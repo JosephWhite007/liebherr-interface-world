@@ -8,6 +8,36 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · Simulation Board (Magic Cube) – zweites Admin-Board umgesetzt
+
+**Kontext.** Erste inhaltliche Umsetzung nach den beiden Aktivierungs-/Capability-Bugfixes.
+Joseph hat als nächsten Slice „Simulation Board" gewählt (Optionen waren: Simulation Board,
+World Connections Map, Onboarding-Formular, Media Board).
+
+**Umsetzung.** `SimulationBoardPage` (Untermenü „Simulation Board" unter „Interface World",
+Capability `liw_manage_interfaces` – dieselbe wie Interface Board, laut RoleBridge-Kommentar
+bewusst für „Interface-/Simulationskatalog" gemeinsam gedacht, keine neue Capability nötig).
+Struktur analog zu `InterfaceBoardPage` (Grundgerüst-Konvention: Formular + Liste, kein
+AJAX): Simulationswelten anlegen/auflisten, je ausgewählter Welt (`?world_id=`) deren
+Testszenarien anlegen/auflisten.
+
+**Bewusst ausgelassen (YAGNI).** Status-Übergänge (Welt validieren, Szenario als
+bestanden/fehlgeschlagen markieren) – dafür fehlt die eigentliche Simulations-Engine-
+Anbindung noch; ein UI ohne fachliche Grundlage dahinter wäre Attrappe statt Funktion.
+`InterfaceCatalogService::set_lifecycle_status()` ist aus demselben Grund ebenfalls
+weiterhin ohne UI.
+
+**Selftest.** `tests/run-tests.php`: 40/40 Prüfungen grün (Syntax + strict_types für
+`SimulationBoardPage.php` und die geänderte `AdminMenu.php` mit abgedeckt).
+
+**Auswirkung.** Kategorie B (neue Funktionalität innerhalb des bestehenden, bereits
+genehmigten Plugin-Grundgerüsts, keine Core-Änderung, kein neues Datenmodell – nutzt die
+in alpha.1 bereits angelegten Tabellen `liw_simulation_world`/`liw_test_scenario`).
+Version 0.1.0-alpha.3 → 0.1.0-alpha.4.
+
+**Quelle.** `src/Simulation/SimulationSchema.php`, `src/Simulation/SimulationService.php`
+(bereits vorhanden seit alpha.1); `src/Admin/Pages/InterfaceBoardPage.php` als Vorbild.
+
 ### 2026-09-17 · Content Board für liw_section bewusst zurückgestellt (Planungsentscheidung)
 
 **Kontext.** Nach Behebung der beiden Aktivierungs-/Capability-Bugs wurde die Frage gestellt,

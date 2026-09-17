@@ -15,6 +15,7 @@ namespace Liebherr\InterfaceWorld\Admin;
 
 use Liebherr\InterfaceWorld\Admin\Pages\HandbookPage;
 use Liebherr\InterfaceWorld\Admin\Pages\InterfaceBoardPage;
+use Liebherr\InterfaceWorld\Admin\Pages\SimulationBoardPage;
 use Liebherr\InterfaceWorld\CoreBridge\RoleBridge;
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
@@ -43,6 +44,15 @@ final class AdminMenu {
 			RoleBridge::CAP_MANAGE_INTERFACES,
 			'liw-interface-board',
 			[ InterfaceBoardPage::class, 'render' ]
+		);
+
+		add_submenu_page(
+			'liw-interface-board',
+			__( 'Simulation Board', 'liebherr-interface-world' ),
+			__( 'Simulation Board', 'liebherr-interface-world' ),
+			RoleBridge::CAP_MANAGE_INTERFACES,
+			SimulationBoardPage::MENU_SLUG,
+			[ SimulationBoardPage::class, 'render' ]
 		);
 
 		// Handbuch-Regel: letzter Reiter des Moduls (CLAUDE.md Abschnitt 1).

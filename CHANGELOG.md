@@ -1,5 +1,22 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.4] – 2026-09-18 – Simulation Board (Magic Cube, Grundgerüst)
+
+### Hinzugefügt
+- Zweites Admin-Board „Simulation Board" (Untermenü von „Interface World", Capability
+  `liw_manage_interfaces` – dieselbe wie Interface Board, s. RoleBridge-Kommentar
+  „Interface-/Simulationskatalog pflegen"): Anlage-Formular + Liste für Simulationswelten
+  (`liw_simulation_world`), je ausgewählter Welt Anlage-Formular + Liste für deren
+  Testszenarien (`liw_test_scenario`) – Liebherr-Pflichtenheft §17 „Magic Cube".
+- Navigation Welt → Szenarien über `?world_id=` (reine Ansichtsnavigation, keine
+  Datenänderung, daher ohne Nonce).
+
+### Bewusst nicht Teil dieser Auslieferung
+- Status-Übergänge (Welt validieren/verwerfen, Szenario als bestanden/fehlgeschlagen
+  markieren) – dafür fehlt noch die eigentliche Simulations-Engine-Anbindung; YAGNI,
+  bis diese ansteht. `InterfaceCatalogService::set_lifecycle_status()` ist ebenfalls
+  noch ohne UI, aus demselben Grund.
+
 ## [0.1.0-alpha.3] – 2026-09-17 – Bugfix: Menü „Interface World" für Administrator unsichtbar
 
 ### Behoben
