@@ -29,6 +29,15 @@ final class AuditBridge {
 	 * zurück (Fehlervermeidung: kein stiller Verlust der Nachvollziehbarkeit, SEC-005),
 	 * bricht aber niemals den Hauptprozess ab (identisches Prinzip wie im Core-Original).
 	 *
+	 * Bugfix 18.09.2026 (Docker-Praxistest, siehe LOGBUCH_TECHNIK.md): der 7. Parameter von
+	 * `AuditService::log()` ist `string $actor_type` (Spalte `actor_type` VARCHAR(20) in
+	 * `{$wpdb->prefix}ary_audit_log`, s. `AuditSchema.php`) – kein Modul-/Plugin-Bezeichner.
+	 * Der bisherige Aufruf übergab hier fälschlich den Plugin-Slug `'liebherr-interface-world'`
+	 * (24 Zeichen), was bei jedem Aufruf am `VARCHAR(20)`-Limit scheiterte („value too long").
+	 * Konvention aus dem Core selbst übernommen (s. `PlatformResetService::log()`-Aufruf):
+	 * `'admin'` für angemeldete Board-Aktionen, `'system'` für anonyme/automatisierte Vorgänge
+	 * (actor_id 0, z. B. das öffentliche Onboarding-Formular).
+	 *
 	 * @param array<string, mixed> $old_values
 	 * @param array<string, mixed> $new_values
 	 */
@@ -49,7 +58,7 @@ final class AuditBridge {
 				$old_values,
 				$new_values,
 				$actor_id,
-				'liebherr-interface-world'
+				$actor_id > 0 ? 'admin' : 'system'
 			);
 			return;
 		}

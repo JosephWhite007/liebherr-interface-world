@@ -8,6 +8,51 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · Docker-Praxistest: zwei Befunde behoben (0.1.0-alpha.14)
+
+**Frage/Kontext.** Joseph hat nach dem Commit von alpha.13 erstmals `scripts/liw-selftest.php`
+(alpha.11) in der echten Docker-Dev-Umgebung ausgeführt und das vollständige Terminal-Ergebnis
+eingefügt: 56 von 59 Prüfungen bestanden, drei Fehlschläge, dazu ein wiederkehrender,
+nicht-fataler `AuditService`-Fehler im Log bei nahezu jedem `AuditBridge::log()`-Aufruf.
+
+**Befund 1 – `actor_type` (echter Produktionsfehler).** `AuditBridge::log()` rief
+`Araliya\Platform\Core\Modules\Audit\AuditService::log()` mit sieben Argumenten auf und
+übergab als letztes `'liebherr-interface-world'`, in der Annahme, dies sei ein
+Modul-/Herkunftsbezeichner. Prüfung der echten Core-Signatur
+(`src/Modules/Audit/AuditService.php`) ergab: Parameter 7 ist `string $actor_type = 'system'`,
+gespeichert in der Spalte `actor_type VARCHAR(20)` (`AuditSchema.php`). Der 24 Zeichen lange
+Plugin-Slug sprengte diese Spalte bei **jedem** Aufruf – nicht fatal (der Fehler wird im Core
+selbst nur geloggt, s. `if (false === $result) { error_log(...) }`), aber die
+Audit-Nachvollziehbarkeit (SEC-005) ging für dieses Plugin faktisch durchgehend verloren.
+
+**Befund 2 – strikter Typvergleich im Testskript (kein Produktionsfehler).** Die drei
+gemeldeten Fehlschläge (`get_all()`/`get_worlds()`/`get_scenarios_for_world()` „enthalten
+neuen Datensatz nicht") betrafen ausschließlich `scripts/liw-selftest.php`, nicht die
+Anwendungslogik: `InterfaceCatalogService::create()`/`SimulationService::create_world()`/
+`add_scenario()` meldeten Erfolg, die anschließenden Prüfungen verglichen die neue (int-)ID
+aber mit `in_array(..., true)` (strikt) gegen `array_column($wpdb_results, 'id')` – und
+`$wpdb->get_results()` liefert alle Spaltenwerte als `string` (mysqli-Standard ohne eigenes
+Type-Casting). `in_array(5, ['5'], true)` ist in PHP `false`. Die eigentlichen Board-Methoden
+funktionieren also korrekt; nur der Selbsttest verglich falsch.
+
+**Optionen.** Bei Befund 1 keine Alternative – falscher Parameter musste korrigiert werden.
+Bei Befund 2: (a) Testskript auf `intval()`-Cast vor dem Vergleich umstellen; (b) strikten
+Vergleich (`true`) ersatzlos entfernen. Für (a) entschieden, da strikte Vergleiche mit
+korrektem Typ dem Projektstandard (`strict_types=1`) eher entsprechen als ein pauschal
+gelockerter Vergleich.
+
+**Entscheidung/Umsetzung.** `AuditBridge::log()`: 7. Argument auf
+`$actor_id > 0 ? 'admin' : 'system'` geändert – Konvention 1:1 aus dem Core selbst übernommen
+(`PlatformResetService::log()` verwendet dieselbe Ternäre mit `'user'`/`'system'`; `'admin'`
+gewählt, da alle bisherigen Aufrufe dieses Plugins aus Admin-Board-Aktionen stammen, mit
+Ausnahme des öffentlichen Onboarding-Formulars, das bereits `actor_id = 0` übergibt).
+`scripts/liw-selftest.php`: `array_map('intval', array_column(...))` vor den drei betroffenen
+`in_array()`-Aufrufen ergänzt. Keine Datenmodell- oder Schema-Änderung nötig.
+
+**Quelle/Version.** Docker-Selbsttest-Ausführung Joseph White 18.09.2026;
+`AuditService.php`/`AuditSchema.php` (araliya-platform-core, verifiziert per device_bash);
+0.1.0-alpha.14.
+
 ### 2026-09-18 · Content Board (§19): Grundgerüst statt volles CMS-Verhalten (0.1.0-alpha.13)
 
 **Frage/Kontext.** Nach alpha.12 wählte Joseph als nächsten Schritt das Content Board

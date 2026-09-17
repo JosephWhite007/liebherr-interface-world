@@ -6,7 +6,7 @@ oder als offene Rückfrage an Joseph White dokumentiert wurden (Quelle jeweils a
 Sichtbar im Backend unter „Interface World → 📋 To-Dos". Wird bei jeder Aufgabe, die einen
 Punkt hier abschließt oder ergänzt, gepflegt.
 
-Stand: 18.09.2026 (0.1.0-alpha.13).
+Stand: 18.09.2026 (0.1.0-alpha.14).
 
 ---
 
@@ -70,8 +70,9 @@ Stand: 18.09.2026 (0.1.0-alpha.13).
 - Media Board Paginierung und Onboarding Board Paginierung (beide seit alpha.7/alpha.6 als
   offen vermerkt) wurden mit alpha.10 umgesetzt.
 - Gemeinsamer Docker-Praxistest aller Bereiche (`scripts/liw-selftest.php`) wurde mit
-  alpha.11 ausgeliefert – Ausführung durch Joseph in der Docker-Dev-Umgebung steht noch
-  aus (`docker exec araliya_wordpress php .../scripts/liw-selftest.php`).
+  alpha.11 ausgeliefert und am 18.09.2026 von Joseph in der Docker-Dev-Umgebung ausgeführt.
+  Erster Lauf: 56/59 (zwei Befunde, behoben in alpha.14); zweiter Lauf: 59/59, kein
+  Audit-Fehler mehr.
 - Content Board Grundgerüst (Übersicht, Freigabeworkflow, native Editor-/Revisions-
   Anbindung) mit alpha.13 umgesetzt – Restpunkte s. oben.
 

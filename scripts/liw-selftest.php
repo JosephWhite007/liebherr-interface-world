@@ -111,7 +111,10 @@ try {
 	if ( ! is_wp_error( $iface_id ) ) {
 		$cleanup_interface_ids[] = $iface_id;
 		$all = InterfaceCatalogService::get_all();
-		liw_st_check( 'get_all() enthält neue Schnittstelle', in_array( $iface_id, array_column( $all, 'id' ), true ) );
+		// $wpdb->get_results() liefert alle Spalten als String (mysqli-Standard, kein Type-Casting) –
+		// daher hier explizit auf int gecastet, sonst schlägt der strikte in_array()-Vergleich mit der
+		// int-ID aus $wpdb->insert_id (in InterfaceCatalogService::create()) immer fehl (Befund 18.09.2026).
+		liw_st_check( 'get_all() enthält neue Schnittstelle', in_array( $iface_id, array_map( 'intval', array_column( $all, 'id' ) ), true ) );
 		liw_st_check( 'öffentlicher Katalog zeigt draft-Schnittstelle NICHT', ! in_array( strtolower( $run ) . '-if', array_column( InterfaceCatalogService::get_public_catalog(), 'code' ), true ) );
 		InterfaceCatalogService::set_lifecycle_status( $iface_id, 'approved', 1 );
 		liw_st_check( 'öffentlicher Katalog zeigt approved-Schnittstelle', in_array( strtolower( $run ) . '-if', array_column( InterfaceCatalogService::get_public_catalog(), 'code' ), true ) );
@@ -123,13 +126,14 @@ try {
 	liw_st_check( 'Simulationswelt angelegt', ! is_wp_error( $world_id ), is_wp_error( $world_id ) ? $world_id->get_error_message() : '' );
 	if ( ! is_wp_error( $world_id ) ) {
 		$cleanup_world_ids[] = $world_id;
-		liw_st_check( 'get_worlds() enthält neue Welt', in_array( $world_id, array_column( SimulationService::get_worlds(), 'id' ), true ) );
+		// Cast s. Kommentar bei [2] Interface Board: $wpdb liefert Spalten als String.
+		liw_st_check( 'get_worlds() enthält neue Welt', in_array( $world_id, array_map( 'intval', array_column( SimulationService::get_worlds(), 'id' ) ), true ) );
 
 		$scenario_id = SimulationService::add_scenario( [ 'world_id' => $world_id, 'category' => 'connectivity' ], 1 );
 		liw_st_check( 'Testszenario angelegt', ! is_wp_error( $scenario_id ), is_wp_error( $scenario_id ) ? $scenario_id->get_error_message() : '' );
 		if ( ! is_wp_error( $scenario_id ) ) {
 			$cleanup_scenario_ids[] = $scenario_id;
-			liw_st_check( 'get_scenarios_for_world() enthält neues Szenario', in_array( $scenario_id, array_column( SimulationService::get_scenarios_for_world( $world_id ), 'id' ), true ) );
+			liw_st_check( 'get_scenarios_for_world() enthält neues Szenario', in_array( $scenario_id, array_map( 'intval', array_column( SimulationService::get_scenarios_for_world( $world_id ), 'id' ) ), true ) );
 		}
 	}
 

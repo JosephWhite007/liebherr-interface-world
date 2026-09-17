@@ -12,6 +12,22 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.14 – Bugfixes aus dem Docker-Praxistest
+
+**Geändert:**
+- `src/CoreBridge/AuditBridge.php` – 7. Parameter an `AuditService::log()` von
+  `'liebherr-interface-world'` (Plugin-Slug, falsch) auf `$actor_id > 0 ? 'admin' : 'system'`
+  (`$actor_type`, korrekt) geändert. Ursache: `VARCHAR(20)`-Spalte `actor_type` in
+  `{$wpdb->prefix}ary_audit_log`, Plugin-Slug war 24 Zeichen lang.
+- `scripts/liw-selftest.php` – drei `in_array(..., true)`-Vergleiche (Abschnitte [2] und [3])
+  casten die DB-Ergebnisspalte `id` jetzt vor dem Vergleich mit `array_map('intval', ...)`,
+  da `$wpdb->get_results()` alle Spalten als String liefert (mysqli-Standard).
+- `liebherr-interface-world.php` – Version auf `0.1.0-alpha.14`.
+
+**Fund:** beide Punkte durch den von Joseph in Docker ausgeführten Selbsttest
+(`scripts/liw-selftest.php`, alpha.11/alpha.13) aufgedeckt – 56 von 59 Prüfungen bestanden,
+drei Fehlschläge plus ein wiederkehrender, nicht fataler `AuditService`-DB-Fehler im Log.
+
 ## 0.1.0-alpha.13 – Content Board (§19, Grundgerüst)
 
 **Neu:**

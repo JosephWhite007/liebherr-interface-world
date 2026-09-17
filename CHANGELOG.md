@@ -1,5 +1,32 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.14] – 2026-09-18 – Bugfixes aus dem Docker-Praxistest
+
+### Behoben
+- **`CoreBridge\AuditBridge::log()`** übergab an `AuditService::log()` fälschlich den
+  Plugin-Slug `'liebherr-interface-world'` (24 Zeichen) als 7. Parameter. Dieser Parameter
+  ist jedoch `string $actor_type` (Core-Spalte `actor_type VARCHAR(20)` in
+  `{$wpdb->prefix}ary_audit_log`) – kein Modulbezeichner. Dadurch scheiterte praktisch
+  **jeder** Audit-Log-Eintrag dieses Plugins in echtem WordPress/MySQL mit „value too long
+  or contains invalid data" (nicht fatal, aber Nachvollziehbarkeit ging verloren – SEC-005).
+  Behoben durch `$actor_id > 0 ? 'admin' : 'system'`, analog zur bestehenden Konvention im
+  Core selbst (`PlatformResetService`). Gefunden über den von Joseph in Docker ausgeführten
+  Selbsttest `scripts/liw-selftest.php` (56/59 bestanden, s. Logbuch).
+- **`scripts/liw-selftest.php`**: drei Prüfungen (`get_all()`/`get_worlds()`/
+  `get_scenarios_for_world()` enthalten den neu angelegten Datensatz) verglichen eine
+  `int`-ID strikt (`in_array(..., true)`) gegen `$wpdb->get_results()`-Ergebnisse, deren
+  Spalten mysqli-bedingt als `string` zurückkommen – der strikte Vergleich schlug dadurch
+  immer fehl, obwohl `InterfaceCatalogService::get_all()`/`SimulationService::get_worlds()`/
+  `get_scenarios_for_world()` selbst korrekt arbeiten (kein Fehler im Anwendungscode).
+  Behoben durch `array_map('intval', ...)` vor dem Vergleich. Reiner Testskript-Fehler,
+  keine Auswirkung auf das Plugin im laufenden Betrieb.
+
+### Geprüft
+- `tests/run-tests.php`: 70/70 grün (unverändert, keine Signaturänderung nach außen).
+- Docker-Praxistest `scripts/liw-selftest.php` erneut durch Joseph ausgeführt (18.09.2026,
+  Lauf `SELFTEST-DDIUJH0J`): **59 bestanden, 0 fehlgeschlagen**, kein
+  `AuditService: INSERT failed` mehr im Log – beide Fixes gegen die reale Umgebung bestätigt.
+
 ## [0.1.0-alpha.13] – 2026-09-18 – Content Board (§19, Grundgerüst)
 
 ### Hinzugefügt
