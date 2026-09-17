@@ -29,6 +29,8 @@ final class LiwSectionCpt {
 	public const STATUS_APPROVED = 'liw_approved';
 
 	public static function register(): void {
+		add_filter( 'display_post_states', [ self::class, 'add_status_badge' ], 10, 2 );
+
 		register_post_type( self::POST_TYPE, [
 			'labels'       => [
 				'name'          => __( 'Interface World – Abschnitte', 'liebherr-interface-world' ),
@@ -37,7 +39,7 @@ final class LiwSectionCpt {
 				'edit_item'     => __( 'Abschnitt bearbeiten', 'liebherr-interface-world' ),
 			],
 			'public'       => true,
-			'show_in_menu' => false, // Eigenes Admin-Board (InterfaceBoardPage) statt Standardmenü.
+			'show_in_menu' => false, // Eigenes Admin-Board (Admin\Pages\ContentBoardPage) statt Standardmenü.
 			'show_ui'      => true,
 			'has_archive'  => false,
 			'rewrite'      => [ 'slug' => 'interface-world', 'with_front' => false ],
@@ -57,5 +59,20 @@ final class LiwSectionCpt {
 			'show_in_admin_status_list' => true,
 			'label_count'               => _n_noop( 'Freigegeben <span class="count">(%s)</span>', 'Freigegeben <span class="count">(%s)</span>', 'liebherr-interface-world' ),
 		] );
+	}
+
+	/**
+	 * WP zeigt Status-Badges neben dem Titel in der Listenansicht nur für seine eigenen
+	 * Standardstatus (Entwurf/Prüfung/geplant/privat) automatisch an – ein registrierter
+	 * Custom-Status wie `liw_approved` bekommt ohne diesen Filter kein Badge.
+	 *
+	 * @param array<string, string> $states
+	 * @return array<string, string>
+	 */
+	public static function add_status_badge( array $states, \WP_Post $post ): array {
+		if ( self::POST_TYPE === $post->post_type && self::STATUS_APPROVED === $post->post_status ) {
+			$states[ self::STATUS_APPROVED ] = __( 'Freigegeben', 'liebherr-interface-world' );
+		}
+		return $states;
 	}
 }

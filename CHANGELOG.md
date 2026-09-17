@@ -1,5 +1,38 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.13] – 2026-09-18 – Content Board (§19, Grundgerüst)
+
+### Hinzugefügt
+- Sechstes/siebtes Admin-Board „Content Board" (`ContentBoardPage`, Capability
+  `liw_manage_content`): Übersicht aller `liw_section`-Beiträge (LP-01…LP-14) mit
+  Reihenfolge, Status und Aktionen (Bearbeiten, Vorschau, Statuswechsel).
+  Freigabeworkflow Entwurf → Prüfung → freigegeben → veröffentlicht per Zeilen-Aktion
+  (`wp_update_post()`, `AuditBridge::log()`), da der Block-Editor den seit alpha.1
+  registrierten Custom-Status `liw_approved` nicht in seinem eigenen Status-Dropdown
+  anbietet.
+- `CPT\LiwSectionCpt::add_status_badge()`: zeigt „Freigegeben" als Status-Badge neben dem
+  Titel in der nativen Listenansicht (WP zeigt das für Custom-Status nicht automatisch an).
+
+### Geprüft vor Umsetzung / bewusst wiederverwendet (keine Doppelentwicklung)
+- Titel, Inhalt, Reihenfolge (`page-attributes`) und **Revisionen vergleichen/
+  wiederherstellen** funktionieren bereits nativ, da die CPT diese Features seit alpha.1
+  unterstützt – dafür war kein zusätzlicher Code nötig.
+
+### ANNAHME-LIW-6
+- Reihenfolge wird über das native „Reihenfolge"-Feld im Beitrags-Editor gepflegt, nicht
+  über Drag-and-Drop in diesem Board (YAGNI, additiv nachrüstbar ohne Datenmodelländerung).
+
+### Bewusst nicht Teil dieser Auslieferung (Entscheidung Joseph White, 18.09.2026: Grundgerüst zuerst)
+- Drag-and-Drop-Reihenfolge, Zeitsteuerte Veröffentlichung über den nativen `future`-Status
+  hinaus, Vorschau je Sprache/Gerät, CTA-Ziel-Picker, Medien-Picker-Beschränkung auf
+  freigegebene Bibliothek, Pflichtfeldprüfung/Übersetzungswarnungen. Details:
+  `docs/LIW_TODO.md`.
+
+### Selftest
+- `tests/run-tests.php`: 70/70 Prüfungen grün (vorher 68/68). `scripts/liw-selftest.php`
+  um Abschnitt [6] Content Board erweitert (Statuswechsel draft→pending→liw_approved→
+  publish, Status-Badge-Filter-Registrierung, `post_status=any`-Sichtbarkeit).
+
 ## [0.1.0-alpha.12] – 2026-09-18 – Landingpage-Konzept + anonymisierte LP-07/LP-08-Grafiken
 
 ### Hinzugefügt

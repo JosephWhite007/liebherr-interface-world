@@ -6,20 +6,29 @@ oder als offene Rückfrage an Joseph White dokumentiert wurden (Quelle jeweils a
 Sichtbar im Backend unter „Interface World → 📋 To-Dos". Wird bei jeder Aufgabe, die einen
 Punkt hier abschließt oder ergänzt, gepflegt.
 
-Stand: 18.09.2026 (0.1.0-alpha.12).
+Stand: 18.09.2026 (0.1.0-alpha.13).
 
 ---
 
 ## Fachlich offen (Pflichtenheft)
 
-- **Content Board (§19 – Redaktionsfunktionen).** In alpha.1 als „nicht Teil dieser
-  Auslieferung" benannt; bislang nicht nachgeliefert. Betrifft redaktionelle Pflege der
-  14 Landingpage-Abschnitte (`liw_section`, CPT-Freigabeworkflow `liw_approved`).
-  Seit alpha.12 liegen für LP-07/LP-08 bereits fertige, anonymisierte Grafiken bereit
-  (`assets/img/liw-data-model.svg`, `assets/img/liw-process-worlds.svg`) – warten auf
-  ihre Platzierung durch das Content Board. Details/Gesamtkonzept:
+- **Content Board (§19) – über das Grundgerüst hinaus.** Seit alpha.13 gibt es Übersicht,
+  Freigabeworkflow (Entwurf → Prüfung → freigegeben → veröffentlicht) und native
+  Editor-/Revisions-Anbindung für `liw_section`. Bewusst noch nicht Teil der Auslieferung
+  (Entscheidung Joseph White 18.09.2026: „Grundgerüst zuerst"):
+  - Drag-and-Drop-Reihenfolge (aktuell: numerisches „Reihenfolge"-Feld im Editor, ANNAHME-LIW-6)
+  - Zeitsteuerte Veröffentlichung über den nativen `future`-Status hinaus
+  - Vorschau je Sprache, Gerät und Veröffentlichungsstatus
+  - CTA-Ziele intern auswählen statt URLs manuell einzutragen
+  - Medien-Picker auf freigegebene Bibliothek beschränken (CI-005) – bei Recherche
+    festgestellt, dass WPs `ajax_query_attachments_args`/`post_id`-Kontext dafür nicht
+    zuverlässig genug ist, um es ungeprüft auszuliefern; braucht eigene Prüfung in Docker
+  - Pflichtfeldprüfung und Warnung bei fehlenden Übersetzungen/Alt-Texten
+  Für LP-07/LP-08 liegen bereits fertige, anonymisierte Grafiken bereit
+  (`assets/img/liw-data-model.svg`, `assets/img/liw-process-worlds.svg`) – warten auf ihre
+  Platzierung in den jetzt anlegbaren `liw_section`-Beiträgen. Details/Gesamtkonzept:
   `docs/LIW_LANDINGPAGE_KONZEPT.md`.
-  *Quelle: CHANGELOG.md alpha.1, alpha.12.*
+  *Quelle: CHANGELOG.md alpha.1, alpha.12, alpha.13.*
 
 - **Visuelles Gesamt-Layout/Wireframe der Landingpage.** Der inhaltliche Bauplan
   (LP-01…LP-14) steht im Pflichtenheft und ist seit alpha.12 in
@@ -63,5 +72,7 @@ Stand: 18.09.2026 (0.1.0-alpha.12).
 - Gemeinsamer Docker-Praxistest aller Bereiche (`scripts/liw-selftest.php`) wurde mit
   alpha.11 ausgeliefert – Ausführung durch Joseph in der Docker-Dev-Umgebung steht noch
   aus (`docker exec araliya_wordpress php .../scripts/liw-selftest.php`).
+- Content Board Grundgerüst (Übersicht, Freigabeworkflow, native Editor-/Revisions-
+  Anbindung) mit alpha.13 umgesetzt – Restpunkte s. oben.
 
 S. `LIW_PROGRAMMIERLOGBUCH.md` für Details.

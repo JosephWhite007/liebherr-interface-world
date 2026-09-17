@@ -12,6 +12,20 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.13 – Content Board (§19, Grundgerüst)
+
+**Neu:**
+- `src/Admin/Pages/ContentBoardPage.php` – Übersicht/Freigabeworkflow für `liw_section`.
+- `CPT\LiwSectionCpt::add_status_badge()` – Status-Badge „Freigegeben" in der Listenansicht.
+
+**Geändert:**
+- `src/Admin/AdminMenu.php` – Submenü „Content Board" ergänzt.
+- `src/Admin/Pages/HandbookPage.php` – Abschnitt zum Content Board ergänzt, „sechs" → „sieben Bereiche".
+- `scripts/liw-selftest.php` – neuer Abschnitt [6] Content Board (Statuswechsel-Kette,
+  Filter-Registrierung); nachfolgende Abschnitte umnummeriert (Media Board jetzt [7] usw.),
+  neuer Abschnitt [10] prüft die alpha.12-Landingpage-Konzept-Dateien.
+- `liebherr-interface-world.php` – Version auf `0.1.0-alpha.13`.
+
 ## 0.1.0-alpha.12 – Landingpage-Konzept + anonymisierte LP-07/LP-08-Grafiken
 
 **Neu:**

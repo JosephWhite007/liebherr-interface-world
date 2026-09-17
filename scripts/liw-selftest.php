@@ -4,12 +4,12 @@ declare( strict_types = 1 );
 /**
  * Liebherr Interface Solutions – Integrations-Selbsttest (Docker-Praxistest)
  *
- * Prüft alle sechs Boards (Interface, Simulation, World Connections – Datenpflege und
- * Frontend, Onboarding, Media) sowie die Nachvollziehbarkeits-Reiter (Programmierlogbuch,
- * To-Dos) end-to-end in der ECHTEN WordPress-Umgebung (CLAUDE.md DoD Punkt 4: „tatsächlich
- * geprüft, nicht nur müsste gehen"). Ergänzt `tests/run-tests.php` (Syntax/Statuslogik ohne
- * WP) um die DB-/Hook-/Shortcode-gebundenen Abläufe, analog zu Core's
- * `scripts/yb-selftest.php`.
+ * Prüft alle sieben Boards (Interface, Content, Simulation, World Connections –
+ * Datenpflege und Frontend, Onboarding, Media) sowie die Nachvollziehbarkeits-Reiter
+ * (Programmierlogbuch, To-Dos, Landingpage-Konzept) end-to-end in der ECHTEN
+ * WordPress-Umgebung (CLAUDE.md DoD Punkt 4: „tatsächlich geprüft, nicht nur müsste
+ * gehen"). Ergänzt `tests/run-tests.php` (Syntax/Statuslogik ohne WP) um die
+ * DB-/Hook-/Shortcode-gebundenen Abläufe, analog zu Core's `scripts/yb-selftest.php`.
  *
  * Testdaten sind mit SELFTEST- präfigiert und werden am Ende vollständig entfernt
  * (Testdaten, keine echten Fachdaten – CLAUDE.md Kategorie B). Läuft nur in
@@ -37,6 +37,7 @@ use Liebherr\InterfaceWorld\CoreBridge\MarkdownBridge;
 use Liebherr\InterfaceWorld\CoreBridge\MediaBridge;
 use Liebherr\InterfaceWorld\CoreBridge\PartnerBridge;
 use Liebherr\InterfaceWorld\CoreBridge\RoleBridge;
+use Liebherr\InterfaceWorld\CPT\LiwSectionCpt;
 use Liebherr\InterfaceWorld\Interfaces\InterfaceCatalogSchema;
 use Liebherr\InterfaceWorld\Interfaces\InterfaceCatalogService;
 use Liebherr\InterfaceWorld\Onboarding\OnboardingSchema;
@@ -69,6 +70,7 @@ $cleanup_world_ids      = [];
 $cleanup_scenario_ids   = [];
 $cleanup_connection_ids = [];
 $cleanup_partner_ids    = [];
+$cleanup_section_ids    = [];
 
 try {
 	global $wpdb;
@@ -193,8 +195,36 @@ try {
 		liw_st_check( 'Honeypot in .liw-visually-hidden verpackt', false !== strpos( $shortcode_html, 'liw-visually-hidden' ) );
 	}
 
-	// ── [6] Media Board (§18) ─────────────────────────────────────────────────
-	echo "\n[6] Media Board – CI-005-Freigabe\n";
+	// ── [6] Content Board (§19) ───────────────────────────────────────────────
+	echo "\n[6] Content Board – Freigabeworkflow (§19)\n";
+	$section_id = wp_insert_post( [
+		'post_type'    => LiwSectionCpt::POST_TYPE,
+		'post_title'   => "{$run} Testabschnitt",
+		'post_content' => 'Testinhalt.',
+		'post_status'  => 'draft',
+		'menu_order'   => 99,
+	], true );
+	liw_st_check( 'Abschnitt angelegt (Status draft)', ! is_wp_error( $section_id ) && $section_id > 0 );
+	if ( ! is_wp_error( $section_id ) && $section_id > 0 ) {
+		$cleanup_section_ids[] = $section_id;
+
+		liw_st_check( 'display_post_states-Filter für liw_approved registriert', false !== has_filter( 'display_post_states', [ LiwSectionCpt::class, 'add_status_badge' ] ) );
+
+		wp_update_post( [ 'ID' => $section_id, 'post_status' => 'pending' ] );
+		liw_st_check( 'Statuswechsel draft → pending', 'pending' === get_post_status( $section_id ) );
+
+		wp_update_post( [ 'ID' => $section_id, 'post_status' => LiwSectionCpt::STATUS_APPROVED ] );
+		liw_st_check( 'Statuswechsel pending → liw_approved', LiwSectionCpt::STATUS_APPROVED === get_post_status( $section_id ) );
+
+		wp_update_post( [ 'ID' => $section_id, 'post_status' => 'publish' ] );
+		liw_st_check( 'Statuswechsel liw_approved → publish', 'publish' === get_post_status( $section_id ) );
+
+		$all_section_ids = get_posts( [ 'post_type' => LiwSectionCpt::POST_TYPE, 'post_status' => 'any', 'posts_per_page' => -1, 'fields' => 'ids' ] );
+		liw_st_check( 'Abschnitt in beliebigem Status auffindbar (post_status=any)', in_array( $section_id, $all_section_ids, true ) );
+	}
+
+	// ── [7] Media Board (§18) ─────────────────────────────────────────────────
+	echo "\n[7] Media Board – CI-005-Freigabe\n";
 	$attachment_id = wp_insert_post( [
 		'post_type'   => 'attachment',
 		'post_title'  => "{$run} Test-Medium",
@@ -211,14 +241,14 @@ try {
 	liw_st_check( 'MediaBridge::add_fields() an attachment_fields_to_edit registriert', false !== has_filter( 'attachment_fields_to_edit', [ MediaBridge::class, 'add_fields' ] ) );
 	liw_st_check( 'MediaBridge::save_fields() an attachment_fields_to_save registriert', false !== has_filter( 'attachment_fields_to_save', [ MediaBridge::class, 'save_fields' ] ) );
 
-	// ── [7] Design System / Assets ────────────────────────────────────────────
-	echo "\n[7] Design-System-Anbindung + Admin-Assets\n";
+	// ── [8] Design System / Assets ────────────────────────────────────────────
+	echo "\n[8] Design-System-Anbindung + Admin-Assets\n";
 	liw_st_check( 'assets/css/liebherr-frontend.css vorhanden', is_readable( LIW_PATH . 'assets/css/liebherr-frontend.css' ) );
 	liw_st_check( 'assets/css/liebherr-admin.css vorhanden', is_readable( LIW_PATH . 'assets/css/liebherr-admin.css' ) );
 	liw_st_check( 'AdminPagination-Klasse verfügbar', class_exists( AdminPagination::class ) );
 
-	// ── [8] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
-	echo "\n[8] Programmierlogbuch / To-Dos\n";
+	// ── [9] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
+	echo "\n[9] Programmierlogbuch / To-Dos\n";
 	liw_st_check( 'docs/LIW_PROGRAMMIERLOGBUCH.md vorhanden', is_readable( LIW_PATH . 'docs/LIW_PROGRAMMIERLOGBUCH.md' ) );
 	liw_st_check( 'docs/LIW_TODO.md vorhanden', is_readable( LIW_PATH . 'docs/LIW_TODO.md' ) );
 	liw_st_check( 'CoreBridge\\MarkdownBridge verfügbar (Core-Renderer)', MarkdownBridge::is_available() );
@@ -227,8 +257,14 @@ try {
 		liw_st_check( 'MarkdownBridge::render() liefert HTML', false !== strpos( $rendered, '<h2' ) || false !== strpos( $rendered, '<li' ) );
 	}
 
-	// ── [9] Permalink-Hinweis (Info, kein Fehlschlag) ─────────────────────────
-	echo "\n[9] Hinweis\n";
+	// ── [10] Landingpage-Konzept (Grafiken) ────────────────────────────────────
+	echo "\n[10] Landingpage-Konzept – LP-07/LP-08-Grafiken\n";
+	liw_st_check( 'docs/LIW_LANDINGPAGE_KONZEPT.md vorhanden', is_readable( LIW_PATH . 'docs/LIW_LANDINGPAGE_KONZEPT.md' ) );
+	liw_st_check( 'assets/img/liw-data-model.svg vorhanden', is_readable( LIW_PATH . 'assets/img/liw-data-model.svg' ) );
+	liw_st_check( 'assets/img/liw-process-worlds.svg vorhanden', is_readable( LIW_PATH . 'assets/img/liw-process-worlds.svg' ) );
+
+	// ── [11] Permalink-Hinweis (Info, kein Fehlschlag) ────────────────────────
+	echo "\n[11] Hinweis\n";
 	echo '  ℹ Permalink-Flush-Flag (liw_flush_rewrite_needed): ' . ( get_option( 'liw_flush_rewrite_needed' ) ? 'gesetzt – bitte Einstellungen → Permalinks → Speichern prüfen' : 'nicht gesetzt' ) . "\n";
 
 } finally {
@@ -252,6 +288,9 @@ try {
 		$wpdb->delete( ConsentLogSchema::table_name(), [ 'request_id' => $partner_id ] );
 		$wpdb->delete( OnboardingSchema::table_name(), [ 'partner_id' => $partner_id ] );
 		$wpdb->delete( $wpdb->prefix . 'ary_partners', [ 'id' => $partner_id ] );
+	}
+	foreach ( $cleanup_section_ids as $id ) {
+		wp_delete_post( $id, true );
 	}
 	echo "  Testdaten entfernt (Präfix {$run}).\n";
 }

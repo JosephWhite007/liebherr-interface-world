@@ -8,6 +8,41 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · Content Board (§19): Grundgerüst statt volles CMS-Verhalten (0.1.0-alpha.13)
+
+**Frage/Kontext.** Nach alpha.12 wählte Joseph als nächsten Schritt das Content Board
+(§19) – bislang der letzte fehlende der ursprünglich in alpha.1 benannten offenen Punkte.
+
+**Befund.** Das Pflichtenheft verlangt für das Content Board volles CMS-Verhalten:
+Drag-and-Drop-Reihenfolge, Zeitsteuerung, Vorschau je Sprache/Gerät/Status, Revisionen
+vergleichen/wiederherstellen, CTA-Ziel-Picker, Medien-Picker nur aus freigegebener
+Bibliothek, Freigabeworkflow, Pflichtfeldprüfung. Das vollständig auf einmal zu bauen wäre
+ein sehr großer, schlecht überprüfbarer Schritt gewesen.
+
+**Optionen (Claude, AskUserQuestion).** (a) Grundgerüst zuerst – native WP-Bordmittel
+wiederverwenden, Rest dokumentiert zurückstellen; (b) größerer Wurf mit mehr Funktionen
+sofort.
+
+**Entscheidung (Joseph White).** (a) Grundgerüst zuerst.
+
+**Begründung/Umsetzung.** Die `liw_section`-CPT unterstützt bereits seit alpha.1 Titel,
+Editor, Revisionen und `page-attributes` (Reihenfolge) – Revisionen vergleichen/
+wiederherstellen funktioniert dadurch bereits nativ, ohne zusätzlichen Code (echter Fund:
+ein Pflichtenheft-Punkt war de facto schon erfüllt). Neu: `ContentBoardPage` (Übersicht,
+Freigabeworkflow Entwurf→Prüfung→freigegeben→veröffentlicht per Statuswechsel-Aktion, da
+der Block-Editor den Custom-Status `liw_approved` nicht in seinem Dropdown zeigt) sowie
+`LiwSectionCpt::add_status_badge()` (Status-Badge in der Listenansicht). **ANNAHME-LIW-6**:
+Reihenfolge über das native Editor-Feld statt Drag-and-Drop (YAGNI). Bewusst nicht Teil
+dieser Auslieferung: Drag-and-Drop, Zeitsteuerung über `future` hinaus, Mehrsprachen-/
+Geräte-Vorschau, CTA-Ziel-Picker, Medien-Picker-Beschränkung auf freigegebene Bibliothek
+(bei Recherche: WPs `ajax_query_attachments_args` liefert keinen zuverlässigen
+Post-Type-Kontext für die Media-Modal-Einschränkung – ungeprüft ausliefern hätte gegen
+„nicht raten/nicht simulieren" verstoßen), Pflichtfeldprüfung. Alle Restpunkte in
+`docs/LIW_TODO.md` dokumentiert.
+
+**Quelle/Version.** liebherr-interface-world 0.1.0-alpha.13; CHANGELOG.md alpha.13;
+Pflichtenheft §19; Selftest 70/70 grün (`scripts/liw-selftest.php` Abschnitt [6]).
+
 ### 2026-09-18 · Landingpage-Layout-Konzept + Umgang mit interner Prozess-PDF (0.1.0-alpha.12)
 
 **Frage/Kontext.** Joseph fragte, ob es ein Layout-Konzept für die Landingpage gibt, und
