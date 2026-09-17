@@ -20,6 +20,7 @@ use Liebherr\InterfaceWorld\CoreBridge\MediaBridge;
 use Liebherr\InterfaceWorld\CoreBridge\SeoBridge;
 use Liebherr\InterfaceWorld\CoreBridge\TranslationBridge;
 use Liebherr\InterfaceWorld\CPT\LiwSectionCpt;
+use Liebherr\InterfaceWorld\Frontend\FrontendAssets;
 use Liebherr\InterfaceWorld\Onboarding\OnboardingForm;
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
@@ -34,6 +35,7 @@ final class Bootstrap {
 		MediaBridge::register();
 		OnboardingForm::register();
 		ConnectionMapView::register();
+		FrontendAssets::register();
 
 		if ( is_admin() ) {
 			AdminMenu::register();

@@ -1,5 +1,30 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.9] – 2026-09-18 – Design-System-Anbindung (Frontend-Shortcodes)
+
+### Hinzugefügt
+- `assets/css/liebherr-frontend.css` – Styling für `[liw_onboarding_form]` und
+  `[liw_world_connections_map]`, ausschließlich über die zentralen ARALIYA-Design-Tokens
+  (`--ary-bg`, `--ary-card`, `--ary-text`, `--ary-accent`, `--ary-highlight` aus
+  `araliya-platform-core/src/Frontend/DesignSystem.php::generate_css()`, ARY-DP-1.0.0,
+  sowie `--ar-font-*`-Typografie-Variablen), mit Fallback-Werten. Keine eigenen,
+  hartkodierten Markenfarben – folgt derselben Namenskonvention wie Core's eigene
+  seitenspezifische Stylesheets (`.ary-apt-*`, `.ary-ev-*` → hier `.liw-onboarding-form`,
+  `.liw-connections-map`).
+- `Frontend\FrontendAssets` – lädt das Stylesheet nur auf Seiten, die tatsächlich einen
+  der beiden Shortcodes enthalten (`has_shortcode()`-Prüfung), nicht global auf jeder
+  Seite (Performance).
+- `.liw-visually-hidden`-Utility-Klasse ergänzt – löst die in alpha.6 dokumentierte
+  ANNAHME-LIW-5 (Honeypot-Feld im Onboarding-Formular) jetzt tatsächlich ein.
+
+### Geprüft vor Umsetzung
+- `araliya-platform-core` hat keine einzelne globale Komponentenbibliothek für
+  Buttons/Cards; stattdessen definiert jede Frontend-Seite ihre eigenen, namensraum-
+  gescopten Selektoren (`.ary-apt-*` in `apartment-page.css`, `.ary-ev-*` in
+  `event-page.css` usw.), alle aufbauend auf den gemeinsamen Design-Tokens. Diese
+  Konvention wurde hier übernommen, statt eine nicht existierende „globale
+  Komponenten-CSS" zu suchen oder zu erfinden.
+
 ## [0.1.0-alpha.8] – 2026-09-18 – World Connections Map (Frontend-Visualisierung)
 
 ### Hinzugefügt

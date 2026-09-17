@@ -8,6 +8,38 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · Design-System-Anbindung für die Frontend-Shortcodes
+
+**Kontext.** Nach Abschluss aller fünf Boards: Joseph wollte als Nächstes, dass die
+beiden öffentlichen Shortcodes (Onboarding-Formular, World Connections Map) echtes
+Styling statt nacktem semantischem HTML bekommen – über das zentrale Design System
+(CLAUDE.md Frontend-Abschnitt).
+
+**Prüfung vor Umsetzung.** `araliya-platform-core` besitzt keine einzelne globale
+Komponentenbibliothek für Buttons/Cards. Stattdessen definiert jede Frontend-Seite ihre
+eigenen, namensraum-gescopten Selektoren (`.ary-apt-*` in `apartment-page.css`,
+`.ary-ev-*` in `event-page.css` usw.), alle aufbauend auf den gemeinsamen Design-Tokens
+aus `src/Frontend/DesignSystem.php::generate_css()` (ARY-DP-1.0.0: `--ary-bg`,
+`--ary-card`, `--ary-text`, `--ary-accent`, `--ary-highlight`) und `assets/css/
+araliya-tokens.css` (Typografie: `--ar-font-*`). Diese Konvention wurde übernommen,
+statt eine nicht existierende „globale Komponenten-CSS" zu erfinden.
+
+**Umsetzung.** Neues, namensraum-gescoptes Stylesheet `assets/css/
+liebherr-frontend.css` (`.liw-onboarding-form`, `.liw-connections-map`), ausschließlich
+über die Core-Tokens mit Fallback-Werten – keine eigenen Markenfarben. Neue Klasse
+`Frontend\FrontendAssets` lädt es nur auf Seiten mit einem der beiden Shortcodes
+(`has_shortcode()`-Prüfung), nicht global. `.liw-visually-hidden`-Utility ergänzt –
+löst die in alpha.6 dokumentierte ANNAHME-LIW-5 (Honeypot-Sichtbarkeit) jetzt ein.
+
+**Selftest.** `tests/run-tests.php`: 58/58 Prüfungen grün.
+
+**Auswirkung.** Kategorie B (rein zusätzliches Frontend-Asset, keine Core-Änderung,
+kein Datenmodell). Version 0.1.0-alpha.8 → 0.1.0-alpha.9.
+
+**Quelle.** `araliya-platform-core/src/Frontend/DesignSystem.php` (Zeilen 177–200,
+Token-Definitionen); `araliya-platform-core/assets/css/apartment-page.css`,
+`event-page.css` (Namenskonvention-Vorbild).
+
 ### 2026-09-18 · World Connections Map – Frontend-Visualisierung umgesetzt (Abschluss der offenen Punkte)
 
 **Kontext.** Sechster und letzter Slice aus der ursprünglichen alpha.1-Liste offener

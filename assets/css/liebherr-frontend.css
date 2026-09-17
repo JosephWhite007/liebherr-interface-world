@@ -1,0 +1,180 @@
+/**
+ * Liebherr Interface Solutions — Frontend-Stylesheet
+ *
+ * Scope: .liw-onboarding-form / .liw-connections-map (namespaced Selektoren, analog
+ * ARALIYA-Konvention .ary-apt-*/.ary-ev-* in araliya-platform-core/assets/css/*.css).
+ * Alle Farb-/Schriftwerte referenzieren ausschließlich die zentralen Design-Tokens aus
+ * araliya-platform-core (ARY-DP-1.0.0, s. src/Frontend/DesignSystem.php::generate_css()
+ * und assets/css/araliya-tokens.css) mit Fallback-Werten, falls Core-Variablen einmal
+ * nicht gesetzt sind – keine eigenen, hartkodierten Markenfarben (CLAUDE.md Frontend-
+ * Abschnitt: „Design immer über das zentrale Design System").
+ *
+ * @package Liebherr\InterfaceWorld
+ * @since   0.1.0-alpha.9
+ */
+
+/* ── Utility: visuell verstecktes Feld (Honeypot, ANNAHME-LIW-5 jetzt eingelöst) ── */
+.liw-visually-hidden {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* ── Gemeinsame Bausteine ─────────────────────────────────────────────────── */
+.liw-onboarding-form,
+.liw-connections-map {
+	font-family: var(--ar-font-body, var(--font-main, "Cormorant", serif));
+	color: var(--ary-text, #24302a);
+}
+
+.liw-onboarding-notice {
+	padding: 14px 18px;
+	border-radius: 4px;
+	margin-bottom: 20px;
+	font-family: var(--ar-font-body, var(--font-main, "Cormorant", serif));
+}
+
+.liw-onboarding-notice--success {
+	background: var(--ary-card, #ffffff);
+	border: 1px solid var(--ary-accent, #61735f);
+	color: var(--ary-accent, #61735f);
+}
+
+.liw-onboarding-notice--error {
+	background: var(--ary-card, #ffffff);
+	border: 1px solid #b3452f;
+	color: #b3452f;
+}
+
+/* ── Onboarding-Formular ──────────────────────────────────────────────────── */
+.liw-onboarding-form {
+	max-width: 640px;
+	background: var(--ary-card, #ffffff);
+	border: 1px solid var(--ary-highlight, #b6a27a);
+	border-radius: 6px;
+	padding: 32px;
+}
+
+.liw-onboarding-form p {
+	margin: 0 0 18px;
+}
+
+.liw-onboarding-form label {
+	display: block;
+	font-weight: var(--ar-weight-heading, 600);
+	margin-bottom: 6px;
+}
+
+.liw-onboarding-form input[type="text"],
+.liw-onboarding-form input[type="email"],
+.liw-onboarding-form input[type="tel"],
+.liw-onboarding-form input[type="url"],
+.liw-onboarding-form select,
+.liw-onboarding-form textarea {
+	width: 100%;
+	padding: 10px 12px;
+	border: 1px solid var(--ary-highlight, #b6a27a);
+	border-radius: 4px;
+	background: var(--ary-bg, #f7f5f1);
+	color: var(--ary-text, #24302a);
+	font-family: var(--ar-font-form, var(--ar-font-body, inherit));
+	box-sizing: border-box;
+}
+
+.liw-onboarding-form button[type="submit"] {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 13px 28px;
+	background: var(--ary-accent, #61735f);
+	color: #fff;
+	border: none;
+	border-radius: 2px;
+	font-family: var(--ar-font-button, var(--ar-font-body, inherit));
+	font-weight: var(--ar-weight-button, 500);
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	cursor: pointer;
+	transition: opacity 0.2s;
+}
+
+.liw-onboarding-form button[type="submit"]:hover {
+	opacity: 0.85;
+}
+
+/* ── World Connections Map (Regionen-Grid) ───────────────────────────────── */
+.liw-connections-map {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+	gap: 20px;
+}
+
+.liw-connections-map--empty {
+	color: var(--ary-text, #24302a);
+	opacity: 0.7;
+}
+
+.liw-connections-region {
+	background: var(--ary-card, #ffffff);
+	border: 1px solid var(--ary-highlight, #b6a27a);
+	border-radius: 6px;
+	padding: 20px;
+}
+
+.liw-connections-region__title {
+	margin: 0 0 12px;
+	font-family: var(--ar-font-card-title, var(--ar-font-heading, inherit));
+	font-weight: var(--ar-weight-heading, 600);
+	color: var(--ary-text, #24302a);
+}
+
+.liw-connections-region__list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.liw-connections-entry {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 8px 10px;
+	border-radius: 4px;
+	background: var(--ary-bg, #f7f5f1);
+	font-size: 0.9em;
+}
+
+.liw-connections-entry__status {
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	font-size: 0.8em;
+	opacity: 0.75;
+}
+
+.liw-connections-entry--active {
+	border-left: 3px solid var(--ary-accent, #61735f);
+}
+
+.liw-connections-entry--planned {
+	border-left: 3px solid var(--ary-highlight, #b6a27a);
+}
+
+.liw-connections-entry--inactive {
+	border-left: 3px solid #999999;
+	opacity: 0.6;
+}
+
+@media (max-width: 600px) {
+	.liw-onboarding-form {
+		padding: 20px;
+	}
+}
