@@ -1,5 +1,32 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.5] – 2026-09-18 – World Connections Map (Datenpflege, Grundgerüst)
+
+### Hinzugefügt
+- Drittes Admin-Board „World Connections" (Untermenü unter „Interface World"):
+  Anlage-Formular + Liste für `liw_connection` (Region, Partnertyp, Anzeigestatus
+  planned/active/inactive, Öffentlichkeits-Flag) samt Statuswechsel, Freigabe/Rückzug
+  und Löschung – Liebherr-Pflichtenheft §17/LP-06.
+- `ConnectionService` um `get_all()`, `get()`, `set_display_status()`,
+  `set_public_flag()`, `delete()` erweitert (bisher nur `create()`/`get_public()`).
+  Jede Änderung über `AuditBridge` protokolliert.
+- **ANNAHME-LIW-3** (dokumentiert im Seitenkopf von `ConnectionBoardPage.php`): Da das
+  Pflichtenheft keine Rollenzuordnung für die World Connections Map nennt, wird dieselbe
+  Capability wie beim Content Board verwendet (`liw_manage_content`) – redaktionelle
+  Freigabeentscheidung, welche Region öffentlich erscheint. Bei Bedarf ohne
+  Datenmodelländerung auf eine eigene Capability umstellbar.
+
+### Bugfix (Fund bei dieser Gelegenheit)
+- Plugin-Header nannte `Requires PHP: 7.4`, der Code verwendet aber bereits seit
+  alpha.1 PHP-8.0-Unions (`int|\WP_Error` in `InterfaceCatalogService`,
+  `ConnectionService` u. a.) und jetzt zusätzlich `match` (PHP 8.0+) in
+  `ConnectionBoardPage`. Auf `Requires PHP: 8.0` korrigiert (Laufzeitumgebung ist
+  ohnehin PHP 8.2, s. `docker-compose.yml`) – rein deklarativ, keine Verhaltensänderung.
+
+### Bewusst nicht Teil dieser Auslieferung
+- Frontend-Visualisierung der World Connections Map (Karte/Grafik auf der
+  Landingpage) – Entscheidung JW 18.09.2026: erst Datenpflege, dann Visualisierung.
+
 ## [0.1.0-alpha.4] – 2026-09-18 – Simulation Board (Magic Cube, Grundgerüst)
 
 ### Hinzugefügt

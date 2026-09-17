@@ -8,6 +8,45 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · World Connections Map – Datenpflege umgesetzt (drittes Admin-Board)
+
+**Kontext.** Dritter Umsetzungs-Slice nach Interface Board und Simulation Board.
+Joseph hat sich für „World Connections Map" entschieden, mit der Vorgabe: erst
+Datenpflege (Backend-CRUD + Admin-Board), Frontend-Visualisierung erst danach.
+
+**Umsetzung.** `ConnectionService` um `get_all()`, `get()`, `set_display_status()`,
+`set_public_flag()`, `delete()` erweitert (bisher nur `create()`/`get_public()`
+seit alpha.1) – jede Änderung über `AuditBridge` protokolliert. Neues Admin-Board
+`ConnectionBoardPage` (Untermenü „World Connections" unter „Interface World"):
+Anlage, Statuswechsel (planned/active/inactive), Freigabe-Toggle und Löschung
+(mit JS-Bestätigung) für `liw_connection`-Einträge.
+
+**Annahme (ANNAHME-LIW-3, Annahmen-Protokoll).** Pflichtenheft nennt keine explizite
+Rollenzuordnung für die World Connections Map. Da es sich um redaktionelle
+Freigabeentscheidungen handelt (welche Region öffentlich erscheint), wurde dieselbe
+Capability wie beim Content Board verwendet (`liw_manage_content`, vergeben an
+`administrator`/`araliya_admin`/`araliya_marketing`) statt einer neuen Capability –
+dokumentiert im Seitenkopf von `ConnectionBoardPage.php`, jederzeit ohne
+Datenmodelländerung umstellbar, falls Joseph eine andere Zuordnung wünscht.
+
+**Nebenbefund/Bugfix.** Plugin-Header nannte `Requires PHP: 7.4`, der Code nutzt aber
+bereits seit alpha.1 PHP-8.0-Unions (`int|\WP_Error`) und jetzt zusätzlich `match`
+(PHP 8.0+). Auf `Requires PHP: 8.0` korrigiert – rein deklarativ, Laufzeitumgebung ist
+ohnehin PHP 8.2 (docker-compose.yml), keine Verhaltensänderung.
+
+**Bewusst ausgelassen.** Frontend-Visualisierung (Karte) – eigene Auslieferung, sobald
+die Datenpflege in der Praxis geprüft ist.
+
+**Selftest.** `tests/run-tests.php`: 42/42 Prüfungen grün.
+
+**Auswirkung.** Kategorie B (neue Funktionalität im bestehenden Grundgerüst, keine
+Core-Änderung, keine Datenmodell-Änderung – nutzt die seit alpha.1 bestehende Tabelle
+`liw_connection`). Version 0.1.0-alpha.4 → 0.1.0-alpha.5.
+
+**Quelle.** `src/Connection/ConnectionSchema.php`, `src/Connection/ConnectionService.php`
+(bereits vorhanden seit alpha.1); `src/Admin/Pages/InterfaceBoardPage.php` als Vorbild
+für Formular-/Tabellen-Konvention.
+
 ### 2026-09-18 · Simulation Board (Magic Cube) – zweites Admin-Board umgesetzt
 
 **Kontext.** Erste inhaltliche Umsetzung nach den beiden Aktivierungs-/Capability-Bugfixes.

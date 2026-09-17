@@ -13,6 +13,7 @@ declare( strict_types = 1 );
 
 namespace Liebherr\InterfaceWorld\Admin;
 
+use Liebherr\InterfaceWorld\Admin\Pages\ConnectionBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\HandbookPage;
 use Liebherr\InterfaceWorld\Admin\Pages\InterfaceBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\SimulationBoardPage;
@@ -53,6 +54,15 @@ final class AdminMenu {
 			RoleBridge::CAP_MANAGE_INTERFACES,
 			SimulationBoardPage::MENU_SLUG,
 			[ SimulationBoardPage::class, 'render' ]
+		);
+
+		add_submenu_page(
+			'liw-interface-board',
+			__( 'World Connections Map', 'liebherr-interface-world' ),
+			__( 'World Connections', 'liebherr-interface-world' ),
+			RoleBridge::CAP_MANAGE_CONTENT,
+			ConnectionBoardPage::MENU_SLUG,
+			[ ConnectionBoardPage::class, 'render' ]
 		);
 
 		// Handbuch-Regel: letzter Reiter des Moduls (CLAUDE.md Abschnitt 1).
