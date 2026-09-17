@@ -15,6 +15,7 @@ declare( strict_types = 1 );
 namespace Liebherr\InterfaceWorld;
 
 use Liebherr\InterfaceWorld\Admin\AdminMenu;
+use Liebherr\InterfaceWorld\Connection\ConnectionMapView;
 use Liebherr\InterfaceWorld\CoreBridge\MediaBridge;
 use Liebherr\InterfaceWorld\CoreBridge\SeoBridge;
 use Liebherr\InterfaceWorld\CoreBridge\TranslationBridge;
@@ -32,6 +33,7 @@ final class Bootstrap {
 		SeoBridge::register();
 		MediaBridge::register();
 		OnboardingForm::register();
+		ConnectionMapView::register();
 
 		if ( is_admin() ) {
 			AdminMenu::register();

@@ -8,6 +8,32 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · World Connections Map – Frontend-Visualisierung umgesetzt (Abschluss der offenen Punkte)
+
+**Kontext.** Sechster und letzter Slice aus der ursprünglichen alpha.1-Liste offener
+Punkte. Vor der Umsetzung wurde Joseph gefragt, wie die „Karte" konkret aussehen soll:
+`liw_connection` (seit alpha.1) speichert Region nur als Freitext, keine Koordinaten –
+eine echte geografische Karte hätte eine Datenmodelländerung (latitude/longitude,
+Kategorie B) plus Kartenbibliothek erfordert.
+
+**Entscheidung (Joseph White, 18.09.2026).** Gruppiertes Regionen-Grid statt
+geografischer Karte – nutzt das bestehende Schema unverändert. Eine echte Karte bleibt
+als spätere, eigenständige Option offen, falls gewünscht.
+
+**Umsetzung.** `Connection\ConnectionMapView` – öffentlicher Shortcode
+`[liw_world_connections_map]`, zeigt ausschließlich `ConnectionService::get_public()`
+(`public_flag = 1`), gruppiert nach Region, mit lesbaren Labels für Partnertyp und
+Status. Reines semantisches HTML, kein Inline-CSS/JS (analog `OnboardingForm`).
+
+**Selftest.** `tests/run-tests.php`: 56/56 Prüfungen grün.
+
+**Auswirkung.** Kategorie B (neue Funktionalität, keine Core-Änderung, keine
+Datenmodelländerung). Version 0.1.0-alpha.7 → 0.1.0-alpha.8.
+
+**Meilenstein.** Damit sind alle fünf in alpha.1/CHANGELOG als „offene Punkte" benannten
+Bereiche ausgeliefert: Interface Board, Simulation Board, World Connections Map
+(Datenpflege + Frontend), Onboarding-Formular, Media Board.
+
 ### 2026-09-18 · Media Board (§18) umgesetzt (fünftes Admin-Board) + MediaBridge-Bugfix
 
 **Kontext.** Fünfter Umsetzungs-Slice. Joseph hat „Media Board" gewählt (verbleibende

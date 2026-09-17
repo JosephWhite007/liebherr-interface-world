@@ -1,5 +1,25 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.8] – 2026-09-18 – World Connections Map (Frontend-Visualisierung)
+
+### Hinzugefügt
+- Öffentlicher Shortcode `[liw_world_connections_map]`: zeigt ausschließlich freigegebene
+  Verbindungen (`ConnectionService::get_public()`, `public_flag = 1`) gruppiert nach
+  Region, mit Partnertyp (Händler/Lieferant/Kunde) und Anzeigestatus. Reines semantisches
+  HTML, kein Inline-CSS/JS – Gestaltung über das zentrale Design System.
+
+### Entscheidung (Joseph White, 18.09.2026)
+- Darstellung als gruppiertes Regionen-Grid statt einer geografischen Karte:
+  `liw_connection` speichert Region nur als Freitext, keine Koordinaten. Eine echte Karte
+  hätte eine Datenmodelländerung (latitude/longitude, Kategorie B) plus Kartenbibliothek
+  erfordert – bewusst nicht umgesetzt, bleibt als spätere Option offen, ohne dass die
+  jetzt gelieferte Datenpflege (alpha.5) davon berührt wäre.
+
+### Damit abgeschlossen
+- Alle fünf ursprünglich in alpha.1 als „offene Punkte" benannten Bereiche sind jetzt
+  ausgeliefert: Interface Board, Simulation Board, World Connections Map (Datenpflege +
+  Frontend), Onboarding-Formular, Media Board.
+
 ## [0.1.0-alpha.7] – 2026-09-18 – Media Board (§18)
 
 ### Hinzugefügt
