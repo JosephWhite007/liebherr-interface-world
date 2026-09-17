@@ -4,7 +4,7 @@
  * Plugin URI:   https://araliya.info
  * Description:  Administrierbare, mehrsprachige Landingpage "Interface World Connections" für Liebherr-Händler-,
  *               Lieferanten- und Kundenanbindung (Magic Cube, Interface LogiQ). Solution Provider: GoHeal.
- * Version:      0.1.0-alpha.5
+ * Version:      0.1.0-alpha.6
  * Author:       GoHeal
  * Author URI:   https://araliya.info
  * Requires at least: 6.0
@@ -29,7 +29,7 @@ namespace Liebherr\InterfaceWorld;
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 // ── Konstanten ────────────────────────────────────────────────────────────────
-define( 'LIW_VERSION', '0.1.0-alpha.5' );
+define( 'LIW_VERSION', '0.1.0-alpha.6' );
 define( 'LIW_PATH', plugin_dir_path( __FILE__ ) );
 define( 'LIW_URL', plugin_dir_url( __FILE__ ) );
 define( 'LIW_BASENAME', plugin_basename( __FILE__ ) );
@@ -92,6 +92,36 @@ function core_missing_notice(): void {
 	echo '</p></div>';
 }
 
+/**
+ * Legt/aktualisiert alle DB-Tabellen des Plugins an. `dbDelta()` ist idempotent – sicher
+ * sowohl bei Erstaktivierung als auch bei jedem `maybe_upgrade_database()`-Aufruf.
+ */
+function create_tables(): void {
+	Interfaces\InterfaceCatalogSchema::create_table();
+	Simulation\SimulationSchema::create_tables();
+	Connection\ConnectionSchema::create_table();
+	Consent\ConsentLogSchema::create_table();
+	Onboarding\OnboardingSchema::create_table();
+}
+
+/**
+ * Selbstheilender Schema-Abgleich (Bugfix 2026-09-18): DB-Tabellen wurden bisher nur im
+ * Aktivierungshook angelegt. Neue Tabellen aus einem späteren Update (z. B. `liw_partner_extra`
+ * in alpha.6) blieben dadurch fehlend, bis das Plugin einmal deaktiviert und reaktiviert wurde
+ * – dieselbe Klasse von Problem wie beim Capability-Bugfix in alpha.3 (Docker-Dev-Umgebungen
+ * mit OPcache sind hierfür besonders anfällig, ein reiner Datei-Update reicht dort nicht).
+ * Läuft bei jedem Request einmal pro tatsächlicher Versionsänderung (Options-Vergleich, kein
+ * Overhead im Normalbetrieb).
+ */
+function maybe_upgrade_database(): void {
+	if ( get_option( 'liw_installed_version' ) === LIW_VERSION ) {
+		return;
+	}
+
+	create_tables();
+	update_option( 'liw_installed_version', LIW_VERSION );
+}
+
 /** Aktivierung: Core-Voraussetzung prüfen, DB-Tabellen anlegen, CPT-Rewrite-Regeln vormerken. */
 function activate(): void {
 	if ( ! core_is_available() ) {
@@ -103,10 +133,8 @@ function activate(): void {
 		);
 	}
 
-	Interfaces\InterfaceCatalogSchema::create_table();
-	Simulation\SimulationSchema::create_tables();
-	Connection\ConnectionSchema::create_table();
-	Consent\ConsentLogSchema::create_table();
+	create_tables();
+	update_option( 'liw_installed_version', LIW_VERSION );
 
 	CPT\LiwSectionCpt::register();
 	CoreBridge\RoleBridge::grant_capabilities();
@@ -132,5 +160,6 @@ add_action( 'plugins_loaded', static function (): void {
 		return;
 	}
 
+	maybe_upgrade_database();
 	Bootstrap::init();
 }, 20 ); // Prio 20: nach dem Bootstrap von araliya-platform-core.

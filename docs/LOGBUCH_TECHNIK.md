@@ -8,6 +8,55 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · Onboarding-Formular (§22) umgesetzt (viertes Admin-Board)
+
+**Kontext.** Vierter Umsetzungs-Slice. Joseph hat „Onboarding-Formular" gewählt (Optionen
+waren: Onboarding-Formular, Media Board, World-Connections-Frontend-Karte).
+
+**Prüfung vor Implementierung (CLAUDE.md Abschnitt 8, „nicht raten").** Core
+`PartnerService` wurde gegen die tatsächliche Signatur geprüft: `VALID_TYPES` ist auf
+`clinic/doctor/wellness/supplier/insurance/general` begrenzt. Liebherrs eigene
+Partnertypen (dealer/supplier/customer) passen NICHT 1:1 – `dealer`/`customer` sind keine
+gültigen Core-Werte. Core's Enum zu erweitern wäre eine Kategorie-A-Core-Änderung
+gewesen; stattdessen: `ary_partners.partner_type` wird über die neue `CoreBridge\
+PartnerBridge` immer als `'general'` angelegt, die eigentliche Klassifizierung lebt
+in der neuen Tabelle `liw_partner_extra` (1:1 zu `ary_partners.id`).
+
+**Umsetzung.**
+- `CoreBridge\PartnerBridge` – Wrapper um Core `PartnerService::create/update/get`
+  (Coupling-Point-Pattern wie AuditBridge/RoleBridge).
+- `Onboarding\OnboardingSchema`/`OnboardingService` – neue Tabelle `liw_partner_extra`,
+  `submit_request()` (legt Core-Partner mit status='pending' an + Zusatzfelder),
+  `set_status()` (spiegelt approved/rejected auf `ary_partners.status`),
+  `get_all_requests()` (ein JOIN statt N+1).
+- `Onboarding\OnboardingForm` – öffentlicher Shortcode `[liw_onboarding_form]`,
+  verarbeitet über `admin-post.php` (priv + nopriv), Honeypot-Feld, Pflicht-Datenschutz-
+  Checkbox mit Protokollierung über die bestehende `ConsentLogService` (keine neue
+  Consent-Infrastruktur).
+- `Admin\Pages\OnboardingBoardPage` – erstmalige Nutzung der seit alpha.1 vorbereiteten,
+  bis jetzt ungenutzten Capability `liw_view_onboarding`.
+
+**Nebenbefund/Verbesserung (Selbstheilung DB-Schema).** DB-Tabellen wurden bisher nur im
+Aktivierungshook angelegt – dieselbe Problemklasse wie der Capability-Bugfix in alpha.3
+(ein reines Datei-Update hätte `liw_partner_extra` nicht erzeugt, ohne erneutes
+Deaktivieren/Aktivieren). Neue Funktion `maybe_upgrade_database()` in der Haupt-Plugin-
+Datei gleicht das Schema bei jeder Versionsänderung automatisch ab (`dbDelta` ist
+idempotent, kein Overhead im Normalbetrieb außer einem Options-Vergleich).
+
+**Annahme (ANNAHME-LIW-5).** Honeypot-Feld setzt eine Utility-Klasse
+`.liw-visually-hidden` im zentralen Design System voraus. Ohne sie bleibt das Formular
+funktionsfähig, nur der Spam-Schutz ist dann wirkungslos – kein Blocker.
+
+**Selftest.** `tests/run-tests.php`: 52/52 Prüfungen grün.
+
+**Auswirkung.** Kategorie B (neue Funktionalität, keine Core-Änderung – Core's
+`ary_partners`/`PartnerService` bleiben unverändert). Version 0.1.0-alpha.5 →
+0.1.0-alpha.6.
+
+**Quelle.** `araliya-platform-core/src/Modules/Partner/PartnerService.php` (VALID_TYPES,
+UPDATABLE_FIELDS, prepare_row – Zeilen 24–33, 245–270); `src/Consent/ConsentLogService.php`
+(bereits vorhanden seit alpha.1).
+
 ### 2026-09-18 · World Connections Map – Datenpflege umgesetzt (drittes Admin-Board)
 
 **Kontext.** Dritter Umsetzungs-Slice nach Interface Board und Simulation Board.

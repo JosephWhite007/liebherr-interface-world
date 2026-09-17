@@ -1,5 +1,43 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.6] – 2026-09-18 – Onboarding-Formular (§22)
+
+### Hinzugefügt
+- Öffentlicher Shortcode `[liw_onboarding_form]` (Frontend, kein Login nötig): Formular für
+  Händler-/Lieferanten-/Kundenanfragen mit Pflicht-Datenschutz-Checkbox und optionaler
+  Marketing-Einwilligung, verarbeitet über `admin-post.php` (funktioniert für eingeloggte
+  UND anonyme Besucher). Honeypot-Feld gegen einfache Bots.
+- `CoreBridge\PartnerBridge`: Wrapper um Core `PartnerService` (verifiziert generisch, keine
+  Guest-Bindung) – jede Onboarding-Anfrage legt einen echten `ary_partners`-Eintrag an
+  (Status `pending` bis zur Freigabe), statt eine Parallelstruktur zu bauen.
+- Neue Tabelle `liw_partner_extra` (Liebherr-spezifische Zusatzfelder: Klassifizierung
+  dealer/supplier/customer, gewünschte Schnittstellen, Freitext-Nachricht, Freigabestatus)
+  – 1:1 zu `ary_partners.id`, keine Datenkopie der Core-Felder.
+- Viertes Admin-Board „Onboarding" (Capability `liw_view_onboarding`, seit alpha.1
+  vorbereitet, jetzt erstmals genutzt): Liste aller Anfragen inkl. Core-Partnerdaten
+  (ein JOIN, keine N+1-Zugriffe) mit Statuspflege (new/in_review/approved/rejected) –
+  spiegelt bei approved/rejected automatisch den `ary_partners.status`.
+- Datenschutz-Einwilligung wird über die bestehende `ConsentLogService` (seit alpha.1)
+  protokolliert – keine neue Consent-Infrastruktur.
+- Selbstheilender DB-Schema-Abgleich (`maybe_upgrade_database()`): DB-Tabellen wurden bisher
+  nur im Aktivierungshook angelegt; ein reines Datei-Update (wie bei diesem Release) hätte
+  `liw_partner_extra` sonst nicht erzeugt, ohne das Plugin erneut zu deaktivieren/aktivieren
+  (dieselbe Problemklasse wie der Capability-Bugfix in alpha.3). Läuft jetzt bei jedem
+  Request einmal pro tatsächlicher Versionsänderung.
+
+### Wichtiger Befund (vor Implementierung geprüft, nicht geraten)
+- Core `PartnerService::VALID_TYPES` erlaubt nur `clinic/doctor/wellness/supplier/
+  insurance/general` (Health-Domain-Vokabular) – `dealer` und `customer` sind dort keine
+  gültigen Werte. Statt Core's Enum zu erweitern: Liebherr-Partner werden in
+  `ary_partners.partner_type` immer als `'general'` angelegt, die eigentliche
+  Liebherr-Klassifizierung lebt in `liw_partner_extra.liw_partner_type`. Details:
+  `CoreBridge\PartnerBridge`-Klassenkommentar.
+
+### ANNAHME-LIW-5
+- Das Honeypot-Feld setzt eine Utility-Klasse `.liw-visually-hidden` im zentralen Design
+  System voraus. Ohne sie ist das Feld sichtbar, aber die Formularfunktion selbst bleibt
+  unbeeinträchtigt (kein Blocker, nur reduzierter Spam-Schutz).
+
 ## [0.1.0-alpha.5] – 2026-09-18 – World Connections Map (Datenpflege, Grundgerüst)
 
 ### Hinzugefügt
