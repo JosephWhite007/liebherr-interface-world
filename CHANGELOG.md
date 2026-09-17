@@ -1,5 +1,34 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.10] – 2026-09-18 – Feinschliff an den Boards + Nachvollziehbarkeit
+
+### Hinzugefügt
+- **Pagination** für Media Board (`WP_Query` statt `get_posts()`, liefert `found_posts` mit)
+  und Onboarding Board (`OnboardingService::get_all_requests()` jetzt mit `LIMIT`/`OFFSET`,
+  neue Methode `count_all_requests()`). Beide Boards waren zuvor als „bewusst nicht Teil
+  dieser Auslieferung" (Media Board, alpha.7) bzw. mit einem ungebremsten JOIN
+  (Onboarding Board, alpha.6) dokumentiert. Gemeinsame Ansicht: `Admin\AdminPagination`
+  (DRY statt Duplikat in beiden Boards).
+- `Admin\AdminAssets` + `assets/css/liebherr-admin.css`: löst drei Inline-Style-
+  Fundstellen ab (Media-, Connection- und Onboarding-Board), die gegen CLAUDE.md
+  Abschnitt 5 „keine Inline-Styles" verstießen. Lädt nur auf den eigenen Board-Seiten.
+- **Programmierlogbuch** (`docs/LIW_PROGRAMMIERLOGBUCH.md`, Reiter „🧾 Programmierlogbuch"):
+  protokolliert ab sofort jede Quellcodeänderung auf Datei-/Klassenebene, ergänzend zu
+  diesem Changelog (fachliche Sicht) und dem Core-Logbuch (Entscheidungs-Warum).
+  Rückwirkend für alpha.1–alpha.9 aus diesem Changelog rekonstruiert.
+- **To-Dos** (`docs/LIW_TODO.md`, Reiter „📋 To-Dos"): kuratierte Liste offener Punkte
+  (Content Board §19, Simulation-Status-Übergänge, echte Karte für die World Connections
+  Map, I18nSeo-Architekturfrage, Docker-Praxistest, Mehrsprachigkeits-Audit) – jeweils mit
+  Quellenangabe, nichts neu erfunden.
+- `CoreBridge\MarkdownBridge`: Wrapper um Core `Modules\Deployment\Admin\HandbookRenderer`
+  (verifiziert generisch), für Programmierlogbuch und To-Dos genutzt statt einer zweiten
+  Markdown-Implementierung.
+- Handbuch vollständig überarbeitet: deckt jetzt alle sechs Boards, beide Frontend-
+  Shortcodes sowie Programmierlogbuch/To-Dos ab (vorher: nur Interface-Board-Grundgerüst).
+
+### Selftest
+- `tests/run-tests.php`: 68/68 Prüfungen grün (vorher 58/58; +10 durch fünf neue Klassen).
+
 ## [0.1.0-alpha.9] – 2026-09-18 – Design-System-Anbindung (Frontend-Shortcodes)
 
 ### Hinzugefügt

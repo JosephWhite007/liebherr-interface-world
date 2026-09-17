@@ -18,7 +18,9 @@ use Liebherr\InterfaceWorld\Admin\Pages\HandbookPage;
 use Liebherr\InterfaceWorld\Admin\Pages\InterfaceBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\MediaBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\OnboardingBoardPage;
+use Liebherr\InterfaceWorld\Admin\Pages\ProgrammingLogPage;
 use Liebherr\InterfaceWorld\Admin\Pages\SimulationBoardPage;
+use Liebherr\InterfaceWorld\Admin\Pages\TodoBoardPage;
 use Liebherr\InterfaceWorld\CoreBridge\RoleBridge;
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
@@ -83,6 +85,24 @@ final class AdminMenu {
 			RoleBridge::CAP_MANAGE_CONTENT,
 			MediaBoardPage::MENU_SLUG,
 			[ MediaBoardPage::class, 'render' ]
+		);
+
+		add_submenu_page(
+			'liw-interface-board',
+			__( 'To-Dos', 'liebherr-interface-world' ),
+			__( '📋 To-Dos', 'liebherr-interface-world' ),
+			RoleBridge::CAP_MANAGE_INTERFACES,
+			'liw-todo',
+			[ TodoBoardPage::class, 'render' ]
+		);
+
+		add_submenu_page(
+			'liw-interface-board',
+			__( 'Programmierlogbuch', 'liebherr-interface-world' ),
+			__( '🧾 Programmierlogbuch', 'liebherr-interface-world' ),
+			RoleBridge::CAP_MANAGE_INTERFACES,
+			'liw-programming-log',
+			[ ProgrammingLogPage::class, 'render' ]
 		);
 
 		// Handbuch-Regel: letzter Reiter des Moduls (CLAUDE.md Abschnitt 1).

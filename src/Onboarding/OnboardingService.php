@@ -25,6 +25,9 @@ final class OnboardingService {
 	public const PARTNER_TYPES = [ 'dealer', 'supplier', 'customer' ];
 	public const STATUSES      = [ 'new', 'in_review', 'approved', 'rejected' ];
 
+	/** Feinschliff alpha.10: Seitengröße für die Admin-Liste (vorher: ungebremster JOIN ohne LIMIT). */
+	public const REQUESTS_PER_PAGE = 20;
+
 	/** Aktuelle Fassung des Datenschutztexts, mit dem das Formular Einwilligung einholt (§22/§24). */
 	public const PRIVACY_TEXT_VERSION = '2026-09-18-v1';
 
@@ -133,24 +136,44 @@ final class OnboardingService {
 	 * Admin-Ansicht: Onboarding-Anfragen inkl. der zugehörigen Core-Partnerdaten (Name,
 	 * Kontakt) in einer Abfrage – vermeidet N+1-Zugriffe auf ary_partners (Performance).
 	 *
+	 * Feinschliff alpha.10: vorher ungebremster JOIN ohne LIMIT (Performance-Risiko bei
+	 * wachsendem öffentlichem Formular, §22). Jetzt seitenweise mit `LIMIT`/`OFFSET`,
+	 * Gesamtzahl über {@see count_all_requests()} für die Pagination-Anzeige.
+	 *
 	 * @return array<int, array<string, mixed>>
 	 */
-	public static function get_all_requests(): array {
+	public static function get_all_requests( int $page = 1, int $per_page = self::REQUESTS_PER_PAGE ): array {
 		global $wpdb;
 		$extra_table   = OnboardingSchema::table_name();
 		$partner_table = $wpdb->prefix . 'ary_partners';
+		$page          = max( 1, $page );
+		$per_page      = max( 1, $per_page );
+		$offset        = ( $page - 1 ) * $per_page;
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$rows = $wpdb->get_results(
-			"SELECT e.id, e.partner_id, e.liw_partner_type, e.requested_interfaces, e.message,
-			        e.onboarding_status, e.created_at,
-			        p.name, p.contact_name, p.contact_email, p.contact_phone, p.city, p.website_url, p.status AS core_status
-			 FROM {$extra_table} e
-			 INNER JOIN {$partner_table} p ON p.id = e.partner_id
-			 ORDER BY e.created_at DESC",
+			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Tabellennamen sind feste Konstanten, keine Nutzereingabe.
+				"SELECT e.id, e.partner_id, e.liw_partner_type, e.requested_interfaces, e.message,
+				        e.onboarding_status, e.created_at,
+				        p.name, p.contact_name, p.contact_email, p.contact_phone, p.city, p.website_url, p.status AS core_status
+				 FROM {$extra_table} e
+				 INNER JOIN {$partner_table} p ON p.id = e.partner_id
+				 ORDER BY e.created_at DESC
+				 LIMIT %d OFFSET %d",
+				$per_page,
+				$offset
+			),
 			ARRAY_A
 		);
 
 		return is_array( $rows ) ? $rows : [];
+	}
+
+	/** Gesamtzahl aller Onboarding-Anfragen (für die Pagination-Anzeige, s. {@see get_all_requests()}). */
+	public static function count_all_requests(): int {
+		global $wpdb;
+		$table = OnboardingSchema::table_name();
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		return (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table}" );
 	}
 }

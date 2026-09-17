@@ -16,6 +16,7 @@ declare( strict_types = 1 );
 
 namespace Liebherr\InterfaceWorld\Admin\Pages;
 
+use Liebherr\InterfaceWorld\Admin\AdminPagination;
 use Liebherr\InterfaceWorld\CoreBridge\RoleBridge;
 use Liebherr\InterfaceWorld\Onboarding\OnboardingService;
 
@@ -64,7 +65,9 @@ final class OnboardingBoardPage {
 	}
 
 	private static function render_table(): void {
-		$rows = OnboardingService::get_all_requests();
+		$page  = AdminPagination::current_page();
+		$rows  = OnboardingService::get_all_requests( $page );
+		$total = OnboardingService::count_all_requests();
 
 		echo '<table class="widefat striped"><thead><tr>';
 		foreach ( [ 'Name/Firma', 'Kontakt', 'Typ', 'Gewünschte Schnittstellen', 'Nachricht', 'Status', 'Aktion' ] as $column ) {
@@ -88,7 +91,7 @@ final class OnboardingBoardPage {
 			echo '<td>' . esc_html( (string) ( $row['message'] ?? '' ) ) . '</td>';
 			echo '<td>' . esc_html( $status ) . '</td>';
 
-			echo '<td><form method="post" style="display:flex;gap:6px;align-items:center;">';
+			echo '<td><form method="post" class="liw-row-form--inline">';
 			wp_nonce_field( self::NONCE_ACTION, self::NONCE_NAME );
 			echo '<input type="hidden" name="liw_action" value="set_status" />';
 			echo '<input type="hidden" name="partner_id" value="' . esc_attr( (string) $partner_id ) . '" />';
@@ -103,5 +106,7 @@ final class OnboardingBoardPage {
 			echo '</tr>';
 		}
 		echo '</tbody></table>';
+
+		AdminPagination::render( $page, $total, OnboardingService::REQUESTS_PER_PAGE );
 	}
 }

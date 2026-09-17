@@ -1,0 +1,26 @@
+/**
+ * Liebherr Interface Solutions – Admin-Board Utility-CSS
+ *
+ * Feinschliff (alpha.10): löst die bis dahin vorhandenen Inline-Styles in den
+ * Admin-Boards ab (CLAUDE.md Abschnitt 5 „Frontend: keine Inline-Styles" gilt auch
+ * für das Backend). Nur Utility-Klassen, kein Duplikat des Design Systems – WP-Admin
+ * hat sein eigenes Styling (`wp-admin.css`), dieses Stylesheet ergänzt nur, was WP
+ * selbst nicht mitbringt. Geladen ausschließlich auf den eigenen Board-Seiten
+ * (`Admin\AdminAssets`), nicht global im Backend.
+ *
+ * @since 0.1.0-alpha.10
+ */
+
+.liw-clear {
+	clear: both;
+}
+
+.liw-row-form--inline {
+	display: flex;
+	gap: 6px;
+	align-items: center;
+}
+
+.liw-pagination {
+	margin-top: 12px;
+}

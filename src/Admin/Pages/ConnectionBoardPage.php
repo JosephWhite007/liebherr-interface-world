@@ -151,7 +151,7 @@ final class ConnectionBoardPage {
 			echo '<td>' . esc_html( (string) $row['region'] ) . '</td>';
 			echo '<td>' . esc_html( (string) $row['partner_type'] ) . '</td>';
 
-			echo '<td><form method="post" style="display:flex;gap:6px;align-items:center;">';
+			echo '<td><form method="post" class="liw-row-form--inline">';
 			wp_nonce_field( self::NONCE_ACTION_ROW, self::NONCE_NAME_ROW );
 			echo '<input type="hidden" name="liw_action" value="set_status" />';
 			echo '<input type="hidden" name="id" value="' . esc_attr( (string) $id ) . '" />';

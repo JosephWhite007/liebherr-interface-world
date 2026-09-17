@@ -19,6 +19,7 @@ declare( strict_types = 1 );
 
 namespace Liebherr\InterfaceWorld\Admin\Pages;
 
+use Liebherr\InterfaceWorld\Admin\AdminPagination;
 use Liebherr\InterfaceWorld\CoreBridge\MediaBridge;
 use Liebherr\InterfaceWorld\CoreBridge\RoleBridge;
 
@@ -30,6 +31,8 @@ final class MediaBoardPage {
 
 	private const NONCE_ACTION  = 'liw_media_board_save';
 	private const NONCE_NAME    = 'liw_media_board_nonce';
+
+	/** Seitengröße der Bulk-Tabelle (Feinschliff alpha.10: vorher harte Obergrenze ohne Blättern). */
 	private const ITEMS_PER_PAGE = 50;
 
 	public static function render(): void {
@@ -103,14 +106,16 @@ final class MediaBoardPage {
 			$parts[] = sprintf( '<li><a href="%s"%s>%s</a></li>', esc_url( $url ), $class, esc_html( $label ) );
 		}
 		echo implode( ' | ', $parts );
-		echo '</ul><div style="clear:both;"></div>';
+		echo '</ul><div class="liw-clear"></div>';
 	}
 
 	private static function render_bulk_form( string $filter ): void {
+		$page       = AdminPagination::current_page();
 		$query_args = [
 			'post_type'      => 'attachment',
 			'post_status'    => 'inherit',
 			'posts_per_page' => self::ITEMS_PER_PAGE,
+			'paged'          => $page,
 			'orderby'        => 'date',
 			'order'          => 'DESC',
 		];
@@ -125,7 +130,11 @@ final class MediaBoardPage {
 			];
 		}
 
-		$attachments = get_posts( $query_args );
+		// Feinschliff alpha.10: `WP_Query` statt `get_posts()` – liefert `found_posts` für die
+		// Pagination-Anzeige mit (vorher: hart auf die ersten 50 neuesten Anhänge begrenzt,
+		// ohne Blättern zu älteren Medien).
+		$query       = new \WP_Query( $query_args );
+		$attachments = $query->posts;
 
 		echo '<form method="post">';
 		wp_nonce_field( self::NONCE_ACTION, self::NONCE_NAME );
@@ -165,5 +174,7 @@ final class MediaBoardPage {
 			submit_button( __( 'Alle Änderungen speichern', 'liebherr-interface-world' ) );
 		}
 		echo '</form>';
+
+		AdminPagination::render( $page, (int) $query->found_posts, self::ITEMS_PER_PAGE );
 	}
 }
