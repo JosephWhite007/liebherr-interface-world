@@ -8,6 +8,66 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · Landingpage-Layout-Konzept + Umgang mit interner Prozess-PDF (0.1.0-alpha.12)
+
+**Frage/Kontext.** Joseph fragte, ob es ein Layout-Konzept für die Landingpage gibt, und
+lieferte eine interne Prozess-PDF („Liebherr DSC – Schnittstellenprozess Neugestaltung")
+als mögliche Grundlage für Auszüge auf der Webseite. Er beschrieb zugleich, dass die
+Interface-Logik hausintern ausschließlich von Händlern genutzt wird und „absolut sicher
+gegenüber Angriffen von außen" sein muss.
+
+**Befund (vor Entscheidung geprüft).** Die PDF ist kein Marketing-Diagramm, sondern der
+vollständige interne Integrationsplan BC/NAV ↔ Livision mit 32 nummerierten Feldern und
+realen API-Endpunktnamen (`Create Customer`, `Update Contact`, `Livision URL for Update`,
+`Lias Open Trans`, `Get Opportunity` …). Das Pflichtenheft (§8) enthält bereits einen
+vollständigen Content-Bauplan für die Landingpage (LP-01…LP-14) – ein Layout-Konzept
+existierte also bereits, war aber nicht mit dem Codestand abgeglichen.
+
+**Optionen (Claude, AskUserQuestion).** (a) Anonymisierte Prozessgrafik ohne reale System-/
+API-Namen, (b) PDF bleibt rein intern, (c) Auszüge der echten Grafik trotzdem
+veröffentlichen.
+
+**Entscheidung (Joseph White).** (a) Anonymisierte Prozessgrafik.
+
+**Begründung.** Pflichtenheft §17 verlangt bereits die strikte Trennung öffentlicher
+Inhalte von technischen Schnittstellendaten (im Code bereits umgesetzt, s.
+`InterfaceCatalogService::get_public_catalog()`). Reale Endpunktnamen und die genaue
+Systemarchitektur offenzulegen widerspräche außerdem der von Joseph selbst formulierten
+Sicherheitsanforderung. Die PDF-Struktur (Objektgruppen, Prozessreihenfolge Sales →
+Configuration → Order) deckt sich inhaltlich fast 1:1 mit den ohnehin generisch
+vorgesehenen Inhalten von LP-07 (Data Model) und LP-08 (Process Worlds).
+
+**Umsetzung.** `docs/LIW_LANDINGPAGE_KONZEPT.md` (LP-01…LP-14-Übersicht mit
+Umsetzungsstand), `assets/img/liw-data-model.svg` (LP-07), `assets/img/liw-process-worlds.svg`
+(LP-08) – beide als inline einzubettendes SVG-Markup, Farben über die zentralen
+ARALIYA-Design-Tokens. Platzierung auf der tatsächlichen Seite wartet auf das Content
+Board (§19, weiterhin offen).
+
+**Quelle/Version.** liebherr-interface-world 0.1.0-alpha.12; CHANGELOG.md alpha.12;
+Pflichtenheft_Liebherr_Interface_Solutions_Landingpage.md §8/§17.
+
+### 2026-09-18 · Docker-Praxistest: Integrations-Selbsttest scripts/liw-selftest.php (0.1.0-alpha.11)
+
+**Frage/Kontext.** Nach alpha.10 fragte Claude erneut, wie es weitergeht. Der Docker-
+Praxistest aller Bereiche stand seit der letzten Rückfrage als Option offen und war zudem
+frisch in `docs/LIW_TODO.md` als offener Punkt vermerkt.
+
+**Entscheidung (Joseph White).** Docker-Praxistest jetzt umsetzen.
+
+**Begründung/Umsetzung.** `tests/run-tests.php` prüft nur Syntax und Statuslogik ohne
+WP-Bootstrap (kein DB-/Hook-/Shortcode-Test). CLAUDE.md DoD Punkt 4 verlangt „tatsächlich
+in der Docker-Umgebung geprüft, nicht nur müsste gehen". Da Claude selbst keinen Zugriff
+auf `docker exec` hat (Terminal-Regel), wurde – analog zum bewährten Core-Muster
+`scripts/yb-selftest.php` – ein eigenständiges, idempotentes Selbsttest-Skript
+`scripts/liw-selftest.php` geliefert: bootstrapt echtes WordPress, prüft DB-Schema,
+Capabilities und alle sechs Boards end-to-end inkl. beider Frontend-Shortcodes, räumt
+`SELFTEST-`-präfigierte Testdaten garantiert wieder auf (`finally`-Block), läuft nur in
+`WP_ENVIRONMENT_TYPE=development`. Die eigentliche Ausführung bleibt bei Joseph
+(Terminal-Regel): `docker exec araliya_wordpress php .../scripts/liw-selftest.php`.
+
+**Quelle/Version.** liebherr-interface-world 0.1.0-alpha.11; CHANGELOG.md alpha.11;
+docs/LIW_TODO.md (Punkt als erledigt markiert, Ausführung durch Joseph steht noch aus).
+
 ### 2026-09-18 · Feinschliff an den Boards + Programmierlogbuch/To-Dos (0.1.0-alpha.10)
 
 **Frage/Kontext.** Nach Abschluss aller fünf Board-Slices (alpha.4–alpha.9) fragte Claude, wie

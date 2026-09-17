@@ -1,5 +1,59 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.12] – 2026-09-18 – Landingpage-Konzept + anonymisierte LP-07/LP-08-Grafiken
+
+### Hinzugefügt
+- `docs/LIW_LANDINGPAGE_KONZEPT.md`: beantwortet „Haben wir ein Layout-Konzept für die
+  Landingpage?" – Übersichtstabelle aller 14 Pflichtenheft-Abschnitte (LP-01…LP-14, §8)
+  mit Umsetzungsstand (gebaut/offen) und Zuordnung zu bestehenden Boards/Shortcodes.
+- `assets/img/liw-data-model.svg` (LP-07 Data Model): schematische Darstellung Interface
+  LogiQ als zentrale Vermittlungsschicht mit den elf Objektgruppen (Kunde, Kontakt,
+  Händler, Maschine, Konfiguration, Angebot, Auftrag, Bedarfsfall, Lieferung, Rechnung,
+  Zahlung) – als inline einzubettendes SVG, Farben über `var(--ary-*, Fallback)`.
+- `assets/img/liw-process-worlds.svg` (LP-08 Process Worlds): sieben Prozesswelten
+  Sales → Configuration → Order → Goods → Finance → Service → Warranty.
+
+### Entscheidung (Joseph White, 18.09.2026)
+- Eine hochgeladene interne Prozess-PDF („Liebherr DSC – Schnittstellenprozess
+  Neugestaltung", vollständiger BC/NAV-↔-Livision-Integrationsplan mit realen
+  API-Endpunktnamen) wird NICHT direkt bzw. in Auszügen auf der öffentlichen Landingpage
+  gezeigt – Begründung: Pflichtenheft §17 (strikte Trennung öffentlich/technisch) und die
+  Anforderung, dass die Interface-Logik sicher gegenüber externen Angriffen sein muss.
+  Stattdessen anonymisierte Grafiken für LP-07/LP-08, deren fachliche Struktur (Objekte,
+  Prozessreihenfolge) sich mit der PDF deckt, ohne reale System-/API-Namen zu zeigen.
+  Details: `docs/LIW_LANDINGPAGE_KONZEPT.md`.
+
+### Bewusst nicht Teil dieser Auslieferung
+- Platzierung der beiden neuen Grafiken auf der tatsächlichen Landingpage – wartet auf
+  das Content Board (§19, weiterhin offen, s. `docs/LIW_TODO.md`).
+- Visuelles Gesamt-Layout/Wireframe für alle 14 Abschnitte.
+
+## [0.1.0-alpha.11] – 2026-09-18 – Docker-Praxistest (Integrations-Selbsttest)
+
+### Hinzugefügt
+- `scripts/liw-selftest.php`: Integrations-Selbsttest analog zu Core's
+  `scripts/yb-selftest.php` – läuft in der echten WordPress-/Docker-Umgebung (nicht nur
+  `php -l`/Statuslogik wie `tests/run-tests.php`). Prüft end-to-end: DB-Schema-Version und
+  alle sechs Tabellen vorhanden, Capabilities an `administrator` vergeben, Interface Board
+  (Anlage → Lifecycle → öffentlicher Katalog), Simulation Board (Welt → Szenario),
+  World Connections Map (Anlage → Freigabe → Statuspflege → Shortcode-Rendering → Löschung),
+  Onboarding-Formular (Ablehnung ohne Einwilligung, Anlage, Core-Partner bleibt neutral
+  `general`, Consent-Log, Freigabe spiegelt `ary_partners.status`, Pagination, Shortcode
+  inkl. Honeypot), Media Board (CI-005-Freigabe-Meta, Hook-Registrierung), Design-System-
+  Assets (beide Stylesheets vorhanden), Programmierlogbuch/To-Dos (Dateien vorhanden,
+  `MarkdownBridge` liefert HTML). Testdaten sind `SELFTEST-`-präfigiert und werden am Ende
+  vollständig entfernt (`finally`-Block, läuft auch bei fehlgeschlagenen Prüfungen).
+  Nur in `WP_ENVIRONMENT_TYPE=development` ausführbar (Terminal-Regel).
+
+### Geändert
+- `tests/run-tests.php`: Kommentar aktualisiert – verweist jetzt auf das tatsächlich
+  ausgelieferte `scripts/liw-selftest.php` statt auf eine „Folgeauslieferung".
+
+### Ausführung (Terminal-Regel – bitte durch Joseph in der Docker-Dev-Umgebung)
+```
+docker exec araliya_wordpress php /var/www/html/wp-content/plugins/liebherr-interface-world/scripts/liw-selftest.php
+```
+
 ## [0.1.0-alpha.10] – 2026-09-18 – Feinschliff an den Boards + Nachvollziehbarkeit
 
 ### Hinzugefügt

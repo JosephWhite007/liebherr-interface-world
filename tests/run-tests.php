@@ -4,8 +4,9 @@
  *
  * Analog zu tests/YenneferBilling/run-tests.php im Core: minimale Sanity-Checks, die ohne
  * WP-Bootstrap laufen (Terminal-Regel/Tests §31 Liebherr-Pflichtenheft: Unit Tests für
- * Validatoren/Statuslogik). Vollständige Integrationstests (DB, Admin-UI) folgen mit
- * scripts/liw-selftest.php in der Docker-Dev-Umgebung (Folgeauslieferung).
+ * Validatoren/Statuslogik). Vollständige Integrationstests (DB, Hooks, Shortcodes) laufen
+ * mit `scripts/liw-selftest.php` in der Docker-Dev-Umgebung (seit alpha.10, Docker-
+ * Praxistest – docker exec araliya_wordpress php .../liebherr-interface-world/scripts/liw-selftest.php).
  *
  * Ausführung: php tests/run-tests.php
  */

@@ -6,7 +6,7 @@ oder als offene Rückfrage an Joseph White dokumentiert wurden (Quelle jeweils a
 Sichtbar im Backend unter „Interface World → 📋 To-Dos". Wird bei jeder Aufgabe, die einen
 Punkt hier abschließt oder ergänzt, gepflegt.
 
-Stand: 18.09.2026 (0.1.0-alpha.10).
+Stand: 18.09.2026 (0.1.0-alpha.12).
 
 ---
 
@@ -15,7 +15,17 @@ Stand: 18.09.2026 (0.1.0-alpha.10).
 - **Content Board (§19 – Redaktionsfunktionen).** In alpha.1 als „nicht Teil dieser
   Auslieferung" benannt; bislang nicht nachgeliefert. Betrifft redaktionelle Pflege der
   14 Landingpage-Abschnitte (`liw_section`, CPT-Freigabeworkflow `liw_approved`).
-  *Quelle: CHANGELOG.md alpha.1.*
+  Seit alpha.12 liegen für LP-07/LP-08 bereits fertige, anonymisierte Grafiken bereit
+  (`assets/img/liw-data-model.svg`, `assets/img/liw-process-worlds.svg`) – warten auf
+  ihre Platzierung durch das Content Board. Details/Gesamtkonzept:
+  `docs/LIW_LANDINGPAGE_KONZEPT.md`.
+  *Quelle: CHANGELOG.md alpha.1, alpha.12.*
+
+- **Visuelles Gesamt-Layout/Wireframe der Landingpage.** Der inhaltliche Bauplan
+  (LP-01…LP-14) steht im Pflichtenheft und ist seit alpha.12 in
+  `docs/LIW_LANDINGPAGE_KONZEPT.md` mit Umsetzungsstand zusammengefasst; ein visuelles
+  Wireframe für Reihenfolge/Bildsprache/Übergänge der Gesamtseite fehlt noch.
+  *Quelle: docs/LIW_LANDINGPAGE_KONZEPT.md, 18.09.2026.*
 
 - **Simulation Board – Status-Übergänge.** Welt validieren/verwerfen, Szenario als
   bestanden/fehlgeschlagen markieren. Bewusst zurückgestellt, bis eine echte
@@ -39,14 +49,6 @@ Stand: 18.09.2026 (0.1.0-alpha.10).
 
 ## Betrieb / Qualitätssicherung
 
-- **Gemeinsamer Docker-Praxistest aller Bereiche.** Bislang wurde jede Auslieferung nur
-  über `php -l` + `tests/run-tests.php` (Syntax/Statuslogik ohne WP) geprüft; ein
-  End-to-End-Test aller sechs Boards und beider Frontend-Shortcodes in der laufenden
-  Docker-Dev-Umgebung (CLAUDE.md DoD Punkt 4 „tatsächlich geprüft, nicht nur müsste gehen")
-  steht noch aus. Wurde am 18.09.2026 als Option angeboten, aber nicht gewählt (Feinschliff
-  hatte Vorrang).
-  *Quelle: Sitzungsverlauf 18.09.2026.*
-
 - **Mehrsprachigkeits-Audit (DoD Punkt 9).** Für `liebherr-interface-world` als
   eigenständiges Plugin bislang nicht gegen das Core-Übersetzungssystem geprüft
   (`trx-scan`/`trx-audit` laufen bisher nur für Core-Module). Zu klären, ob/wie die
@@ -56,5 +58,10 @@ Stand: 18.09.2026 (0.1.0-alpha.10).
 ---
 
 **Bereits erledigt (zur Nachvollziehbarkeit, nicht mehr offen):**
-Media Board Paginierung und Onboarding Board Paginierung (beide seit alpha.7/alpha.6 als
-offen vermerkt) wurden mit alpha.10 umgesetzt – s. `LIW_PROGRAMMIERLOGBUCH.md`.
+- Media Board Paginierung und Onboarding Board Paginierung (beide seit alpha.7/alpha.6 als
+  offen vermerkt) wurden mit alpha.10 umgesetzt.
+- Gemeinsamer Docker-Praxistest aller Bereiche (`scripts/liw-selftest.php`) wurde mit
+  alpha.11 ausgeliefert – Ausführung durch Joseph in der Docker-Dev-Umgebung steht noch
+  aus (`docker exec araliya_wordpress php .../scripts/liw-selftest.php`).
+
+S. `LIW_PROGRAMMIERLOGBUCH.md` für Details.

@@ -1,0 +1,51 @@
+<svg viewBox="0 0 1000 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="liw-pw-title liw-pw-desc" class="liw-graphic liw-graphic--process-worlds">
+	<title id="liw-pw-title">Interface World Connections – Process Worlds (LP-08)</title>
+	<desc id="liw-pw-desc">Sieben Prozesswelten in ihrer typischen Reihenfolge: Sales, Configuration, Order, Goods, Finance, Service, Warranty. Rein schematische Darstellung ohne reale System- oder Schnittstellennamen.</desc>
+
+	<rect x="0" y="0" width="1000" height="260" fill="var(--ary-bg, #F7F5F1)" />
+
+	<!-- Verbindungslinie durch alle Welten -->
+	<line x1="80" y1="120" x2="920" y2="120" stroke="var(--ary-accent, #61735F)" stroke-width="2" stroke-opacity="0.4" />
+
+	<g font-family="Arial, Helvetica, sans-serif" text-anchor="middle">
+		<!-- 7 Prozesswelten, gleichmäßig verteilt -->
+		<!-- Sales -->
+		<circle cx="80" cy="120" r="46" fill="var(--ary-accent, #61735F)" />
+		<text x="80" y="126" font-size="14" font-weight="700" fill="var(--ary-card, #FFFFFF)">Sales</text>
+		<text x="80" y="192" font-size="12" fill="var(--ary-text, #24302A)" fill-opacity="0.75">Anfrage &amp; Angebot</text>
+
+		<!-- Configuration -->
+		<circle cx="220" cy="120" r="46" fill="var(--ary-highlight, #B6A27A)" />
+		<text x="220" y="126" font-size="13" font-weight="700" fill="var(--ary-text, #24302A)">Config-</text>
+		<text x="220" y="140" font-size="13" font-weight="700" fill="var(--ary-text, #24302A)">uration</text>
+		<text x="220" y="192" font-size="12" fill="var(--ary-text, #24302A)" fill-opacity="0.75">Maschine &amp; Ausstattung</text>
+
+		<!-- Order -->
+		<circle cx="360" cy="120" r="46" fill="var(--ary-accent, #61735F)" />
+		<text x="360" y="126" font-size="14" font-weight="700" fill="var(--ary-card, #FFFFFF)">Order</text>
+		<text x="360" y="192" font-size="12" fill="var(--ary-text, #24302A)" fill-opacity="0.75">Auftragsanlage</text>
+
+		<!-- Goods -->
+		<circle cx="500" cy="120" r="46" fill="var(--ary-highlight, #B6A27A)" />
+		<text x="500" y="126" font-size="14" font-weight="700" fill="var(--ary-text, #24302A)">Goods</text>
+		<text x="500" y="192" font-size="12" fill="var(--ary-text, #24302A)" fill-opacity="0.75">Lieferung &amp; Logistik</text>
+
+		<!-- Finance -->
+		<circle cx="640" cy="120" r="46" fill="var(--ary-accent, #61735F)" />
+		<text x="640" y="126" font-size="14" font-weight="700" fill="var(--ary-card, #FFFFFF)">Finance</text>
+		<text x="640" y="192" font-size="12" fill="var(--ary-text, #24302A)" fill-opacity="0.75">Rechnung &amp; Zahlung</text>
+
+		<!-- Service -->
+		<circle cx="780" cy="120" r="46" fill="var(--ary-highlight, #B6A27A)" />
+		<text x="780" y="126" font-size="14" font-weight="700" fill="var(--ary-text, #24302A)">Service</text>
+		<text x="780" y="192" font-size="12" fill="var(--ary-text, #24302A)" fill-opacity="0.75">Betrieb &amp; Support</text>
+
+		<!-- Warranty -->
+		<circle cx="920" cy="120" r="46" fill="var(--ary-accent, #61735F)" />
+		<text x="920" y="126" font-size="13" font-weight="700" fill="var(--ary-card, #FFFFFF)">War-</text>
+		<text x="920" y="140" font-size="13" font-weight="700" fill="var(--ary-card, #FFFFFF)">ranty</text>
+		<text x="920" y="192" font-size="12" fill="var(--ary-text, #24302A)" fill-opacity="0.75">Gewährleistung</text>
+	</g>
+
+	<text x="500" y="240" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="var(--ary-text, #24302A)" fill-opacity="0.6">Schematische Darstellung – keine realen System- oder Schnittstellennamen</text>
+</svg>

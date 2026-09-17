@@ -1,0 +1,78 @@
+<svg viewBox="0 0 860 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="liw-dm-title liw-dm-desc" class="liw-graphic liw-graphic--data-model">
+	<title id="liw-dm-title">Interface World Connections – Datenmodell (LP-07)</title>
+	<desc id="liw-dm-desc">Interface LogiQ als zentrale Vermittlungsschicht, verbunden mit den Objektgruppen Kunde, Kontakt, Händler, Maschine, Konfiguration, Angebot, Auftrag, Bedarfsfall, Lieferung, Rechnung und Zahlung. Rein schematische Darstellung ohne reale System- oder Schnittstellennamen.</desc>
+
+	<rect x="0" y="0" width="860" height="600" fill="var(--ary-bg, #F7F5F1)" />
+
+	<!-- Speichen: Hub -> Objektgruppen -->
+	<g stroke="var(--ary-accent, #61735F)" stroke-width="1.5" stroke-opacity="0.45">
+		<line x1="430" y1="300" x2="430" y2="90" />
+		<line x1="430" y1="300" x2="554" y2="126" />
+		<line x1="430" y1="300" x2="639" y2="212" />
+		<line x1="430" y1="300" x2="658" y2="333" />
+		<line x1="430" y1="300" x2="604" y2="440" />
+		<line x1="430" y1="300" x2="495" y2="503" />
+		<line x1="430" y1="300" x2="365" y2="503" />
+		<line x1="430" y1="300" x2="256" y2="440" />
+		<line x1="430" y1="300" x2="202" y2="333" />
+		<line x1="430" y1="300" x2="221" y2="212" />
+		<line x1="430" y1="300" x2="306" y2="126" />
+	</g>
+
+	<!-- Zentraler Hub: Interface LogiQ -->
+	<g>
+		<rect x="335" y="262" width="190" height="76" rx="16" fill="var(--ary-accent, #61735F)" />
+		<text x="430" y="294" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" fill="var(--ary-card, #FFFFFF)">Interface LogiQ</text>
+		<text x="430" y="315" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="var(--ary-card, #FFFFFF)" fill-opacity="0.85">Vermittlungs- &amp; Prüfschicht</text>
+	</g>
+
+	<!-- Objektgruppen -->
+	<g font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="600" text-anchor="middle">
+		<g>
+			<rect x="365" y="52" width="130" height="38" rx="10" fill="var(--ary-card, #FFFFFF)" stroke="var(--ary-highlight, #B6A27A)" stroke-width="1.5" />
+			<text x="430" y="76" fill="var(--ary-text, #24302A)">Kunde</text>
+		</g>
+		<g>
+			<rect x="489" y="88" width="130" height="38" rx="10" fill="var(--ary-card, #FFFFFF)" stroke="var(--ary-highlight, #B6A27A)" stroke-width="1.5" />
+			<text x="554" y="112" fill="var(--ary-text, #24302A)">Kontakt</text>
+		</g>
+		<g>
+			<rect x="574" y="174" width="130" height="38" rx="10" fill="var(--ary-card, #FFFFFF)" stroke="var(--ary-highlight, #B6A27A)" stroke-width="1.5" />
+			<text x="639" y="198" fill="var(--ary-text, #24302A)">Händler</text>
+		</g>
+		<g>
+			<rect x="593" y="295" width="130" height="38" rx="10" fill="var(--ary-card, #FFFFFF)" stroke="var(--ary-highlight, #B6A27A)" stroke-width="1.5" />
+			<text x="658" y="319" fill="var(--ary-text, #24302A)">Maschine</text>
+		</g>
+		<g>
+			<rect x="539" y="412" width="140" height="38" rx="10" fill="var(--ary-card, #FFFFFF)" stroke="var(--ary-highlight, #B6A27A)" stroke-width="1.5" />
+			<text x="609" y="436" fill="var(--ary-text, #24302A)">Konfiguration</text>
+		</g>
+		<g>
+			<rect x="430" y="484" width="130" height="38" rx="10" fill="var(--ary-card, #FFFFFF)" stroke="var(--ary-highlight, #B6A27A)" stroke-width="1.5" />
+			<text x="495" y="508" fill="var(--ary-text, #24302A)">Angebot</text>
+		</g>
+		<g>
+			<rect x="300" y="484" width="130" height="38" rx="10" fill="var(--ary-card, #FFFFFF)" stroke="var(--ary-highlight, #B6A27A)" stroke-width="1.5" />
+			<text x="365" y="508" fill="var(--ary-text, #24302A)">Auftrag</text>
+		</g>
+		<g>
+			<rect x="186" y="412" width="140" height="38" rx="10" fill="var(--ary-card, #FFFFFF)" stroke="var(--ary-highlight, #B6A27A)" stroke-width="1.5" />
+			<text x="256" y="436" fill="var(--ary-text, #24302A)">Bedarfsfall</text>
+		</g>
+		<g>
+			<rect x="137" y="295" width="130" height="38" rx="10" fill="var(--ary-card, #FFFFFF)" stroke="var(--ary-highlight, #B6A27A)" stroke-width="1.5" />
+			<text x="202" y="319" fill="var(--ary-text, #24302A)">Lieferung</text>
+		</g>
+		<g>
+			<rect x="156" y="174" width="130" height="38" rx="10" fill="var(--ary-card, #FFFFFF)" stroke="var(--ary-highlight, #B6A27A)" stroke-width="1.5" />
+			<text x="221" y="198" fill="var(--ary-text, #24302A)">Rechnung</text>
+		</g>
+		<g>
+			<rect x="241" y="88" width="130" height="38" rx="10" fill="var(--ary-card, #FFFFFF)" stroke="var(--ary-highlight, #B6A27A)" stroke-width="1.5" />
+			<text x="306" y="112" fill="var(--ary-text, #24302A)">Zahlung</text>
+		</g>
+	</g>
+
+	<text x="430" y="580" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="var(--ary-text, #24302A)" fill-opacity="0.6">Schematische Darstellung – keine realen System- oder Schnittstellennamen</text>
+</svg>

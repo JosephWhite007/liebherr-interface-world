@@ -12,6 +12,32 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.12 – Landingpage-Konzept + anonymisierte LP-07/LP-08-Grafiken
+
+**Neu:**
+- `docs/LIW_LANDINGPAGE_KONZEPT.md` – LP-01…LP-14-Übersicht mit Umsetzungsstand.
+- `assets/img/liw-data-model.svg` (LP-07), `assets/img/liw-process-worlds.svg` (LP-08) –
+  anonymisierte, inline einzubettende SVG-Grafiken auf Basis der von Joseph gelieferten
+  internen Prozess-PDF, ohne reale System-/API-Namen (Sicherheitsentscheidung).
+
+**Geändert:**
+- `liebherr-interface-world.php` – Version auf `0.1.0-alpha.12`.
+- `docs/LIW_TODO.md` – Content-Board-Punkt ergänzt um Hinweis auf die beiden neuen,
+  noch zu platzierenden Grafiken.
+
+## 0.1.0-alpha.11 – Docker-Praxistest (Integrations-Selbsttest)
+
+**Neu:**
+- `scripts/liw-selftest.php` – Integrations-Selbsttest in der echten Docker-Dev-Umgebung
+  (analog Core `scripts/yb-selftest.php`): DB-Schema, Capabilities, alle sechs Boards,
+  beide Frontend-Shortcodes, Design-System-Assets, Programmierlogbuch/To-Dos. Testdaten
+  `SELFTEST-`-präfigiert, garantierte Aufräumung im `finally`-Block.
+
+**Geändert:**
+- `tests/run-tests.php` – Kommentar verweist jetzt auf das ausgelieferte Skript statt auf
+  eine „Folgeauslieferung".
+- `liebherr-interface-world.php` – Version auf `0.1.0-alpha.11`.
+
 ## 0.1.0-alpha.10 – Feinschliff an den Boards + Programmierlogbuch/To-Dos
 
 **Neu:**
