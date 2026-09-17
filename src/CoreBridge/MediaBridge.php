@@ -35,7 +35,16 @@ final class MediaBridge {
 		add_filter( 'attachment_fields_to_save', [ self::class, 'save_fields' ], 10, 2 );
 	}
 
-	/** @param array<string, mixed> $form_fields */
+	/**
+	 * @param array<string, mixed> $form_fields
+	 *
+	 * Bugfix 2026-09-18 (Fund bei Media-Board-Umsetzung): META_APPROVED wurde bisher als
+	 * `'input' => 'text'` mit dem übersetzten Anzeigetext „Ja"/„Nein" ausgegeben – ein reines
+	 * Freitextfeld ohne Checkbox-Semantik, das in `save_fields()` zudem gar nicht ausgewertet
+	 * wurde. Der Freigabestatus war über den nativen Anhang-Editor faktisch weder erkennbar
+	 * noch änderbar. Fix: echte Checkbox über `'input' => 'html'` (dokumentiertes WP-Muster
+	 * für boolesche Attachment-Felder) + Auswertung in `save_fields()`.
+	 */
 	public static function add_fields( array $form_fields, \WP_Post $post ): array {
 		$form_fields[ self::META_COPYRIGHT ] = [
 			'label' => __( 'Copyright / Rechteinhaber', 'liebherr-interface-world' ),
@@ -47,10 +56,17 @@ final class MediaBridge {
 			'value' => get_post_meta( $post->ID, self::META_SOURCE, true ),
 			'input' => 'text',
 		];
+
+		$is_approved = self::is_approved( $post->ID );
+		$field_name  = "attachments[{$post->ID}][" . self::META_APPROVED . ']';
 		$form_fields[ self::META_APPROVED ] = [
 			'label' => __( 'Freigegeben (CI-005)', 'liebherr-interface-world' ),
-			'value' => get_post_meta( $post->ID, self::META_APPROVED, true ) ? __( 'Ja', 'liebherr-interface-world' ) : __( 'Nein', 'liebherr-interface-world' ),
-			'input' => 'text',
+			'input' => 'html',
+			'html'  => sprintf(
+				'<input type="checkbox" name="%1$s" value="1" %2$s />',
+				esc_attr( $field_name ),
+				checked( $is_approved, true, false )
+			),
 		];
 		return $form_fields;
 	}
@@ -66,6 +82,8 @@ final class MediaBridge {
 		if ( isset( $attachment[ self::META_SOURCE ] ) ) {
 			update_post_meta( $post['ID'], self::META_SOURCE, sanitize_text_field( $attachment[ self::META_SOURCE ] ) );
 		}
+		// Checkbox: fehlt im POST-Payload vollständig, wenn sie unmarkiert war (HTML-Standardverhalten).
+		update_post_meta( $post['ID'], self::META_APPROVED, ! empty( $attachment[ self::META_APPROVED ] ) ? '1' : '0' );
 		return $post;
 	}
 

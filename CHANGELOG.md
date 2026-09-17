@@ -1,5 +1,29 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.7] – 2026-09-18 – Media Board (§18)
+
+### Hinzugefügt
+- Fünftes Admin-Board „Media Board" (Capability `liw_manage_content`, ANNAHME-LIW-3-
+  Präzedenzfall): Bulk-Übersicht der Medienbibliothek mit einem Formular für alle
+  Zeilen gleichzeitig (Copyright/Rechteinhaber, Asset-Quelle, CI-005-Freigabe-Checkbox
+  je Medium, ein Speichern-Klick für alle Änderungen). Filter „Alle/Freigegeben/Nicht
+  freigegeben" über die bestehenden `_liw_media_*`-Attachment-Metafelder (kein neues
+  Datenmodell, kein eigenes Mediensystem).
+
+### Bugfix (Fund bei dieser Gelegenheit)
+- `CoreBridge\MediaBridge::add_fields()` zeigte den CI-005-Freigabestatus bisher als
+  reinen Anzeigetext („Ja"/„Nein", `input => 'text'`) im nativen Anhang-Editor – ohne
+  Checkbox-Semantik. `save_fields()` werte dieses Feld zudem gar nicht aus: der
+  Freigabestatus war über den Standard-Medien-Dialog faktisch weder erkennbar noch
+  änderbar, nur über direkten Datenbankzugriff. Fix: echte Checkbox (`input => 'html'`,
+  dokumentiertes WP-Muster für boolesche Attachment-Felder) + Auswertung in
+  `save_fields()`. Das neue Media Board ist der primäre, empfohlene Weg zur
+  Bulk-Freigabe; der Einzel-Anhang-Dialog funktioniert jetzt zusätzlich korrekt.
+
+### Bewusst nicht Teil dieser Auslieferung
+- Paginierung (aktuell 50 neueste Medien) – ergänzen, sobald die Bibliothek in der
+  Praxis größer wird.
+
 ## [0.1.0-alpha.6] – 2026-09-18 – Onboarding-Formular (§22)
 
 ### Hinzugefügt

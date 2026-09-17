@@ -8,6 +8,38 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · Media Board (§18) umgesetzt (fünftes Admin-Board) + MediaBridge-Bugfix
+
+**Kontext.** Fünfter Umsetzungs-Slice. Joseph hat „Media Board" gewählt (verbleibende
+Option: World-Connections-Frontend-Karte, weiterhin offen).
+
+**Bugfund bei der Umsetzung.** `CoreBridge\MediaBridge::add_fields()` zeigte den
+CI-005-Freigabestatus im nativen WP-Anhang-Editor bisher als reinen Anzeigetext
+(„Ja"/„Nein", `input => 'text'`); `save_fields()` wertete dieses Feld gar nicht aus.
+Der Freigabestatus war über den Standard-Dialog faktisch weder erkennbar noch änderbar.
+Fix: echte Checkbox über `input => 'html'` (dokumentiertes WP-Muster für boolesche
+Attachment-Felder) + Auswertung in `save_fields()`.
+
+**Umsetzung.** `Admin\Pages\MediaBoardPage` (Capability `liw_manage_content`,
+ANNAHME-LIW-3-Präzedenzfall: Medienfreigabe ist ebenfalls eine redaktionelle
+Publizieren-Entscheidung): ein Formular über die gesamte Medienliste (bis zu 50 neueste
+Anhänge), Copyright/Quelle/Freigabe-Checkbox je Zeile, ein Speichern-Klick für alle
+Änderungen (echtes „Bulk", nicht Zeile-für-Zeile wie bei den vorherigen Boards – passend
+zur Pflichtenheft-Formulierung „Bulk-Übersicht/Freigabe"). Filter Alle/Freigegeben/Nicht
+freigegeben über die bestehenden `_liw_media_*`-Metafelder.
+
+**Bewusst ausgelassen.** Paginierung – aktuell 50 neueste Medien, ausreichend für den
+jetzigen Bibliotheksumfang; nachrüstbar ohne Datenmodelländerung.
+
+**Selftest.** `tests/run-tests.php`: 54/54 Prüfungen grün.
+
+**Auswirkung.** Kategorie B (neue Funktionalität + Bugfix an bestehendem CoreBridge-
+Adapter, keine Core-Änderung, kein neues Datenmodell – nutzt die seit alpha.1
+bestehenden Attachment-Metafelder). Version 0.1.0-alpha.6 → 0.1.0-alpha.7.
+
+**Quelle.** `src/CoreBridge/MediaBridge.php` (bereits vorhanden seit alpha.1, Fehler
+beim Nachvollziehen der add_fields/save_fields-Rundreise entdeckt).
+
 ### 2026-09-18 · Onboarding-Formular (§22) umgesetzt (viertes Admin-Board)
 
 **Kontext.** Vierter Umsetzungs-Slice. Joseph hat „Onboarding-Formular" gewählt (Optionen
