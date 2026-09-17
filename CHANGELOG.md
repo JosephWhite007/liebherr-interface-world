@@ -1,5 +1,38 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.3] – 2026-09-17 – Bugfix: Menü „Interface World" für Administrator unsichtbar
+
+### Behoben
+- **Kritisch.** `RoleBridge::grant_capabilities()` vergab die Liebherr-Capabilities
+  (`liw_manage_interfaces`, `liw_manage_content`, `liw_view_onboarding`) nur an die
+  Custom-Rollen `araliya_admin`/`araliya_marketing`, nicht aber an die native
+  WordPress-Rolle `administrator`. Der Core folgt hier durchgängig dem Muster
+  „administrator erhält zusätzlich zu araliya_admin jede Capability" (s.
+  `araliya-platform-core/src/Core/RoleManager.php`). Dadurch blendete WordPress den
+  kompletten Menüpunkt „Interface World" für den regulären Administrator-Account aus
+  (`add_menu_page()`/`add_submenu_page()` verstecken sich selbst ohne passende Capability).
+- Fix: `administrator` in `RoleBridge::FULL_ACCESS_ROLES` aufgenommen (analog Core-
+  Konvention). `revoke_capabilities()` entfernt weiterhin bewusst **nicht** von
+  `administrator` (Core-Konvention: "Does NOT remove 'administrator'" bei Deaktivierung).
+- **Wichtig für bestehende Installationen**: Die Capability-Vergabe läuft nur beim
+  Aktivierungshook. Nach diesem Fix muss das Plugin einmal deaktiviert und wieder
+  aktiviert werden, damit `administrator` die Capabilities tatsächlich erhält.
+
+## [0.1.0-alpha.2] – 2026-09-17 – Bugfix: Aktivierung schlug immer fehl
+
+### Behoben
+- **Kritisch.** `core_is_available()` prüfte mit `class_exists('Araliya\Platform\Core\Core\ModuleInterface')`.
+  `ModuleInterface` ist im Core aber als `interface` deklariert, nicht als `class` –
+  `class_exists()` matcht keine Interfaces und lieferte **immer** `false`, unabhängig vom
+  tatsächlichen Aktivierungsstatus von Core. Dadurch schlug die Aktivierung von
+  `liebherr-interface-world` reproduzierbar mit „ARALIYA Platform Core ist nicht aktiv"
+  fehl, auch wenn Core nachweislich aktiv war (Diagnose anhand von Docker-Logs, Joseph
+  White 17.09.2026).
+- Fix: `core_is_available()` prüft jetzt primär mit WordPress' nativer `is_plugin_active(
+  'araliya-platform-core/araliya-platform-core.php' )`, mit `interface_exists(
+  ModuleInterface )` als Fallback. Konstante `CORE_DEPENDENCY_CLASS` aufgeteilt in
+  `CORE_DEPENDENCY_PLUGIN_FILE` und `CORE_DEPENDENCY_INTERFACE`.
+
 ## [0.1.0-alpha.1] – 2026-09-17 – Plugin-Grundgerüst + CoreBridge
 
 ### Hinzugefügt

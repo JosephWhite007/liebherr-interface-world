@@ -31,13 +31,24 @@ final class RoleBridge {
 
 	private const ROLE_ADMIN_CLASS = 'Araliya\\Platform\\Core\\Core\\RoleManager';
 
+	/**
+	 * Rollen, die im Core-`RoleManager` als "vollständiger Systemzugriff" behandelt werden
+	 * (Core vergibt dort jede Capability explizit auch an 'administrator', s.
+	 * araliya-platform-core/src/Core/RoleManager.php: "Extends the built-in 'administrator' —
+	 * we add ARALIYA capabilities"). Bugfix 2026-09-17: ursprünglich fehlte 'administrator'
+	 * hier, wodurch der native WP-Administrator-Account das Interface-World-Menü nicht sah.
+	 */
+	private const FULL_ACCESS_ROLES = [ 'administrator', 'araliya_admin' ];
+
 	/** Vergibt die Liebherr-Capabilities an bestehende ARALIYA-Rollen (Aktivierung). */
 	public static function grant_capabilities(): void {
-		$admin = get_role( 'araliya_admin' );
-		if ( $admin instanceof \WP_Role ) {
-			$admin->add_cap( self::CAP_MANAGE_INTERFACES );
-			$admin->add_cap( self::CAP_MANAGE_CONTENT );
-			$admin->add_cap( self::CAP_VIEW_ONBOARDING );
+		foreach ( self::FULL_ACCESS_ROLES as $role_slug ) {
+			$role = get_role( $role_slug );
+			if ( $role instanceof \WP_Role ) {
+				$role->add_cap( self::CAP_MANAGE_INTERFACES );
+				$role->add_cap( self::CAP_MANAGE_CONTENT );
+				$role->add_cap( self::CAP_VIEW_ONBOARDING );
+			}
 		}
 
 		$marketing = get_role( 'araliya_marketing' );
@@ -52,7 +63,12 @@ final class RoleBridge {
 		do_action( 'liw_after_grant_capabilities' );
 	}
 
-	/** Entfernt die Liebherr-Capabilities wieder (Deaktivierung). Rollen selbst bleiben unangetastet. */
+	/**
+	 * Entfernt die Liebherr-Capabilities wieder (Deaktivierung). Rollen selbst bleiben unangetastet.
+	 * 'administrator' wird bewusst NICHT entfernt (Core-Konvention, RoleManager::deactivate():
+	 * "Does NOT remove 'administrator'") — der native Admin-Account soll auch nach einer
+	 * Deaktivierung nicht plötzlich Capabilities verlieren, die er vorher hatte.
+	 */
 	public static function revoke_capabilities(): void {
 		foreach ( [ 'araliya_admin', 'araliya_marketing' ] as $role_slug ) {
 			$role = get_role( $role_slug );

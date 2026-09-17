@@ -4,11 +4,12 @@
  * Plugin URI:   https://araliya.info
  * Description:  Administrierbare, mehrsprachige Landingpage "Interface World Connections" für Liebherr-Händler-,
  *               Lieferanten- und Kundenanbindung (Magic Cube, Interface LogiQ). Solution Provider: GoHeal.
- * Version:      0.1.0-alpha.1
+ * Version:      0.1.0-alpha.3
  * Author:       GoHeal
  * Author URI:   https://araliya.info
  * Requires at least: 6.0
  * Requires PHP: 7.4
+ * Requires Plugins: araliya-platform-core
  * Text Domain:  liebherr-interface-world
  *
  * Eigenständiges Plugin (Ausnahme von der Ein-Plugin-Regel, zweite Ausnahme neben `araliya-installer`;
@@ -28,13 +29,16 @@ namespace Liebherr\InterfaceWorld;
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 // ── Konstanten ────────────────────────────────────────────────────────────────
-define( 'LIW_VERSION', '0.1.0-alpha.1' );
+define( 'LIW_VERSION', '0.1.0-alpha.3' );
 define( 'LIW_PATH', plugin_dir_path( __FILE__ ) );
 define( 'LIW_URL', plugin_dir_url( __FILE__ ) );
 define( 'LIW_BASENAME', plugin_basename( __FILE__ ) );
 
-/** Namespace-Präfix des Core-Plugins, dessen Anwesenheit Voraussetzung ist (Variante A). */
-const CORE_DEPENDENCY_CLASS = 'Araliya\\Platform\\Core\\Core\\ModuleInterface';
+/** Plugin-Datei (Slug) des Core-Plugins, dessen Aktivierung Voraussetzung ist (Variante A). */
+const CORE_DEPENDENCY_PLUGIN_FILE = 'araliya-platform-core/araliya-platform-core.php';
+
+/** Marker-Interface im Core, das nur bei geladenem Core existiert (Fallback-Check). */
+const CORE_DEPENDENCY_INTERFACE = 'Araliya\\Platform\\Core\\Core\\ModuleInterface';
 
 // ── PSR-4 Autoloader (Namespace: Liebherr\InterfaceWorld\ → src/) ────────────
 spl_autoload_register( static function ( string $class ): void {
@@ -53,9 +57,26 @@ spl_autoload_register( static function ( string $class ): void {
 /**
  * Prüft, ob araliya-platform-core aktiv und verfügbar ist.
  * Terminal-/Nichtziel-Vorgabe: Graceful Degradation statt Fatal Error, wenn Core fehlt.
+ *
+ * Bugfix (2026-09-17): Der ursprüngliche Check `class_exists(ModuleInterface)` lieferte
+ * IMMER `false`, weil `ModuleInterface` im Core als `interface`, nicht als `class`
+ * deklariert ist – `class_exists()` matcht keine Interfaces (`interface_exists()` wäre
+ * nötig gewesen). Dadurch schlug die Aktivierung reproduzierbar fehl, obwohl Core aktiv
+ * war (siehe docs/LOGBUCH_TECHNIK.md). Robuster Fix: WordPress' native
+ * `is_plugin_active()` gegen den Plugin-Slug prüfen, mit `interface_exists()` als
+ * zusätzlichem Fallback (z. B. falls der Slug künftig abweicht).
  */
 function core_is_available(): bool {
-	return class_exists( CORE_DEPENDENCY_CLASS );
+	if ( ! function_exists( 'is_plugin_active' ) ) {
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+	}
+
+	if ( is_plugin_active( CORE_DEPENDENCY_PLUGIN_FILE ) ) {
+		return true;
+	}
+
+	// Fallback, z. B. während der eigenen Aktivierung von Core selbst (Multisite-Netzwerkaktivierung o. Ä.).
+	return interface_exists( CORE_DEPENDENCY_INTERFACE );
 }
 
 /** Admin-Hinweis, falls Core fehlt oder deaktiviert ist. */
