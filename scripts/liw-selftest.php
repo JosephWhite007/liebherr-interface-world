@@ -584,6 +584,18 @@ try {
 	liw_st_check( 'Local-Intelligence-Board verfuegbar', class_exists( \Liebherr\InterfaceWorld\Admin\Pages\LocalIntelligenceBoardPage::class ) );
 	liw_st_check( 'JS: Szenario-Schalter + Einsatzfeld-Filter', ( function (): bool { $j = (string) file_get_contents( LIW_PATH . 'assets/js/liebherr-frontend.js' ); return str_contains( $j, 'data-liw-sim' ) && str_contains( $j, 'data-liw-usecase-filter' ); } )() );
 	liw_st_check( 'CSS: .liw-li-Bloecke + reduzierte Bewegung', ( function (): bool { $c = (string) file_get_contents( LIW_PATH . 'assets/css/liebherr-frontend.css' ); return str_contains( $c, '.liw-li__hero' ) && str_contains( $c, 'prefers-reduced-motion' ); } )() );
+	// Prototyp-Konformität (LI §9.2/§12.7): noindex bis Freigabe; SEO erkennt die LI-Hauptseite.
+	delete_option( 'liw_public_release' );
+	liw_st_check( 'SEO: Prototyp nicht indexierbar (Standard)', false === SeoBridge::indexing_allowed() );
+	update_option( 'liw_public_release', 1 );
+	liw_st_check( 'SEO: Freigabe-Schalter erlaubt Indexierung', true === SeoBridge::indexing_allowed() );
+	delete_option( 'liw_public_release' );
+	$__liid = \Liebherr\InterfaceWorld\Content\SitePages::li_id();
+	if ( $__liid > 0 ) {
+		liw_st_check( 'SEO: LI-Hauptseite wird als LIW-Fläche erkannt (Composite-Shortcode)', SeoBridge::is_liw_post( get_post( $__liid ) ) );
+	}
+	$__robots = ( function (): string { ob_start(); SeoBridge::render_robots(); return (string) ob_get_clean(); } )();
+	liw_st_check( 'SEO: render_robots schweigt außerhalb einer LIW-Ansicht (CLI)', '' === $__robots );
 
 	// ── [9] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
 	echo "\n[9] Programmierlogbuch / To-Dos\n";

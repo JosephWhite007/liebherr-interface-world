@@ -12,6 +12,21 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.42 – Prototyp-SEO (noindex bis Freigabe) + Abnahme-Lieferliste
+
+**Geändert:** `src/CoreBridge/SeoBridge.php` – `CARRIER_SHORTCODES` (jetzt auch `liw_local_intelligence`),
+`has_carrier_shortcode()`-Helfer; `render_robots()` + `indexing_allowed()` (Option `liw_public_release` /
+Filter `liw_allow_indexing`) → `noindex,follow` auf LIW-Flächen bis Freigabe; `filter_sitemap_page_args()`
+schließt Haupt-/Interface-Seite aus der `page`-Sitemap aus (`wp_sitemaps_posts_query_args`).
+`is_liw_post()`/`is_liw_public_view()` nutzen den Träger-Helfer (OG/hreflang/Canonical greifen jetzt auf der
+LI-Hauptseite). `scripts/liw-selftest.php` (+4 SEO-Prüfungen), `tests/run-tests.php` (+2 Wächter),
+`docs/LIW_ABNAHME.md` (§8 Vorher-Nachher-Liste), `CHANGELOG.md`, `liebherr-interface-world.php` (alpha.42).
+**Grund:** Die neue Hauptseite nutzt `[liw_local_intelligence]`, fiel damit aus der bestehenden SEO-Logik
+(nur `[liw_landingpage]`) heraus; zudem verlangt das LI-Pflichtenheft (§9.2/§12.7), nicht freigegebene
+Prototypen nicht zu indexieren.
+**Prüfung:** `php -l`; `tests/run-tests.php` 226/226, `scripts/liw-selftest.php` 236/236; reale Seiten (noindex,
+OG-Titel, Sitemap-Ausschluss) bestätigt.
+
 ## 0.1.0-alpha.41 – Hauptseite „Liebherr Local Intelligence" (11 Module) + Verschachtelung
 
 **Neu:**

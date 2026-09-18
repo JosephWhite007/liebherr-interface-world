@@ -8,6 +8,24 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · Prototyp-SEO-Konformität + SEO-Erfassung der LI-Hauptseite (0.1.0-alpha.42)
+
+**Frage/Kontext.** Nachzug zu alpha.41: (1) die neue Hauptseite nutzt `[liw_local_intelligence]`, fiel damit
+aus der bestehenden SEO-Erkennung (nur `[liw_landingpage]`) — OG/hreflang/Canonical/Sitemap griffen nicht;
+(2) LI-Pflichtenheft §9.2/§12.7 verlangt, nicht freigegebene Prototypen nicht zu indexieren.
+
+**Entscheidungen (Kategorie B).**
+- Zentral im `SeoBridge` gelöst (keine zweite SEO-Schicht): Liste `CARRIER_SHORTCODES` statt Einzelprüfung;
+  `is_liw_post()`/`is_liw_public_view()` erkennen beide Träger.
+- **noindex bis Freigabe** über Option `liw_public_release` (Standard gesperrt) + Filter `liw_allow_indexing`;
+  zusätzlich Sitemap-Ausschluss der Haupt-/Interface-Seite (`wp_sitemaps_posts_query_args`). Bewusst
+  umschaltbar statt hart, damit die Freischaltung nach Markenfreigabe ein Einzeiler ist (Option setzen).
+  Der sichtbare „Prototyp"-Hinweis wurde NICHT erzwungen (JW hat die vorläufige CI für interne Präsentation
+  autorisiert); die Prototyp-Kennzeichnung erfolgt über Doku (Abnahme §8.4) + noindex.
+
+**Quelle/Version.** LI-Pflichtenheft §9.2/§12.7/§16/§17; 0.1.0-alpha.42. Prüfung: run-tests 226/226,
+liw-selftest 236/236, reale Seiten (noindex/OG/Sitemap) bestätigt.
+
 ### 2026-09-18 · Neue Hauptseite „Liebherr Local Intelligence" + Verschachtelung der Interface-Seite (0.1.0-alpha.41)
 
 **Frage/Kontext.** JW: Umsetzung des Pflichtenhefts „Liebherr Local Intelligence Landingpage". Die bestehende

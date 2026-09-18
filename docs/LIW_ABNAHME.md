@@ -85,3 +85,50 @@ MUSS-Funktionen implementiert, getestet (Unit + Docker) und dokumentiert; DE str
 EN/PL vorbereitet; keine kritischen Sicherheits-/Darstellungsfehler bekannt. **Ausstehend für „fertig":**
 Staging-Abnahme + Performance-/A11y-Vollmessung, dokumentierte Liebherr-Markenfreigabe, ausdrückliche
 Produktionsfreigabe. Bis dahin bleibt die Produktivschaltung gesperrt.
+
+## 8. Liebherr Local Intelligence (Pflichtenheft LI, alpha.41/42)
+
+Umsetzung des Pflichtenhefts „Liebherr Local Intelligence Landingpage": neue übergeordnete Hauptseite;
+die bisherige Interface-World-Seite bleibt erhalten und wird zur technischen Unterseite.
+
+### 8.1 Vorher-Nachher – Routen (§16 AK4/AK15)
+
+| Vorher | Nachher |
+|---|---|
+| `/interface-world/` (eigenständige Seite) | `/interface-world/` → **301** auf die Unterseite |
+| — | `/liebherr-local-intelligence/` (**neue Hauptseite**) |
+| — | `/liebherr-local-intelligence/interface-solutions/` (Interface-Seite, verschachtelt) |
+
+Bestehende interne Links/Bookmarks/Kampagnen laufen über den 301 weiter (kein toter Link, §3.2).
+
+### 8.2 Geänderte/neue Dateien und Komponenten (§17.8)
+
+- **Neu:** `Settings/LocalIntelligenceContent` (Content-Modell), `Frontend/LocalIntelligenceView`
+  (11 Modul-Shortcodes + Composite `[liw_local_intelligence]` + `[liw_context_nav]`),
+  `Frontend/LegacyRedirect` (301), `Content/SitePages` (Seiten-Registry),
+  `Admin/Pages/LocalIntelligenceBoardPage` (Pflege), `scripts/liw-seed-local-intelligence.php`.
+- **Geändert:** `Bootstrap`, `Frontend/FrontendAssets`, `Frontend/RocketCompat`, `Admin/AdminMenu`,
+  `CoreBridge/SeoBridge` (Composite als Träger erkannt + noindex/Sitemap-Prototyp-Guard),
+  `assets/js/liebherr-frontend.js` (Szenario-Schalter + Filter), `assets/css/liebherr-frontend.css`
+  (`.liw-li*`), `scripts/liw-seed-demo-landing.php`, `scripts/liw-selftest.php`, `tests/run-tests.php`.
+
+### 8.3 Abnahmekriterien LI (§16)
+
+Erfüllt: eigenständige, vollständig erreichbare Hauptseite (AK1); Nutzen/Thema in Sekunden (AK2);
+Interface-Seite besteht als Unterseite fort (AK3); Routen/301 (AK4); Erzählbogen Simulieren–Verstehen–
+Entscheiden (AK5); Simulation/Wissen/Datenqualität/weltweit konkret (AK6); Interface Solutions als
+Befähigungsebene eingeordnet (AK7); Inhalte administrierbar (AK8); DE vollständig, EN/weitere vorbereitet
+(AK9); responsiv/Tastatur/reduzierte Bewegung (AK10); keine hartcodierten Domains/Formularziele (AK11);
+keine unfreigegebenen Versprechen (AK12); Tests grün (AK13/AK14); diese Vorher-Nachher-Liste (AK15).
+
+### 8.4 Prototyp-Status (§9.2/§12.7)
+
+Bis zur dokumentierten Liebherr-Freigabe sind Haupt- und Unterseite **noindex** und aus der XML-Sitemap
+ausgeschlossen (Guard in `SeoBridge`, Option `liw_public_release` / Filter `liw_allow_indexing`, Standard
+gesperrt). CI weiterhin **vorläufig** (siehe §5). Freischaltung: `liw_public_release` setzen **und**
+Markenfreigabe dokumentieren.
+
+### 8.5 Offen (LI)
+
+Vollständige EN-Fassung + weitere Sprachen (§12.4), Analytik-Events (§14), Szenario-Editor im Board,
+Performance-/A11y-Vollmessung auf Staging, redaktionelle + markenrechtliche Freigabe.

@@ -27,7 +27,10 @@ Breadcrumb/Rücklink, zwei Frontpage-Menüpunkte. Nur Demo-Inhalte (§4/§7/§12
 - **Analytik-Events (§14).** Klick-/Formular-/Sprachwechsel-Events in der freigegebenen Analytik-
   Namenskonvention erfassen – erst mit freigegebenem Analytics-Setup.
 - **Redaktion/Freigabe (§9.2/§16).** Bis zur dokumentierten Liebherr-Freigabe gilt die Seite als
-  Konzept/Prototyp; CI weiterhin „vorläufig" (siehe Marken-Freigabe-Punkt unten).
+  Konzept/Prototyp; CI weiterhin „vorläufig" (siehe Marken-Freigabe-Punkt unten). **alpha.42:** Haupt-
+  und Interface-Seite sind bis dahin **noindex** + aus der Sitemap ausgeschlossen (`SeoBridge`, Option
+  `liw_public_release`). *Freischalten bei Launch:* `liw_public_release` setzen **und** Markenfreigabe
+  dokumentieren (Abnahme §8.4).
 
 ---
 

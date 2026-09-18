@@ -33,11 +33,57 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 final class SeoBridge {
 
+	/** Shortcodes, die eine Seite zur öffentlichen LIW-Fläche machen (Träger der Landingpage bzw. Hauptseite). */
+	private const CARRIER_SHORTCODES = [ 'liw_landingpage', 'liw_local_intelligence' ];
+
 	public static function register(): void {
+		add_action( 'wp_head', [ self::class, 'render_robots' ], 4 );
 		add_action( 'wp_head', [ self::class, 'render_hreflang' ], 5 );
 		add_action( 'wp_head', [ self::class, 'render_open_graph' ], 6 );
 		add_filter( 'get_canonical_url', [ self::class, 'filter_canonical' ], 10, 2 );
 		add_filter( 'wp_sitemaps_post_types', [ self::class, 'filter_sitemap_post_types' ] );
+		add_filter( 'wp_sitemaps_posts_query_args', [ self::class, 'filter_sitemap_page_args' ], 10, 2 );
+	}
+
+	/**
+	 * Prototyp-Konformität (LI-Pflichtenheft §9.2/§12.7): Solange keine offizielle Liebherr-Freigabe
+	 * vorliegt, dürfen die (mit vorläufiger CI versehenen) LIW-Seiten nicht indexiert werden. Gibt auf
+	 * den öffentlichen LIW-Flächen `noindex,follow` aus. Umschaltbar über Option `liw_public_release`
+	 * (Standard: nicht freigegeben) bzw. Filter `liw_allow_indexing`.
+	 */
+	public static function render_robots(): void {
+		if ( ! self::is_liw_public_view() || self::indexing_allowed() ) {
+			return;
+		}
+		echo '<meta name="robots" content="noindex,follow" />' . "\n";
+	}
+
+	/** Indexierung erlaubt? Erst nach dokumentierter Freigabe (Option/Filter). */
+	public static function indexing_allowed(): bool {
+		$allow = (bool) get_option( 'liw_public_release', false );
+		return (bool) apply_filters( 'liw_allow_indexing', $allow );
+	}
+
+	/**
+	 * Prototyp nicht in die XML-Sitemap (§12.7): schließt Haupt- und Interface-Seite aus der
+	 * `page`-Sitemap aus, solange nicht freigegeben.
+	 *
+	 * @param array<string,mixed> $args
+	 * @return array<string,mixed>
+	 */
+	public static function filter_sitemap_page_args( array $args, string $post_type ): array {
+		if ( 'page' !== $post_type || self::indexing_allowed() ) {
+			return $args;
+		}
+		$ids = array_values( array_filter( [
+			\Liebherr\InterfaceWorld\Content\SitePages::li_id(),
+			\Liebherr\InterfaceWorld\Content\SitePages::interface_id(),
+		] ) );
+		if ( [] !== $ids ) {
+			$existing = isset( $args['post__not_in'] ) && is_array( $args['post__not_in'] ) ? $args['post__not_in'] : [];
+			$args['post__not_in'] = array_merge( $existing, $ids );
+		}
+		return $args;
 	}
 
 	/**
@@ -106,7 +152,17 @@ final class SeoBridge {
 		if ( 'liw_section' === $post->post_type ) {
 			return true;
 		}
-		return 'page' === $post->post_type && has_shortcode( (string) $post->post_content, 'liw_landingpage' );
+		return 'page' === $post->post_type && self::has_carrier_shortcode( (string) $post->post_content );
+	}
+
+	/** Enthält der Inhalt einen der Träger-Shortcodes (Landingpage oder Local-Intelligence-Hauptseite)? */
+	private static function has_carrier_shortcode( string $content ): bool {
+		foreach ( self::CARRIER_SHORTCODES as $sc ) {
+			if ( has_shortcode( $content, $sc ) ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -133,7 +189,7 @@ final class SeoBridge {
 			return true;
 		}
 		$post = get_post();
-		return is_page() && $post instanceof \WP_Post && has_shortcode( (string) $post->post_content, 'liw_landingpage' );
+		return is_page() && $post instanceof \WP_Post && self::has_carrier_shortcode( (string) $post->post_content );
 	}
 
 	/**

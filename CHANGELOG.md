@@ -1,5 +1,20 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.42] – 2026-09-18 – Prototyp-SEO-Konformität (noindex bis Freigabe) + Abnahme-Lieferliste
+
+### Hinzugefügt/Geändert
+- **SeoBridge erkennt die neue LI-Hauptseite** (`[liw_local_intelligence]` als Träger-Shortcode neben
+  `[liw_landingpage]`): Open-Graph-, hreflang- und Canonical-Ausgabe greifen nun auch auf `/liebherr-local-intelligence/`.
+- **Prototyp-Konformität (LI §9.2/§12.7):** Solange keine offizielle Liebherr-Freigabe vorliegt, liefern
+  Haupt- und Interface-Seite `<meta name="robots" content="noindex,follow">` und werden aus der XML-Sitemap
+  ausgeschlossen. Steuerung über Option `liw_public_release` (Standard: gesperrt) bzw. Filter `liw_allow_indexing`.
+- **Abnahmebericht** `docs/LIW_ABNAHME.md` §8: Vorher-Nachher-Liste (Routen/Dateien/Komponenten, §16 AK15/§17),
+  LI-Abnahmekriterien-Abgleich und Freischalt-Anleitung.
+
+### Verifikation
+- `tests/run-tests.php` **226/226**, `scripts/liw-selftest.php` **236/236**; reale Seiten liefern `noindex`,
+  OG-Titel erscheint auf der Hauptseite, Sitemap `wp-sitemap-posts-page-1.xml` enthält die Prototyp-Seiten nicht.
+
 ## [0.1.0-alpha.41] – 2026-09-18 – Neue Hauptseite „Liebherr Local Intelligence" (11 Module) + Interface Solutions als Unterseite
 
 Umsetzung des Pflichtenhefts „Liebherr Local Intelligence Landingpage": die bisherige Interface-World-Seite
