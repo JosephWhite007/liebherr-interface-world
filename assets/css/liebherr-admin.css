@@ -24,3 +24,11 @@
 .liw-pagination {
 	margin-top: 12px;
 }
+
+/* Content Board – Drag-&-Drop-Reihenfolge (§19, alpha.35) */
+.liw-drag-handle { cursor: grab; color: #787c82; font-size: 1.1em; user-select: none; margin-right: 4px; }
+.liw-drag-handle:active { cursor: grabbing; }
+table[data-liw-reorder] tbody tr.ui-sortable-helper { display: table; box-shadow: 0 2px 8px rgba(0,0,0,.15); background: #fff; }
+table[data-liw-reorder] .ui-sortable-placeholder { visibility: visible !important; background: #f0f6fc; height: 3em; }
+table.liw-reorder-busy { opacity: .6; pointer-events: none; }
+.liw-preview-langs { color: #787c82; font-size: .9em; }

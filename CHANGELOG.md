@@ -1,5 +1,22 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.35] – 2026-09-18 – Content-Board-Restpunkte: Drag-&-Drop-Reihenfolge & Sprachvorschau (§19)
+
+### Hinzugefügt
+- **Drag-&-Drop-Reihenfolge** der Abschnitte im Content Board (§19): Zeilen per Ziehgriff sortieren,
+  neue `menu_order` (10/20/…) wird sofort per AJAX gespeichert (`liw_reorder_sections`, Nonce +
+  Capability `liw_manage_content`, auditiert). Testbare Kernlogik `ContentBoardPage::apply_order()`.
+  JS `assets/js/liw-admin-content.js` (jQuery-UI-Sortable); ohne JS bleibt das „Reihenfolge"-Feld im
+  Editor nutzbar (progressive Verbesserung).
+- **Vorschau je Sprache** in der Abschnittsliste (§19): Vorschau-Links je aktiver Sprache (`?lang=xx`).
+
+### Hinweise
+- Zeitgesteuerte Veröffentlichung nutzt weiterhin den nativen WP-`future`-Status (Editor); ein
+  eigenes Sichtbarkeits-Zeitfenster (valid_from/valid_until) bleibt bewusster Folgepunkt (Schema-/
+  Frontend-Änderung, To-Dos). Geräte-Vorschau = responsive Ansicht im Browser.
+- Verifikation: `php -l`; `tests/run-tests.php` 174/174, `scripts/liw-selftest.php` 185/185 (u. a.
+  `apply_order()` mit echten Test-Abschnitten) im Docker-Container.
+
 ## [0.1.0-alpha.34] – 2026-09-18 – Etappe 8: Qualität & Abnahme (§25–35)
 
 ### Hinzugefügt

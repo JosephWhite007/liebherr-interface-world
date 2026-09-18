@@ -26,9 +26,12 @@ Stand: 18.09.2026 (0.1.0-alpha.26).
   Freigabeworkflow (Entwurf → Prüfung → freigegeben → veröffentlicht) und native
   Editor-/Revisions-Anbindung für `liw_section`. Bewusst noch nicht Teil der Auslieferung
   (Entscheidung Joseph White 18.09.2026: „Grundgerüst zuerst"):
-  - Drag-and-Drop-Reihenfolge (aktuell: numerisches „Reihenfolge"-Feld im Editor, ANNAHME-LIW-6)
-  - Zeitsteuerte Veröffentlichung über den nativen `future`-Status hinaus
-  - Vorschau je Sprache, Gerät und Veröffentlichungsstatus
+  - ~~Drag-and-Drop-Reihenfolge~~ – alpha.35: Zeilen im Content Board sortierbar (AJAX, menu_order)
+  - Zeitsteuerte Veröffentlichung über den nativen `future`-Status hinaus (eigenes Sichtbarkeits-
+    Zeitfenster valid_from/valid_until) – bleibt offen (Schema-/Frontend-Änderung); native
+    Terminveröffentlichung (`future`) deckt den Basisfall bereits ab
+  - ~~Vorschau je Sprache~~ – alpha.35 (Links je aktiver Sprache); Vorschau je Gerät = responsive
+    Ansicht im Browser; Vorschau je Veröffentlichungsstatus über den vorhandenen Vorschau-Link
   - ~~CTA-Ziele intern auswählen~~ – alpha.30: CTA-Zielfelder schlagen Abschnitts-Anker per `<datalist>` vor
   - Medien-Picker auf freigegebene Bibliothek beschränken (CI-005) – bei Recherche
     festgestellt, dass WPs `ajax_query_attachments_args`/`post_id`-Kontext dafür nicht

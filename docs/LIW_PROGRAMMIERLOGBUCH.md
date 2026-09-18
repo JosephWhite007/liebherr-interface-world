@@ -12,6 +12,20 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.35 – Content-Board-Restpunkte: Drag-&-Drop-Reihenfolge & Sprachvorschau (§19)
+
+**Neu:** `assets/js/liw-admin-content.js` (jQuery-UI-Sortable + AJAX-Speichern).
+**Geändert:** `src/Admin/Pages/ContentBoardPage.php` (`REORDER_ACTION`/`REORDER_NONCE`, `register()`
+für `wp_ajax_liw_reorder_sections`, `ajax_reorder()`, testbare `apply_order()`; Tabelle mit
+`data-liw-reorder`/`data-liw-id`/Ziehgriff/`liw-order-num`; Vorschau-Links je Sprache),
+`src/Admin/AdminAssets.php` (Enqueue Sortable + Localize nur auf dem Content Board),
+`src/Bootstrap.php` (ContentBoardPage::register im is_admin-Block), `assets/css/liebherr-admin.css`
+(Ziehgriff/Busy/Placeholder), `scripts/liw-selftest.php` ([8] +4), `CHANGELOG.md`, `docs/LIW_TODO.md`,
+`docs/LOGBUCH_TECHNIK.md`, `src/Admin/Pages/HandbookPage.php`, `liebherr-interface-world.php` (Version).
+**Prüfung:** `php -l`; `tests/run-tests.php` 174/174, `scripts/liw-selftest.php` 185/185
+(`apply_order()` mit echten Test-Abschnitten verifiziert). Kontext-Falle: `wp_ajax_`-Hook wird nur im
+Admin gesetzt → Selbsttest prüft die Verdrahtung quellbasiert.
+
 ## 0.1.0-alpha.34 – Etappe 8: Qualität & Abnahme (§25–35)
 
 **Neu:** `scripts/liw-seed-demo.php` (idempotenter DEMO-Seeder, `--confirm`; Interfaces/Connections/

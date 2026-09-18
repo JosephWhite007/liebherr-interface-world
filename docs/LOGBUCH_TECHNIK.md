@@ -8,6 +8,25 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · Content-Board-Restpunkte: Drag-&-Drop + Sprachvorschau (0.1.0-alpha.35)
+
+**Frage/Kontext.** Nach Abschluss der Stufe 1 (JW „weiter" → Content-Board-Restpunkte, §19): welche
+der drei Restpunkte jetzt, welche vertagen?
+
+**Entscheidungen (Claude, Kategorie B).**
+- **Drag-&-Drop-Reihenfolge (umgesetzt):** jQuery-UI-Sortable + AJAX (`admin-ajax`, Nonce, Capability,
+  Audit). Kernlogik in testbare `apply_order()` extrahiert (Docker-Test mit echten Abschnitten).
+  Progressive Verbesserung: ohne JS bleibt das numerische „Reihenfolge"-Feld nutzbar.
+- **Vorschau je Sprache (umgesetzt):** Links `?lang=xx` je aktiver Sprache; Geräte-Vorschau =
+  responsive Browser-Ansicht (kein eigener Emulator).
+- **Zeitfenster-Veröffentlichung (vertagt):** native WP-Terminveröffentlichung (`future`) deckt den
+  Basisfall; ein eigenes valid_from/valid_until-Sichtbarkeitsfenster wäre Schema- + Frontend-Änderung
+  → bewusst Folgepunkt (kein Feature auf Verdacht, YAGNI).
+- **Test-Kontext-Falle:** `wp_ajax_`-Hooks nur im Admin gesetzt; der CLI-Selbsttest prüft die
+  Verdrahtung quellbasiert statt über `has_action()`.
+
+**Quelle/Version.** JW „weiter → Content-Board-Restpunkte"; Pflichtenheft §19; 0.1.0-alpha.35.
+
 ### 2026-09-18 · Etappe 8: Abschluss Stufe 1 – Demo-Seed + Abnahmebericht (0.1.0-alpha.34)
 
 **Frage/Kontext.** Abschluss des Release-Plans: Demo-Daten (§33) und Abnahme (§32/§35) ohne Staging.

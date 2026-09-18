@@ -503,6 +503,19 @@ try {
 	liw_st_check( 'Demo-Seeder vorhanden + --confirm-Schutz (§33)', is_readable( LIW_PATH . 'scripts/liw-seed-demo.php' ) && str_contains( (string) file_get_contents( LIW_PATH . 'scripts/liw-seed-demo.php' ), '--confirm' ) );
 	liw_st_check( 'Demo-Seeder legt keine echten Daten an (DEMO-Kennzeichnung)', str_contains( (string) file_get_contents( LIW_PATH . 'scripts/liw-seed-demo.php' ), 'DEMO' ) );
 	liw_st_check( 'Abnahmebericht + Release-Plan dokumentiert', is_readable( LIW_PATH . 'docs/LIW_ABNAHME.md' ) && is_readable( LIW_PATH . 'docs/LIW_RELEASEPLAN.md' ) );
+	// Etappe 9: Content-Board-Restpunkte (alpha.35).
+	// Verdrahtung quellbasiert (der wp_ajax_-Hook wird nur im Admin-Kontext gesetzt, nicht im CLI-Selbsttest).
+	liw_st_check( 'Content-Reorder: AJAX-Handler verdrahtet (§19)', str_contains( (string) file_get_contents( LIW_PATH . 'src/Admin/Pages/ContentBoardPage.php' ), "wp_ajax_' . self::REORDER_ACTION" ) && str_contains( (string) file_get_contents( LIW_PATH . 'src/Bootstrap.php' ), 'ContentBoardPage::register()' ) );
+	liw_st_check( 'Content-Reorder: Sortier-Skript vorhanden', is_readable( LIW_PATH . 'assets/js/liw-admin-content.js' ) );
+	liw_st_check( 'AdminAssets enqueued Sortier-Skript auf dem Content Board', str_contains( (string) file_get_contents( LIW_PATH . 'src/Admin/AdminAssets.php' ), 'liw-admin-content' ) && str_contains( (string) file_get_contents( LIW_PATH . 'src/Admin/AdminAssets.php' ), 'jquery-ui-sortable' ) );
+	// apply_order() setzt menu_order in gewünschter Reihenfolge (mit echten Test-Abschnitten).
+	$__a = wp_insert_post( [ 'post_type' => 'liw_section', 'post_title' => 'SELFTEST Reorder A', 'post_status' => 'draft', 'menu_order' => 100 ] );
+	$__b = wp_insert_post( [ 'post_type' => 'liw_section', 'post_title' => 'SELFTEST Reorder B', 'post_status' => 'draft', 'menu_order' => 200 ] );
+	$__n = \Liebherr\InterfaceWorld\Admin\Pages\ContentBoardPage::apply_order( [ (int) $__b, (int) $__a ] );
+	liw_st_check( 'apply_order(): B vor A → menu_order 10/20', 2 === $__n && 10 === (int) get_post_field( 'menu_order', $__b ) && 20 === (int) get_post_field( 'menu_order', $__a ) );
+	liw_st_check( 'apply_order(): ignoriert Fremd-Post-Typen', 0 === \Liebherr\InterfaceWorld\Admin\Pages\ContentBoardPage::apply_order( [ 1 ] ) );
+	wp_delete_post( (int) $__a, true );
+	wp_delete_post( (int) $__b, true );
 	liw_st_check( 'Language Board Seite verfügbar', class_exists( \Liebherr\InterfaceWorld\Admin\Pages\LanguageBoardPage::class ) );
 	liw_st_check( 'TranslationBridge::public_scope_post_ids() liefert Array', is_array( \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::public_scope_post_ids() ) );
 	liw_st_check( 'TranslationBridge::readiness_report() liefert je Sprache Kennzahlen', ( function (): bool { $r = \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::readiness_report( [ 'en' ] ); return ! \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::is_available() || ( isset( $r['en'] ) && array_key_exists( 'ready', $r['en'] ) && array_key_exists( 'min_rate', $r['en'] ) ); } )() );

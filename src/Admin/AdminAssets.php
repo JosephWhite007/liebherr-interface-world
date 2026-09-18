@@ -37,5 +37,19 @@ final class AdminAssets {
 			[],
 			LIW_VERSION
 		);
+
+		// Content Board: Drag-&-Drop-Reihenfolge (§19) – nur auf dieser Board-Seite.
+		if ( false !== strpos( $hook_suffix, \Liebherr\InterfaceWorld\Admin\Pages\ContentBoardPage::MENU_SLUG ) ) {
+			wp_enqueue_script(
+				'liw-admin-content',
+				LIW_URL . 'assets/js/liw-admin-content.js',
+				[ 'jquery', 'jquery-ui-sortable' ],
+				LIW_VERSION,
+				true
+			);
+			wp_localize_script( 'liw-admin-content', 'liwContentReorder', [
+				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+			] );
+		}
 	}
 }

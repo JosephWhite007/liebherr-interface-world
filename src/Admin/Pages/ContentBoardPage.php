@@ -39,6 +39,7 @@ namespace Liebherr\InterfaceWorld\Admin\Pages;
 use Liebherr\InterfaceWorld\Content\SectionBlueprint;
 use Liebherr\InterfaceWorld\Content\SectionSeeder;
 use Liebherr\InterfaceWorld\CoreBridge\AuditBridge;
+use Liebherr\InterfaceWorld\CoreBridge\LanguageBridge;
 use Liebherr\InterfaceWorld\CoreBridge\RoleBridge;
 use Liebherr\InterfaceWorld\CPT\LiwSectionCpt;
 
@@ -54,6 +55,53 @@ final class ContentBoardPage {
 	/** Seit alpha.17: fehlende Standard-Abschnitte LP-01…LP-14 per Knopf anlegen (SectionSeeder). */
 	private const SEED_NONCE_ACTION = 'liw_content_board_seed';
 	private const SEED_NONCE_NAME   = 'liw_content_board_seed_nonce';
+
+	public const REORDER_ACTION = 'liw_reorder_sections';
+	public const REORDER_NONCE  = 'liw_reorder_sections_nonce';
+
+	/** AJAX-Endpunkt für Drag-&-Drop-Reihenfolge registrieren (§19). */
+	public static function register(): void {
+		add_action( 'wp_ajax_' . self::REORDER_ACTION, [ self::class, 'ajax_reorder' ] );
+	}
+
+	/** Speichert die per Drag-&-Drop übermittelte Reihenfolge als menu_order (10,20,…). */
+	public static function ajax_reorder(): void {
+		if ( ! check_ajax_referer( self::REORDER_NONCE, '_wpnonce', false ) ) {
+			wp_send_json_error( [ 'message' => 'bad_nonce' ], 400 );
+		}
+		if ( ! current_user_can( RoleBridge::CAP_MANAGE_CONTENT ) ) {
+			wp_send_json_error( [ 'message' => 'forbidden' ], 403 );
+		}
+		$order = isset( $_POST['order'] ) && is_array( $_POST['order'] ) ? array_map( 'absint', wp_unslash( $_POST['order'] ) ) : [];
+		$order = array_values( array_filter( $order ) );
+		if ( [] === $order ) {
+			wp_send_json_error( [ 'message' => 'empty' ], 400 );
+		}
+		$updated = self::apply_order( $order );
+		AuditBridge::log( 'reorder', 'section', 0, [], [ 'count' => $updated ], get_current_user_id() );
+		wp_send_json_success( [ 'updated' => $updated ] );
+	}
+
+	/**
+	 * Setzt menu_order (10, 20, …) für die übergebene ID-Reihenfolge; nur `liw_section`-Posts.
+	 *
+	 * @param int[] $order
+	 * @return int Anzahl aktualisierter Abschnitte
+	 */
+	public static function apply_order( array $order ): int {
+		$position = 0;
+		$updated  = 0;
+		foreach ( $order as $post_id ) {
+			$post_id = (int) $post_id;
+			if ( LiwSectionCpt::POST_TYPE !== get_post_type( $post_id ) ) {
+				continue;
+			}
+			$position += 10;
+			wp_update_post( [ 'ID' => $post_id, 'menu_order' => $position ] );
+			$updated++;
+		}
+		return $updated;
+	}
 
 	/** Freigabeworkflow §19: Entwurf → Prüfung → freigegeben → veröffentlicht. */
 	private const WORKFLOW_STATUSES = [ 'draft', 'pending', LiwSectionCpt::STATUS_APPROVED, 'publish' ];
@@ -233,7 +281,12 @@ final class ContentBoardPage {
 			'orderby'        => [ 'menu_order' => 'ASC', 'title' => 'ASC' ],
 		] );
 
-		echo '<table class="widefat striped"><thead><tr>';
+		echo '<p class="description">' . esc_html__( 'Zeilen per Ziehgriff (↕) verschieben, um die Reihenfolge auf der Landingpage zu ändern (wird sofort gespeichert).', 'liebherr-interface-world' ) . '</p>';
+		printf(
+			'<table class="widefat striped" data-liw-reorder="1" data-liw-nonce="%s">',
+			esc_attr( wp_create_nonce( self::REORDER_NONCE ) )
+		);
+		echo '<thead><tr>';
 		foreach ( [ 'Reihenfolge', 'Code', 'Titel', 'Status', 'Aktionen' ] as $column ) {
 			echo '<th>' . esc_html( $column ) . '</th>';
 		}
@@ -245,8 +298,8 @@ final class ContentBoardPage {
 
 		foreach ( $posts as $post ) {
 			$status = $post->post_status;
-			echo '<tr>';
-			echo '<td>' . esc_html( (string) $post->menu_order ) . '</td>';
+			printf( '<tr data-liw-id="%d">', (int) $post->ID );
+			echo '<td><span class="liw-drag-handle" title="' . esc_attr__( 'Ziehen zum Sortieren', 'liebherr-interface-world' ) . '" aria-hidden="true">↕</span> <span class="liw-order-num">' . esc_html( (string) $post->menu_order ) . '</span></td>';
 			echo '<td>' . esc_html( (string) get_post_meta( $post->ID, SectionBlueprint::META_CODE, true ) ?: '–' ) . '</td>';
 			echo '<td>' . esc_html( get_the_title( $post ) ?: __( '(ohne Titel)', 'liebherr-interface-world' ) ) . '</td>';
 			echo '<td>' . esc_html( self::STATUS_LABELS[ $status ] ?? $status ) . '</td>';
@@ -257,6 +310,19 @@ final class ContentBoardPage {
 			$preview_link = 'publish' === $status ? get_permalink( $post ) : get_preview_post_link( $post );
 			if ( is_string( $preview_link ) && '' !== $preview_link ) {
 				printf( ' · <a href="%s" target="_blank" rel="noopener">%s</a>', esc_url( $preview_link ), esc_html__( 'Vorschau', 'liebherr-interface-world' ) );
+				// Vorschau je Sprache (§19): Core-Sprachsteuerung via ?lang=xx.
+				$langs = LanguageBridge::active_langs();
+				if ( count( $langs ) > 1 ) {
+					$lang_links = [];
+					foreach ( $langs as $lang ) {
+						$lang_links[] = sprintf(
+							'<a href="%s" target="_blank" rel="noopener">%s</a>',
+							esc_url( add_query_arg( 'lang', $lang, $preview_link ) ),
+							esc_html( strtoupper( (string) $lang ) )
+						);
+					}
+					echo ' <span class="liw-preview-langs">(' . implode( ' · ', $lang_links ) . ')</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- je Link oben escaped.
+				}
 			}
 
 			echo ' · <form method="post" class="liw-row-form--inline">';

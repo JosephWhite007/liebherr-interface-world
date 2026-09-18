@@ -61,6 +61,7 @@ final class Bootstrap {
 		if ( is_admin() ) {
 			AdminMenu::register();
 			AdminAssets::register();
+			Admin\Pages\ContentBoardPage::register(); // AJAX-Reorder (§19).
 		}
 
 		add_action( 'admin_notices', [ self::class, 'maybe_show_permalink_notice' ] );
