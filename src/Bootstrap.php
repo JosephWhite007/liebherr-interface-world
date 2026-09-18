@@ -19,6 +19,7 @@ use Liebherr\InterfaceWorld\Admin\AdminMenu;
 use Liebherr\InterfaceWorld\Connection\ConnectionMapView;
 use Liebherr\InterfaceWorld\Contact\ContactExporter;
 use Liebherr\InterfaceWorld\Contact\ContactForm;
+use Liebherr\InterfaceWorld\Contact\ContactRetention;
 use Liebherr\InterfaceWorld\CoreBridge\LanguageBridge;
 use Liebherr\InterfaceWorld\CoreBridge\MediaBridge;
 use Liebherr\InterfaceWorld\CoreBridge\SeoBridge;
@@ -47,6 +48,7 @@ final class Bootstrap {
 		OnboardingForm::register();
 		ContactForm::register();
 		ContactExporter::register();
+		ContactRetention::register();
 		ConnectionMapView::register();
 		SectionGraphicView::register();
 		HeaderView::register();

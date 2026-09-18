@@ -196,6 +196,11 @@ liw_assert( 'leeres alt="" zählt als fehlend', 1 === $cia( '<img src="a.jpg" al
 liw_assert( 'gemischt: 2 ohne, 1 mit → 2', 2 === $cia( '<img src="1.jpg"><img alt="ok" src="2.jpg"><img src="3.jpg" alt="">' ), $checks, $failures );
 liw_assert( 'kein Bild → 0', 0 === $cia( '<p>nur Text</p>' ), $checks, $failures );
 
+// 2j. Rate-Limit-Bridge (Etappe 7, SEC-004) – ohne Core Graceful Degradation (nicht blockieren).
+echo "-- Rate-Limit-Bridge (alpha.33) --\n";
+require_once $root . '/src/CoreBridge/RateLimitBridge.php';
+liw_assert( 'allow() ohne Core → true (Graceful Degradation)', true === \Liebherr\InterfaceWorld\CoreBridge\RateLimitBridge::allow( 'contact' ), $checks, $failures );
+
 // 3. strict_types=1 in jeder src/-Datei (Coding Standard, CLAUDE.md Abschnitt 5).
 echo "-- Coding Standard --\n";
 $iterator2 = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $root . '/src', FilesystemIterator::SKIP_DOTS ) );

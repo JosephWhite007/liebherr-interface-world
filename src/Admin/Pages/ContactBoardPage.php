@@ -50,6 +50,7 @@ final class ContactBoardPage {
 		}
 
 		self::render_export();
+		self::render_retention();
 		self::render_table();
 		echo '</div>';
 	}
@@ -57,10 +58,22 @@ final class ContactBoardPage {
 	/** @return array{class:string,message:string}|null */
 	private static function maybe_handle_submit(): ?array {
 		$action = isset( $_POST['liw_action'] ) ? sanitize_key( wp_unslash( $_POST['liw_action'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce unten geprüft.
-		if ( ! in_array( $action, [ 'set_status', 'delete' ], true ) ) {
+		if ( ! in_array( $action, [ 'set_status', 'delete', 'set_retention' ], true ) ) {
 			return null;
 		}
 		check_admin_referer( self::NONCE_ACTION, self::NONCE_NAME );
+
+		if ( 'set_retention' === $action ) {
+			$days = absint( wp_unslash( $_POST['retention_days'] ?? 0 ) );
+			\Liebherr\InterfaceWorld\Contact\ContactRetention::set_days( $days );
+			return [
+				'class'   => 'notice-success',
+				'message' => 0 === $days
+					? __( 'Automatische Löschung deaktiviert.', 'liebherr-interface-world' )
+					/* translators: %d: Aufbewahrungsdauer in Tagen. */
+					: sprintf( __( 'Aufbewahrungsfrist gespeichert: %d Tage.', 'liebherr-interface-world' ), $days ),
+			];
+		}
 
 		$id = absint( wp_unslash( $_POST['request_id'] ?? 0 ) );
 
@@ -85,6 +98,19 @@ final class ContactBoardPage {
 		wp_nonce_field( \Liebherr\InterfaceWorld\Contact\ContactExporter::ACTION, \Liebherr\InterfaceWorld\Contact\ContactExporter::NONCE_NAME );
 		submit_button( __( 'Als CSV exportieren (§24)', 'liebherr-interface-world' ), 'secondary', 'submit', false );
 		echo ' <span class="description">' . esc_html__( 'Enthält personenbezogene Daten inkl. Einwilligungen (Version/Zeit). Nur zweckgebunden verarbeiten, sicher ablegen und nach Gebrauch löschen (DSGVO).', 'liebherr-interface-world' ) . '</span>';
+		echo '</form>';
+	}
+
+	/** SEC-007/§24: konfigurierbare Aufbewahrungsfrist (automatische Löschung per täglichem Cron). */
+	private static function render_retention(): void {
+		$days = \Liebherr\InterfaceWorld\Contact\ContactRetention::days();
+		echo '<form method="post" style="margin:12px 0">';
+		wp_nonce_field( self::NONCE_ACTION, self::NONCE_NAME );
+		echo '<input type="hidden" name="liw_action" value="set_retention" />';
+		echo '<label for="liw-retention">' . esc_html__( 'Aufbewahrungsfrist (Tage, 0 = keine automatische Löschung):', 'liebherr-interface-world' ) . '</label> ';
+		printf( '<input type="number" id="liw-retention" name="retention_days" min="0" max="3650" value="%d" style="width:90px" /> ', $days );
+		submit_button( __( 'Frist speichern', 'liebherr-interface-world' ), 'secondary', 'submit', false );
+		echo ' <span class="description">' . esc_html__( 'Datenminimierung (SEC-007): Anfragen älter als die Frist werden täglich automatisch mit ihren Einwilligungen gelöscht.', 'liebherr-interface-world' ) . '</span>';
 		echo '</form>';
 	}
 

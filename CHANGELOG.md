@@ -1,5 +1,30 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.33] – 2026-09-18 – Etappe 7: Sicherheit & Datenschutz (§23/§24)
+
+### Hinzugefügt
+- **Rate-Limiting öffentlicher Formulare** (SEC-004): Kontakt- und Onboarding-Formular drosseln
+  Absendungen je IP über den Core-`RateLimiter` (neuer `RateLimitBridge`, 5/min, `liw_`-Präfix).
+  Überschreitung → generische Fehlermeldung (keine internen Details, SEC-010). Ohne Core wird nicht
+  blockiert (Graceful Degradation, §14).
+- **Konfigurierbare Aufbewahrungsfrist** für Kontaktanfragen (SEC-007/§24, `ContactRetention`):
+  täglicher WP-Cron löscht Anfragen älter als N Tage inkl. Einwilligungen (auditiert); 0 = deaktiviert
+  (Standard). Einstellbar im Contact Board; Cron wird bei Deaktivierung entfernt.
+  - Neu: `ContactService::ids_older_than()`.
+
+### Geprüft/Dokumentiert (bereits erfüllt)
+- **Upload-Härtung (SEC-009):** `PartnerDocumentService::upload()` prüft bereits Größe, doppelten
+  MIME (Dateiname via `wp_check_filetype` **und** Inhalt via `finfo`) gegen eine Whitelist und legt in
+  einem gegen Direktzugriff geschützten Verzeichnis ab – durch Selbsttest abgesichert.
+- **Fehlermeldungs-Hygiene (SEC-010):** öffentliche Formulare geben nur generische Status
+  (success/error) aus, keine internen Pfade/Details.
+- **Security-Header (SEC-008):** bewusst Plattform-/Serveraufgabe (CSP/HSTS „nach Plattformstandard");
+  im Modul nicht gesetzt, um Konflikte zu vermeiden (dokumentiert).
+
+### Hinweise
+- Verifikation: `php -l`; `tests/run-tests.php` 174/174, `scripts/liw-selftest.php` 177/177 im
+  Docker-Container.
+
 ## [0.1.0-alpha.32] – 2026-09-18 – Etappe 6: SEO-Rest (§21) & Sprach-Release-Readiness (LANG-006)
 
 ### Hinzugefügt

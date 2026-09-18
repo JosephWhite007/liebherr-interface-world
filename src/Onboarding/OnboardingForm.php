@@ -125,6 +125,12 @@ final class OnboardingForm {
 			exit;
 		}
 
+		// Rate-Limit (SEC-004): zu viele Absendungen je IP → generische Fehlermeldung (SEC-010).
+		if ( ! \Liebherr\InterfaceWorld\CoreBridge\RateLimitBridge::allow( 'onboarding' ) ) {
+			wp_safe_redirect( add_query_arg( 'liw_onboarding', 'error', $redirect ) );
+			exit;
+		}
+
 		$result = OnboardingService::submit_request( [
 			'name'                 => wp_unslash( $_POST['name'] ?? '' ),
 			'contact_email'        => wp_unslash( $_POST['contact_email'] ?? '' ),

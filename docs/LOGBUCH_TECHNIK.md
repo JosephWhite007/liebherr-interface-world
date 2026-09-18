@@ -8,6 +8,27 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · Etappe 7: Rate-Limit + Retention gebaut, Upload/Headers bereits/Plattform (0.1.0-alpha.33)
+
+**Frage/Kontext.** §23/§24: Rate-Limiting (SEC-004), Uploads (SEC-009), Datenminimierung/Löschfristen
+(SEC-007), Security-Header (SEC-008), Fehlermeldungs-Hygiene (SEC-010). Was bauen, was ist schon da,
+was gehört zur Plattform?
+
+**Befund/Entscheidungen (Claude, Kategorie B).**
+- **SEC-004 gebaut:** `RateLimitBridge` um Core-`RateLimiter::check()`; Kontakt-/Onboarding-Formular
+  drosseln je IP (5/min). Ohne Core kein Blockieren (Graceful Degradation, §14). Überschreitung →
+  generischer Fehlerstatus (SEC-010, keine Details).
+- **SEC-007 gebaut:** `ContactRetention` (Option + täglicher Cron) löscht Anfragen älter als N Tage
+  inkl. Einwilligungen (auditiert); 0 = aus (bewusster Default, keine stille Löschung). Einstellung im
+  Contact Board; Cron-Cleanup bei Deaktivierung.
+- **SEC-009 bereits erfüllt:** `PartnerDocumentService::upload()` prüft Größe + doppelten MIME
+  (Dateiname + finfo) gegen Whitelist, geschütztes Verzeichnis. Nicht neu gebaut, nur per Selbsttest
+  abgesichert (keine Doppelentwicklung).
+- **SEC-008 = Plattform:** CSP/HSTS „nach Plattformstandard" – im Modul NICHT gesetzt (Konfliktvermeidung,
+  konsistent mit B-7), dokumentiert.
+
+**Quelle/Version.** Release-Plan Etappe 7; Pflichtenheft §23/§24; Core `RateLimiter`; 0.1.0-alpha.33.
+
 ### 2026-09-18 · Etappe 6: Canonical via Filter, LANG-006-Readiness aus Core-Registry (0.1.0-alpha.32)
 
 **Frage/Kontext.** §21 fordert Canonical/OG je Sprache und korrekte Sitemap; LANG-006 ein

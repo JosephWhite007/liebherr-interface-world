@@ -12,6 +12,22 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.33 – Etappe 7: Sicherheit & Datenschutz (§23/§24)
+
+**Neu:** `src/CoreBridge/RateLimitBridge.php` (Wrapper um Core-`RateLimiter::check()`, Graceful
+Degradation), `src/Contact/ContactRetention.php` (Option `liw_contact_retention_days`, Cron
+`liw_contact_retention_cron`, `run()`/`days()`/`set_days()`/`unschedule()`).
+**Geändert:** `src/Contact/ContactForm.php` + `src/Onboarding/OnboardingForm.php` (Rate-Limit nach
+Honeypot), `src/Contact/ContactService.php` (`ids_older_than()`), `src/Admin/Pages/ContactBoardPage.php`
+(Retention-Formular + `set_retention`-Handler), `src/Bootstrap.php` (ContactRetention::register),
+`liebherr-interface-world.php` (deactivate → ContactRetention::unschedule, Version), `tests/run-tests.php`
+(+1), `scripts/liw-selftest.php` ([8] +9), `CHANGELOG.md`, `docs/LIW_TODO.md`, `docs/LOGBUCH_TECHNIK.md`,
+`src/Admin/Pages/HandbookPage.php`.
+**Verifiziert (bereits erfüllt):** Upload-Härtung SEC-009 in `PartnerDocumentService::upload()`
+(finfo+Whitelist+Größe), Fehlermeldungs-Hygiene SEC-010. Security-Header SEC-008 = Plattform (nicht
+im Modul).
+**Prüfung:** `php -l`; `tests/run-tests.php` 174/174, `scripts/liw-selftest.php` 177/177.
+
 ## 0.1.0-alpha.32 – Etappe 6: SEO-Rest & Sprach-Release-Readiness (LANG-006)
 
 **Neu:** `src/Admin/Pages/LanguageBoardPage.php` (Readiness-Lese-Ansicht, Capability

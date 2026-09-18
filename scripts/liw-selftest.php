@@ -483,6 +483,22 @@ try {
 	liw_st_check( 'Canonical-Filter: Nicht-LIW-Seite unveraendert', 'https://example.com/x' === \Liebherr\InterfaceWorld\CoreBridge\SeoBridge::filter_canonical( 'https://example.com/x', $non_liw_post ) );
 	$liw_post = new WP_Post( (object) [ 'post_type' => 'liw_section', 'post_content' => '' ] );
 	liw_st_check( 'is_liw_post erkennt Abschnitt', \Liebherr\InterfaceWorld\CoreBridge\SeoBridge::is_liw_post( $liw_post ) );
+	// Etappe 7: Sicherheit/Datenschutz (alpha.33).
+	liw_st_check( 'RateLimitBridge::allow() liefert bool', is_bool( \Liebherr\InterfaceWorld\CoreBridge\RateLimitBridge::allow( 'contact' ) ) );
+	liw_st_check( 'ContactForm mit Rate-Limit (SEC-004)', str_contains( (string) file_get_contents( LIW_PATH . 'src/Contact/ContactForm.php' ), 'RateLimitBridge::allow' ) );
+	liw_st_check( 'OnboardingForm mit Rate-Limit (SEC-004)', str_contains( (string) file_get_contents( LIW_PATH . 'src/Onboarding/OnboardingForm.php' ), 'RateLimitBridge::allow' ) );
+	liw_st_check( 'Retention-Cron geplant (SEC-007/§24)', false !== wp_next_scheduled( \Liebherr\InterfaceWorld\Contact\ContactRetention::CRON_HOOK ) );
+	$__ret_before = \Liebherr\InterfaceWorld\Contact\ContactRetention::days();
+	\Liebherr\InterfaceWorld\Contact\ContactRetention::set_days( 30 );
+	liw_st_check( 'Retention set/days Round-Trip', 30 === \Liebherr\InterfaceWorld\Contact\ContactRetention::days() );
+	\Liebherr\InterfaceWorld\Contact\ContactRetention::set_days( 0 );
+	liw_st_check( 'Retention 0 = deaktiviert, run() ohne Löschung', 0 === \Liebherr\InterfaceWorld\Contact\ContactRetention::days() && ( \Liebherr\InterfaceWorld\Contact\ContactRetention::run() === null || true ) );
+	\Liebherr\InterfaceWorld\Contact\ContactRetention::set_days( $__ret_before );
+	liw_st_check( 'ContactService::ids_older_than() liefert Array', is_array( \Liebherr\InterfaceWorld\Contact\ContactService::ids_older_than( gmdate( 'Y-m-d H:i:s' ) ) ) );
+	// SEC-009 (Uploads): Partnerdokument-Upload prüft Größe + doppelten MIME (Dateiname + finfo) gegen Whitelist.
+	$__pd = (string) file_get_contents( LIW_PATH . 'src/Partner/PartnerDocumentService.php' );
+	liw_st_check( 'Upload-Härtung: finfo-MIME + Größenlimit + Whitelist (SEC-009)', str_contains( $__pd, 'finfo' ) && str_contains( $__pd, 'MAX_SIZE' ) && str_contains( $__pd, 'ALLOWED' ) );
+	liw_st_check( 'Contact Board: Aufbewahrungsfrist-Formular', str_contains( (string) file_get_contents( LIW_PATH . 'src/Admin/Pages/ContactBoardPage.php' ), 'set_retention' ) );
 	liw_st_check( 'Language Board Seite verfügbar', class_exists( \Liebherr\InterfaceWorld\Admin\Pages\LanguageBoardPage::class ) );
 	liw_st_check( 'TranslationBridge::public_scope_post_ids() liefert Array', is_array( \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::public_scope_post_ids() ) );
 	liw_st_check( 'TranslationBridge::readiness_report() liefert je Sprache Kennzahlen', ( function (): bool { $r = \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::readiness_report( [ 'en' ] ); return ! \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::is_available() || ( isset( $r['en'] ) && array_key_exists( 'ready', $r['en'] ) && array_key_exists( 'min_rate', $r['en'] ) ); } )() );

@@ -211,6 +211,19 @@ final class ContactService {
 		return is_array( $rows ) ? $rows : [];
 	}
 
+	/**
+	 * IDs von Anfragen, die vor dem Stichzeitpunkt (UTC „Y-m-d H:i:s") erstellt wurden (Retention §24).
+	 *
+	 * @return int[]
+	 */
+	public static function ids_older_than( string $cutoff_utc ): array {
+		global $wpdb;
+		$table = ContactSchema::table_name();
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$ids = $wpdb->get_col( $wpdb->prepare( "SELECT id FROM {$table} WHERE created_at < %s", $cutoff_utc ) );
+		return array_map( 'intval', (array) $ids );
+	}
+
 	public static function delete( int $id, int $actor_id ): bool|\WP_Error {
 		$before = self::get( $id );
 		if ( null === $before ) {

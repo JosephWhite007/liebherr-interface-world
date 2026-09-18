@@ -130,6 +130,9 @@ Stand: 18.09.2026 (0.1.0-alpha.26).
   interaktive Vertiefung ist Feature-Flag/Folgeetappe (AC-002).
 - Audit Board (Lese-Ansicht Core-Audit, gefiltert auf liw_) + Interface-Lifecycle-Status-UI (alpha.31).
   Release Board bewusst nicht eigenständig → Core-Deployment-Manager (Variante A).
+- Sicherheit/Datenschutz (alpha.33): Rate-Limiting der öffentlichen Formulare (SEC-004),
+  konfigurierbare Aufbewahrungsfrist + Cron für Kontaktanfragen (SEC-007/§24). Upload-Härtung
+  (SEC-009) war bereits erfüllt; Security-Header (SEC-008) = Plattform/Server (dokumentiert).
 - Ankernavigation/Sprungleiste der Landingpage (alpha.23).
 - Aktive Hervorhebung des sichtbaren Abschnitts in der Sprungleiste (alpha.26): enqueuetes
   Skript `assets/js/liebherr-frontend.js` (IntersectionObserver, `aria-current`/`is-current`),

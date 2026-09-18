@@ -140,6 +140,12 @@ final class ContactForm {
 			exit;
 		}
 
+		// Rate-Limit (SEC-004): zu viele Absendungen je IP → generische Fehlermeldung (keine Details, SEC-010).
+		if ( ! \Liebherr\InterfaceWorld\CoreBridge\RateLimitBridge::allow( 'contact' ) ) {
+			wp_safe_redirect( add_query_arg( self::STATE_PARAM, 'error', $redirect ) );
+			exit;
+		}
+
 		$interests = isset( $_POST['interests'] ) && is_array( $_POST['interests'] ) ? array_map( 'sanitize_key', wp_unslash( $_POST['interests'] ) ) : [];
 
 		$result = ContactService::submit_request( [
