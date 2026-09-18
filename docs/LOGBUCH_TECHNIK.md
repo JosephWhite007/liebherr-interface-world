@@ -8,6 +8,48 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · Etappe 1: CI-Tokens als Brand Board + Inline-Style, neutrale Fallbacks (0.1.0-alpha.27)
+
+**Frage/Kontext.** Release-Plan freigegeben („ok, wir können loslegen"). Etappe 1 = CI-Fundament
+(§10–12). Zwei Entscheidungen: (1) Wo/wie kommen die Marken-Tokens ins Frontend, ohne Inline-Style
+und ohne hart codierte Markenwerte? (2) Womit füllen, solange kein Liebherr-Brand-Kit freigegeben ist?
+
+**Optionen (1).** (a) Werte in `liebherr-frontend.css` hart codieren – verstößt gegen §11/§14
+(keine Markenwerte im Code) und ist nicht administrierbar; (b) dynamische `:root`-Variablen aus einer
+Option über `wp_add_inline_style()` am bestehenden Frontend-Handle. **(2).** (a) ARALIYA-Creme-Tokens
+weiterverwenden; (b) neutrale, industrielle Fallbacks; (c) echtes Liebherr-Gelb schon eintragen.
+
+**Entscheidung (Claude, Kategorie B).** (1b) + (2b). `BrandTokens` als Service (reine, testbare
+`sanitize()`/`css_from()`), `BrandBoardPage` als administrierbares Board (Capability
+`liw_manage_content`, Nonce, Audit). Ausgabe über `wp_add_inline_style()` – der von WordPress
+sanktionierte Weg für dynamische Tokens, kein hand­geschriebenes Inline-CSS im Template, kein
+Markenwert im Code (§11/§14). Fallbacks bewusst **markenneutral** (nicht Liebherr-Gelb): CI-002
+verbietet erfundenes/vorweggenommenes Branding; das echte Gelb `#ffd000` steht in
+`docs/LIW_BRAND_TOKENS.md` bereit und wird erst nach dokumentierter Freigabe im Board eingetragen.
+Ausbruchschutz in `css_from()` (Entfernen von `{}`/`;`/`<`/`>`) gegen CSS-/`</style>`-Injektion.
+Logo nur aus im Media Board freigegebenen Assets (CI-005).
+
+**Quelle/Version.** Release-Plan `docs/LIW_RELEASEPLAN.md`; Pflichtenheft §10–12/§14; 0.1.0-alpha.27.
+
+### 2026-09-18 · Marken-Assets als CI-005-Kandidaten statt Verzicht bis zur Freigabe
+
+**Frage/Kontext.** §34 nennt Logo, Brand-Manual, Bildmaterial als „vor finaler Freigabe offen". JW:
+„Die müssen wir noch erstellen – jetzt. Analysiere die Liebherr-Welt-Seite, sammle die nötigen Assets
+und lege sie ins Media Board; Freigabe holen wir uns dann von Liebherr."
+
+**Optionen.** (a) Nichts tun bis Liebherr liefert; (b) Assets von liebherr.com als **Kandidaten** in den
+CI-005-Freigabeworkflow des Media Boards laden (Quelle+Copyright, `approved = 0`), Werte/Typo als
+Referenz festhalten, Verwendung erst nach dokumentierter Freigabe.
+
+**Entscheidung (JW-Auftrag, Umsetzung Claude).** (b). Genau dafür existiert der Media-Board-Workflow.
+Idempotenter Import (`scripts/liw-import-brand-assets.php`): 11 Assets (Logo-SVG, 5 Webfonts, 5 Bilder),
+alle `_liw_media_approved = 0`, Quelle+Copyright gesetzt. Werte **nicht erfunden**, sondern aus Liebherrs
+eigenem Auftritt abgelesen (`docs/LIW_BRAND_TOKENS.md`). Kein erfundenes Logo/Farbschema (CI-002),
+keine Freigabe-Behauptung (Markenschutz), keine öffentliche Verwendung vor `approved = 1`. Schriften sind
+lizenziert → Einbindung erst nach Liebherr-Lizenz.
+
+**Quelle/Version.** JW-Auftrag 18.09.2026; Pflichtenheft §10–12/§34, CI-002/005; Media-Board (MediaBridge).
+
 ### 2026-09-18 · Aktive Anker-Hervorhebung der Sprungleiste – enqueuetes Skript statt Verzicht (0.1.0-alpha.26)
 
 **Frage/Kontext.** Fortsetzung aus dem Chat, gewählte „Scheibe" (JW „weiter mit 1"): die seit alpha.18

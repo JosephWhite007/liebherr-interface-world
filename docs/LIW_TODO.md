@@ -12,6 +12,16 @@ Stand: 18.09.2026 (0.1.0-alpha.26).
 
 ## Fachlich offen (Pflichtenheft)
 
+- **CI/Branding & Marken-Freigabe (§10–12, §34, CI-002/005).** Die benötigten Liebherr-Assets
+  (Logo-CI-SVG, Webfonts LiebherrHead/LiebherrText, 5 Baumaschinen-/Hero-Motive) wurden am
+  18.09.2026 von liebherr.com als **CI-005-Kandidaten** ins Media Board importiert
+  (`scripts/liw-import-brand-assets.php`, alle `_liw_media_approved = 0`). Erfasste Farb-/
+  Typo-Token: `docs/LIW_BRAND_TOKENS.md`. Das **Brand Board** (Design-Tokens, Logo-Auswahl) ist mit
+  alpha.27 gebaut und läuft mit neutralen Fallbacks. **Launch-Blocker/offen:** dokumentierte
+  Liebherr-Freigabe je Asset (dann im Media Board `approved = 1`) und Schrift-Lizenz; erst danach
+  im Brand Board die Originalwerte aus `docs/LIW_BRAND_TOKENS.md` eintragen und Logo auswählen.
+  *Quelle: Pflichtenheft §10–12/§34; CHANGELOG alpha.26/alpha.27.*
+
 - **Content Board (§19) – über das Grundgerüst hinaus.** Seit alpha.13 gibt es Übersicht,
   Freigabeworkflow (Entwurf → Prüfung → freigegeben → veröffentlicht) und native
   Editor-/Revisions-Anbindung für `liw_section`. Bewusst noch nicht Teil der Auslieferung

@@ -14,6 +14,22 @@
  * @since   0.1.0-alpha.9
  */
 
+/* ── CI-Tokens (§10–12): neutrale Fallbacks. Das Brand Board überschreibt diese zur Laufzeit
+   per wp_add_inline_style() (BrandTokens::css_root()). Kein erfundenes Liebherr-Branding
+   (CI-002) – Originalwerte erst nach dokumentierter Freigabe. ── */
+:root {
+	--brand-primary: #3a3f45;
+	--brand-secondary: #6b7278;
+	--brand-surface: #ffffff;
+	--brand-text: #1f1f1f;
+	--brand-muted: #666666;
+	--brand-border: #d9d9d9;
+	--font-heading: Arial, Helvetica, sans-serif;
+	--font-body: Arial, Helvetica, sans-serif;
+	--radius-control: 2px;
+	--content-max: 1440px;
+}
+
 /* ── Utility: visuell verstecktes Feld (Honeypot, ANNAHME-LIW-5 jetzt eingelöst) ── */
 .liw-visually-hidden {
 	position: absolute !important;

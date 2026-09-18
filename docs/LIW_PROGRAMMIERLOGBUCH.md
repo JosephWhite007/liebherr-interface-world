@@ -12,6 +12,34 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.27 – Etappe 1: CI/Brand-Fundament (Design-Tokens)
+
+**Neu:** `src/Branding/BrandTokens.php` (Token-Service: `defaults()` neutrale Fallbacks,
+`get()/save()` über Option `liw_brand_tokens`, reine `sanitize()` + `css_from()/css_root()`,
+`logo_id()`), `src/Admin/Pages/BrandBoardPage.php` (Admin-Board, Capability `liw_manage_content`,
+Nonce `liw_brand_board_save`, AuditBridge::log('update','brand_tokens',…), Logo-Auswahl aus
+Rolle `logo`, CSS-Vorschau).
+**Geändert:** `src/Admin/AdminMenu.php` (Untermenü „🎨 Brand Board" vor To-Dos, use-Import),
+`src/Frontend/FrontendAssets.php` (`wp_add_inline_style(HANDLE, BrandTokens::css_root())`),
+`assets/css/liebherr-frontend.css` (`:root`-Fallbacks `--brand-*`), `tests/run-tests.php`
+(Abschnitt Brand Tokens, +9), `scripts/liw-selftest.php` ([8] +5), `docs/LIW_TODO.md`,
+`docs/LIW_RELEASEPLAN.md` (neu, Release-Plan), `CHANGELOG.md`, `docs/LOGBUCH_TECHNIK.md`,
+`src/Admin/Pages/HandbookPage.php`, `liebherr-interface-world.php` (Version).
+**Prüfung:** `php -l` je Datei; `tests/run-tests.php` 132/132, `scripts/liw-selftest.php` 134/134
+im Docker-Container. PSR-4: neuer Namespace `Branding` → `src/Branding/` (Autoloader base_dir).
+
+## 0.1.0-alpha.26 (Nachtrag 18.09.2026) – Marken-Assets als CI-005-Kandidaten importiert
+
+**Neu:** `scripts/liw-import-brand-assets.php` (idempotenter CLI-Import, `--confirm`; lädt Logo,
+Webfonts und Bildmotive server-seitig von liebherr.com in die Medienbibliothek, setzt
+`_liw_media_copyright`, `_liw_media_source`, `_liw_media_approved = 0`, `_liw_media_role`, Alt-Text;
+temporäres `upload_mimes` für SVG/woff2 nur im Lauf; Idempotenz über Quelle-URL in `_liw_media_source`),
+`docs/LIW_BRAND_TOKENS.md` (erfasste Farb-/Typo-Token als Referenz, Freigabe ausstehend).
+**Geändert:** `docs/LIW_TODO.md` (CI/Branding-Punkt), `docs/LOGBUCH_TECHNIK.md`.
+**Datenoperation:** Lauf im Dev-Container am 18.09.2026 → 11 Kandidaten (#2149–#2159), alle
+`approved = 0`. Keine Code-/Schema-Änderung am Plugin, kein Versionssprung. Verwendung erst nach
+dokumentierter Liebherr-Freigabe (CI-002/CI-005).
+
 ## 0.1.0-alpha.26 – Landingpage: aktive Anker-Hervorhebung der Sprungleiste
 
 **Neu:** `assets/js/liebherr-frontend.js` (erstes Frontend-Skript des Plugins; IIFE, ES5,

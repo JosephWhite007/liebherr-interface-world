@@ -135,6 +135,27 @@ liw_assert( 'aktiver Link erhält aria-current + Klasse is-current', str_contain
 liw_assert( 'kein Inline-Handler/eval im Skript', ! preg_match( '/\beval\s*\(/', $anchornav_src ), $checks, $failures );
 liw_assert( 'CSS enthält Aktiv-Zustand .liw-landingpage__nav-link.is-current', str_contains( $frontend_css, '.liw-landingpage__nav-link.is-current' ), $checks, $failures );
 
+// 2f. Brand Tokens (Etappe 1, CI §10–12) – reine Logik ohne WordPress.
+echo "-- Brand Tokens (alpha.27) --\n";
+require_once $root . '/src/Branding/BrandTokens.php';
+$bt_defaults = \Liebherr\InterfaceWorld\Branding\BrandTokens::defaults();
+$hex_ok = true;
+foreach ( [ 'primary', 'secondary', 'surface', 'text', 'muted', 'border' ] as $k ) {
+	if ( ! preg_match( '/^#[0-9a-f]{6}$/i', (string) ( $bt_defaults[ $k ] ?? '' ) ) ) { $hex_ok = false; }
+}
+liw_assert( 'Fallback-Farben sind gültige #rrggbb', $hex_ok, $checks, $failures );
+liw_assert( 'Fallback ist markenneutral (kein Liebherr-Gelb #ffd000)', '#ffd000' !== strtolower( (string) $bt_defaults['primary'] ), $checks, $failures );
+$san = \Liebherr\InterfaceWorld\Branding\BrandTokens::sanitize( [ 'primary' => '#ffd000', 'secondary' => 'NICHT-HEX', 'heading_font' => 'LiebherrHead}; body{display:none', 'radius' => '4px', 'content_max' => '9999vw', 'logo_id' => '42' ] );
+liw_assert( 'sanitize übernimmt gültiges Hex', '#ffd000' === $san['primary'], $checks, $failures );
+liw_assert( 'sanitize verwirft ungültiges Hex (Fallback)', $san['secondary'] === $bt_defaults['secondary'], $checks, $failures );
+liw_assert( 'sanitize entfernt CSS-Injektion aus Schrift', ! str_contains( (string) $san['heading_font'], '}' ) && ! str_contains( (string) $san['heading_font'], '{' ) && ! str_contains( (string) $san['heading_font'], ';' ), $checks, $failures );
+liw_assert( 'sanitize akzeptiert Radius px, verwirft ungültige Breite', '4px' === $san['radius'] && $san['content_max'] === $bt_defaults['content_max'], $checks, $failures );
+liw_assert( 'sanitize logo_id als int', 42 === $san['logo_id'], $checks, $failures );
+$css = \Liebherr\InterfaceWorld\Branding\BrandTokens::css_from( $bt_defaults );
+liw_assert( 'css_from liefert :root mit --brand-primary und --content-max', str_starts_with( $css, ':root{' ) && str_contains( $css, '--brand-primary:' ) && str_contains( $css, '--content-max:' ), $checks, $failures );
+$css_evil = \Liebherr\InterfaceWorld\Branding\BrandTokens::css_from( [ 'primary' => '#000000}html{display:none' ] );
+liw_assert( 'css_from kann nicht aus :root ausbrechen', 1 === substr_count( $css_evil, '{' ) && 1 === substr_count( $css_evil, '}' ), $checks, $failures );
+
 // 3. strict_types=1 in jeder src/-Datei (Coding Standard, CLAUDE.md Abschnitt 5).
 echo "-- Coding Standard --\n";
 $iterator2 = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $root . '/src', FilesystemIterator::SKIP_DOTS ) );

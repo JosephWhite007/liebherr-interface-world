@@ -1,5 +1,30 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.27] – 2026-09-18 – Etappe 1: CI/Brand-Fundament (Design-Tokens §10–12)
+
+### Hinzugefügt
+- **`src/Branding/BrandTokens.php`** – zentraler Design-Token-Service (Pflichtenheft §11):
+  neutrale, markenneutrale Fallbacks (kein erfundenes Liebherr-Branding, CI-002); Option
+  `liw_brand_tokens` überschreibt sie. Reine, unit-testbare `sanitize()` (Farben nur `#rrggbb`,
+  Schriftstacks auf sichere Zeichen begrenzt, Radius/Breite nur Zahl+Einheit, `logo_id` int) und
+  `css_from()`/`css_root()` (Ausgabe `:root{ --brand-* }`, ausbruchsicher gegen `{}`/`;`/`<`/`>`).
+- **`src/Admin/Pages/BrandBoardPage.php`** – Admin-Board „🎨 Brand Board (Design / CI)": pflegt
+  Primär-/Sekundär-/Flächen-/Text-/Muted-/Rahmenfarbe, Headline-/Text-Schrift, Radius,
+  Inhaltsbreite und Logo (Auswahl aus Media-Board-Assets der Rolle „logo"; nicht freigegebene
+  Logos werden im Frontend nicht ausgegeben, CI-005). Capability `liw_manage_content`, Nonce,
+  Audit (SEC-005), Live-Vorschau des ausgegebenen CSS-Blocks.
+- Frontend: `FrontendAssets::maybe_enqueue()` injiziert die Tokens via `wp_add_inline_style()`
+  (sanktionierter Weg für dynamische Tokens, kein hart codierter Markenwert in Komponenten, §11/§14).
+- `assets/css/liebherr-frontend.css`: `:root`-Fallback-Block der `--brand-*`-Variablen.
+- Selbsttests: `tests/run-tests.php` (Fallback-Validität, Markenneutralität, sanitize-Fälle,
+  css_from-Ausbruchschutz), `scripts/liw-selftest.php` [8] (Board vorhanden, css_root, Injektion).
+
+### Hinweise
+- Bis zur dokumentierten Liebherr-Freigabe (§34) gelten die neutralen Fallbacks. Danach die in
+  `docs/LIW_BRAND_TOKENS.md` erfassten Originalwerte im Brand Board eintragen und die Assets im
+  Media Board freigeben. Erste Etappe des Release-Plans (`docs/LIW_RELEASEPLAN.md`).
+- Verifikation: `php -l`; `tests/run-tests.php` 132/132 und `scripts/liw-selftest.php` 134/134 im Docker-Container.
+
 ## [0.1.0-alpha.26] – 2026-09-18 – Landingpage: aktive Hervorhebung des sichtbaren Abschnitts in der Sprungleiste
 
 ### Hinzugefügt

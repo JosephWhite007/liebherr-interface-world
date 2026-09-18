@@ -431,6 +431,12 @@ try {
 	liw_st_check( 'FrontendAssets registriert liebherr-frontend.js (Footer, LIW_VERSION)', str_contains( $liw_front_assets_src, "assets/js/liebherr-frontend.js" ) && str_contains( $liw_front_assets_src, 'wp_enqueue_script' ) );
 	liw_st_check( 'liebherr-frontend.js: IntersectionObserver + aria-current + is-current, an .liw-landingpage__nav gebunden', ( static function (): bool { $s = (string) file_get_contents( LIW_PATH . 'assets/js/liebherr-frontend.js' ); return str_contains( $s, 'IntersectionObserver' ) && str_contains( $s, 'aria-current' ) && str_contains( $s, 'is-current' ) && str_contains( $s, '.liw-landingpage__nav' ); } )() );
 	liw_st_check( 'liebherr-frontend.css: Aktiv-Zustand .liw-landingpage__nav-link.is-current', str_contains( (string) file_get_contents( LIW_PATH . 'assets/css/liebherr-frontend.css' ), '.liw-landingpage__nav-link.is-current' ) );
+	// Brand Board / CI-Tokens (alpha.27, Etappe 1).
+	liw_st_check( 'Brand Board Seite verfügbar', class_exists( \Liebherr\InterfaceWorld\Admin\Pages\BrandBoardPage::class ) );
+	liw_st_check( 'BrandTokens::css_root() liefert :root mit --brand-primary', str_starts_with( \Liebherr\InterfaceWorld\Branding\BrandTokens::css_root(), ':root{' ) && str_contains( \Liebherr\InterfaceWorld\Branding\BrandTokens::css_root(), '--brand-primary:' ) );
+	liw_st_check( 'BrandTokens-Fallback markenneutral (kein #ffd000 ohne Freigabe)', '#ffd000' !== strtolower( (string) \Liebherr\InterfaceWorld\Branding\BrandTokens::defaults()['primary'] ) );
+	liw_st_check( 'FrontendAssets injiziert Tokens via wp_add_inline_style', str_contains( $liw_front_assets_src, 'wp_add_inline_style' ) && str_contains( $liw_front_assets_src, 'BrandTokens::css_root' ) );
+	liw_st_check( 'liebherr-frontend.css enthält :root --brand-* Fallbacks', str_contains( (string) file_get_contents( LIW_PATH . 'assets/css/liebherr-frontend.css' ), '--brand-primary:' ) );
 
 	// ── [9] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
 	echo "\n[9] Programmierlogbuch / To-Dos\n";

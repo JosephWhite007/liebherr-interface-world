@@ -43,6 +43,11 @@ final class FrontendAssets {
 			LIW_VERSION
 		);
 
+		// CI-Tokens (§10–12): zentrale --brand-*-Variablen aus dem Brand Board (neutrale Fallbacks,
+		// bis Liebherr-Freigabe vorliegt). Sanktionierter Weg für dynamische Tokens, kein hart
+		// codierter Markenwert in Komponenten (§11/§14).
+		wp_add_inline_style( self::HANDLE, \Liebherr\InterfaceWorld\Branding\BrandTokens::css_root() );
+
 		// Aktive Hervorhebung des sichtbaren Abschnitts in der Sprungleiste (alpha.26):
 		// fortschreitende Verbesserung, im Footer, ohne Abhängigkeit, kein Inline-Code.
 		wp_enqueue_script(
