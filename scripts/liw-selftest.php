@@ -550,15 +550,40 @@ try {
 	liw_st_check( 'BrandTokens::brand_text() = Liebherr Interface Solutions (CI angewendet)', 'Liebherr Interface Solutions' === \Liebherr\InterfaceWorld\Branding\BrandTokens::brand_text() );
 	liw_st_check( '[liw_footer] zeigt die Wortmarke', str_contains( do_shortcode( '[liw_footer]' ), 'Liebherr Interface Solutions' ) );
 	liw_st_check( 'Vollbild-Seitenvorlage registriert + Datei vorhanden', array_key_exists( \Liebherr\InterfaceWorld\Frontend\PageTemplate::TEMPLATE, \Liebherr\InterfaceWorld\Frontend\PageTemplate::add_choice( [] ) ) && is_readable( LIW_PATH . 'templates/full-width.php' ) );
-	$__cw = get_page_by_path( 'interface-world' );
+	$__cw_id = \Liebherr\InterfaceWorld\Content\SitePages::interface_id();
+		$__cw    = $__cw_id > 0 ? get_post( $__cw_id ) : ( get_page_by_path( 'interface-solutions' ) ?: get_page_by_path( 'interface-world' ) );
 	liw_st_check( 'Traegerseite nutzt Vollbild-Vorlage', $__cw instanceof WP_Post && \Liebherr\InterfaceWorld\Frontend\PageTemplate::TEMPLATE === get_page_template_slug( $__cw->ID ) );
 	// Frontpage-Ansicht als erster Menü-Unterpunkt (alpha.40).
 	$__am = (string) file_get_contents( LIW_PATH . 'src/Admin/AdminMenu.php' );
-	liw_st_check( 'Menü: Frontpage-Ansicht + move_first verdrahtet', str_contains( $__am, 'Frontpage-Ansicht' ) && str_contains( $__am, 'move_first' ) && str_contains( $__am, 'front_url' ) );
-	liw_st_check( 'Frontpage-Link-Ziel existiert (Trägerseite auffindbar)', get_page_by_path( 'interface-world' ) instanceof WP_Post );
+	liw_st_check( 'Menü: Local Intelligence + Interface Solutions + move_first verdrahtet', str_contains( $__am, 'Local Intelligence' ) && str_contains( $__am, 'Interface Solutions' ) && str_contains( $__am, 'move_first' ) && str_contains( $__am, 'SitePages' ) );
+	liw_st_check( 'Frontpage-Link-Ziel existiert (Trägerseite über Registry auffindbar)', $__cw instanceof WP_Post );
 	liw_st_check( 'Language Board Seite verfügbar', class_exists( \Liebherr\InterfaceWorld\Admin\Pages\LanguageBoardPage::class ) );
 	liw_st_check( 'TranslationBridge::public_scope_post_ids() liefert Array', is_array( \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::public_scope_post_ids() ) );
 	liw_st_check( 'TranslationBridge::readiness_report() liefert je Sprache Kennzahlen', ( function (): bool { $r = \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::readiness_report( [ 'en' ] ); return ! \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::is_available() || ( isset( $r['en'] ) && array_key_exists( 'ready', $r['en'] ) && array_key_exists( 'min_rate', $r['en'] ) ); } )() );
+
+	// ── [8b] Liebherr Local Intelligence – Hauptseite (LI-Pflichtenheft §8, alpha.41) ──
+	echo "\n[8b] Local Intelligence – Hauptseite (11 Module)\n";
+	liw_st_check( 'Composite [liw_local_intelligence] registriert', shortcode_exists( 'liw_local_intelligence' ) );
+	foreach ( [ 'liw_li_hero', 'liw_li_vision', 'liw_li_flow', 'liw_simulation_world', 'liw_li_knowledge', 'liw_li_trust', 'liw_li_global', 'liw_li_usecases', 'liw_interface_bridge', 'liw_li_rollout', 'liw_li_contact', 'liw_context_nav' ] as $__sc ) {
+		liw_st_check( "Shortcode [{$__sc}] registriert", shortcode_exists( $__sc ) );
+	}
+	$__li = do_shortcode( '[liw_local_intelligence]' );
+	liw_st_check( 'Composite rendert alle Modul-Anker', str_contains( $__li, 'id="li-hero"' ) && str_contains( $__li, 'id="li-vision"' ) && str_contains( $__li, 'id="li-simulation"' ) && str_contains( $__li, 'id="li-bridge"' ) && str_contains( $__li, 'id="li-contact"' ) );
+	liw_st_check( 'Composite enthaelt Sprungleiste', str_contains( $__li, 'liw-li__nav' ) );
+	liw_st_check( 'Hero: Eyebrow + Dreiklang-Kurzzeile', str_contains( $__li, 'LIEBHERR LOCAL INTELLIGENCE' ) && str_contains( $__li, 'Simulieren. Verstehen. Entscheiden.' ) );
+	$__sim = do_shortcode( '[liw_simulation_world]' );
+	liw_st_check( 'Simulation: Tabs A/B/C + Demo-Kennzeichnung', str_contains( $__sim, 'data-liw-sim-tab="A"' ) && str_contains( $__sim, 'data-liw-sim-tab="B"' ) && str_contains( $__sim, 'data-liw-sim-tab="C"' ) && str_contains( $__sim, 'liw-li__demo-note' ) );
+	$__uc = do_shortcode( '[liw_li_usecases]' );
+	liw_st_check( 'Einsatzfelder: Filterleiste + sechs Karten', str_contains( $__uc, 'data-liw-usecase-filter' ) && 6 === substr_count( $__uc, 'data-liw-tag="' ) );
+	$__br = do_shortcode( '[liw_interface_bridge]' );
+	liw_st_check( 'Bruecke: CTA zu Interface Solutions vorhanden', str_contains( $__br, 'liw-cta--primary' ) && str_contains( $__br, 'Interface Solutions' ) );
+	liw_st_check( 'Content-Modell: defaults() hat elf Modul-Zweige', 11 === count( array_intersect( array_keys( \Liebherr\InterfaceWorld\Settings\LocalIntelligenceContent::defaults() ), [ 'hero','vision','flow','simulation','knowledge','trust','global','usecases','bridge','rollout','contact' ] ) ) );
+	liw_st_check( 'Content-Modell: sanitize([]) == defaults()', \Liebherr\InterfaceWorld\Settings\LocalIntelligenceContent::sanitize( [] ) === \Liebherr\InterfaceWorld\Settings\LocalIntelligenceContent::defaults() );
+	liw_st_check( 'SitePages-Resolver liefern Integer', is_int( \Liebherr\InterfaceWorld\Content\SitePages::li_id() ) && is_int( \Liebherr\InterfaceWorld\Content\SitePages::interface_id() ) );
+	liw_st_check( 'LegacyRedirect verfuegbar (301 Altroute)', class_exists( \Liebherr\InterfaceWorld\Frontend\LegacyRedirect::class ) );
+	liw_st_check( 'Local-Intelligence-Board verfuegbar', class_exists( \Liebherr\InterfaceWorld\Admin\Pages\LocalIntelligenceBoardPage::class ) );
+	liw_st_check( 'JS: Szenario-Schalter + Einsatzfeld-Filter', ( function (): bool { $j = (string) file_get_contents( LIW_PATH . 'assets/js/liebherr-frontend.js' ); return str_contains( $j, 'data-liw-sim' ) && str_contains( $j, 'data-liw-usecase-filter' ); } )() );
+	liw_st_check( 'CSS: .liw-li-Bloecke + reduzierte Bewegung', ( function (): bool { $c = (string) file_get_contents( LIW_PATH . 'assets/css/liebherr-frontend.css' ); return str_contains( $c, '.liw-li__hero' ) && str_contains( $c, 'prefers-reduced-motion' ); } )() );
 
 	// ── [9] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
 	echo "\n[9] Programmierlogbuch / To-Dos\n";

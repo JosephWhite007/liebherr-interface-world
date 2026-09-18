@@ -31,6 +31,8 @@ use Liebherr\InterfaceWorld\Frontend\FrontendAssets;
 use Liebherr\InterfaceWorld\Frontend\HeaderView;
 use Liebherr\InterfaceWorld\Frontend\HeroView;
 use Liebherr\InterfaceWorld\Frontend\LandingpageView;
+use Liebherr\InterfaceWorld\Frontend\LegacyRedirect;
+use Liebherr\InterfaceWorld\Frontend\LocalIntelligenceView;
 use Liebherr\InterfaceWorld\Frontend\SectionGraphicView;
 use Liebherr\InterfaceWorld\Frontend\WorldMapView;
 use Liebherr\InterfaceWorld\Onboarding\OnboardingForm;
@@ -59,6 +61,8 @@ final class Bootstrap {
 		ComponentViews::register();
 		WorldMapView::register();
 		LandingpageView::register();
+		LocalIntelligenceView::register(); // Hauptseite Local Intelligence (11 Module, LI-Pflichtenheft §8).
+		LegacyRedirect::register();        // 301 Altroute /interface-world/ → Unterseite (LI §3.2).
 		PartnerDocumentsView::register();
 		FrontendAssets::register();
 		Frontend\RocketCompat::register(); // WP-Rocket-RUCSS-Safelist für .liw-Selektoren.

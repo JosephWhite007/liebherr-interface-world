@@ -1,5 +1,43 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.41] – 2026-09-18 – Neue Hauptseite „Liebherr Local Intelligence" (11 Module) + Interface Solutions als Unterseite
+
+Umsetzung des Pflichtenhefts „Liebherr Local Intelligence Landingpage": die bisherige Interface-World-Seite
+bleibt vollständig erhalten und wird zur technischen Unterseite unter der neuen übergeordneten Hauptseite.
+
+### Hinzugefügt
+- **Hauptseite „Liebherr Local Intelligence"** mit allen elf Modulen (LI-Pflichtenheft §8):
+  Hero · Vision-Dreiklang · Datenbewegung · **Simulation World (interaktiver A/B/C-Szenario-Schalter)** ·
+  Wissensassistenz (Frage→Antwort→Quelle/Status→nächste Aktion) · Datenqualität (4 Prinzipien) ·
+  weltweite Nutzung · **Einsatzfelder (filterbar)** · Interface-Solutions-Brücke · Rollout · Kontakt.
+  Ein Modul = ein Shortcode (`[liw_li_hero]`, `[liw_li_vision]`, `[liw_li_flow]`, `[liw_simulation_world]`,
+  `[liw_li_knowledge]`, `[liw_li_trust]`, `[liw_li_global]`, `[liw_li_usecases]`, `[liw_interface_bridge]`,
+  `[liw_li_rollout]`, `[liw_li_contact]`) plus Composite `[liw_local_intelligence]` mit Sprungleiste.
+  Kontaktformular (Modul 11) verwendet das bestehende `[liw_contact_form]` wieder.
+- **Administrierbares Content-Modell** `Settings\LocalIntelligenceContent` (Option `liw_local_intelligence`,
+  Standardtexte via `__()`) + Pflege-Board „🧠 Local Intelligence" (`Admin\Pages\LocalIntelligenceBoardPage`).
+- **Verschachtelung/Routing:** Interface-World-Seite wird Kind der Hauptseite, Slug → `interface-solutions`
+  (URL `/liebherr-local-intelligence/interface-solutions/`); **301-Redirect** der Altroute `/interface-world/`
+  (`Frontend\LegacyRedirect`, §3.2 – keine toten Links). Kontextnavigation/Breadcrumb + Rücklink auf der
+  Unterseite (`[liw_context_nav]`, §3.3/§13). Zentrale Seiten-Registry `Content\SitePages` (IDs statt Slug-Pfad).
+- **Menü:** zwei Frontpage-Direktlinks (🌍 Local Intelligence als erste Ansicht, 🌐 Interface Solutions).
+- **Interaktion** (assets/js): Szenario-Schalter (Tabs A/B/C, tastaturbedienbar) + Einsatzfeld-Filter –
+  beide fortschreitende Verbesserung; ohne JS bleiben alle Inhalte sichtbar (§10). `prefers-reduced-motion`
+  respektiert. `.liw-li*`-CSS ausschließlich über `--brand-*`-Tokens, mobile-first.
+- **Seeder** `scripts/liw-seed-local-intelligence.php` (idempotent, `--confirm`): Hauptseite anlegen,
+  Interface-Seite verschachteln, Kontextnavigation einhängen, Rewrite-Regeln aktualisieren.
+
+### Konformität (LI-Pflichtenheft §4/§7/§12.8)
+- Nur Demonstrationsdaten, klar gekennzeichnet; keine echten Geschäftszahlen; keine unbelegten
+  Leistungs-, Sicherheits- oder Echtzeitversprechen; Markenassets nur über freigegebene CI-Tokens.
+
+### Verifikation
+- `php -l` (alle Dateien); `tests/run-tests.php` **224/224**, `scripts/liw-selftest.php` **232/232**.
+- Echte Seiten geprüft: `/liebherr-local-intelligence/` (HTTP 200, alle 11 Anker, Hero zuerst, beide CTAs
+  sichtbar, Szenario-Schalter A/B/C funktioniert, Einsatzfeld-Filter), `/interface-world/` → **301** auf
+  die Unterseite, Unterseite HTTP 200 mit Breadcrumb + Rücklink.
+- Falle bestätigt: **WP Rocket** (Frontend-HTML-Cache) musste geleert werden, damit Reihenfolge/CI griffen.
+
 ## [0.1.0-alpha.40] – 2026-09-18 – Menü „Frontpage-Ansicht" + Landingpage-Layout (Gutter/CI)
 
 ### Hinzugefügt

@@ -23,12 +23,14 @@ use Liebherr\InterfaceWorld\Admin\Pages\HandbookPage;
 use Liebherr\InterfaceWorld\Admin\Pages\HeaderBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\InterfaceBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\LanguageBoardPage;
+use Liebherr\InterfaceWorld\Admin\Pages\LocalIntelligenceBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\MediaBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\OnboardingBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\PartnerDocumentBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\ProgrammingLogPage;
 use Liebherr\InterfaceWorld\Admin\Pages\SimulationBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\TodoBoardPage;
+use Liebherr\InterfaceWorld\Content\SitePages;
 use Liebherr\InterfaceWorld\CoreBridge\RoleBridge;
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
@@ -50,15 +52,26 @@ final class AdminMenu {
 			58 // hinter dem ARALIYA-Kernmenü (Konvention: eigenständige Plugins ordnen sich dahinter ein).
 		);
 
-		// Frontpage-Ansicht: Direktlink zur öffentlichen Landingpage (erster Unterpunkt – kein Umschalten nötig).
-		$front_url = self::front_url();
-		if ( '' !== $front_url ) {
+		// Frontpage-Ansichten: Direktlinks zu den öffentlichen Seiten (kein Umschalten nötig).
+		// Hauptseite = Local Intelligence, darunter die technische Unterseite Interface Solutions.
+		$li_url        = SitePages::li_url();
+		$interface_url = SitePages::interface_url();
+		if ( '' !== $li_url ) {
 			add_submenu_page(
 				'liw-interface-board',
-				__( 'Frontpage-Ansicht', 'liebherr-interface-world' ),
-				__( '🌐 Frontpage-Ansicht', 'liebherr-interface-world' ),
+				__( 'Local Intelligence (Hauptseite)', 'liebherr-interface-world' ),
+				__( '🌍 Local Intelligence', 'liebherr-interface-world' ),
 				RoleBridge::CAP_MANAGE_CONTENT,
-				$front_url
+				$li_url
+			);
+		}
+		if ( '' !== $interface_url ) {
+			add_submenu_page(
+				'liw-interface-board',
+				__( 'Interface Solutions (Frontpage)', 'liebherr-interface-world' ),
+				__( '🌐 Interface Solutions', 'liebherr-interface-world' ),
+				RoleBridge::CAP_MANAGE_CONTENT,
+				$interface_url
 			);
 		}
 
@@ -78,6 +91,15 @@ final class AdminMenu {
 			RoleBridge::CAP_MANAGE_CONTENT,
 			ContentBoardPage::MENU_SLUG,
 			[ ContentBoardPage::class, 'render' ]
+		);
+
+		add_submenu_page(
+			'liw-interface-board',
+			__( 'Local Intelligence – Inhalte', 'liebherr-interface-world' ),
+			__( '🧠 Local Intelligence', 'liebherr-interface-world' ),
+			RoleBridge::CAP_MANAGE_CONTENT,
+			LocalIntelligenceBoardPage::MENU_SLUG,
+			[ LocalIntelligenceBoardPage::class, 'render' ]
 		);
 
 		add_submenu_page(
@@ -207,29 +229,13 @@ final class AdminMenu {
 			[ HandbookPage::class, 'render' ]
 		);
 
-		if ( '' !== $front_url ) {
-			self::move_first( 'liw-interface-board', $front_url );
+		// Reihenfolge: erst Interface Solutions nach vorn, dann Local Intelligence davor → LI ganz oben.
+		if ( '' !== $interface_url ) {
+			self::move_first( 'liw-interface-board', $interface_url );
 		}
-	}
-
-	/** URL der öffentlichen Landingpage (Trägerseite mit [liw_landingpage]); leer, wenn keine existiert. */
-	private static function front_url(): string {
-		$page = get_page_by_path( 'interface-world' );
-		if ( $page instanceof \WP_Post && 'publish' === $page->post_status ) {
-			return (string) get_permalink( $page );
+		if ( '' !== $li_url ) {
+			self::move_first( 'liw-interface-board', $li_url );
 		}
-		$ids = get_posts( [
-			'post_type'      => 'page',
-			'post_status'    => 'publish',
-			'posts_per_page' => 1,
-			'fields'         => 'ids',
-			'no_found_rows'  => true,
-			's'              => '[liw_landingpage',
-		] );
-		if ( ! empty( $ids ) ) {
-			return (string) get_permalink( (int) $ids[0] );
-		}
-		return '';
 	}
 
 	/** Verschiebt den Untermenü-Eintrag mit gegebenem Slug an die erste Position. */

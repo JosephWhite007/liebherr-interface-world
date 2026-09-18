@@ -12,6 +12,43 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.41 – Hauptseite „Liebherr Local Intelligence" (11 Module) + Verschachtelung
+
+**Neu:**
+- `src/Settings/LocalIntelligenceContent.php` – administrierbares Content-Modell (Option `liw_local_intelligence`),
+  `defaults()`/`get()`/`save()`/`sanitize()` (tiefe Bereinigung gegen Standard), Standardtexte via `__()`.
+- `src/Frontend/LocalIntelligenceView.php` – Composite `[liw_local_intelligence]` + 11 Modul-Shortcodes
+  (`render_hero/vision/flow/simulation/knowledge/trust/global/usecases/bridge/rollout/contact`) +
+  `[liw_context_nav]` (Breadcrumb/Rücklink). Rekursionsschutz, `head()`/`interface_href()`-Helfer.
+- `src/Frontend/LegacyRedirect.php` – 301 der Altroute `/interface-world/` auf die Unterseite (`template_redirect`).
+- `src/Content/SitePages.php` – Seiten-Registry (Optionen `liw_li_page_id`/`liw_interface_page_id`,
+  Resolver mit Slug-/Pfad-Fallback, `li_url()`/`interface_url()`).
+- `src/Admin/Pages/LocalIntelligenceBoardPage.php` – Pflege-Board (Text/Textarea/Zeilenlisten, Nonce, Audit).
+- `scripts/liw-seed-local-intelligence.php` – idempotenter Seeder (Hauptseite anlegen, Interface-Seite
+  verschachteln + Slug `interface-solutions`, Kontextnavigation einhängen, `flush_rewrite_rules`).
+
+**Geändert:**
+- `src/Bootstrap.php` – `LocalIntelligenceView::register()` + `LegacyRedirect::register()`.
+- `src/Frontend/FrontendAssets.php` – LI-Shortcodes in `SHORTCODES` (CSS/JS-Enqueue-Auslöser).
+- `src/Frontend/RocketCompat.php` – `.liw-li` in die RUCSS-Safelist.
+- `src/Admin/AdminMenu.php` – zwei Frontpage-Direktlinks (Local Intelligence + Interface Solutions) über
+  `SitePages`, LI-Board-Untermenü, `move_first`-Ordnung; altes `front_url()` entfernt.
+- `assets/js/liebherr-frontend.js` – zwei IIFEs: Szenario-Schalter (`[data-liw-sim]`, Tabs A/B/C, Pfeiltasten,
+  **Init-Zustand `show(active)`**) + Einsatzfeld-Filter (`[data-liw-usecase-filter]`).
+- `assets/css/liebherr-frontend.css` – `.liw-li*`-Block (mobile-first, `--brand-*`, reduzierte Bewegung,
+  Sekundär-CTA hell auf dunklem Grund).
+- `scripts/liw-seed-demo-landing.php` – verschachtelungssicher (Interface-Seite über Registry, Slug/Parent
+  unangetastet), speichert Interface-Seiten-ID.
+- `scripts/liw-selftest.php` (+27, Block [8b]), `tests/run-tests.php` (+12, LI-Content-Modell),
+  `CHANGELOG.md`, `docs/LIW_TODO.md`, `docs/LOGBUCH_TECHNIK.md`, `src/Admin/Pages/HandbookPage.php`,
+  `liebherr-interface-world.php` (Version alpha.41).
+
+**Zwei Bugs beim Bau gefixt:** (1) Board-Name-Templates ohne schließende `]`; (2) Szenario-JS setzte die
+`--enhanced`-Klasse, rief aber `show()` initial nie auf → alle Panels sichtbar (Init-Aufruf ergänzt).
+**Falle:** WP Rocket cachte das gerenderte HTML (Reihenfolge/CI alt) → `rocket_clean_domain()` nötig.
+**Prüfung:** `php -l` (alle); `tests/run-tests.php` 224/224, `scripts/liw-selftest.php` 232/232; echte Seiten
+(Haupt 200, Alt→301, Unter 200) + visuell (Szenario-Schalter, Filter) bestätigt.
+
 ## 0.1.0-alpha.40 – Menü „Frontpage-Ansicht" + Landingpage-Layout (Gutter/CI)
 
 **Geändert:** `src/Admin/AdminMenu.php` (`front_url()`, `move_first()`, Untermenü „🌐 Frontpage-Ansicht"

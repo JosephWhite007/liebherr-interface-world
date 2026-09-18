@@ -191,3 +191,95 @@
 		init();
 	}
 }() );
+
+/**
+ * Simulation World – Szenario-Schalter ([liw_simulation_world], LI §8 Modul 4, alpha.41).
+ * Umschaltbare Varianten A/B/C (Tabs/Panels). Fortschreitende Verbesserung: ohne JS sind alle
+ * Panels über die Standardanzeige erreichbar (CSS zeigt sie gestapelt), die Tabs steuern nur die
+ * Sichtbarkeit. Tastaturbedienbar (Pfeiltasten), ARIA-Zustände werden gepflegt. Nur Demo-Daten.
+ */
+( function () {
+	'use strict';
+	function initSim( root ) {
+		var tabs   = [].slice.call( root.querySelectorAll( '[data-liw-sim-tab]' ) );
+		var panels = [].slice.call( root.querySelectorAll( '[data-liw-sim-panel]' ) );
+		if ( ! tabs.length || ! panels.length ) { return; }
+		root.classList.add( 'liw-li__sim--enhanced' ); // CSS: erst mit JS die Panels als Tabs verstecken.
+
+		function show( key ) {
+			tabs.forEach( function ( t ) {
+				var on = t.getAttribute( 'data-liw-sim-tab' ) === key;
+				t.classList.toggle( 'is-active', on );
+				t.setAttribute( 'aria-selected', on ? 'true' : 'false' );
+				t.tabIndex = on ? 0 : -1;
+			} );
+			panels.forEach( function ( p ) {
+				var on = p.getAttribute( 'data-liw-sim-panel' ) === key;
+				p.classList.toggle( 'is-active', on );
+				if ( on ) { p.removeAttribute( 'hidden' ); } else { p.setAttribute( 'hidden', 'hidden' ); }
+			} );
+		}
+
+		tabs.forEach( function ( t, i ) {
+			t.addEventListener( 'click', function () { show( t.getAttribute( 'data-liw-sim-tab' ) ); } );
+			t.addEventListener( 'keydown', function ( e ) {
+				var next = null;
+				if ( 'ArrowRight' === e.key || 'ArrowDown' === e.key ) { next = tabs[ ( i + 1 ) % tabs.length ]; }
+				else if ( 'ArrowLeft' === e.key || 'ArrowUp' === e.key ) { next = tabs[ ( i - 1 + tabs.length ) % tabs.length ]; }
+				if ( next ) { e.preventDefault(); next.focus(); show( next.getAttribute( 'data-liw-sim-tab' ) ); }
+			} );
+		} );
+
+		// Ausgangszustand herstellen: aktiven Tab (oder ersten) einblenden, übrige einklappen.
+		var initial = tabs.filter( function ( t ) { return t.classList.contains( 'is-active' ); } )[ 0 ] || tabs[ 0 ];
+		show( initial.getAttribute( 'data-liw-sim-tab' ) );
+	}
+	function init() {
+		var sims = document.querySelectorAll( '[data-liw-sim]' );
+		for ( var i = 0; i < sims.length; i++ ) { initSim( sims[ i ] ); }
+	}
+	if ( document.readyState === 'loading' ) {
+		document.addEventListener( 'DOMContentLoaded', init );
+	} else {
+		init();
+	}
+}() );
+
+/**
+ * Einsatzfelder – Filter ([liw_li_usecases], LI §8 Modul 8, alpha.41).
+ * Blendet Karten nach Tag ein/aus. Fortschreitende Verbesserung: ohne JS sind alle Karten sichtbar,
+ * die Filterleiste ist rein additiv. aria-pressed wird gepflegt.
+ */
+( function () {
+	'use strict';
+	function initFilter( bar ) {
+		var section = bar.closest( '.liw-li__section' ) || document;
+		var buttons = [].slice.call( bar.querySelectorAll( '[data-liw-filter]' ) );
+		var cards   = [].slice.call( section.querySelectorAll( '.liw-li__usecase[data-liw-tag]' ) );
+		if ( ! buttons.length || ! cards.length ) { return; }
+
+		function apply( tag ) {
+			cards.forEach( function ( c ) {
+				var show = '*' === tag || c.getAttribute( 'data-liw-tag' ) === tag;
+				c.style.display = show ? '' : 'none';
+			} );
+			buttons.forEach( function ( b ) {
+				var on = b.getAttribute( 'data-liw-filter' ) === tag;
+				b.classList.toggle( 'is-active', on );
+				b.setAttribute( 'aria-pressed', on ? 'true' : 'false' );
+			} );
+		}
+		buttons.forEach( function ( b ) {
+			b.addEventListener( 'click', function () { apply( b.getAttribute( 'data-liw-filter' ) ); } );
+		} );
+	}
+	function init() {
+		var bars = document.querySelectorAll( '[data-liw-usecase-filter]' );
+		for ( var i = 0; i < bars.length; i++ ) { initFilter( bars[ i ] ); }
+	}
+	if ( document.readyState === 'loading' ) {
+		document.addEventListener( 'DOMContentLoaded', init );
+	} else {
+		init();
+	}
+}() );

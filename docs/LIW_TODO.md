@@ -6,7 +6,28 @@ oder als offene Rückfrage an Joseph White dokumentiert wurden (Quelle jeweils a
 Sichtbar im Backend unter „Interface World → 📋 To-Dos". Wird bei jeder Aufgabe, die einen
 Punkt hier abschließt oder ergänzt, gepflegt.
 
-Stand: 18.09.2026 (0.1.0-alpha.26).
+Stand: 18.09.2026 (0.1.0-alpha.41).
+
+---
+
+## Local Intelligence – Hauptseite (LI-Pflichtenheft, alpha.41)
+
+**Geliefert (alpha.41):** übergeordnete Hauptseite „Liebherr Local Intelligence" mit allen elf Modulen
+(Composite `[liw_local_intelligence]` + Modul-Shortcodes), interaktiver Simulation-World-Szenario-Schalter
+(A/B/C) und filterbare Einsatzfelder, administrierbares Content-Modell + Pflege-Board, Verschachtelung der
+Interface-Seite als Unterseite (`/liebherr-local-intelligence/interface-solutions/`) mit 301 der Altroute,
+Breadcrumb/Rücklink, zwei Frontpage-Menüpunkte. Nur Demo-Inhalte (§4/§7/§12.8).
+
+**Offen / bewusst später:**
+- **Vollständige EN-Fassung + weitere Sprachen (§12.4).** DE ist redaktionelle Ausgangsfassung; die
+  LI-Texte laufen wie ComponentContent über den bestehenden Sprach-Workflow (Standard via `__()`, Overrides
+  literal). EN-Kuratierung + Freigabe im Language Board steht noch aus.
+- **Szenario-Editor im Board.** Simulation-Szenarien A/B/C werden aktuell über Standardwerte/Seeder gepflegt;
+  ein feingranularer UI-Editor (Zeilen je Variante) ist optional nachrüstbar.
+- **Analytik-Events (§14).** Klick-/Formular-/Sprachwechsel-Events in der freigegebenen Analytik-
+  Namenskonvention erfassen – erst mit freigegebenem Analytics-Setup.
+- **Redaktion/Freigabe (§9.2/§16).** Bis zur dokumentierten Liebherr-Freigabe gilt die Seite als
+  Konzept/Prototyp; CI weiterhin „vorläufig" (siehe Marken-Freigabe-Punkt unten).
 
 ---
 

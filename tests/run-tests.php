@@ -231,6 +231,25 @@ liw_assert( 'BrandTokens: on_primary sanitisiert Hex', '#202326' === $bt3['on_pr
 $bt4 = \Liebherr\InterfaceWorld\Branding\BrandTokens::sanitize( [ 'brand_text' => '  Liebherr Interface Solutions  ' ] );
 liw_assert( 'BrandTokens: brand_text sanitisiert', 'Liebherr Interface Solutions' === $bt4['brand_text'], $checks, $failures );
 
+// 2m. Local Intelligence – Content-Modell (LI-Pflichtenheft §8/§12.3, alpha.41) – reine Logik.
+echo "-- Local Intelligence Content (alpha.41) --\n";
+if ( ! function_exists( 'sanitize_textarea_field' ) ) { function sanitize_textarea_field( $s ) { return trim( (string) $s ); } }
+require_once $root . '/src/Settings/LocalIntelligenceContent.php';
+$li = \Liebherr\InterfaceWorld\Settings\LocalIntelligenceContent::defaults();
+$li_modules = [ 'hero', 'vision', 'flow', 'simulation', 'knowledge', 'trust', 'global', 'usecases', 'bridge', 'rollout', 'contact' ];
+liw_assert( 'defaults() hat alle elf Modul-Zweige', 11 === count( array_intersect( array_keys( $li ), $li_modules ) ), $checks, $failures );
+liw_assert( 'Vision: 3 Nutzenfelder (Simulieren/Verstehen/Entscheiden)', 3 === count( $li['vision']['fields'] ) && 'Simulieren' === $li['vision']['fields'][0]['title'], $checks, $failures );
+liw_assert( 'Flow: 5 Schritte (globales Wissen → lokale Entscheidung)', 5 === count( $li['flow']['steps'] ), $checks, $failures );
+liw_assert( 'Simulation: 3 Szenarien A/B/C', 3 === count( $li['simulation']['scenarios'] ) && 'A' === $li['simulation']['scenarios'][0]['key'], $checks, $failures );
+liw_assert( 'Datenqualität: 4 Themenbereiche', 4 === count( $li['trust']['areas'] ), $checks, $failures );
+liw_assert( 'Einsatzfelder: 6 Bereiche', 6 === count( $li['usecases']['items'] ), $checks, $failures );
+liw_assert( 'Rollout: 6 Schritte', 6 === count( $li['rollout']['steps'] ), $checks, $failures );
+liw_assert( 'sanitize([]) == defaults() (leere Eingabe → Standard)', \Liebherr\InterfaceWorld\Settings\LocalIntelligenceContent::sanitize( [] ) === $li, $checks, $failures );
+$li_over = \Liebherr\InterfaceWorld\Settings\LocalIntelligenceContent::sanitize( [ 'hero' => [ 'headline' => 'Neue Headline' ], 'vision' => [ 'fields' => [] ] ] );
+liw_assert( 'sanitize übernimmt Hero-Override', 'Neue Headline' === $li_over['hero']['headline'], $checks, $failures );
+liw_assert( 'sanitize: leere Liste fällt auf Standard zurück', $li_over['vision']['fields'] === $li['vision']['fields'], $checks, $failures );
+liw_assert( 'Hero enthält Dreiklang-Kurzzeile', 'Simulieren. Verstehen. Entscheiden.' === $li['hero']['tagline'], $checks, $failures );
+
 // 3. strict_types=1 in jeder src/-Datei (Coding Standard, CLAUDE.md Abschnitt 5).
 echo "-- Coding Standard --\n";
 $iterator2 = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $root . '/src', FilesystemIterator::SKIP_DOTS ) );

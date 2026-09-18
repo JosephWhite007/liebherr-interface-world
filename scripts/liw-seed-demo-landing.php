@@ -102,28 +102,37 @@ foreach ( SectionBlueprint::all() as $code => $_def ) {
 }
 echo "  [2b] {$drafted} noch nicht aufbereitete Abschnitte auf Entwurf gesetzt (im Content Board reaktivierbar).\n";
 
-// 3. Trägerseite „Interface World".
-$slug     = 'interface-world';
-$existing = get_page_by_path( $slug );
+// 3. Trägerseite „Interface World" (verschachtelungssicher: vorhandene Seite wiederverwenden,
+// Slug/Elternseite NICHT zurücksetzen, damit die Local-Intelligence-Verschachtelung erhalten bleibt).
+$existing = null;
+if ( class_exists( \Liebherr\InterfaceWorld\Content\SitePages::class ) ) {
+	$eid = \Liebherr\InterfaceWorld\Content\SitePages::interface_id();
+	if ( $eid > 0 ) { $existing = get_post( $eid ); }
+}
+if ( ! $existing instanceof WP_Post ) {
+	$existing = get_page_by_path( 'interface-solutions' ) ?: get_page_by_path( 'interface-world' );
+}
 $page_content = "<!-- wp:shortcode -->[liw_header]<!-- /wp:shortcode -->\n\n"
 	. "<!-- wp:shortcode -->[liw_hero]<!-- /wp:shortcode -->\n\n"
 	. "<!-- wp:shortcode -->[liw_landingpage]<!-- /wp:shortcode -->\n\n"
 	. "<!-- wp:shortcode -->[liw_footer]<!-- /wp:shortcode -->";
-$page_args = [
-	'post_title'   => 'Interface World Connections',
-	'post_name'    => $slug,
-	'post_type'    => 'page',
-	'post_status'  => 'publish',
-	'post_content' => $page_content,
-];
 if ( $existing instanceof WP_Post ) {
-	$page_args['ID'] = $existing->ID;
-	wp_update_post( $page_args );
-	$page_id = $existing->ID;
-	echo "  [3] Trägerseite aktualisiert (#{$page_id}).\n";
+	// Nur Inhalt/Status aktualisieren – Slug und post_parent unangetastet lassen.
+	wp_update_post( [ 'ID' => $existing->ID, 'post_content' => $page_content, 'post_status' => 'publish' ] );
+	$page_id = (int) $existing->ID;
+	echo "  [3] Trägerseite aktualisiert (#{$page_id}, Slug „{$existing->post_name}“).\n";
 } else {
-	$page_id = (int) wp_insert_post( $page_args );
+	$page_id = (int) wp_insert_post( [
+		'post_title'   => 'Interface World Connections',
+		'post_name'    => 'interface-world',
+		'post_type'    => 'page',
+		'post_status'  => 'publish',
+		'post_content' => $page_content,
+	] );
 	echo "  [3] Trägerseite angelegt (#{$page_id}).\n";
+}
+if ( $page_id > 0 && class_exists( \Liebherr\InterfaceWorld\Content\SitePages::class ) ) {
+	\Liebherr\InterfaceWorld\Content\SitePages::set_interface_id( $page_id );
 }
 
 // Vollbild-Vorlage (ohne Theme-Kopf/-Fuß) zuweisen.

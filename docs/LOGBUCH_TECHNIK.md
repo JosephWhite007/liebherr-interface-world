@@ -8,6 +8,45 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · Neue Hauptseite „Liebherr Local Intelligence" + Verschachtelung der Interface-Seite (0.1.0-alpha.41)
+
+**Frage/Kontext.** JW: Umsetzung des Pflichtenhefts „Liebherr Local Intelligence Landingpage". Die bestehende
+Interface-World-Seite (unsere bisherige Arbeit, „One structure. Connected worldwide.") soll vollständig
+erhalten bleiben und als **erste/technische Lösung** unter eine neue, übergeordnete Hauptseite eingeordnet
+werden; zusätzlich ein Menüpunkt, der die Local-Intelligence-Welt öffnet. Vor dem Bau geklärt (AskUser):
+Routing = **verschachteln**, Umfang = **alle 11 Module**, Simulation = **interaktiver A/B/C-Schalter**.
+
+**Entscheidungen (Kategorie B).**
+- **Wiederverwendung statt Duplikat (LI §2/§12.1, Grundregel „keine Redundanzen"):** gleiche Shortcode-/
+  Settings-/Board-/Seeder-Muster wie bestehende Komponenten; Kontaktmodul nutzt `[liw_contact_form]` wieder;
+  Gestaltung nur über `--brand-*`; keine zweite Übersetzungs-/Komponenten-/CMS-Schicht.
+- **Content-Modell** als Option (`LocalIntelligenceContent`, Standard via `__()`) + Pflege-Board – identische
+  Linie wie `ComponentContent`/`ComponentsBoardPage`, damit Sprach-Workflow und Pflege konsistent bleiben.
+- **Verschachtelung/Routing:** Interface-Seite wird Kind der Hauptseite, Slug → `interface-solutions`
+  (PH „bevorzugt"); Altroute `/interface-world/` per **301** (`LegacyRedirect`), damit Bookmarks/SEO/Kampagnen
+  nicht brechen (§3.2/§13/§12.7). Da der Slug-Pfad nach der Verschachtelung nicht mehr als Top-Level auflösbar
+  ist, wurde eine **Seiten-Registry** (`SitePages`, IDs in Optionen mit Pfad-Fallback) eingeführt – AdminMenu,
+  Selbsttest, Seeder und Redirect referenzieren sie statt fester Slugs (eine Wahrheit, DRY).
+- **Progressive Enhancement (§10):** Szenario-Schalter/Filter sind rein additiv; ohne JS bleiben alle Panels
+  sichtbar (kein `hidden` im PHP-Markup – der JS-Enhancer klappt inaktive Panels erst nach Init ein);
+  `prefers-reduced-motion` respektiert; Tastaturbedienung (Pfeiltasten) für die Tabs.
+- **Konformität (§4/§7/§12.8):** ausschließlich Demo-Daten, klar gekennzeichnet; keine unbelegten Leistungs-/
+  Sicherheits-/Echtzeitversprechen; Markenassets nur über die (vorläufig freigegebenen) CI-Tokens.
+
+**Fallen/Lehren.**
+- **WP Rocket** cachte das gerenderte HTML: Nach der Composite-Umstellung (Hero zuerst) und CSS-Änderungen
+  blieb die alte Reihenfolge/CI sichtbar, obwohl CLI (`do_shortcode`) bereits korrekt war und der Container
+  neu gestartet wurde. Ursache war der **Frontend-HTML-Cache** – `rocket_clean_domain()`/`rocket_clean_minify()`
+  nötig (Projekt-Memory „WP Rocket zuerst prüfen" bestätigt; **nicht** OPcache, nicht Query-String-Stripping).
+- **Zwei Eigenbau-Bugs**: (1) Board-`name`-Templates ohne schließende `]` (unbalancierte Klammern → PHP
+  parst das Array nicht); (2) der Szenario-Enhancer setzte die `--enhanced`-Klasse (Tabs sichtbar), rief aber
+  `show()` initial nie auf → alle Panels blieben sichtbar (Init-Aufruf `show(active)` ergänzt).
+- **Deutsche Anführungszeichen** in doppelt-quotierten PHP-Strings: ASCII-`"` als Schluss-Zeichen beendet den
+  String vorzeitig → im Seeder auf typografisches `“` umgestellt.
+
+**Quelle/Version.** Pflichtenheft „Liebherr Local Intelligence Landingpage"; JW-Auftrag 18.09.2026;
+0.1.0-alpha.41. Prüfung: `tests/run-tests.php` 224/224, `liw-selftest.php` 232/232, echte Seiten + visuell.
+
 ### 2026-09-18 · Menü-Direktlink zur Frontpage + Landingpage-Gutter (0.1.0-alpha.40)
 
 **Frage/Kontext.** JW: Frontpage als erster Menü-Unterpunkt (kein Umschalten); zudem klebte der
