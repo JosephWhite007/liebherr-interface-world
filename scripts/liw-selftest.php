@@ -437,6 +437,19 @@ try {
 	liw_st_check( 'BrandTokens-Fallback markenneutral (kein #ffd000 ohne Freigabe)', '#ffd000' !== strtolower( (string) \Liebherr\InterfaceWorld\Branding\BrandTokens::defaults()['primary'] ) );
 	liw_st_check( 'FrontendAssets injiziert Tokens via wp_add_inline_style', str_contains( $liw_front_assets_src, 'wp_add_inline_style' ) && str_contains( $liw_front_assets_src, 'BrandTokens::css_root' ) );
 	liw_st_check( 'liebherr-frontend.css enthält :root --brand-* Fallbacks', str_contains( (string) file_get_contents( LIW_PATH . 'assets/css/liebherr-frontend.css' ), '--brand-primary:' ) );
+	// Header + Hero (alpha.28, Etappe 2).
+	liw_st_check( 'Shortcodes [liw_header] und [liw_hero] registriert', shortcode_exists( 'liw_header' ) && shortcode_exists( 'liw_hero' ) );
+	liw_st_check( 'Header Board Seite verfügbar', class_exists( \Liebherr\InterfaceWorld\Admin\Pages\HeaderBoardPage::class ) );
+	$hdr = do_shortcode( '[liw_header]' );
+	liw_st_check( '[liw_header] rendert Header mit Navigation und Primär-CTA', str_contains( $hdr, 'class="liw-header"' ) && str_contains( $hdr, 'liw-header__nav' ) && str_contains( $hdr, 'liw-cta--primary' ) );
+	liw_st_check( '[liw_header] ohne freigegebenes Logo → Text-Wortmarke (kein erfundenes Logo)', str_contains( $hdr, 'liw-header__wordmark' ) );
+	$hero = do_shortcode( '[liw_hero]' );
+	liw_st_check( '[liw_hero] rendert Hero mit H1 und CTAs', str_contains( $hero, 'class="liw-hero' ) && str_contains( $hero, 'liw-hero__headline' ) && str_contains( $hero, 'liw-cta--secondary' ) );
+	liw_st_check( '[liw_hero] Standard-Headline (§8)', str_contains( $hero, 'One structure' ) );
+	$liw_front_css = (string) file_get_contents( LIW_PATH . 'assets/css/liebherr-frontend.css' );
+	liw_st_check( 'CSS enthält Header/CTA/Hero-Klassen', str_contains( $liw_front_css, '.liw-header {' ) && str_contains( $liw_front_css, '.liw-cta {' ) && str_contains( $liw_front_css, '.liw-hero {' ) );
+	liw_st_check( 'Hero-Animation respektiert prefers-reduced-motion', str_contains( $liw_front_css, 'prefers-reduced-motion: no-preference' ) );
+	liw_st_check( 'FrontendAssets: [liw_header]/[liw_hero] als Asset-Auslöser', str_contains( $liw_front_assets_src, 'HeaderView::SHORTCODE' ) && str_contains( $liw_front_assets_src, 'HeroView::SHORTCODE' ) );
 
 	// ── [9] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
 	echo "\n[9] Programmierlogbuch / To-Dos\n";

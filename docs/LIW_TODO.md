@@ -49,10 +49,13 @@ Stand: 18.09.2026 (0.1.0-alpha.26).
   (§24) – seit alpha.24 mit Sprachsuffix umgesetzt.
   *Quelle: CHANGELOG.md alpha.19; Pflichtenheft §22/§24/§31.*
 
-- **Landingpage-Feinheiten nach dem ersten Gerüst (alpha.18).** Hero-Bildmotiv (freigegebenes
-  Liebherr-Motiv, redaktionell) offen. Ankernavigation: alpha.23; aktive Hervorhebung des
-  sichtbaren Abschnitts in der Sprungleiste: umgesetzt in alpha.26 (s. „Bereits erledigt").
-  *Quelle: CHANGELOG.md alpha.18, alpha.23, alpha.26.*
+- **Landingpage-Feinheiten nach dem ersten Gerüst (alpha.18).** Ankernavigation: alpha.23; aktive
+  Hervorhebung: alpha.26; Header/Navigation (§7) + Hero LP-01 (§8): alpha.28 (`[liw_header]`,
+  `[liw_hero]`, Header Board). **Offen:** Hero-Bildmotiv erst nach Liebherr-Freigabe des Assets
+  (im Header Board wählbar, wird bis dahin als neutraler Verlauf ausgegeben); **per-Sprache-Labels
+  für Nav/CTAs** (aktuell Standard via `__()` mehrsprachig, redaktionelle Overrides literal –
+  Verfeinerung, ggf. Anbindung an die Translation-Registry).
+  *Quelle: CHANGELOG.md alpha.18/alpha.23/alpha.26/alpha.28.*
 
 - **Visuelles Gesamt-Layout/Wireframe der Landingpage.** Der inhaltliche Bauplan
   (LP-01…LP-14) steht im Pflichtenheft und ist seit alpha.12 in

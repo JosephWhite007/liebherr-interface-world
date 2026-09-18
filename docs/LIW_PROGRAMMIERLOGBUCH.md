@@ -12,6 +12,24 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.28 – Etappe 2: Header/Navigation + Hero (LP-01)
+
+**Neu:** `src/Settings/HeaderSettings.php` (Option `liw_header`; `defaults()`/`get()/save()/sanitize()`,
+reine `normalize_target()`), `src/Frontend/HeaderView.php` (`[liw_header]`: Logo/Wortmarke, Nav, CTAs,
+`LanguageBridge::switcher_html()`, Portal-Login, sticky/Off-Canvas), `src/Frontend/HeroView.php`
+(`[liw_hero]`: H1/Subline aus Attributen, Netzwerk-Ebene dekorativ, CTAs, Bild nur freigegeben),
+`src/Admin/Pages/HeaderBoardPage.php` (Header Board, Capability/Nonce/Audit).
+**Geändert:** `src/Bootstrap.php` (HeaderView/HeroView registriert), `src/Admin/AdminMenu.php`
+(Untermenü „🧭 Header Board", use-Import), `src/Frontend/FrontendAssets.php` (Header/Hero als
+Asset-Auslöser), `assets/css/liebherr-frontend.css` (Header/CTA/Hero-Blöcke über `--brand-*`,
+Off-Canvas, `prefers-reduced-motion`), `assets/js/liebherr-frontend.js` (Header-Toggle-IIFE),
+`tests/run-tests.php` (+7 normalize_target), `scripts/liw-selftest.php` ([8] +9),
+`CHANGELOG.md`, `docs/LIW_TODO.md`, `docs/LOGBUCH_TECHNIK.md`, `src/Admin/Pages/HandbookPage.php`,
+`liebherr-interface-world.php` (Version).
+**Prüfung:** `php -l` je Datei; `tests/run-tests.php` 147/147, `scripts/liw-selftest.php` 143/143;
+Header/Hero visuell (Desktop 1280 + Mobil) über Browser-Vorschau bestätigt. PSR-4: neuer Namespace
+`Settings` → `src/Settings/`.
+
 ## 0.1.0-alpha.27 – Etappe 1: CI/Brand-Fundament (Design-Tokens)
 
 **Neu:** `src/Branding/BrandTokens.php` (Token-Service: `defaults()` neutrale Fallbacks,

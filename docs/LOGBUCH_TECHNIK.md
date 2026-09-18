@@ -8,6 +8,27 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · Etappe 2: Header/Navigation + Hero – Shortcodes + Option-Config (0.1.0-alpha.28)
+
+**Frage/Kontext.** §7 verlangt eine administrierbare, sticky Hauptnavigation mit Logo, CTAs,
+Sprachumschalter und optionalem Portal-Login; §8 LP-01 einen Hero mit Netzwerk-Ebene und den zwei
+CTAs. Zwei Entscheidungen: (1) Wo liegt die Header-Konfiguration? (2) Wie werden Nav-/CTA-Labels
+mehrsprachig, ohne die Translation-Registry (die auf Post-Feldern arbeitet) für Chrome aufzubohren?
+
+**Optionen (1).** (a) Fester Header im Template; (b) Option-basierte Settings + kleines „Header
+Board". **(2).** (a) Labels in die Registry aufnehmen (schwer für Nicht-Post-Chrome); (b) Standard-
+Labels über `__()` (gettext/.po), redaktionelle Overrides literal.
+
+**Entscheidung (Claude, Kategorie B).** (1b) + (2b). `HeaderSettings` (Option `liw_header`) +
+`HeaderBoardPage`; `[liw_header]`/`[liw_hero]` als Shortcodes (nicht fest ins Theme, da die
+Landingpage eine WP-Seite mit Shortcode ist). Ziel-Normalisierung rein/testbar und hart abgesichert
+(nur `#anker`, relativer Pfad oder http(s); `javascript:`/protokollrelativ verworfen). Labels:
+`__()`-Standards mehrsprachig; per-Sprache-Overrides als spätere Verfeinerung vermerkt (To-Dos).
+CI-Konformität: Logo nur bei Media-Board-Freigabe (CI-005), sonst neutrale Text-Wortmarke (kein
+erfundenes Logo, CI-002); Hero-Bild analog. Farben/Schriften ausschließlich über `--brand-*` (§11).
+
+**Quelle/Version.** Release-Plan Etappe 2; Pflichtenheft §7/§8/§16; 0.1.0-alpha.28.
+
 ### 2026-09-18 · Etappe 1: CI-Tokens als Brand Board + Inline-Style, neutrale Fallbacks (0.1.0-alpha.27)
 
 **Frage/Kontext.** Release-Plan freigegeben („ok, wir können loslegen"). Etappe 1 = CI-Fundament

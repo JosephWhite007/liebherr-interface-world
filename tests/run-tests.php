@@ -156,6 +156,18 @@ liw_assert( 'css_from liefert :root mit --brand-primary und --content-max', str_
 $css_evil = \Liebherr\InterfaceWorld\Branding\BrandTokens::css_from( [ 'primary' => '#000000}html{display:none' ] );
 liw_assert( 'css_from kann nicht aus :root ausbrechen', 1 === substr_count( $css_evil, '{' ) && 1 === substr_count( $css_evil, '}' ), $checks, $failures );
 
+// 2g. Header-/Navigations-Einstellungen (Etappe 2, §7) – reine Ziel-Normalisierung ohne WordPress.
+echo "-- Header Settings (alpha.28) --\n";
+require_once $root . '/src/Settings/HeaderSettings.php';
+$nt = [ 'Liebherr\\InterfaceWorld\\Settings\\HeaderSettings', 'normalize_target' ];
+liw_assert( 'normalize_target: In-Page-Anker bleibt', '#lp-04' === $nt( '#lp-04' ), $checks, $failures );
+liw_assert( 'normalize_target: Anker säubert Sonderzeichen', '#lp04' === $nt( '#lp 04!' ), $checks, $failures );
+liw_assert( 'normalize_target: relativer Pfad bleibt', '/interface-world/magic-cube' === $nt( '/interface-world/magic-cube' ), $checks, $failures );
+liw_assert( 'normalize_target: http(s)-URL bleibt', 'https://example.com/x' === $nt( 'https://example.com/x' ), $checks, $failures );
+liw_assert( 'normalize_target: javascript: verworfen', '' === $nt( 'javascript:alert(1)' ), $checks, $failures );
+liw_assert( 'normalize_target: protokollrelativ verworfen', '' === $nt( '//evil.example' ), $checks, $failures );
+liw_assert( 'normalize_target: leer bleibt leer', '' === $nt( '   ' ), $checks, $failures );
+
 // 3. strict_types=1 in jeder src/-Datei (Coding Standard, CLAUDE.md Abschnitt 5).
 echo "-- Coding Standard --\n";
 $iterator2 = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $root . '/src', FilesystemIterator::SKIP_DOTS ) );

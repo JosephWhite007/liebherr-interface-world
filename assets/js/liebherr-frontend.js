@@ -105,3 +105,45 @@
 		init();
 	}
 }() );
+
+/**
+ * Mobiles Off-Canvas-Menü des Headers ([liw_header], §7, alpha.28).
+ * Schaltet `data-liw-open` am Header und `aria-expanded` am Umschalter; schließt bei Escape
+ * und bei Klick auf einen Navigationslink. Fortschreitende Verbesserung: ohne JS ist die
+ * Navigation via CSS weiterhin erreichbar (Menü über 900px sichtbar).
+ */
+( function () {
+	'use strict';
+	function initHeader( header ) {
+		var toggle = header.querySelector( '.liw-header__toggle' );
+		var nav    = header.querySelector( '.liw-header__nav' );
+		if ( ! toggle || ! nav ) { return; }
+
+		function setOpen( open ) {
+			header.setAttribute( 'data-liw-open', open ? '1' : '0' );
+			toggle.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
+		}
+		setOpen( false );
+
+		toggle.addEventListener( 'click', function () {
+			setOpen( header.getAttribute( 'data-liw-open' ) !== '1' );
+		} );
+		nav.addEventListener( 'click', function ( e ) {
+			if ( e.target && e.target.closest && e.target.closest( '.liw-header__nav-link' ) ) { setOpen( false ); }
+		} );
+		document.addEventListener( 'keydown', function ( e ) {
+			if ( 'Escape' === e.key ) { setOpen( false ); }
+		} );
+	}
+
+	function init() {
+		var headers = document.querySelectorAll( '[data-liw-header]' );
+		for ( var i = 0; i < headers.length; i++ ) { initHeader( headers[ i ] ); }
+	}
+
+	if ( document.readyState === 'loading' ) {
+		document.addEventListener( 'DOMContentLoaded', init );
+	} else {
+		init();
+	}
+}() );

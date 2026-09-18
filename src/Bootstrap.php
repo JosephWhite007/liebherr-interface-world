@@ -24,6 +24,8 @@ use Liebherr\InterfaceWorld\CoreBridge\SeoBridge;
 use Liebherr\InterfaceWorld\CoreBridge\TranslationBridge;
 use Liebherr\InterfaceWorld\CPT\LiwSectionCpt;
 use Liebherr\InterfaceWorld\Frontend\FrontendAssets;
+use Liebherr\InterfaceWorld\Frontend\HeaderView;
+use Liebherr\InterfaceWorld\Frontend\HeroView;
 use Liebherr\InterfaceWorld\Frontend\LandingpageView;
 use Liebherr\InterfaceWorld\Frontend\SectionGraphicView;
 use Liebherr\InterfaceWorld\Onboarding\OnboardingForm;
@@ -44,6 +46,8 @@ final class Bootstrap {
 		ContactForm::register();
 		ConnectionMapView::register();
 		SectionGraphicView::register();
+		HeaderView::register();
+		HeroView::register();
 		LandingpageView::register();
 		PartnerDocumentsView::register();
 		FrontendAssets::register();

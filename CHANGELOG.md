@@ -1,5 +1,32 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.28] – 2026-09-18 – Etappe 2: Header/Navigation (§7) + Hero (LP-01)
+
+### Hinzugefügt
+- **`[liw_header]`** ([HeaderView](src/Frontend/HeaderView.php)) – sticky Hauptnavigation (§7/§16):
+  Logo (nur wenn im Media Board freigegeben, CI-005; sonst neutrale Text-Wortmarke, kein erfundenes
+  Logo, CI-002), konfigurierbare Menüpunkte, Primär-CTA „Start Integration", Sekundär-CTA
+  „Explore the Simulation", Core-Sprachumschalter und optionaler Portal-Login. Mobil als
+  zugängliches Off-Canvas-Menü (`aria-expanded`, Escape/Link schließt).
+- **`[liw_hero]`** ([HeroView](src/Frontend/HeroView.php)) – LP-01 Hero-Network (§8): H1/Subline
+  (Attribute, über Abschnittstext mehrsprachig), dezente Netzwerk-Ebene (dekorativ, `aria-hidden`,
+  `prefers-reduced-motion`-fest), beide CTAs. Bildmotiv nur wenn freigegeben (CI-005), sonst
+  neutraler Verlauf.
+- **`src/Settings/HeaderSettings.php`** – administrierbare Header-Konfiguration (Option `liw_header`):
+  Menüpunkte, CTAs, Portal-Login, Hero-Bild; Standardwerte je §7/§8 mit `__()`. Reine, testbare
+  `normalize_target()` (nur In-Page-Anker, relativer Pfad oder http(s)-URL; `javascript:` und
+  protokollrelative Ziele verworfen).
+- **`src/Admin/Pages/HeaderBoardPage.php`** – „🧭 Header Board" (Nav/CTAs/Portal/Hero-Bild),
+  Capability `liw_manage_content`, Nonce, Audit (SEC-005).
+- CSS (Header sticky + Off-Canvas, CTAs, Hero) über `--brand-*`-Tokens; JS-Menü-Umschalter in
+  `assets/js/liebherr-frontend.js`. `[liw_header]`/`[liw_hero]` als Asset-Auslöser.
+
+### Hinweise
+- Nav-/CTA-Labels: Standard über `__()` (mehrsprachig); redaktionell überschriebene Labels sind
+  literal – per-Sprache-Labels sind eine spätere Verfeinerung (To-Dos).
+- Verifikation: `php -l`; `tests/run-tests.php` 147/147, `scripts/liw-selftest.php` 143/143 im
+  Docker-Container; Header/Hero visuell in Desktop- und Mobilansicht geprüft (Browser-Vorschau).
+
 ## [0.1.0-alpha.27] – 2026-09-18 – Etappe 1: CI/Brand-Fundament (Design-Tokens §10–12)
 
 ### Hinzugefügt
