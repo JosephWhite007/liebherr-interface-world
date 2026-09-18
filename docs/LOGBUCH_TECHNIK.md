@@ -8,6 +8,41 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · Geschützter Partnerbereich: Option A, Stufe 1 = eigene Rolle + Konto per Knopf (0.1.0-alpha.21)
+
+**Frage/Kontext.** Nach der PDF-Entscheidung (alpha.20) bat Joseph um die Analyse eines
+geschützten Downloads nur für angemeldete, freigegebene Partner und gab mit „ja" die Umsetzung
+von Option A frei (Rolle + Konto zuerst, Dokumentenbereich danach).
+
+**Befund (Core-Bestandsaufnahme per device_bash).** `Modules\Documents` (DocumentService): sehr gutes
+Sicherheitsmuster – zufälliger `stored_name`, Upload-Verzeichnis 0750 mit `.htaccess Deny from all`,
+Einmal-Download-Token (Transient, TTL 300 s), Rate-Limit, Soft-Delete – aber jede Signatur ist an
+`guest_id` gebunden. `PartnerAuth`/`PartnerPortalController`: Bearer-Token-REST-API für eine App
+(Therapeut/Standortleiter via `wp_authenticate` + Core-Caps), kein Cookie-Login für Website-Seiten,
+keine Händlerrolle. `RoleManager`: nur ARALIYA-Rollen mit Hotel-/Gesundheits-Caps. Liebherr-Partner
+aus dem Onboarding sind `ary_partners`-Zeilen ohne WP-Benutzer. Medienbibliothek: Dateien immer
+per URL öffentlich – die CI-005-Freigabe steuert nur die Anzeige, nicht den Dateizugriff.
+
+**Optionen.** (A) eigener schlanker Dokumentenbereich im Plugin nach dem Core-Muster, WP-Konten mit
+eigener Rolle; (B) Core-Dokumentenmodul um `owner_type` verallgemeinern (Kategorie A, sicherheits-
+kritisches Modul, eigenes Core-Release); (C) Core-Partner-Portal-API (App-Design, bräuchte JS-Frontend);
+(D) passwortgeschützte WP-Seite (schützt Datei-URL nicht – abgelehnt).
+
+**Entscheidung (Joseph White „ja" auf Empfehlung A).** A mit Migrationspfad zu B. Stufe 1 in dieser
+Auslieferung: eigene Rolle `liw_partner` (nur `read` + `liw_partner_access`, kein Backend – Least
+Privilege statt Wiederverwendung einer ARALIYA-Rolle), Kontoanlage als expliziter zweiter Schritt
+nach der fachlichen Freigabe (**ANNAHME-LIW-11**, konservativer Default), Passwort ausschließlich über
+den WP-Standard-Setzen-Link, additive Verknüpfung `liw_partner_extra.wp_user_id` + User-Meta.
+Rolle wird bei Deaktivierung nicht entfernt (Benutzer würden rollenlos; WP-Konvention).
+
+**Vorab-Entscheidungen für Stufe 2 (nicht bei Claude).** (1) Vollständige interne PDF an Partner
+oder bereinigte Fassung ohne Endpunktnamen (Empfehlung: bereinigt, Freigabe durch Liebherr);
+(2) Konten für alle freigegebenen Händler oder nur ausgewählte.
+
+**Quelle/Version.** Core-Dateien `Modules/Documents/*`, `Modules/Partner/PartnerAuth.php`,
+`PartnerPortalController.php`, `Core/RoleManager.php` (gelesen 18.09.2026); Pflichtenheft §10/§23/§24;
+Joseph White 18.09.2026; 0.1.0-alpha.21.
+
 ### 2026-09-18 · Interne Prozess-PDF: nicht veröffentlichen, Grafiken aus dem Pflichtenheft (0.1.0-alpha.20)
 
 **Frage/Kontext.** Joseph fragte, ob die interne Prozess-PDF (Integrationsplan mit realen

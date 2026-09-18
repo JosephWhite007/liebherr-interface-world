@@ -79,6 +79,7 @@ $cleanup_connection_ids = [];
 $cleanup_partner_ids    = [];
 $cleanup_section_ids    = [];
 $cleanup_contact_ids    = [];
+$cleanup_user_ids       = [];
 
 try {
 	global $wpdb;
@@ -122,6 +123,8 @@ try {
 	liw_st_check( 'administrator hat liw_manage_interfaces', $admin_role instanceof WP_Role && $admin_role->has_cap( RoleBridge::CAP_MANAGE_INTERFACES ) );
 	liw_st_check( 'administrator hat liw_manage_content', $admin_role instanceof WP_Role && $admin_role->has_cap( RoleBridge::CAP_MANAGE_CONTENT ) );
 	liw_st_check( 'administrator hat liw_view_onboarding', $admin_role instanceof WP_Role && $admin_role->has_cap( RoleBridge::CAP_VIEW_ONBOARDING ) );
+	$partner_role = get_role( RoleBridge::ROLE_PARTNER );
+	liw_st_check( 'Rolle liw_partner existiert mit read + liw_partner_access, ohne Backend-Caps', $partner_role instanceof WP_Role && $partner_role->has_cap( 'read' ) && $partner_role->has_cap( RoleBridge::CAP_PARTNER_ACCESS ) && ! $partner_role->has_cap( 'edit_posts' ) && ! $partner_role->has_cap( RoleBridge::CAP_MANAGE_CONTENT ) );
 
 	// ── [2] Interface Board ───────────────────────────────────────────────────
 	echo "\n[2] Interface Board (§18)\n";
@@ -187,7 +190,7 @@ try {
 
 	$partner_id = OnboardingService::submit_request( [
 		'name'             => "{$run} GmbH",
-		'contact_email'    => 'selftest@example.invalid',
+		'contact_email'    => strtolower( $run ) . '@example.invalid', // je Lauf eindeutig (alpha.21: Kontoanlage verknüpft sonst Alt-Benutzer)
 		'liw_partner_type' => 'supplier',
 		'privacy_consent'  => true,
 	] );
@@ -211,6 +214,28 @@ try {
 
 		liw_st_check( 'count_all_requests() >= 1', OnboardingService::count_all_requests() >= 1 );
 		liw_st_check( 'get_all_requests() Seite 1 liefert Zeilen', [] !== OnboardingService::get_all_requests( 1 ) );
+
+		// Partnerkonto (alpha.21): nur für freigegebene Anfragen, idempotent, Rolle liw_partner, Rückverweis.
+		$acct_mail_filter = static fn( $args ) => array_merge( (array) $args, [ 'to' => 'selftest-blackhole@example.invalid' ] );
+		add_filter( 'wp_mail', $acct_mail_filter );
+		$acct_user_id = OnboardingService::create_partner_account( $partner_id, 1 );
+		remove_filter( 'wp_mail', $acct_mail_filter );
+		liw_st_check( 'Partnerkonto für freigegebene Anfrage angelegt', ! is_wp_error( $acct_user_id ) && $acct_user_id > 0, is_wp_error( $acct_user_id ) ? $acct_user_id->get_error_message() : '' );
+		if ( ! is_wp_error( $acct_user_id ) ) {
+			$cleanup_user_ids[] = $acct_user_id;
+			$acct_user = get_userdata( $acct_user_id );
+			liw_st_check( 'Konto hat Rolle liw_partner und Rückverweis _liw_partner_id', $acct_user instanceof WP_User && in_array( RoleBridge::ROLE_PARTNER, (array) $acct_user->roles, true ) && (int) get_user_meta( $acct_user_id, OnboardingService::USER_META_PARTNER_ID, true ) === $partner_id );
+			liw_st_check( 'liw_partner_extra.wp_user_id gesetzt', (int) ( OnboardingService::get_extra( $partner_id )['wp_user_id'] ?? 0 ) === $acct_user_id );
+			liw_st_check( 'Partnerkonto darf NICHT ins Backend (edit_posts) und hat keine Board-Caps', ! user_can( $acct_user_id, 'edit_posts' ) && ! user_can( $acct_user_id, RoleBridge::CAP_VIEW_ONBOARDING ) && user_can( $acct_user_id, RoleBridge::CAP_PARTNER_ACCESS ) );
+			$second = OnboardingService::create_partner_account( $partner_id, 1 );
+			liw_st_check( 'Zweiter Aufruf legt kein zweites Konto an (liw_account_exists)', is_wp_error( $second ) && 'liw_account_exists' === $second->get_error_code() );
+		}
+		$not_approved = OnboardingService::submit_request( [ 'name' => "{$run} Zweit", 'contact_email' => strtolower( $run ) . '.zweit@example.com', 'liw_partner_type' => 'dealer', 'privacy_consent' => true ] );
+		if ( ! is_wp_error( $not_approved ) ) {
+			$cleanup_partner_ids[] = $not_approved;
+			$refused = OnboardingService::create_partner_account( $not_approved, 1 );
+			liw_st_check( 'Kein Konto für nicht freigegebene Anfrage (liw_not_approved)', is_wp_error( $refused ) && 'liw_not_approved' === $refused->get_error_code() );
+		}
 
 		$shortcode_html = do_shortcode( '[liw_onboarding_form]' );
 		liw_st_check( 'Shortcode [liw_onboarding_form] rendert Formular', false !== strpos( $shortcode_html, 'liw-onboarding-form' ) );
@@ -388,6 +413,12 @@ try {
 	}
 	foreach ( $cleanup_connection_ids as $id ) {
 		$wpdb->delete( ConnectionSchema::table_name(), [ 'id' => $id ] );
+	}
+	if ( [] !== $cleanup_user_ids ) {
+		require_once ABSPATH . 'wp-admin/includes/user.php';
+		foreach ( $cleanup_user_ids as $uid ) {
+			wp_delete_user( $uid );
+		}
 	}
 	foreach ( $cleanup_partner_ids as $partner_id ) {
 		$wpdb->delete( ConsentLogSchema::table_name(), [ 'request_id' => $partner_id ] );

@@ -1,5 +1,43 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.21] – 2026-09-18 – Partnerbereich Stufe 1: Rolle `liw_partner` + Partnerkonto anlegen
+
+### Hinzugefügt
+- **Eigene WP-Rolle `liw_partner`** („Liebherr Interface Partner", `RoleBridge::ROLE_PARTNER`) mit
+  genau zwei Capabilities: `read` (WP-Minimum für Login/Profil) und `liw_partner_access`
+  (`RoleBridge::CAP_PARTNER_ACCESS`). Bewusst keine ARALIYA-Rolle: Core-Rollen tragen Hotel-/
+  Gesundheits-Capabilities, die ein Liebherr-Partner nie haben darf (Least Privilege, §10/§23).
+  Kein Backend-Zugriff über das eigene Profil hinaus. `RoleBridge::ensure_partner_role()` läuft
+  idempotent bei Aktivierung und bei jedem Versionswechsel (`maybe_upgrade_database()`); die Rolle
+  wird bei Deaktivierung bewusst nicht entfernt (Benutzer würden rollenlos).
+- **`OnboardingService::create_partner_account()`**: legt für eine *freigegebene* Anfrage ein
+  WP-Konto mit Partnerrolle an, verknüpft es (`liw_partner_extra.wp_user_id`, User-Meta
+  `_liw_partner_id`), versendet den WP-Standardlink zum Passwort-Setzen (kein Passwort wird je
+  erzeugt oder kommuniziert), Audit `account_create`. Idempotent (`liw_account_exists`); nicht
+  freigegeben → `liw_not_approved`; vorhandener WP-Benutzer zur E-Mail wird verknüpft und erhält
+  die Partnerrolle zusätzlich.
+- **Onboarding Board:** neue Spalte „Partnerkonto" – Knopf „Partnerkonto anlegen" nur bei Status
+  `approved`, sonst Link auf den Benutzer bzw. Hinweis „nach Freigabe".
+- `liw_partner_extra`: additive Spalte `wp_user_id` + Index (dbDelta, kein Datenverlust).
+- Handbuch: Absatz zur Kontoanlage im Onboarding-Abschnitt.
+
+### Entscheidung / Analyse (geschützter Partner-Download, Joseph White „ja" zu Option A)
+- Core-Bestandsaufnahme: `Modules\Documents` hat ein sehr gutes Sicherheitsmuster, ist aber
+  gastgebunden; das Core-Partner-Portal ist eine Bearer-Token-API für eine App ohne Website-Login
+  und ohne Händlerrolle; Medienbibliothek-Dateien sind immer per URL öffentlich (CI-005 schützt
+  nur die Anzeige). Daher Option A (eigener Bereich im Plugin nach Core-Muster), Migrationspfad
+  zu B (Core-Verallgemeinerung). Diese Auslieferung ist **Stufe 1** (Rolle + Konto); Stufe 2
+  (Dokumentenbereich) folgt nach zwei Vorab-Entscheidungen (s. `docs/LIW_TODO.md`).
+- **ANNAHME-LIW-11:** Konten werden nicht automatisch bei Freigabe angelegt, sondern per
+  explizitem zweitem Schritt im Board (konservativer Default bis zur Entscheidung).
+
+### Geprüft
+- `tests/run-tests.php`: 101/101 (keine neuen Klassen; Syntax/strict_types/COMMENT-Regel grün).
+- `scripts/liw-selftest.php`: [1] Rolle existiert mit genau den erwarteten Caps und ohne
+  Backend-Caps; [5] Kontoanlage für die freigegebene Testanfrage (Rolle, Rückverweis,
+  `wp_user_id`, keine Backend-Rechte), Idempotenz, Ablehnung für nicht freigegebene Anfrage;
+  Mail im Testlauf umgeleitet; Testbenutzer werden wieder gelöscht. Docker-Lauf steht aus.
+
 ## [0.1.0-alpha.20] – 2026-09-18 – Drei weitere anonymisierte Grafiken (LP-03, LP-04, LP-12)
 
 ### Hinzugefügt

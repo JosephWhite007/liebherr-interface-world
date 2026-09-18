@@ -6,7 +6,7 @@ oder als offene Rückfrage an Joseph White dokumentiert wurden (Quelle jeweils a
 Sichtbar im Backend unter „Interface World → 📋 To-Dos". Wird bei jeder Aufgabe, die einen
 Punkt hier abschließt oder ergänzt, gepflegt.
 
-Stand: 18.09.2026 (0.1.0-alpha.20).
+Stand: 18.09.2026 (0.1.0-alpha.21).
 
 ---
 
@@ -64,14 +64,17 @@ Stand: 18.09.2026 (0.1.0-alpha.20).
   18.09.2026: bewusst zurückgestellt, Datenpflege (alpha.5) ist davon unabhängig nutzbar.
   *Quelle: CHANGELOG.md alpha.8; AskUserQuestion-Antwort 18.09.2026 „Liste/Grid nach Region".*
 
-- **Interne Prozess-PDF – geschützter Partner-Download (Analyse ausstehend).** Entscheidung Joseph
-  White 18.09.2026: öffentlich nicht (reale Endpunkt-/Systemnamen, §17, Sicherheitsziel); stattdessen
-  (1) weitere anonymisierte Grafiken – mit alpha.20 geliefert – und (2) Analyse eines geschützten
-  Downloads nur für angemeldete, freigegebene Partner (Media Board/CI-005, Partner-Login/Rolle, ggf.
-  Core-Dokumentenmodul). Kategorie-A-nahe Entscheidung, Analyse mit Optionen/Aufwand/Risiken folgt
-  als eigene Scheibe. Die PDF liegt Claude aktuell nicht vor (erneut hochladen, wenn Prozessdetails
-  daraus gebraucht werden).
-  *Quelle: Rückfrage Joseph White 18.09.2026; docs/LOGBUCH_TECHNIK.md alpha.12/alpha.20.*
+- **Geschützter Partnerbereich – Stufe 2: Dokumentenbereich.** Analyse 18.09.2026 (Logbuch
+  alpha.21): Option A gewählt – eigener schlanker Dokumentenbereich im Plugin nach dem
+  Core-Sicherheitsmuster (`Modules\Documents`: zufälliger Dateiname, Verzeichnis mit Deny, Einmal-
+  Download-Token, Audit), weil das Core-Modul gastgebunden ist; Migrationspfad zu Option B
+  (Core-Verallgemeinerung `owner_type`) offen. Stufe 1 (Rolle `liw_partner` + Kontoanlage) ist mit
+  alpha.21 umgesetzt. Offen für Stufe 2: Tabelle/Speicherort, Upload im Backend, Shortcode
+  `[liw_partner_documents]`, Download-Endpunkt (eingeloggt + `liw_partner_access` + Nonce + Audit).
+  **Zwei Entscheidungen Joseph/Liebherr vorab:** (1) Darf die vollständige interne PDF an Partner,
+  oder nur eine Fassung ohne Endpunktnamen? (2) Konten für alle freigegebenen Händler oder nur
+  ausgewählte (aktuell: manuell per Knopf, ANNAHME-LIW-11)? Die PDF liegt Claude nicht vor.
+  *Quelle: Rückfrage Joseph White 18.09.2026; docs/LOGBUCH_TECHNIK.md alpha.20/alpha.21.*
 
 ## Architektur – offene Rückfrage an Joseph White
 
@@ -103,6 +106,7 @@ Stand: 18.09.2026 (0.1.0-alpha.20).
 - Bauplan LP-01…LP-14 + Anlage der Standard-Abschnitte per Knopf (alpha.17) umgesetzt.
 - Zusammengesetzte Landingpage `[liw_landingpage]` (alpha.18) umgesetzt.
 - LP-13 Kontaktformular + Contact Board (alpha.19) umgesetzt – Folgepunkte s. oben.
+- Partnerbereich Stufe 1: Rolle `liw_partner` + Kontoanlage im Onboarding Board (alpha.21).
 - Anonymisierte Grafiken LP-03/LP-04/LP-12 (alpha.20) geliefert – damit haben acht von 14
   Abschnitten einen gebauten Baustein; LP-01/02/05/09/10/14 sind reine Redaktion/Bildsprache.
 - Hinweis an den Core (Klammern in Tabellen-COMMENTs, Befund alpha.16): von Joseph freigegeben und

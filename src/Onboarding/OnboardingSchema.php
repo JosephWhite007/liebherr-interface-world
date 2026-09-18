@@ -39,11 +39,13 @@ final class OnboardingSchema {
 			requested_interfaces  TEXT NULL COMMENT 'Freitext: gewünschte Schnittstellen/Anbindung',
 			message               TEXT NULL,
 			onboarding_status     VARCHAR(20)  NOT NULL DEFAULT 'new' COMMENT 'new | in_review | approved | rejected',
+			wp_user_id            BIGINT UNSIGNED NULL COMMENT 'WP-Benutzerkonto des Partners, Rolle liw_partner, seit alpha.21, NULL = kein Konto',
 			created_at            DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			updated_at            DATETIME NULL ON UPDATE CURRENT_TIMESTAMP,
 			PRIMARY KEY (id),
 			UNIQUE KEY unique_partner (partner_id),
-			KEY idx_status (onboarding_status)
+			KEY idx_status (onboarding_status),
+			KEY idx_wp_user (wp_user_id)
 		) {$charset} COMMENT='Liebherr Interface World – Onboarding-Zusatzfelder zu ary_partners, §22';" );
 	}
 }

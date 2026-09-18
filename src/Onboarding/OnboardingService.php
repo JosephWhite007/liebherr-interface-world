@@ -17,6 +17,7 @@ namespace Liebherr\InterfaceWorld\Onboarding;
 use Liebherr\InterfaceWorld\Consent\ConsentLogService;
 use Liebherr\InterfaceWorld\CoreBridge\AuditBridge;
 use Liebherr\InterfaceWorld\CoreBridge\PartnerBridge;
+use Liebherr\InterfaceWorld\CoreBridge\RoleBridge;
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
@@ -175,5 +176,82 @@ final class OnboardingService {
 		$table = OnboardingSchema::table_name();
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		return (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table}" );
+	}
+
+	/** User-Meta am WP-Konto: Rückverweis auf ary_partners.id (für Partnerbereich/Dokumente, Stufe 2). */
+	public const USER_META_PARTNER_ID = '_liw_partner_id';
+
+	/**
+	 * Legt für eine FREIGEGEBENE Onboarding-Anfrage ein WP-Benutzerkonto mit Rolle `liw_partner`
+	 * an (alpha.21, Stufe 1 des geschützten Partnerbereichs). Idempotent: ist bereits ein Konto
+	 * verknüpft, wird nichts geändert (Fehler `liw_account_exists`).
+	 *
+	 * ANNAHME-LIW-11: Konten werden NICHT automatisch bei Freigabe angelegt, sondern bewusst per
+	 * Aktion im Onboarding Board (zweiter Schritt nach der fachlichen Freigabe – Least Privilege,
+	 * §10/§23). Existiert zur Kontakt-E-Mail bereits ein WP-Benutzer, wird dieser verknüpft und
+	 * erhält die Partner-Rolle ZUSÄTZLICH (keine bestehende Rolle wird entfernt).
+	 *
+	 * Passwort: nie erzeugt/versendet – der Partner setzt es selbst über den WP-Standardlink
+	 * (`wp_new_user_notification( …, 'user' )`, zeitlich begrenzter Reset-Link).
+	 *
+	 * @return int|\WP_Error WP-User-ID
+	 */
+	public static function create_partner_account( int $partner_id, int $actor_id ): int|\WP_Error {
+		$extra = self::get_extra( $partner_id );
+		if ( null === $extra ) {
+			return new \WP_Error( 'liw_not_found', __( 'Anfrage nicht gefunden.', 'liebherr-interface-world' ) );
+		}
+		if ( 'approved' !== $extra['onboarding_status'] ) {
+			return new \WP_Error( 'liw_not_approved', __( 'Ein Partnerkonto kann nur für freigegebene Anfragen angelegt werden.', 'liebherr-interface-world' ) );
+		}
+		if ( ! empty( $extra['wp_user_id'] ) && get_userdata( (int) $extra['wp_user_id'] ) instanceof \WP_User ) {
+			return new \WP_Error( 'liw_account_exists', __( 'Für diese Anfrage existiert bereits ein Partnerkonto.', 'liebherr-interface-world' ) );
+		}
+
+		$partner = PartnerBridge::get( $partner_id );
+		$email   = sanitize_email( (string) ( $partner['contact_email'] ?? '' ) );
+		if ( ! is_email( $email ) ) {
+			return new \WP_Error( 'liw_invalid_email', __( 'Die Kontakt-E-Mail des Partners ist ungültig – Konto kann nicht angelegt werden.', 'liebherr-interface-world' ) );
+		}
+
+		RoleBridge::ensure_partner_role();
+
+		$existing = get_user_by( 'email', $email );
+		if ( $existing instanceof \WP_User ) {
+			$existing->add_role( RoleBridge::ROLE_PARTNER );
+			$user_id = (int) $existing->ID;
+			$linked  = true;
+		} else {
+			$base     = sanitize_user( strstr( $email, '@', true ) ?: $email, true ) ?: 'partner';
+			$username = $base;
+			$i        = 1;
+			while ( username_exists( $username ) ) {
+				$username = $base . '-' . ( ++$i );
+			}
+			$user_id = wp_insert_user( [
+				'user_login'   => $username,
+				'user_email'   => $email,
+				'user_pass'    => wp_generate_password( 32, true, true ), // wird nie kommuniziert; Partner setzt eigenes Passwort per Link.
+				'display_name' => sanitize_text_field( (string) ( $partner['contact_name'] ?: $partner['name'] ) ),
+				'role'         => RoleBridge::ROLE_PARTNER,
+			] );
+			if ( is_wp_error( $user_id ) ) {
+				return $user_id;
+			}
+			$user_id = (int) $user_id;
+			$linked  = false;
+		}
+
+		update_user_meta( $user_id, self::USER_META_PARTNER_ID, $partner_id );
+
+		global $wpdb;
+		$wpdb->update( OnboardingSchema::table_name(), [ 'wp_user_id' => $user_id ], [ 'partner_id' => $partner_id ] );
+
+		if ( ! $linked ) {
+			wp_new_user_notification( $user_id, null, 'user' ); // Passwort-setzen-Link an den Partner, keine Admin-Kopie.
+		}
+
+		AuditBridge::log( 'account_create', 'onboarding_request', $partner_id, [], [ 'wp_user_id' => $user_id, 'linked_existing' => $linked, 'role' => RoleBridge::ROLE_PARTNER ], $actor_id );
+		return $user_id;
 	}
 }

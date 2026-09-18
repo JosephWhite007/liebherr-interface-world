@@ -10,7 +10,8 @@
  * Rollenzuordnung (Liebherr-Pflichtenheft §5) → ARALIYA-Rolle:
  *   Interface Admin / System Admin → araliya_admin
  *   Redaktion (Content Board)      → araliya_marketing (CAP_CONTENT-Träger)
- *   Händler / Lieferant / Partner  → eigene, noch zu schaffende Portal-Rolle (Stufe 2, Portal – nicht Teil dieser Auslieferung)
+ *   Händler / Lieferant / Partner  → eigene Rolle `liw_partner` (seit alpha.21, Stufe 1 des geschützten
+ *                                    Partnerbereichs: Konto + Login; Dokumentenbereich folgt)
  *
  * @package Liebherr\InterfaceWorld\CoreBridge
  * @since   0.1.0-alpha.1
@@ -28,6 +29,16 @@ final class RoleBridge {
 	public const CAP_MANAGE_INTERFACES  = 'liw_manage_interfaces';   // Interface-/Simulationskatalog pflegen
 	public const CAP_MANAGE_CONTENT     = 'liw_manage_content';      // Sektionen/Content Board
 	public const CAP_VIEW_ONBOARDING    = 'liw_view_onboarding';     // Partner-/Onboarding-Anfragen einsehen
+	public const CAP_PARTNER_ACCESS     = 'liw_partner_access';      // Zugang zum geschützten Partnerbereich (Rolle liw_partner)
+
+	/**
+	 * Eigene WP-Rolle für freigegebene Händler/Lieferanten/Kunden (alpha.21). Bewusst eine
+	 * eigene Rolle statt einer ARALIYA-Rolle: Core-Rollen tragen Hotel-/Gesundheits-Capabilities
+	 * (Therapeut, Reception …), die ein Liebherr-Partner nie haben darf (Least Privilege,
+	 * Pflichtenheft §10/§23 rollenbasierter Zugriff). Capabilities: nur `read` (WP-Minimum für
+	 * Login/Profil) + CAP_PARTNER_ACCESS – kein Backend-Zugriff über das eigene Profil hinaus.
+	 */
+	public const ROLE_PARTNER = 'liw_partner';
 
 	private const ROLE_ADMIN_CLASS = 'Araliya\\Platform\\Core\\Core\\RoleManager';
 
@@ -40,8 +51,25 @@ final class RoleBridge {
 	 */
 	private const FULL_ACCESS_ROLES = [ 'administrator', 'araliya_admin' ];
 
+	/**
+	 * Legt die Partner-Rolle an bzw. gleicht ihre Capabilities ab (idempotent; Aktivierung und
+	 * Versionswechsel). Bestehende Benutzer mit dieser Rolle bleiben unberührt.
+	 */
+	public static function ensure_partner_role(): void {
+		$role = get_role( self::ROLE_PARTNER );
+		if ( ! $role instanceof \WP_Role ) {
+			$role = add_role( self::ROLE_PARTNER, __( 'Liebherr Interface Partner', 'liebherr-interface-world' ), [ 'read' => true ] );
+		}
+		if ( $role instanceof \WP_Role ) {
+			$role->add_cap( 'read' );
+			$role->add_cap( self::CAP_PARTNER_ACCESS );
+		}
+	}
+
 	/** Vergibt die Liebherr-Capabilities an bestehende ARALIYA-Rollen (Aktivierung). */
 	public static function grant_capabilities(): void {
+		self::ensure_partner_role();
+
 		foreach ( self::FULL_ACCESS_ROLES as $role_slug ) {
 			$role = get_role( $role_slug );
 			if ( $role instanceof \WP_Role ) {
@@ -68,6 +96,9 @@ final class RoleBridge {
 	 * 'administrator' wird bewusst NICHT entfernt (Core-Konvention, RoleManager::deactivate():
 	 * "Does NOT remove 'administrator'") — der native Admin-Account soll auch nach einer
 	 * Deaktivierung nicht plötzlich Capabilities verlieren, die er vorher hatte.
+	 * Die Rolle `liw_partner` wird bei Deaktivierung ebenfalls NICHT entfernt: Benutzer mit
+	 * dieser Rolle würden sonst rollenlos (WP-Konvention: Rollen mit Benutzern nur bei
+	 * Deinstallation entfernen; keine Deinstallationsroutine in dieser Ausbaustufe).
 	 */
 	public static function revoke_capabilities(): void {
 		foreach ( [ 'araliya_admin', 'araliya_marketing' ] as $role_slug ) {
