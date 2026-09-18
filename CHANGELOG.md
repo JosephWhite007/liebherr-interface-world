@@ -1,5 +1,45 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.22] – 2026-09-18 – Partnerbereich Stufe 2: geschützte Partnerdokumente
+
+### Hinzugefügt
+- **`Partner\PartnerDocumentService` / `PartnerDocumentSchema`** (Tabelle `liw_partner_document`,
+  nur Metadaten): Sicherheitsmuster 1:1 vom Core `Modules\Documents` (ADR-074) übernommen, weil
+  das Core-Modul gastgebunden ist – Upload-Verzeichnis `uploads/liw-partner-documents` mit 0750,
+  `.htaccess Deny from all` + `Require all denied`, leerer `index.html`; zufälliger `stored_name`
+  (nie ausgegeben, auch nicht in `get_active()`); doppelte Typprüfung Dateiname UND Inhalt (finfo)
+  gegen Whitelist PDF/PNG/JPG/DOCX; 10 MB; SHA-256 je Datei; Soft-Delete (Datei bleibt für den
+  Audit-Trail); Audit für Upload, Löschung und **jeden Download** (§10).
+- **`[liw_partner_documents]`** (`Partner\PartnerDocumentsView`): ohne Login nur Login-Link
+  (`wp_login_url()` mit Rücksprung), angemeldet ohne `liw_partner_access` ein Hinweis, Partner
+  die Liste mit Download-Formular (POST + Nonce). Download über `admin_post_` (bewusst kein
+  `nopriv`): eingeloggt → Capability → Nonce → aktives Dokument → realpath-Guard → Streaming mit
+  `Content-Disposition`, `nosniff`, `nocache_headers()`. Kein Token nötig (Website-Login mit
+  Cookie; der Core braucht Token wegen seiner cookielosen App-API). Admin-Leiste für reine
+  Partner ausgeblendet.
+- **Neuntes Board „Partnerdokumente"** (`Admin\Pages\PartnerDocumentBoardPage`, Capability
+  `liw_manage_content`): Upload-Formular, Liste, Entfernen. Hinweis im Board: nur für Partner
+  freigegebene Fassungen hochladen.
+- `RoleBridge`: Administratoren erhalten `liw_partner_access` (Prüfung/Support des Frontends);
+  Nachziehen bei Versionswechsel über `ensure_partner_role()`.
+- CSS `.liw-partner-docs*` (Design-Tokens), `FrontendAssets`: sechster Auslöser. Handbuch:
+  neuer Abschnitt 7, Nummerierung 8/9.
+
+### Annahme
+- **ANNAHME-LIW-12:** Alle Partner mit `liw_partner_access` sehen dieselben Dokumente (keine
+  Zuordnung je Partner/Region); additiv per Join-Tabelle nachrüstbar.
+
+### Geprüft
+- `tests/run-tests.php`: 110/110 (neue Klassen; COMMENT-Regel für die neue Tabelle grün).
+- Fachlogik ohne WP per Stub (14/14): gültiger Upload, zufälliger Name, Datei im gesperrten
+  Verzeichnis mit `.htaccess`, SHA-256, realpath-Guard gegen Traversal, Ablehnung `.php`/`.exe`,
+  Inhalt≠Endung, leerer Titel, Upload-Fehler, >10 MB, Soft-Delete lässt Datei stehen.
+- `scripts/liw-selftest.php`: neuer Abschnitt [5c] mit 10 Prüfungen (Verzeichnisschutz,
+  Ablehnungen, Upload, Listen ohne `stored_name`, Shortcode ohne Login/als Partner, Admin-Leiste,
+  Soft-Delete) – Testuploads nur in `development` per CLI aus dem WP-Temp-Verzeichnis
+  (`is_test_upload()`, im Produktivbetrieb bleibt `is_uploaded_file()` zwingend). Docker-Lauf
+  steht aus.
+
 ## [0.1.0-alpha.21] – 2026-09-18 – Partnerbereich Stufe 1: Rolle `liw_partner` + Partnerkonto anlegen
 
 ### Hinzugefügt

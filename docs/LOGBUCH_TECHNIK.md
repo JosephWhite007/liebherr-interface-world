@@ -8,6 +8,26 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · Partnerdokumente: Core-Muster kopiert statt Core-Modul gebogen (0.1.0-alpha.22)
+
+**Frage/Kontext.** Joseph gab mit „ja" Stufe 2 frei. Die zwei Vorab-Fragen (PDF-Fassung, Konto-
+Automatik) sind noch offen – der Dokumentenbereich ist inhaltsneutral, daher blockieren sie den
+Bau nicht; konservative Defaults bleiben (manuelle Konten, Redaktion entscheidet den Upload).
+
+**Entscheidungen im Detail.** (1) Speichermuster: Verzeichnis/Random-Name/Deny/finfo/Soft-Delete
+wie Core `DocumentService` – bewusst kopiert statt das gastgebundene Core-Modul zu erweitern
+(Kategorie A, später als Option B möglich). (2) Download ohne Einmal-Token: Der Core braucht Token,
+weil seine App-API ohne Cookie arbeitet; hier liegt ein Website-Login vor, also reicht eingeloggt +
+Capability + Nonce + `admin_post_` ohne `nopriv` – weniger Zustand, kein Transient. (3) Kein
+`nopriv`-Hook: anonyme Anfragen erreichen den Handler nie. (4) Admins erhalten
+`liw_partner_access`, damit Joseph den Bereich ohne zweites Konto prüfen kann. (5) Testuploads:
+`is_uploaded_file()` schlägt im CLI-Selbsttest immer fehl; Ausnahme nur bei
+`WP_ENVIRONMENT_TYPE=development` UND CLI UND Datei im WP-Temp-Verzeichnis – im Produktivbetrieb
+unverändert streng. (6) **ANNAHME-LIW-12:** ein Dokumentenpool für alle Partner.
+
+**Quelle/Version.** Core `Modules/Documents/DocumentService.php` (Muster); Pflichtenheft §10/§23/§24;
+Joseph White 18.09.2026 „ja"; 0.1.0-alpha.22.
+
 ### 2026-09-18 · Geschützter Partnerbereich: Option A, Stufe 1 = eigene Rolle + Konto per Knopf (0.1.0-alpha.21)
 
 **Frage/Kontext.** Nach der PDF-Entscheidung (alpha.20) bat Joseph um die Analyse eines

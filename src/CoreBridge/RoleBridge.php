@@ -64,6 +64,12 @@ final class RoleBridge {
 			$role->add_cap( 'read' );
 			$role->add_cap( self::CAP_PARTNER_ACCESS );
 		}
+		foreach ( self::FULL_ACCESS_ROLES as $role_slug ) { // Versionswechsel: Admins erhalten den Frontend-Zugang nach (alpha.22).
+			$admin = get_role( $role_slug );
+			if ( $admin instanceof \WP_Role ) {
+				$admin->add_cap( self::CAP_PARTNER_ACCESS );
+			}
+		}
 	}
 
 	/** Vergibt die Liebherr-Capabilities an bestehende ARALIYA-Rollen (Aktivierung). */
@@ -76,6 +82,7 @@ final class RoleBridge {
 				$role->add_cap( self::CAP_MANAGE_INTERFACES );
 				$role->add_cap( self::CAP_MANAGE_CONTENT );
 				$role->add_cap( self::CAP_VIEW_ONBOARDING );
+				$role->add_cap( self::CAP_PARTNER_ACCESS ); // Admins sehen den Partnerbereich im Frontend (Prüfung/Support), alpha.22.
 			}
 		}
 
@@ -107,6 +114,7 @@ final class RoleBridge {
 				$role->remove_cap( self::CAP_MANAGE_INTERFACES );
 				$role->remove_cap( self::CAP_MANAGE_CONTENT );
 				$role->remove_cap( self::CAP_VIEW_ONBOARDING );
+				$role->remove_cap( self::CAP_PARTNER_ACCESS );
 			}
 		}
 	}

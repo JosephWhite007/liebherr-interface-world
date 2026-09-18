@@ -1,7 +1,8 @@
 /**
  * Liebherr Interface Solutions — Frontend-Stylesheet
  *
- * Scope: .liw-onboarding-form / .liw-contact-form / .liw-connections-map / .liw-graphic-figure / .liw-landingpage (namespaced Selektoren, analog
+ * Scope: .liw-onboarding-form / .liw-contact-form / .liw-connections-map / .liw-graphic-figure / .liw-landingpage /
+ * .liw-partner-docs (namespaced Selektoren, analog
  * ARALIYA-Konvention .ary-apt-*/.ary-ev-* in araliya-platform-core/assets/css/*.css).
  * Alle Farb-/Schriftwerte referenzieren ausschließlich die zentralen Design-Tokens aus
  * araliya-platform-core (ARY-DP-1.0.0, s. src/Frontend/DesignSystem.php::generate_css()
@@ -260,7 +261,66 @@
 	font-weight: normal;
 }
 
+/* ── Partnerdokumente ([liw_partner_documents], seit alpha.22) ─────────────── */
+.liw-partner-docs {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	font-family: var(--ar-font-body, var(--font-main, "Cormorant", serif));
+	color: var(--ary-text, #24302a);
+}
+
+.liw-partner-docs--login,
+.liw-partner-docs--denied,
+.liw-partner-docs--empty {
+	padding: 1rem 1.25rem;
+	border: 1px dashed var(--ary-highlight, #b6a27a);
+	border-radius: 4px;
+	background: var(--ary-card, #ffffff);
+}
+
+.liw-partner-docs__item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 16px;
+	padding: 16px 20px;
+	margin-bottom: 12px;
+	background: var(--ary-card, #ffffff);
+	border: 1px solid var(--ary-highlight, #b6a27a);
+	border-left: 3px solid var(--ary-accent, #61735f);
+	border-radius: 6px;
+}
+
+.liw-partner-docs__description {
+	margin: 4px 0;
+	font-size: 0.95em;
+}
+
+.liw-partner-docs__file {
+	font-size: 0.85em;
+	opacity: 0.7;
+}
+
+.liw-partner-docs__form button[type="submit"] {
+	padding: 10px 20px;
+	background: var(--ary-accent, #61735f);
+	color: #fff;
+	border: none;
+	border-radius: 2px;
+	font-family: var(--ar-font-button, var(--ar-font-body, inherit));
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	cursor: pointer;
+	white-space: nowrap;
+}
+
 @media (max-width: 600px) {
+	.liw-partner-docs__item {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
 	.liw-onboarding-form,
 	.liw-contact-form {
 		padding: 20px;

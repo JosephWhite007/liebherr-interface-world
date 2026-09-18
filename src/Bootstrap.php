@@ -26,6 +26,7 @@ use Liebherr\InterfaceWorld\Frontend\FrontendAssets;
 use Liebherr\InterfaceWorld\Frontend\LandingpageView;
 use Liebherr\InterfaceWorld\Frontend\SectionGraphicView;
 use Liebherr\InterfaceWorld\Onboarding\OnboardingForm;
+use Liebherr\InterfaceWorld\Partner\PartnerDocumentsView;
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
@@ -42,6 +43,7 @@ final class Bootstrap {
 		ConnectionMapView::register();
 		SectionGraphicView::register();
 		LandingpageView::register();
+		PartnerDocumentsView::register();
 		FrontendAssets::register();
 
 		if ( is_admin() ) {

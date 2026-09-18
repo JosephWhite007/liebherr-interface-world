@@ -49,6 +49,9 @@ use Liebherr\InterfaceWorld\Interfaces\InterfaceCatalogSchema;
 use Liebherr\InterfaceWorld\Interfaces\InterfaceCatalogService;
 use Liebherr\InterfaceWorld\Onboarding\OnboardingSchema;
 use Liebherr\InterfaceWorld\Onboarding\OnboardingService;
+use Liebherr\InterfaceWorld\Partner\PartnerDocumentSchema;
+use Liebherr\InterfaceWorld\Partner\PartnerDocumentService;
+use Liebherr\InterfaceWorld\Partner\PartnerDocumentsView;
 use Liebherr\InterfaceWorld\Simulation\SimulationSchema;
 use Liebherr\InterfaceWorld\Simulation\SimulationService;
 
@@ -80,6 +83,7 @@ $cleanup_partner_ids    = [];
 $cleanup_section_ids    = [];
 $cleanup_contact_ids    = [];
 $cleanup_user_ids       = [];
+$cleanup_document_ids   = [];
 
 try {
 	global $wpdb;
@@ -101,6 +105,7 @@ try {
 			'liw_consent_log'      => ConsentLogSchema::table_name(),
 			'liw_partner_extra'    => OnboardingSchema::table_name(),
 			'liw_contact_request'  => ContactSchema::table_name(),
+			'liw_partner_document' => PartnerDocumentSchema::table_name(),
 		] as $label => $table
 	) {
 		$exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) ) === $table;
@@ -242,6 +247,41 @@ try {
 		liw_st_check( 'Honeypot-Feld liw_hp_website vorhanden', false !== strpos( $shortcode_html, 'liw_hp_website' ) );
 		liw_st_check( 'Honeypot in .liw-visually-hidden verpackt', false !== strpos( $shortcode_html, 'liw-visually-hidden' ) );
 	}
+
+	// ── [5c] Partnerdokumente (geschützter Bereich, alpha.22) ─────────────────
+	echo "\n[5c] Partnerdokumente – geschützter Download (§10/§23)\n";
+	$pd_dir = PartnerDocumentService::get_upload_path();
+	liw_st_check( 'Gesperrtes Verzeichnis mit .htaccess Deny + index.html angelegt', is_dir( $pd_dir ) && is_file( $pd_dir . '/.htaccess' ) && str_contains( (string) file_get_contents( $pd_dir . '/.htaccess' ), 'Deny from all' ) && is_file( $pd_dir . '/index.html' ) );
+	$tmp_pdf = tempnam( get_temp_dir(), 'liwst' ) . '.pdf';
+	file_put_contents( $tmp_pdf, "%PDF-1.4\n1 0 obj << /Type /Catalog >> endobj\ntrailer << /Root 1 0 R >>\n%%EOF\n" );
+	$fake = [ 'name' => "{$run}-Prozess.pdf", 'tmp_name' => $tmp_pdf, 'size' => filesize( $tmp_pdf ), 'error' => UPLOAD_ERR_OK ];
+	$bad  = [ 'name' => "{$run}-Skript.php", 'tmp_name' => $tmp_pdf, 'size' => filesize( $tmp_pdf ), 'error' => UPLOAD_ERR_OK ];
+	$rej  = PartnerDocumentService::upload( $bad, 'x', '', 1 );
+	liw_st_check( 'Upload mit nicht erlaubter Endung (.php) wird abgelehnt', is_wp_error( $rej ) && 'liw_type_not_allowed' === $rej->get_error_code() );
+	$tmp_png = tempnam( get_temp_dir(), 'liwst' ) . '.png';
+	file_put_contents( $tmp_png, "%PDF-1.4 not really a png" );
+	$rej2 = PartnerDocumentService::upload( [ 'name' => 'bild.png', 'tmp_name' => $tmp_png, 'size' => filesize( $tmp_png ), 'error' => UPLOAD_ERR_OK ], 'x', '', 1 );
+	liw_st_check( 'Inhalt ≠ Endung (PDF-Bytes als .png) wird abgelehnt', is_wp_error( $rej2 ) && 'liw_type_mismatch' === $rej2->get_error_code() );
+	$doc_id = PartnerDocumentService::upload( $fake, "{$run} Prozessdokument", 'Testbeschreibung', 1 );
+	liw_st_check( 'PDF-Upload angelegt', ! is_wp_error( $doc_id ) && $doc_id > 0, is_wp_error( $doc_id ) ? $doc_id->get_error_message() : '' );
+	if ( ! is_wp_error( $doc_id ) ) {
+		$doc = PartnerDocumentService::get( $doc_id );
+		$cleanup_document_ids[] = [ $doc_id, $pd_dir . '/' . ( $doc['stored_name'] ?? '' ) ];
+		liw_st_check( 'Zufälliger stored_name, sha256 gesetzt, Datei im gesperrten Verzeichnis', is_array( $doc ) && preg_match( '/^[0-9a-f]{32}\.pdf$/', (string) $doc['stored_name'] ) && 64 === strlen( (string) $doc['sha256'] ) && null !== PartnerDocumentService::file_path( $doc ) );
+		liw_st_check( 'get_active() listet Dokument ohne stored_name auszugeben', in_array( $doc_id, array_map( 'intval', array_column( PartnerDocumentService::get_active(), 'id' ) ), true ) && ! array_key_exists( 'stored_name', PartnerDocumentService::get_active()[0] ) );
+		$prev_user = get_current_user_id();
+		wp_set_current_user( 0 );
+		liw_st_check( '[liw_partner_documents] ohne Login → nur Login-Link, kein Dokument', str_contains( do_shortcode( '[liw_partner_documents]' ), 'liw-partner-docs--login' ) && ! str_contains( do_shortcode( '[liw_partner_documents]' ), "{$run} Prozessdokument" ) );
+		if ( ! empty( $acct_user_id ) && ! is_wp_error( $acct_user_id ) ) {
+			wp_set_current_user( $acct_user_id );
+			$pd_html = do_shortcode( '[liw_partner_documents]' );
+			liw_st_check( '[liw_partner_documents] als Partner → Dokument mit Download-Formular (Nonce, POST)', str_contains( $pd_html, "{$run} Prozessdokument" ) && str_contains( $pd_html, 'name="document_id"' ) && str_contains( $pd_html, 'liw_pd_nonce' ) && ! str_contains( $pd_html, (string) $doc['stored_name'] ) );
+			liw_st_check( 'Admin-Leiste für reine Partner ausgeblendet', false === PartnerDocumentsView::hide_admin_bar_for_partners( true ) );
+		}
+		wp_set_current_user( $prev_user );
+		liw_st_check( 'soft_delete() entfernt aus Liste, Datei bleibt (Audit-Trail)', true === PartnerDocumentService::soft_delete( $doc_id, 1 ) && null === PartnerDocumentService::get( $doc_id ) && is_file( $pd_dir . '/' . $doc['stored_name'] ) );
+	}
+	@unlink( $tmp_pdf ); @unlink( $tmp_png ); // phpcs:ignore
 
 	// ── [5b] Kontaktformular LP-13 (§22) ─────────────────────────────────────
 	echo "\n[5b] Kontaktformular LP-13 (§22, getrennt vom Onboarding)\n";
@@ -413,6 +453,10 @@ try {
 	}
 	foreach ( $cleanup_connection_ids as $id ) {
 		$wpdb->delete( ConnectionSchema::table_name(), [ 'id' => $id ] );
+	}
+	foreach ( $cleanup_document_ids as [ $doc_id, $doc_file ] ) {
+		$wpdb->delete( PartnerDocumentSchema::table_name(), [ 'id' => $doc_id ] );
+		if ( is_file( $doc_file ) ) { wp_delete_file( $doc_file ); }
 	}
 	if ( [] !== $cleanup_user_ids ) {
 		require_once ABSPATH . 'wp-admin/includes/user.php';

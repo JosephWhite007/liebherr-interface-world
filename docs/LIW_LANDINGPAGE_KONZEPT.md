@@ -6,7 +6,7 @@ Beantwortet die Frage „Haben wir ein Layout-Konzept für die Landingpage?" (Jo
 LP-14. Was bisher fehlte, war die Zuordnung zu bereits gebauten Boards/Shortcodes bzw. zu
 neuen Grafik-Assets – das leistet dieses Dokument.
 
-Stand: 18.09.2026 (0.1.0-alpha.20).
+Stand: 18.09.2026 (0.1.0-alpha.22).
 
 ## Die 14 Abschnitte (Pflichtenheft §8) und ihr Umsetzungsstand
 

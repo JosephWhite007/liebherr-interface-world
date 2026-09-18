@@ -20,6 +20,7 @@ use Liebherr\InterfaceWorld\Admin\Pages\HandbookPage;
 use Liebherr\InterfaceWorld\Admin\Pages\InterfaceBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\MediaBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\OnboardingBoardPage;
+use Liebherr\InterfaceWorld\Admin\Pages\PartnerDocumentBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\ProgrammingLogPage;
 use Liebherr\InterfaceWorld\Admin\Pages\SimulationBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\TodoBoardPage;
@@ -96,6 +97,15 @@ final class AdminMenu {
 			RoleBridge::CAP_VIEW_ONBOARDING,
 			ContactBoardPage::MENU_SLUG,
 			[ ContactBoardPage::class, 'render' ]
+		);
+
+		add_submenu_page(
+			'liw-interface-board',
+			__( 'Partnerdokumente (geschützter Bereich)', 'liebherr-interface-world' ),
+			__( 'Partnerdokumente', 'liebherr-interface-world' ),
+			RoleBridge::CAP_MANAGE_CONTENT,
+			PartnerDocumentBoardPage::MENU_SLUG,
+			[ PartnerDocumentBoardPage::class, 'render' ]
 		);
 
 		add_submenu_page(

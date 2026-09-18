@@ -6,7 +6,7 @@ oder als offene Rückfrage an Joseph White dokumentiert wurden (Quelle jeweils a
 Sichtbar im Backend unter „Interface World → 📋 To-Dos". Wird bei jeder Aufgabe, die einen
 Punkt hier abschließt oder ergänzt, gepflegt.
 
-Stand: 18.09.2026 (0.1.0-alpha.21).
+Stand: 18.09.2026 (0.1.0-alpha.22).
 
 ---
 
@@ -64,17 +64,15 @@ Stand: 18.09.2026 (0.1.0-alpha.21).
   18.09.2026: bewusst zurückgestellt, Datenpflege (alpha.5) ist davon unabhängig nutzbar.
   *Quelle: CHANGELOG.md alpha.8; AskUserQuestion-Antwort 18.09.2026 „Liste/Grid nach Region".*
 
-- **Geschützter Partnerbereich – Stufe 2: Dokumentenbereich.** Analyse 18.09.2026 (Logbuch
-  alpha.21): Option A gewählt – eigener schlanker Dokumentenbereich im Plugin nach dem
-  Core-Sicherheitsmuster (`Modules\Documents`: zufälliger Dateiname, Verzeichnis mit Deny, Einmal-
-  Download-Token, Audit), weil das Core-Modul gastgebunden ist; Migrationspfad zu Option B
-  (Core-Verallgemeinerung `owner_type`) offen. Stufe 1 (Rolle `liw_partner` + Kontoanlage) ist mit
-  alpha.21 umgesetzt. Offen für Stufe 2: Tabelle/Speicherort, Upload im Backend, Shortcode
-  `[liw_partner_documents]`, Download-Endpunkt (eingeloggt + `liw_partner_access` + Nonce + Audit).
-  **Zwei Entscheidungen Joseph/Liebherr vorab:** (1) Darf die vollständige interne PDF an Partner,
-  oder nur eine Fassung ohne Endpunktnamen? (2) Konten für alle freigegebenen Händler oder nur
-  ausgewählte (aktuell: manuell per Knopf, ANNAHME-LIW-11)? Die PDF liegt Claude nicht vor.
-  *Quelle: Rückfrage Joseph White 18.09.2026; docs/LOGBUCH_TECHNIK.md alpha.20/alpha.21.*
+- **Geschützter Partnerbereich – Folgepunkte.** Stufe 1 (Rolle + Konto, alpha.21) und Stufe 2
+  (Dokumentenbereich, alpha.22) sind umgesetzt. Offen: (1) Entscheidung Liebherr, welche Fassung
+  der Prozessdokumentation an Partner geht (Empfehlung: ohne Endpunktnamen) – der Bereich ist
+  inhaltsneutral, der Upload liegt bei der Redaktion; (2) Konten für alle freigegebenen Händler
+  automatisch statt per Knopf (ANNAHME-LIW-11); (3) Dokumente je Partner/Region statt für alle
+  (ANNAHME-LIW-12, additiv per Join-Tabelle); (4) Migrationspfad zu Core-Option B
+  (`Modules\Documents` um `owner_type` verallgemeinern), falls der Core Partnerdokumente braucht;
+  (5) Login-Seite im Design System statt WP-Standard-Login (aktuell `wp_login_url()`).
+  *Quelle: docs/LOGBUCH_TECHNIK.md alpha.21/alpha.22.*
 
 ## Architektur – offene Rückfrage an Joseph White
 
@@ -107,6 +105,7 @@ Stand: 18.09.2026 (0.1.0-alpha.21).
 - Zusammengesetzte Landingpage `[liw_landingpage]` (alpha.18) umgesetzt.
 - LP-13 Kontaktformular + Contact Board (alpha.19) umgesetzt – Folgepunkte s. oben.
 - Partnerbereich Stufe 1: Rolle `liw_partner` + Kontoanlage im Onboarding Board (alpha.21).
+- Partnerbereich Stufe 2: geschützte Partnerdokumente – Board, Service, `[liw_partner_documents]` (alpha.22).
 - Anonymisierte Grafiken LP-03/LP-04/LP-12 (alpha.20) geliefert – damit haben acht von 14
   Abschnitten einen gebauten Baustein; LP-01/02/05/09/10/14 sind reine Redaktion/Bildsprache.
 - Hinweis an den Core (Klammern in Tabellen-COMMENTs, Befund alpha.16): von Joseph freigegeben und
