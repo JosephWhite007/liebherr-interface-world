@@ -12,6 +12,13 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.23 – Landingpage: Sprungleiste
+
+**Geändert:** `src/Frontend/LandingpageView.php` (`render_shortcode()` mit Attribut `nav`,
+`anchor_for()`, `render_nav()`), `assets/css/liebherr-frontend.css` (`.liw-landingpage__nav*`,
+`scroll-margin-top`), `src/Admin/Pages/HandbookPage.php`, `scripts/liw-selftest.php` ([6] +2),
+`docs/LIW_TODO.md`, `CHANGELOG.md`, `liebherr-interface-world.php` (Version).
+
 ## 0.1.0-alpha.22 – Partnerbereich Stufe 2: geschützte Partnerdokumente
 
 **Neu:** `src/Partner/PartnerDocumentSchema.php`, `src/Partner/PartnerDocumentService.php`,

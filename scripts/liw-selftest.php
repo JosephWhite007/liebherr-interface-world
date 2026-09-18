@@ -375,6 +375,16 @@ try {
 		liw_st_check( '[liw_landingpage] löst eingebetteten [liw_graphic] auf (Inline-SVG)', str_contains( $lp_html, 'liw-graphic--data-model' ) );
 		liw_st_check( '[liw_landingpage] zeigt Entwurf NICHT', ! str_contains( $lp_html, "{$run} Entwurf-Abschnitt" ) && ! str_contains( $lp_html, 'unsichtbar' ) );
 		liw_st_check( '[liw_landingpage] Wrapper-Klasse liw-landingpage vorhanden', str_contains( $lp_html, 'class="liw-landingpage"' ) );
+		// Sprungleiste (alpha.23): Link auf den Anker des veröffentlichten Abschnitts; nav="0" schaltet ab.
+		$nav_html = do_shortcode( '[liw_landingpage]' );
+		$published_count = count( LandingpageView::get_published_sections() );
+		liw_st_check(
+			$published_count >= 2 ? '[liw_landingpage] enthält Sprungleiste mit Link auf den Abschnitts-Anker' : '[liw_landingpage] ohne Sprungleiste bei nur einem veröffentlichten Abschnitt (bewusst)',
+			$published_count >= 2
+				? ( str_contains( $nav_html, 'class="liw-landingpage__nav"' ) && str_contains( $nav_html, 'href="#' . strtolower( $run ) . '-code"' ) )
+				: ! str_contains( $nav_html, 'liw-landingpage__nav' )
+		);
+		liw_st_check( '[liw_landingpage nav="0"] ohne Sprungleiste, Abschnitt weiterhin da', ! str_contains( do_shortcode( '[liw_landingpage nav="0"]' ), 'liw-landingpage__nav' ) && str_contains( do_shortcode( '[liw_landingpage nav="0"]' ), "{$run} Testabschnitt" ) );
 		liw_st_check( 'get_published_sections() liefert nur publish', [] === array_filter( LandingpageView::get_published_sections(), static fn( WP_Post $p ): bool => 'publish' !== $p->post_status ) );
 	}
 

@@ -1,5 +1,21 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.23] – 2026-09-18 – Landingpage: klebende Sprungleiste (Ankernavigation)
+
+### Hinzugefügt
+- `[liw_landingpage]` rendert oben eine **Sprungleiste** (`<nav aria-label="Abschnitte der Seite">`)
+  mit einem Link je veröffentlichtem Abschnitt auf dessen Anker (`#lp-07` …); `position: sticky`,
+  horizontal scrollbar auf kleinen Bildschirmen, Hover/Fokus in Akzentfarbe, `scroll-margin-top`
+  der Abschnitte auf 4rem erhöht, damit Überschriften nicht unter der Leiste verschwinden.
+  Erscheint erst ab zwei Abschnitten; `nav="0"` schaltet sie ab. Reines HTML/CSS – keine aktive
+  Hervorhebung per JS (kein Inline-JS; eigenes Skript wäre YAGNI, s. To-Dos).
+- `LandingpageView::anchor_for()` als gemeinsame Quelle für Anker (Abschnitt und Leiste), kein
+  doppelter Code.
+
+### Geprüft
+- `tests/run-tests.php`: 110/110. `scripts/liw-selftest.php` [6]: zwei Prüfungen (Leiste mit Link auf
+  den Test-Anker bei ≥ 2 veröffentlichten Abschnitten, `nav="0"` ohne Leiste). Docker-Lauf steht aus.
+
 ## [0.1.0-alpha.22] – 2026-09-18 – Partnerbereich Stufe 2: geschützte Partnerdokumente
 
 ### Hinzugefügt

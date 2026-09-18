@@ -46,14 +46,19 @@ final class LandingpageView {
 		add_shortcode( self::SHORTCODE, [ self::class, 'render_shortcode' ] );
 	}
 
-	public static function render_shortcode(): string {
+	/**
+	 * @param array<string, string>|string $atts `nav="0"` schaltet die Sprungleiste ab (Standard: an, alpha.23).
+	 */
+	public static function render_shortcode( $atts = [] ): string {
 		if ( self::$rendering ) {
 			return '';
 		}
 		self::$rendering = true;
 
+		$atts = shortcode_atts( [ 'nav' => '1' ], is_array( $atts ) ? $atts : [], self::SHORTCODE );
+
 		try {
-			return self::render();
+			return self::render( '0' !== (string) $atts['nav'] );
 		} finally {
 			self::$rendering = false;
 		}
@@ -71,7 +76,36 @@ final class LandingpageView {
 		return array_values( array_filter( $posts, static fn( $p ): bool => $p instanceof \WP_Post ) );
 	}
 
-	private static function render(): string {
+	/** Anker eines Abschnitts: Bauplan-Code (lp-07) oder Post-Slug, immer sanitize_html_class(). */
+	public static function anchor_for( \WP_Post $section ): string {
+		$code = (string) get_post_meta( $section->ID, SectionBlueprint::META_CODE, true );
+		return sanitize_html_class( strtolower( '' !== $code ? $code : (string) $section->post_name ) );
+	}
+
+	/**
+	 * Sprungleiste (alpha.23): ein Link je veröffentlichtem Abschnitt mit Titel. Reines HTML/CSS
+	 * (position: sticky) – keine aktive Hervorhebung per JS (kein Inline-JS; ein eigenes Skript wäre
+	 * für dieses Gerüst YAGNI). Abschnitte ohne Titel oder Anker werden übersprungen.
+	 *
+	 * @param \WP_Post[] $sections
+	 */
+	public static function render_nav( array $sections ): string {
+		$items = [];
+		foreach ( $sections as $section ) {
+			$anchor = self::anchor_for( $section );
+			$title  = get_the_title( $section );
+			if ( '' === $anchor || '' === $title ) {
+				continue;
+			}
+			$items[] = sprintf( '<li class="liw-landingpage__nav-item"><a class="liw-landingpage__nav-link" href="#%1$s">%2$s</a></li>', esc_attr( $anchor ), esc_html( $title ) );
+		}
+		if ( count( $items ) < 2 ) {
+			return ''; // Eine Sprungleiste mit einem Eintrag hilft niemandem.
+		}
+		return '<nav class="liw-landingpage__nav" aria-label="' . esc_attr__( 'Abschnitte der Seite', 'liebherr-interface-world' ) . '"><ul class="liw-landingpage__nav-list">' . implode( '', $items ) . '</ul></nav>';
+	}
+
+	private static function render( bool $with_nav = true ): string {
 		$sections = self::get_published_sections();
 
 		if ( [] === $sections ) {
@@ -89,12 +123,14 @@ final class LandingpageView {
 
 		ob_start();
 		echo '<div class="liw-landingpage">';
+		if ( $with_nav ) {
+			echo self::render_nav( $sections ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- in render_nav() escaped.
+		}
 		foreach ( $sections as $section ) {
 			$post = $section; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- bewusst für the_content-Filter/Shortcodes im Abschnittskontext, wird unten zurückgesetzt.
 			setup_postdata( $post );
 
-			$code   = (string) get_post_meta( $section->ID, SectionBlueprint::META_CODE, true );
-			$anchor = sanitize_html_class( strtolower( '' !== $code ? $code : (string) $section->post_name ) );
+			$anchor = self::anchor_for( $section );
 			$title  = get_the_title( $section );
 			?>
 			<section id="<?php echo esc_attr( $anchor ); ?>" class="liw-landingpage__section<?php echo '' !== $anchor ? ' liw-landingpage__section--' . esc_attr( $anchor ) : ''; ?>">

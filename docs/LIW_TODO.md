@@ -6,7 +6,7 @@ oder als offene Rückfrage an Joseph White dokumentiert wurden (Quelle jeweils a
 Sichtbar im Backend unter „Interface World → 📋 To-Dos". Wird bei jeder Aufgabe, die einen
 Punkt hier abschließt oder ergänzt, gepflegt.
 
-Stand: 18.09.2026 (0.1.0-alpha.22).
+Stand: 18.09.2026 (0.1.0-alpha.23).
 
 ---
 
@@ -39,11 +39,11 @@ Stand: 18.09.2026 (0.1.0-alpha.22).
   (§24, hängt an der I18nSeo-Frage).
   *Quelle: CHANGELOG.md alpha.19; Pflichtenheft §22/§24/§31.*
 
-- **Landingpage-Feinheiten nach dem ersten Gerüst (alpha.18).** Ankernavigation/Sprungleiste
-  über die `#lp-NN`-Anker, Sprachumschaltung/SEO-Metadaten der Trägerseite (hängt an der offenen
-  I18nSeo-Frage), Hero-Bildmotiv (freigegebenes Liebherr-Motiv, redaktionell). Bewusst nicht Teil
-  von alpha.18 (Gerüst zuerst).
-  *Quelle: CHANGELOG.md alpha.18.*
+- **Landingpage-Feinheiten nach dem ersten Gerüst (alpha.18).** Sprachumschaltung/SEO-Metadaten
+  der Trägerseite (hängt an der offenen I18nSeo-Frage), Hero-Bildmotiv (freigegebenes
+  Liebherr-Motiv, redaktionell), aktive Hervorhebung des sichtbaren Abschnitts in der Sprungleiste
+  (bräuchte ein eigenes, enqueuetes Skript – YAGNI bis Bedarf). Ankernavigation selbst: alpha.23.
+  *Quelle: CHANGELOG.md alpha.18, alpha.23.*
 
 - **Visuelles Gesamt-Layout/Wireframe der Landingpage.** Der inhaltliche Bauplan
   (LP-01…LP-14) steht im Pflichtenheft und ist seit alpha.12 in
@@ -105,6 +105,7 @@ Stand: 18.09.2026 (0.1.0-alpha.22).
 - Zusammengesetzte Landingpage `[liw_landingpage]` (alpha.18) umgesetzt.
 - LP-13 Kontaktformular + Contact Board (alpha.19) umgesetzt – Folgepunkte s. oben.
 - Partnerbereich Stufe 1: Rolle `liw_partner` + Kontoanlage im Onboarding Board (alpha.21).
+- Ankernavigation/Sprungleiste der Landingpage (alpha.23).
 - Partnerbereich Stufe 2: geschützte Partnerdokumente – Board, Service, `[liw_partner_documents]` (alpha.22).
 - Anonymisierte Grafiken LP-03/LP-04/LP-12 (alpha.20) geliefert – damit haben acht von 14
   Abschnitten einen gebauten Baustein; LP-01/02/05/09/10/14 sind reine Redaktion/Bildsprache.
