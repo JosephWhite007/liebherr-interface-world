@@ -1,5 +1,21 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.43] – 2026-09-18 – Hero-Visual (Modul 1: Knotennetz) + A11y-Struktur bestätigt
+
+### Hinzugefügt
+- **Hero-Visual (LI §8 Modul 1 / §9.3):** abstraktes, dekoratives Knotennetz als Hero-Ebene – zentrale
+  freigegebene Wissensquelle (Hub), lokale Knoten und Datenraum-Ringe mit gestrichelten Verbindungen.
+  Inline-SVG (`LocalIntelligenceView::hero_network_svg()`), `aria-hidden`, Farben aus `--brand-*`, sanfter
+  Puls nur bei `prefers-reduced-motion: no-preference`. Keine Roboter/Gehirn/KI-Chip-Klischees, kein externes Asset.
+
+### Bestätigt (Barrierefreiheit §12.6)
+- Genau **eine H1** (Hero) auf der Seite; Landmarken vorhanden (`<main>` aus der Vollbild-Vorlage, `<header>`,
+  `<footer>`, `<nav>` mit `aria-label`). Als automatisierte Prüfungen im Selbsttest verankert.
+
+### Verifikation
+- `tests/run-tests.php` 226/226, `scripts/liw-selftest.php` **238/238**; Hero-Visual real geprüft (subtil,
+  Text bleibt lesbar).
+
 ## [0.1.0-alpha.42] – 2026-09-18 – Prototyp-SEO-Konformität (noindex bis Freigabe) + Abnahme-Lieferliste
 
 ### Hinzugefügt/Geändert

@@ -768,6 +768,18 @@
 		radial-gradient(760px 380px at 10% 118%, var(--brand-primary, #ffd000), transparent 62%);
 	opacity: .5;
 }
+/* Abstraktes Knotennetz (Modul 1): zentrale Wissensquelle + lokale Knoten + Datenraum-Ringe. */
+.liw-li__net { position: absolute; inset: 0; width: 100%; height: 100%; }
+.liw-li__net-ring { fill: none; stroke: rgba(255,255,255,.12); stroke-width: 1; }
+.liw-li__net-link { stroke: rgba(255,255,255,.22); stroke-width: 1.5; stroke-dasharray: 3 5; opacity: .3; }
+.liw-li__net-node { fill: #fff; opacity: .6; }
+.liw-li__net-hub { fill: var(--brand-primary, #ffd000); opacity: .9; }
+@media (prefers-reduced-motion: no-preference) {
+	.liw-li__net-link { animation: liw-net-flow 4s ease-in-out infinite; animation-delay: var(--liw-net-delay, 0s); }
+	.liw-li__net-hub  { animation: liw-net-hub 3.5s ease-in-out infinite; }
+}
+@keyframes liw-net-flow { 0%, 100% { opacity: .12; } 50% { opacity: .5; } }
+@keyframes liw-net-hub  { 0%, 100% { opacity: .75; } 50% { opacity: 1; } }
 .liw-li__hero-inner { position: relative; padding-top: 4.5rem; padding-bottom: 4.5rem; }
 .liw-li__eyebrow { letter-spacing: .18em; text-transform: uppercase; font-size: .8rem; color: var(--brand-primary, #ffd000); margin: 0 0 1rem; }
 .liw-li__hero-headline { font-family: var(--font-heading, Arial, sans-serif); font-weight: 900; font-size: clamp(1.9rem, 5.2vw, 3.4rem); line-height: 1.08; margin: 0 0 1rem; max-width: 18ch; }

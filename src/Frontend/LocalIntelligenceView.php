@@ -119,7 +119,9 @@ final class LocalIntelligenceView {
 		ob_start();
 		?>
 		<section class="liw-li__hero" id="li-hero">
-			<div class="liw-li__hero-bg" aria-hidden="true"></div>
+			<div class="liw-li__hero-bg" aria-hidden="true">
+				<?php echo self::hero_network_svg(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- statisches, dekoratives Inline-SVG ohne Nutzereingaben. ?>
+			</div>
 			<div class="liw-li__inner liw-li__hero-inner">
 				<p class="liw-li__eyebrow"><?php echo esc_html( (string) $h['eyebrow'] ); ?></p>
 				<h1 class="liw-li__hero-headline"><?php echo esc_html( (string) $h['headline'] ); ?></h1>
@@ -412,6 +414,35 @@ final class LocalIntelligenceView {
 			$out .= '<p class="liw-li__intro">' . esc_html( (string) $intro ) . '</p>';
 		}
 		return $out;
+	}
+
+	/**
+	 * Dekoratives Hero-Visual (LI §8 Modul 1 / §9.3): abstrakte räumliche Darstellung aus lokalen
+	 * Knoten, Datenraum-Ringen und einer zentral freigegebenen Wissensquelle. Rein dekorativ
+	 * (aria-hidden), ohne Roboter/Gehirn/KI-Chip-Klischees; Farben aus `--brand-*` (via CSS-Klassen),
+	 * Bewegung nur als sanfter Puls (CSS, unter `prefers-reduced-motion` deaktiviert). Kein externes Asset.
+	 */
+	private static function hero_network_svg(): string {
+		// Zentrale Wissensquelle (Mitte-rechts) + lokale Knoten ringsum; Linien = Bereitstellung.
+		$hub    = [ 300, 150 ];
+		$nodes  = [ [ 355, 60 ], [ 375, 165 ], [ 330, 255 ], [ 225, 250 ], [ 190, 150 ], [ 215, 60 ], [ 285, 40 ] ];
+		$lines  = '';
+		$dots   = '';
+		foreach ( $nodes as $i => $n ) {
+			$delay  = number_format( $i * 0.4, 1, '.', '' );
+			$lines .= sprintf(
+				'<line class="liw-li__net-link" x1="%d" y1="%d" x2="%d" y2="%d" style="--liw-net-delay:%ss" />',
+				$hub[0], $hub[1], $n[0], $n[1], $delay
+			);
+			$dots  .= sprintf( '<circle class="liw-li__net-node" cx="%d" cy="%d" r="6" />', $n[0], $n[1] );
+		}
+		return '<svg class="liw-li__net" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">'
+			. '<circle class="liw-li__net-ring" cx="' . $hub[0] . '" cy="' . $hub[1] . '" r="70" />'
+			. '<circle class="liw-li__net-ring" cx="' . $hub[0] . '" cy="' . $hub[1] . '" r="110" />'
+			. $lines
+			. $dots
+			. '<circle class="liw-li__net-hub" cx="' . $hub[0] . '" cy="' . $hub[1] . '" r="16" />'
+			. '</svg>';
 	}
 
 	/** Ziel für „Technische Plattform / Interface Solutions": echte URL, sonst In-Page-Anker. */

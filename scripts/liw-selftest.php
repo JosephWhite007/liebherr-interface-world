@@ -571,6 +571,8 @@ try {
 	liw_st_check( 'Composite rendert alle Modul-Anker', str_contains( $__li, 'id="li-hero"' ) && str_contains( $__li, 'id="li-vision"' ) && str_contains( $__li, 'id="li-simulation"' ) && str_contains( $__li, 'id="li-bridge"' ) && str_contains( $__li, 'id="li-contact"' ) );
 	liw_st_check( 'Composite enthaelt Sprungleiste', str_contains( $__li, 'liw-li__nav' ) );
 	liw_st_check( 'Hero: Eyebrow + Dreiklang-Kurzzeile', str_contains( $__li, 'LIEBHERR LOCAL INTELLIGENCE' ) && str_contains( $__li, 'Simulieren. Verstehen. Entscheiden.' ) );
+	liw_st_check( 'Hero: abstraktes Knotennetz-Visual (Modul 1)', str_contains( $__li, 'liw-li__net' ) && str_contains( $__li, 'liw-li__net-hub' ) && str_contains( $__li, 'aria-hidden="true"' ) );
+	liw_st_check( 'A11y: Composite hat genau eine H1', 1 === substr_count( $__li, '<h1' ) );
 	$__sim = do_shortcode( '[liw_simulation_world]' );
 	liw_st_check( 'Simulation: Tabs A/B/C + Demo-Kennzeichnung', str_contains( $__sim, 'data-liw-sim-tab="A"' ) && str_contains( $__sim, 'data-liw-sim-tab="B"' ) && str_contains( $__sim, 'data-liw-sim-tab="C"' ) && str_contains( $__sim, 'liw-li__demo-note' ) );
 	$__uc = do_shortcode( '[liw_li_usecases]' );

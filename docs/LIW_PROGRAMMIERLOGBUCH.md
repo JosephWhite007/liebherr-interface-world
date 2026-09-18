@@ -12,6 +12,17 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.43 – Hero-Visual (Knotennetz, Modul 1) + A11y-Prüfungen
+
+**Geändert:** `src/Frontend/LocalIntelligenceView.php` – neue `hero_network_svg()` (dekoratives Inline-SVG:
+Hub + 7 lokale Knoten + 2 Datenraum-Ringe + gestrichelte Verbindungen, `aria-hidden`), in `render_hero()`
+in die `.liw-li__hero-bg`-Ebene eingehängt. `assets/css/liebherr-frontend.css` – `.liw-li__net*`-Regeln
+(tokenbasiert, Puls nur bei `prefers-reduced-motion: no-preference`). `scripts/liw-selftest.php` (+2:
+Hero-Visual vorhanden, Composite hat genau eine H1). `CHANGELOG.md`, `liebherr-interface-world.php` (alpha.43).
+**Grund:** LI §8 Modul 1 verlangt eine abstrakte räumliche Darstellung (lokale Knoten + zentrale Wissensquelle);
+bisher war der Hero nur ein Farbverlauf. Zugleich A11y-Struktur (eine H1, Landmarken) automatisiert abgesichert.
+**Prüfung:** `php -l`; run-tests 226/226, liw-selftest 238/238; Hero visuell bestätigt.
+
 ## 0.1.0-alpha.42 – Prototyp-SEO (noindex bis Freigabe) + Abnahme-Lieferliste
 
 **Geändert:** `src/CoreBridge/SeoBridge.php` – `CARRIER_SHORTCODES` (jetzt auch `liw_local_intelligence`),
