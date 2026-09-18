@@ -431,7 +431,9 @@
 	padding: 0.6rem 4vw;
 }
 .liw-header__brand { display: inline-flex; align-items: center; text-decoration: none; }
-.liw-header__logo { max-height: 40px; width: auto; display: block; }
+/* Explizite Höhe + width:auto: SVG-Logos ohne width/height-Attribut (nur viewBox) brauchen eine
+   definite Dimension, sonst rendern sie als 0×0. Breite folgt dem viewBox-Seitenverhältnis. */
+.liw-header__logo { height: 32px; width: auto; max-width: 260px; display: block; }
 .liw-header__wordmark {
 	font-family: var(--font-heading, sans-serif);
 	font-weight: 700;

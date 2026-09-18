@@ -20,6 +20,7 @@ declare( strict_types = 1 );
 namespace Liebherr\InterfaceWorld\Frontend;
 
 use Liebherr\InterfaceWorld\Branding\BrandTokens;
+use Liebherr\InterfaceWorld\Content\SitePages;
 use Liebherr\InterfaceWorld\CoreBridge\LanguageBridge;
 use Liebherr\InterfaceWorld\CoreBridge\MediaBridge;
 use Liebherr\InterfaceWorld\Settings\HeaderSettings;
@@ -34,8 +35,14 @@ final class HeaderView {
 		add_shortcode( self::SHORTCODE, [ self::class, 'render' ] );
 	}
 
-	public static function render(): string {
-		$cfg = HeaderSettings::get();
+	/**
+	 * @param array<string,string>|string $atts `nav="li"` verwendet den Local-Intelligence-Menüsatz
+	 *        (Anker der Hauptseite + Link zur Interface-Solutions-Unterseite) statt der globalen
+	 *        Header-Settings (deren #lp-*-Anker nur auf der Interface-Solutions-Seite existieren).
+	 */
+	public static function render( $atts = [] ): string {
+		$atts = shortcode_atts( [ 'nav' => '' ], is_array( $atts ) ? $atts : [], self::SHORTCODE );
+		$cfg  = 'li' === $atts['nav'] ? self::li_nav_config() : HeaderSettings::get();
 
 		ob_start();
 		?>
@@ -79,11 +86,42 @@ final class HeaderView {
 		$brand   = BrandTokens::brand_text();
 		$logo_id = BrandTokens::logo_id();
 		if ( $logo_id > 0 && MediaBridge::is_approved( $logo_id ) ) {
-			$img = wp_get_attachment_image( $logo_id, 'medium', false, [ 'class' => 'liw-header__logo', 'alt' => $brand ] );
-			if ( '' !== $img ) {
-				return $img;
+			// Direkt-URL statt wp_get_attachment_image(): SVG-Anhänge liefern sonst width="1" height="1"
+			// (kein intrinsisches Seitenverhältnis) → das Logo würde als 1×1 px gerendert. Größe via CSS.
+			$url = wp_get_attachment_image_url( $logo_id, 'full' );
+			if ( is_string( $url ) && '' !== $url ) {
+				return sprintf(
+					'<img class="liw-header__logo" src="%s" alt="%s" decoding="async" />',
+					esc_url( $url ),
+					esc_attr( $brand )
+				);
 			}
 		}
 		return '<span class="liw-header__wordmark">' . esc_html( $brand ) . '</span>';
+	}
+
+	/**
+	 * Menüsatz für die Local-Intelligence-Hauptseite: Anker der Hauptseite (`#li-*`) + Link zur
+	 * technischen Unterseite. Ersetzt die globalen Header-Settings, deren #lp-*-Anker dort nicht
+	 * existieren (behebt die tote obere Menüleiste auf `/liebherr-local-intelligence/`).
+	 *
+	 * @return array{nav:array<int,array{label:string,target:string}>,cta_primary:array{label:string,target:string},cta_secondary:array{label:string,target:string},portal_enabled:bool,portal_url:string,hero_image_id:int}
+	 */
+	private static function li_nav_config(): array {
+		$base            = HeaderSettings::get(); // Portal/Hero/Logo-Kontext beibehalten.
+		$interface_url   = SitePages::interface_url();
+		$interface_href  = '' !== $interface_url ? $interface_url : '#li-bridge';
+
+		$base['nav'] = [
+			[ 'label' => __( 'Vision', 'liebherr-interface-world' ), 'target' => '#li-vision' ],
+			[ 'label' => __( 'Simulation World', 'liebherr-interface-world' ), 'target' => '#li-simulation' ],
+			[ 'label' => __( 'Einsatzfelder', 'liebherr-interface-world' ), 'target' => '#li-usecases' ],
+			[ 'label' => __( 'Interface Solutions', 'liebherr-interface-world' ), 'target' => $interface_href ],
+			[ 'label' => __( 'Kontakt', 'liebherr-interface-world' ), 'target' => '#li-contact' ],
+		];
+		$base['cta_secondary'] = [ 'label' => __( 'Technische Plattform', 'liebherr-interface-world' ), 'target' => $interface_href ];
+		$base['cta_primary']   = [ 'label' => __( 'Demonstration anfragen', 'liebherr-interface-world' ), 'target' => '#li-contact-form' ];
+
+		return $base;
 	}
 }

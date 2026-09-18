@@ -12,6 +12,20 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.44 – Obere Menüleiste (LI) repariert + Logo-Fix
+
+**Geändert:** `src/Frontend/HeaderView.php` – `render()` nimmt jetzt `nav`-Attribut; neue `li_nav_config()`
+(LI-Menüsatz: `#li-*`-Anker + Interface-Solutions-URL + LI-CTAs); `brand_markup()` gibt SVG-Logos als
+direkte `<img src>`-URL aus (kein `wp_get_attachment_image()` mehr → keine `width="1" height="1"`).
+`assets/css/liebherr-frontend.css` – `.liw-header__logo` mit expliziter `height:32px` (SVG-viewBox skaliert
+die Breite). `scripts/liw-seed-local-intelligence.php` – LI-Seite nutzt `[liw_header nav="li"]`.
+`scripts/liw-selftest.php` (+3 Header-Prüfungen), `CHANGELOG.md`, `liebherr-interface-world.php` (alpha.44).
+**Grund:** Nutzerbefund „Doppelmenüstruktur – obere Menüleiste funktioniert nicht": der geteilte Header hatte
+nur den globalen `#lp-*`-Menüsatz (existiert nur auf der Interface-Solutions-Seite) → auf der LI-Hauptseite
+tote Links. Zusätzlich Logo als 1×1 px (SVG ohne Maße).
+**Prüfung:** `php -l`; run-tests 226/226, liw-selftest 241/241; reale Seite JS-geprüft (alle Header-Links
+treffen echte Ziele, Logo 258×32).
+
 ## 0.1.0-alpha.43 – Hero-Visual (Knotennetz, Modul 1) + A11y-Prüfungen
 
 **Geändert:** `src/Frontend/LocalIntelligenceView.php` – neue `hero_network_svg()` (dekoratives Inline-SVG:

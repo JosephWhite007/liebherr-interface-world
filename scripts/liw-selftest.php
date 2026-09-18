@@ -573,6 +573,12 @@ try {
 	liw_st_check( 'Hero: Eyebrow + Dreiklang-Kurzzeile', str_contains( $__li, 'LIEBHERR LOCAL INTELLIGENCE' ) && str_contains( $__li, 'Simulieren. Verstehen. Entscheiden.' ) );
 	liw_st_check( 'Hero: abstraktes Knotennetz-Visual (Modul 1)', str_contains( $__li, 'liw-li__net' ) && str_contains( $__li, 'liw-li__net-hub' ) && str_contains( $__li, 'aria-hidden="true"' ) );
 	liw_st_check( 'A11y: Composite hat genau eine H1', 1 === substr_count( $__li, '<h1' ) );
+	// Header kontextfähig: LI-Menüsatz zeigt auf existierende LI-Anker, Standard bleibt bei #lp-*.
+	$__hli = do_shortcode( '[liw_header nav="li"]' );
+	liw_st_check( 'Header nav="li": LI-Anker statt toter #lp-*', str_contains( $__hli, 'href="#li-vision"' ) && str_contains( $__hli, 'href="#li-simulation"' ) && ! str_contains( $__hli, 'href="#lp-02"' ) );
+	$__hdef = do_shortcode( '[liw_header]' );
+	liw_st_check( 'Header Standard: #lp-*-Anker (Interface-Solutions-Seite) unverändert', str_contains( $__hdef, 'href="#lp-02"' ) );
+	liw_st_check( 'Header-Logo ohne 1x1-Maße (SVG via URL, CSS-Größe)', ! str_contains( $__hdef, 'width="1" height="1"' ) );
 	$__sim = do_shortcode( '[liw_simulation_world]' );
 	liw_st_check( 'Simulation: Tabs A/B/C + Demo-Kennzeichnung', str_contains( $__sim, 'data-liw-sim-tab="A"' ) && str_contains( $__sim, 'data-liw-sim-tab="B"' ) && str_contains( $__sim, 'data-liw-sim-tab="C"' ) && str_contains( $__sim, 'liw-li__demo-note' ) );
 	$__uc = do_shortcode( '[liw_li_usecases]' );

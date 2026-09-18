@@ -1,5 +1,23 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.44] – 2026-09-18 – Obere Menüleiste der LI-Seite repariert + Logo-Fix
+
+### Behoben
+- **Tote obere Menüleiste auf `/liebherr-local-intelligence/`:** Der geteilte Header (`[liw_header]`) nutzte
+  ausschließlich den globalen Menüsatz mit den Ankern `#lp-02…#lp-13`, die nur auf der Interface-Solutions-
+  Unterseite existieren – auf der Hauptseite liefen alle Links ins Leere. `[liw_header]` ist jetzt
+  **kontextfähig**: `nav="li"` verwendet den Local-Intelligence-Menüsatz (Vision `#li-vision`,
+  Simulation World `#li-simulation`, Einsatzfelder `#li-usecases`, Interface Solutions → Unterseiten-URL,
+  Kontakt `#li-contact`) samt passender CTAs. Die Hauptseite (Seeder) verwendet `[liw_header nav="li"]`;
+  die Interface-Solutions-Seite behält den Standard-Menüsatz. Beide Menüs (obere Leiste + Sprungleiste) funktionieren.
+- **Logo als 1×1 px:** `wp_get_attachment_image()` gab für das SVG-Logo `width="1" height="1"` aus
+  (SVG ohne intrinsische Maße). Ausgabe jetzt als direkte `<img src=…>`-URL; Größe rein über CSS
+  (`.liw-header__logo { height: 32px; width: auto }`, Breite folgt dem viewBox-Verhältnis) → Logo sichtbar.
+
+### Verifikation
+- `tests/run-tests.php` 226/226, `scripts/liw-selftest.php` **241/241**; reale Seite: obere Menüleiste
+  trifft alle LI-Anker (JS-geprüft), Logo 258×32 px, Standard-Header der Unterseite unverändert.
+
 ## [0.1.0-alpha.43] – 2026-09-18 – Hero-Visual (Modul 1: Knotennetz) + A11y-Struktur bestätigt
 
 ### Hinzugefügt

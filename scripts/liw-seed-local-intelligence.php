@@ -43,7 +43,7 @@ if ( ! class_exists( SitePages::class ) ) {
 echo "== Local Intelligence: Hauptseite + Verschachtelung ==\n";
 
 // 1. Hauptseite Local Intelligence.
-$li_content = "<!-- wp:shortcode -->[liw_header]<!-- /wp:shortcode -->\n\n"
+$li_content = "<!-- wp:shortcode -->[liw_header nav=\"li\"]<!-- /wp:shortcode -->\n\n"
 	. "<!-- wp:shortcode -->[liw_local_intelligence]<!-- /wp:shortcode -->\n\n"
 	. "<!-- wp:shortcode -->[liw_footer]<!-- /wp:shortcode -->";
 
