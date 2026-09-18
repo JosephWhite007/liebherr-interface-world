@@ -1,5 +1,25 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.25] – 2026-09-18 – Bugfix: Sprachcodes aus dem Core („Array" statt `de`)
+
+### Behoben
+- **`LanguageBridge::active_langs()`** (und damit auch der seit alpha.1 bestehende Code in der alten
+  `SeoBridge`) behandelte den Rückgabewert von Core `LanguageService::get_active_langs()` als
+  String-Liste. Der Core liefert aber **Sprach-Datensätze** (`['code' => 'de', 'label' => …]`);
+  der Cast erzeugte `"Array"` – im Frontend also `hreflang="Array"` statt `hreflang="de"`. Seit
+  alpha.1 unbemerkt, weil hreflang bisher nur auf Einzelansichten und nie geprüft ausgegeben wurde;
+  die neue Selbsttest-Prüfung [6b] aus alpha.24 hat es beim ersten Docker-Lauf aufgedeckt
+  (`PHP Warning: Array to string conversion`, 124/125).
+- Fix: `active_langs()` akzeptiert Datensätze (`code`-Feld), schlüssel-indizierte Listen und reine
+  String-Listen, verwirft alles, was kein plausibler Sprachcode ist (`^[a-z]{2,5}(-[a-z0-9]{2,8})?$`),
+  entfernt Dubletten und fällt bei leerem Ergebnis auf DE/EN/PL zurück.
+
+### Geprüft
+- Stub-Test ohne WP (6/6): Core-Datensätze, String-Liste, schlüssel-indiziert, leer, unbrauchbar,
+  Dubletten/Großschreibung. `tests/run-tests.php`: 112/112. Selbsttest-Prüfung [6b] verschärft:
+  jeder Code muss dem Muster entsprechen (hätte den Fehler auch ohne PHP-Warning gefangen).
+  Docker-Lauf steht aus.
+
 ## [0.1.0-alpha.24] – 2026-09-18 – I18nSeo Option A: Sprache, hreflang, §24-Sprachsuffix
 
 ### Entscheidung (Analyse 18.09.2026, Joseph White „ja" zu Option A)

@@ -12,6 +12,14 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.25 – Bugfix Sprachcodes
+
+**Geändert:** `src/CoreBridge/LanguageBridge.php` (`active_langs()` verarbeitet Core-Datensätze,
+Plausibilitätsmuster, Dubletten), `scripts/liw-selftest.php` ([6b] Codemuster-Prüfung),
+`liebherr-interface-world.php` (Version), `CHANGELOG.md`, `docs/LOGBUCH_TECHNIK.md`.
+**Fund:** Docker-Lauf alpha.24 (`SELFTEST-DFEY1SCL`, 124/125): `Array to string conversion` in
+`LanguageBridge.php:57` – Core `get_active_langs()` liefert Datensätze, keine Strings.
+
 ## 0.1.0-alpha.24 – I18nSeo Option A
 
 **Neu:** `src/CoreBridge/LanguageBridge.php` (Sprache, Umschalter-Shortcode, Router-Status, `versioned()`).

@@ -8,6 +8,23 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · Befund aus alpha.24-Lauf: Core-Sprachliste sind Datensätze, nicht Strings (0.1.0-alpha.25)
+
+**Kontext.** Erster Docker-Lauf nach alpha.24: 124/125, eine PHP-Warning `Array to string conversion`
+in `LanguageBridge::active_langs()`. Ursache: Core `LanguageService::get_active_langs()` liefert
+`[['code' => 'de', 'label' => …], …]`; der `(string)`-Cast machte daraus `"Array"`. Derselbe Cast
+stand seit alpha.1 in der alten `SeoBridge::active_languages()` – im Frontend also seit Beginn
+`hreflang="Array"`, unbemerkt, weil nie geprüft.
+
+**Lehre.** Eine Core-Signatur „verifiziert" heißt nicht nur Parameter, sondern auch die **Form des
+Rückgabewerts** – bei alpha.1 wurde die Existenz der Methode geprüft, nicht ihr Ergebnis. Genau
+dafür zahlt sich der Selbsttest aus: Die in alpha.24 ergänzte Prüfung hat den Altfehler beim ersten
+Lauf sichtbar gemacht. Zusätzlich verschärft: Sprachcodes müssen jetzt einem Plausibilitätsmuster
+entsprechen, damit ein ähnlicher Formfehler künftig auch ohne PHP-Warning rot wird.
+
+**Quelle/Version.** Lauf `SELFTEST-DFEY1SCL` 18.09.2026; Core `Language/LanguageService.php`
+(`get_available_langs()` mit `code`-Feld); 0.1.0-alpha.25.
+
 ### 2026-09-18 · I18nSeo: Option A – vorhandene Core-Sprachsteuerung nutzen, Router-Eingriff vertagen (0.1.0-alpha.24)
 
 **Frage/Kontext.** Seit alpha.1 offene Kategorie-A-Frage (ADR-LIW-001): `liw_section` in den

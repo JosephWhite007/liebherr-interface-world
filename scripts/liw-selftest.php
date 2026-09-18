@@ -393,7 +393,7 @@ try {
 	// ── [6b] Sprache & SEO (I18nSeo-Analyse Option A, alpha.24) ─────────────────
 	echo "\n[6b] Sprache & hreflang (Pflichtenheft §20/§24, Option A)\n";
 	$langs = LanguageBridge::active_langs();
-	liw_st_check( 'Aktive Sprachen vom Core (oder Fallback DE/EN/PL), Default-Sprache enthalten', count( $langs ) >= 1 && in_array( LanguageBridge::current_lang(), $langs, true ) );
+	liw_st_check( 'Aktive Sprachen vom Core als Codes (kein "Array"), Default-Sprache enthalten', count( $langs ) >= 1 && in_array( LanguageBridge::current_lang(), $langs, true ) && [] === array_filter( $langs, static fn( string $l ): bool => 1 !== preg_match( '/^[a-z]{2,5}(-[a-z0-9]{2,8})?$/', $l ) ), implode( ',', $langs ) );
 	$hl = SeoBridge::hreflang_markup( 'https://example.test/interface-world/', [ 'de', 'en' ] );
 	liw_st_check( 'hreflang-Markup: je Sprache ?lang=, x-default = Basis-URL', str_contains( $hl, 'hreflang="de"' ) && str_contains( $hl, 'lang=en' ) && str_contains( $hl, 'hreflang="x-default" href="https://example.test/interface-world/"' ) && 3 === substr_count( $hl, '<link ' ) );
 	liw_st_check( 'Core-Router-Status abfragbar (bool), SeoBridge schweigt bei aktivem Router', is_bool( LanguageBridge::core_router_active() ) );

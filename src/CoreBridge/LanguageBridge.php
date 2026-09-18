@@ -49,12 +49,27 @@ final class LanguageBridge {
 		return self::FALLBACK_LANGS[0];
 	}
 
-	/** @return string[] */
+	/**
+	 * @return string[] Sprachcodes. Core `get_active_langs()` liefert Sprach-Datensätze
+	 *   (`['code' => 'de', 'label' => …]`), keine Strings – Befund Docker-Selbsttest alpha.24
+	 *   (`hreflang="Array"`, im alten SeoBridge-Code seit alpha.1 unbemerkt). Beide Formen werden
+	 *   akzeptiert; ungültige Einträge fallen weg, leere Liste → Fallback.
+	 */
 	public static function active_langs(): array {
 		if ( class_exists( self::LANGUAGE_SERVICE ) && method_exists( self::LANGUAGE_SERVICE, 'get_active_langs' ) ) {
 			$langs = call_user_func( [ self::LANGUAGE_SERVICE, 'get_active_langs' ] );
-			if ( is_array( $langs ) && [] !== $langs ) {
-				return array_values( array_filter( array_map( static fn( $l ): string => sanitize_key( (string) $l ), $langs ) ) );
+			if ( is_array( $langs ) ) {
+				$codes = [];
+				foreach ( $langs as $key => $entry ) {
+					$raw = is_array( $entry ) ? ( $entry['code'] ?? ( is_string( $key ) ? $key : '' ) ) : ( is_object( $entry ) ? ( $entry->code ?? '' ) : $entry );
+					$code = is_scalar( $raw ) ? sanitize_key( (string) $raw ) : '';
+					if ( 1 === preg_match( '/^[a-z]{2,5}(-[a-z0-9]{2,8})?$/', $code ) && ! in_array( $code, $codes, true ) ) { // nur plausible Sprachcodes (ISO 639 ± Region)
+						$codes[] = $code;
+					}
+				}
+				if ( [] !== $codes ) {
+					return $codes;
+				}
 			}
 		}
 		return self::FALLBACK_LANGS;
