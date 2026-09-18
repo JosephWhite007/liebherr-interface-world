@@ -17,8 +17,8 @@ durch einen externen §34-Input blockiert.
 | AC-003 | Inhalte/Bilder/CTAs/Sichtbarkeit ohne Code pflegbar | ✅ | Content Board, Components Board, Header Board, Brand Board, Media Board |
 | AC-004 | DE/EN/PL vollständig, weitere Sprachen strukturell vorbereitet | ⚠️ | Struktur + Sprachumschalter + Readiness-Board vorhanden; 100-%-Kuratierung der Texte = Redaktion (Languages Hub), Messung im Language Board |
 | AC-005 | Sprachwechsel erhält Seite, korrekte Locale-Routen | ✅ | Core-Sprachsteuerung (Cookie/`?lang=`), hreflang/Canonical je Sprache |
-| AC-006 | Liebherr primär, GoHeal nur klein als Solution Provider | ✅ | GoHeal nur Footer/Impressum (CI-003); bis Markenfreigabe neutrale Fallbacks |
-| AC-007 | CI ausschließlich aus freigegebenen/konfigurierbaren Brand Tokens | ✅ | Brand Board `--brand-*`; kein erfundenes Branding (CI-002). Echte Liebherr-Werte = §34 |
+| AC-006 | Liebherr primär, GoHeal nur klein als Solution Provider | ✅ | GoHeal nur Footer/Impressum (CI-003); seit alpha.37 Liebherr-Logo/-CI **vorläufig** angewendet (autorisiert JW), Logo/Hero freigegeben |
+| AC-007 | CI ausschließlich aus freigegebenen/konfigurierbaren Brand Tokens | ✅ | Brand Board `--brand-*` (inkl. `--brand-on-primary`); seit alpha.37 mit echten Liebherr-Werten belegt (vorläufig bis endgültige Freigabe, §34) |
 | AC-008 | Kontakt-/Onboarding serverseitig validiert, sicher gespeichert/übergeben, bestätigt | ✅ | Validierung, Nonce, Honeypot, Rate-Limit, Einwilligungsprotokoll, Bestätigung; Empfänger/CRM = §34 (bis dahin Admin-Mail) |
 | AC-009 | Adminrechte serverseitig erzwungen, Änderungen auditiert | ✅ | Capabilities je Board, AuditBridge + Audit Board |
 | AC-010 | Keine produktiven Schnittstellen/Daten unbeabsichtigt angesprochen | ✅ | Keine externen Adapter aktiv; DEMO-Seed klar gekennzeichnet (§4) |

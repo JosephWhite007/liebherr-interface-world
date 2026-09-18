@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 final class FrontendAssets {
 
 	private const HANDLE     = 'liw-frontend';
-	private const SHORTCODES = [ 'liw_onboarding_form', 'liw_contact_form', 'liw_world_connections_map', SectionGraphicView::SHORTCODE, LandingpageView::SHORTCODE, PartnerDocumentsView::SHORTCODE, HeaderView::SHORTCODE, HeroView::SHORTCODE, ComponentViews::SC_PROCESS, ComponentViews::SC_ROADMAP, ComponentViews::SC_ONBOARDING ];
+	private const SHORTCODES = [ 'liw_onboarding_form', 'liw_contact_form', 'liw_world_connections_map', SectionGraphicView::SHORTCODE, LandingpageView::SHORTCODE, PartnerDocumentsView::SHORTCODE, HeaderView::SHORTCODE, HeroView::SHORTCODE, ComponentViews::SC_PROCESS, ComponentViews::SC_ROADMAP, ComponentViews::SC_ONBOARDING, WorldMapView::SHORTCODE ];
 
 	public static function register(): void {
 		add_action( 'wp_enqueue_scripts', [ self::class, 'maybe_enqueue' ] );
@@ -47,6 +47,12 @@ final class FrontendAssets {
 		// bis Liebherr-Freigabe vorliegt). Sanktionierter Weg für dynamische Tokens, kein hart
 		// codierter Markenwert in Komponenten (§11/§14).
 		wp_add_inline_style( self::HANDLE, \Liebherr\InterfaceWorld\Branding\BrandTokens::css_root() );
+
+		// Liebherr-Webfonts (@font-face) – nur freigegebene (CI-005). Erst danach greifen die --font-*-Tokens.
+		$font_css = FontFaceService::css();
+		if ( '' !== $font_css ) {
+			wp_add_inline_style( self::HANDLE, $font_css );
+		}
 
 		// Aktive Hervorhebung des sichtbaren Abschnitts in der Sprungleiste (alpha.26):
 		// fortschreitende Verbesserung, im Footer, ohne Abhängigkeit, kein Inline-Code.

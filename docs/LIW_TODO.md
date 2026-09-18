@@ -17,10 +17,11 @@ Stand: 18.09.2026 (0.1.0-alpha.26).
   18.09.2026 von liebherr.com als **CI-005-Kandidaten** ins Media Board importiert
   (`scripts/liw-import-brand-assets.php`, alle `_liw_media_approved = 0`). Erfasste Farb-/
   Typo-Token: `docs/LIW_BRAND_TOKENS.md`. Das **Brand Board** (Design-Tokens, Logo-Auswahl) ist mit
-  alpha.27 gebaut und läuft mit neutralen Fallbacks. **Launch-Blocker/offen:** dokumentierte
-  Liebherr-Freigabe je Asset (dann im Media Board `approved = 1`) und Schrift-Lizenz; erst danach
-  im Brand Board die Originalwerte aus `docs/LIW_BRAND_TOKENS.md` eintragen und Logo auswählen.
-  *Quelle: Pflichtenheft §10–12/§34; CHANGELOG alpha.26/alpha.27.*
+  alpha.27 gebaut. **alpha.37 (autorisiert JW):** CI **vorläufig angewendet** – Assets `approved=1`,
+  echte Liebherr-Tokens (Gelb/Anthrazit/Blau, LiebherrHead/Text), Logo + Hero gesetzt, Webfonts
+  eingebunden. **Launch-Blocker/offen:** endgültige, dokumentierte Liebherr-Freigabe + Schrift-Lizenz
+  (bis dahin gilt die Anwendung als vorläufig; Rücknahmeweg in `docs/LIW_ABNAHME.md` §5).
+  *Quelle: Pflichtenheft §10–12/§34; CHANGELOG alpha.26/alpha.27/alpha.37.*
 
 - **Content Board (§19) – über das Grundgerüst hinaus.** Seit alpha.13 gibt es Übersicht,
   Freigabeworkflow (Entwurf → Prüfung → freigegeben → veröffentlicht) und native
@@ -72,12 +73,11 @@ Stand: 18.09.2026 (0.1.0-alpha.26).
   (`set_lifecycle_status()`) ist dagegen seit **alpha.31** im Interface Board umgesetzt.
   *Quelle: CHANGELOG.md alpha.4/alpha.31.*
 
-- **World Connections Map – echte geografische Karte.** Aktuell Regionen-Grid (Liste
-  gruppiert nach Freitext-Region), keine Koordinaten. Eine echte Karte erfordert eine
-  Datenmodelländerung (latitude/longitude, Kategorie B) sowie eine Kartenbibliothek
-  (Kategorie A – neue externe Abhängigkeit, braucht Freigabe). Entscheidung Joseph White
-  18.09.2026: bewusst zurückgestellt, Datenpflege (alpha.5) ist davon unabhängig nutzbar.
-  *Quelle: CHANGELOG.md alpha.8; AskUserQuestion-Antwort 18.09.2026 „Liste/Grid nach Region".*
+- **World Connections Map.** alpha.37: abstrakte, interaktive Inline-SVG-Weltkarte `[liw_world_map]`
+  (Zentrale + Regionen-Knoten aus den Verbindungen, Text-Alternative) – ohne externe Bibliothek/
+  Koordinaten. Zusätzlich weiterhin das Regionen-Grid `[liw_world_connections_map]`. **Offen (optional,
+  Kategorie A):** echte geografische Karte mit Koordinaten (latitude/longitude) + Kartenbibliothek.
+  *Quelle: CHANGELOG.md alpha.8/alpha.37; AskUserQuestion 18.09.2026 „interaktive Weltkarte".*
 
 - **Geschützter Partnerbereich – Folgepunkte.** Stufe 1 (Rolle + Konto, alpha.21) und Stufe 2
   (Dokumentenbereich, alpha.22) sind umgesetzt. Offen: (1) Entscheidung Liebherr, welche Fassung

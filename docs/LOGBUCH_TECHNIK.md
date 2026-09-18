@@ -8,6 +8,26 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · Optik: Liebherr-CI vorläufig angewendet, Connected-World-Karte (0.1.0-alpha.37)
+
+**Frage/Kontext.** JW: „attraktive Plattform vorn, ganze Liebherr-Welt verbunden; spezifische
+Liebherr-CI + Logos". AskUserQuestion: Assets **jetzt freigeben**, **interaktive Weltkarte**, echte
+Farben/Typo **vorläufig anwenden**.
+
+**Entscheidungen.**
+- **Freigabe (autorisiert JW):** Media-Board-Kandidaten auf `approved=1` gesetzt (Skript
+  `liw-apply-liebherr-ci.php`), Brand-Tokens = echte Liebherr-Werte, Logo/Hero gesetzt. Ausdrücklich
+  **vorläufig bis dokumentierte Liebherr-Freigabe** (im Audit-Log vermerkt); Rücknahmeweg dokumentiert.
+  Grund: Präsentation/Demo; produktiver Launch bleibt gated (AC-016).
+- **Weltkarte ohne Kategorie-A:** eigene, abhängigkeitsfreie Inline-SVG (keine Kartenbibliothek, keine
+  echten Koordinaten) → der frühere „Geo-Karte = Kategorie A"-Vorbehalt greift nicht; echte
+  Koordinaten-/Tile-Karte bliebe separat Kategorie A. Barrierearm: Knoten fokussierbar + Text-Alternative.
+- **Kontrast:** neues Token `--brand-on-primary` (dunkel auf Gelb) statt fixem Weiß – behebt den
+  Lesbarkeitsfehler heller Primärfarben, ohne die neutrale Fallback-Variante zu verschlechtern.
+- **Webfonts:** nur freigegebene Fonts per @font-face (CI-005). Lizenzhinweis bleibt (§34).
+
+**Quelle/Version.** JW-Auftrag + AskUserQuestion 18.09.2026; Pflichtenheft §7/§8/§10–12; 0.1.0-alpha.37.
+
 ### 2026-09-18 · Content-Board-Restpunkte: Sichtbarkeits-Zeitfenster (0.1.0-alpha.36)
 
 **Frage/Kontext.** Letzter §19-Restpunkt: Veröffentlichung „über den nativen future-Status hinaus".

@@ -34,6 +34,7 @@ final class BrandBoardPage {
 	/** @var array<string,string> Farb-Token → Label. */
 	private const COLOR_FIELDS = [
 		'primary'   => 'Primärfarbe (--brand-primary)',
+		'on_primary' => 'Text auf Primärfarbe (--brand-on-primary)',
 		'secondary' => 'Sekundärfarbe (--brand-secondary)',
 		'surface'   => 'Fläche (--brand-surface)',
 		'text'      => 'Text (--brand-text)',

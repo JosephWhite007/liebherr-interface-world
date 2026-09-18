@@ -12,6 +12,25 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.37 – Optik: Liebherr-CI angewendet + Connected-World-Weltkarte
+
+**Neu:** `src/Frontend/WorldMapView.php` (`[liw_world_map]`, abstrahierte SVG-Weltkarte, reine
+`canonical_region()`), `src/Frontend/FontFaceService.php` (@font-face freigegebener Fonts),
+`scripts/liw-apply-liebherr-ci.php` (Freigabe + Brand-Tokens + Hero, autorisiert JW, idempotent).
+**Geändert:** `src/Branding/BrandTokens.php` (Token `on_primary`/`--brand-on-primary`),
+`src/Admin/Pages/BrandBoardPage.php` (Feld on_primary), `src/Frontend/FrontendAssets.php`
+(FontFaceService enqueued, WorldMap als Auslöser), `src/Bootstrap.php` (WorldMapView registriert),
+`assets/css/liebherr-frontend.css` (Weltkarte, Hero-Keyline, CTA/Marker via --brand-on-primary),
+`assets/js/liebherr-frontend.js` (Weltkarten-Highlight), `tests/run-tests.php` (+7),
+`scripts/liw-selftest.php` (Optik-Checks + Logo-Regel zustandsabhängig), `CHANGELOG.md`,
+`docs/LIW_TODO.md`, `docs/LOGBUCH_TECHNIK.md`, `docs/LIW_BRAND_TOKENS.md`, `docs/LIW_ABNAHME.md`,
+`src/Admin/Pages/HandbookPage.php`, `liebherr-interface-world.php` (Version).
+**Datenoperation (Dev, autorisiert JW):** 11 Assets `approved=1`, Brand-Tokens = echte Liebherr-Werte,
+Logo #2154, Hero #2149. Vorläufig bis endgültige Freigabe.
+**Prüfung:** `php -l`; `tests/run-tests.php` 196/196, `scripts/liw-selftest.php` 196/196; Optik visuell
+bestätigt. Falle: durch das freigegebene Logo zeigt der Header jetzt das Bild statt der Wortmarke →
+Etappe-2-Selbsttest auf zustandsabhängige Logo-Regel umgestellt.
+
 ## 0.1.0-alpha.36 – Content-Board-Restpunkte: Sichtbarkeits-Zeitfenster (§19)
 
 **Neu:** `src/Content/SectionSchedule.php` (Meta `_liw_valid_from`/`_liw_valid_until`, reine

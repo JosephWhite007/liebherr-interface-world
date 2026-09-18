@@ -147,3 +147,47 @@
 		init();
 	}
 }() );
+
+/**
+ * Connected-World-Weltkarte ([liw_world_map], §8/LP-06, alpha.37).
+ * Verknüpft Regionen-Knoten (SVG) mit der Text-Alternative: Hover/Fokus/Klick hebt Knoten und
+ * Listeneintrag gemeinsam hervor. Reine Anzeige-Interaktion; ohne JS bleiben Karte und Liste nutzbar.
+ */
+( function () {
+	'use strict';
+	function initMap( root ) {
+		var nodes = root.querySelectorAll( '.liw-worldmap__node[data-region]' );
+		var items = root.querySelectorAll( '.liw-worldmap__list li[data-region]' );
+		if ( ! nodes.length ) { return; }
+
+		function setHighlight( region, on ) {
+			[].forEach.call( nodes, function ( n ) {
+				if ( n.getAttribute( 'data-region' ) === region ) { n.classList.toggle( 'is-highlight', on ); }
+			} );
+			[].forEach.call( items, function ( li ) {
+				if ( li.getAttribute( 'data-region' ) === region ) { li.classList.toggle( 'is-highlight', on ); }
+			} );
+		}
+
+		function bind( el ) {
+			var region = el.getAttribute( 'data-region' );
+			el.addEventListener( 'mouseenter', function () { setHighlight( region, true ); } );
+			el.addEventListener( 'mouseleave', function () { setHighlight( region, false ); } );
+			el.addEventListener( 'focus', function () { setHighlight( region, true ); } );
+			el.addEventListener( 'blur', function () { setHighlight( region, false ); } );
+		}
+		[].forEach.call( nodes, bind );
+		[].forEach.call( items, bind );
+	}
+
+	function init() {
+		var maps = document.querySelectorAll( '[data-liw-worldmap]' );
+		for ( var i = 0; i < maps.length; i++ ) { initMap( maps[ i ] ); }
+	}
+
+	if ( document.readyState === 'loading' ) {
+		document.addEventListener( 'DOMContentLoaded', init );
+	} else {
+		init();
+	}
+}() );

@@ -442,7 +442,12 @@ try {
 	liw_st_check( 'Header Board Seite verfügbar', class_exists( \Liebherr\InterfaceWorld\Admin\Pages\HeaderBoardPage::class ) );
 	$hdr = do_shortcode( '[liw_header]' );
 	liw_st_check( '[liw_header] rendert Header mit Navigation und Primär-CTA', str_contains( $hdr, 'class="liw-header"' ) && str_contains( $hdr, 'liw-header__nav' ) && str_contains( $hdr, 'liw-cta--primary' ) );
-	liw_st_check( '[liw_header] ohne freigegebenes Logo → Text-Wortmarke (kein erfundenes Logo)', str_contains( $hdr, 'liw-header__wordmark' ) );
+	// Logo-Regel (CI-002/005): freigegebenes Logo → Bild; sonst neutrale Wortmarke.
+	$__logo_id = \Liebherr\InterfaceWorld\Branding\BrandTokens::logo_id();
+	$__logo_ok = ( $__logo_id > 0 && \Liebherr\InterfaceWorld\CoreBridge\MediaBridge::is_approved( $__logo_id ) )
+		? str_contains( $hdr, 'liw-header__logo' )
+		: str_contains( $hdr, 'liw-header__wordmark' );
+	liw_st_check( '[liw_header] Logo-Regel: freigegeben → Bild, sonst Wortmarke (CI-002/005)', $__logo_ok );
 	$hero = do_shortcode( '[liw_hero]' );
 	liw_st_check( '[liw_hero] rendert Hero mit H1 und CTAs', str_contains( $hero, 'class="liw-hero' ) && str_contains( $hero, 'liw-hero__headline' ) && str_contains( $hero, 'liw-cta--secondary' ) );
 	liw_st_check( '[liw_hero] Standard-Headline (§8)', str_contains( $hero, 'One structure' ) );
@@ -527,6 +532,14 @@ try {
 	update_post_meta( (int) $__pub, \Liebherr\InterfaceWorld\Content\SectionSchedule::META_UNTIL, gmdate( 'Y-m-d H:i:s', time() + 3600 ) );
 	liw_st_check( 'is_visible_now: laufendes Fenster → sichtbar', true === \Liebherr\InterfaceWorld\Content\SectionSchedule::is_visible_now( (int) $__pub ) );
 	wp_delete_post( (int) $__pub, true );
+	// Etappe „Optik" (alpha.37): Liebherr-CI angewendet, Weltkarte, Webfonts.
+	liw_st_check( 'CI angewendet: Brand-Primaerfarbe = Liebherr-Gelb', str_contains( \Liebherr\InterfaceWorld\Branding\BrandTokens::css_root(), '--brand-primary:#ffd000' ) );
+	liw_st_check( 'CI angewendet: Logo freigegeben (approved=1)', 0 < \Liebherr\InterfaceWorld\Branding\BrandTokens::logo_id() && \Liebherr\InterfaceWorld\CoreBridge\MediaBridge::is_approved( \Liebherr\InterfaceWorld\Branding\BrandTokens::logo_id() ) );
+	liw_st_check( 'Webfonts: @font-face fuer freigegebene Liebherr-Fonts', str_contains( \Liebherr\InterfaceWorld\Frontend\FontFaceService::css(), "font-family:'LiebherrHead'" ) && str_contains( \Liebherr\InterfaceWorld\Frontend\FontFaceService::css(), "font-family:'LiebherrText'" ) );
+	liw_st_check( 'Shortcode [liw_world_map] registriert', shortcode_exists( \Liebherr\InterfaceWorld\Frontend\WorldMapView::SHORTCODE ) );
+	$__wm = do_shortcode( '[liw_world_map]' );
+	liw_st_check( '[liw_world_map] rendert SVG + Zentrale + Text-Alternative', str_contains( $__wm, 'liw-worldmap__svg' ) && str_contains( $__wm, 'liw-worldmap__hub' ) && str_contains( $__wm, 'liw-worldmap__list' ) );
+	liw_st_check( '[liw_world_map] enthaelt Regionsknoten aus DEMO-Verbindungen', str_contains( $__wm, 'data-region="europe"' ) || str_contains( $__wm, 'data-region="asia_pacific"' ) );
 	liw_st_check( 'Language Board Seite verfügbar', class_exists( \Liebherr\InterfaceWorld\Admin\Pages\LanguageBoardPage::class ) );
 	liw_st_check( 'TranslationBridge::public_scope_post_ids() liefert Array', is_array( \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::public_scope_post_ids() ) );
 	liw_st_check( 'TranslationBridge::readiness_report() liefert je Sprache Kennzahlen', ( function (): bool { $r = \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::readiness_report( [ 'en' ] ); return ! \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::is_available() || ( isset( $r['en'] ) && array_key_exists( 'ready', $r['en'] ) && array_key_exists( 'min_rate', $r['en'] ) ); } )() );

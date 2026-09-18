@@ -35,6 +35,7 @@ final class BrandTokens {
 	 */
 	private const DEFAULTS = [
 		'primary'      => '#3a3f45',
+		'on_primary'   => '#ffffff',
 		'secondary'    => '#6b7278',
 		'surface'      => '#ffffff',
 		'text'         => '#1f1f1f',
@@ -50,6 +51,7 @@ final class BrandTokens {
 	/** CSS-Variablenname je Token-Schlüssel (Pflichtenheft §11). */
 	private const CSS_VARS = [
 		'primary'      => '--brand-primary',
+		'on_primary'   => '--brand-on-primary',
 		'secondary'    => '--brand-secondary',
 		'surface'      => '--brand-surface',
 		'text'         => '--brand-text',
@@ -95,7 +97,7 @@ final class BrandTokens {
 	public static function sanitize( array $raw ): array {
 		$out = self::DEFAULTS;
 
-		foreach ( [ 'primary', 'secondary', 'surface', 'text', 'muted', 'border' ] as $key ) {
+		foreach ( [ 'primary', 'on_primary', 'secondary', 'surface', 'text', 'muted', 'border' ] as $key ) {
 			if ( isset( $raw[ $key ] ) && is_string( $raw[ $key ] ) && preg_match( '/^#[0-9a-fA-F]{6}$/', trim( $raw[ $key ] ) ) ) {
 				$out[ $key ] = strtolower( trim( $raw[ $key ] ) );
 			}

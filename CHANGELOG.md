@@ -1,5 +1,35 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.37] – 2026-09-18 – Optik: Liebherr-CI angewendet + „Connected World"-Weltkarte
+
+> **Markenhinweis:** Liebherr-CI, -Logo, -Bilder und -Webfonts sind auf ausdrückliche Autorisierung
+> (Joseph White) **vorläufig** angewendet; die endgültige, dokumentierte Liebherr-Freigabe bleibt
+> Voraussetzung für den produktiven Launch. Rücknahme: Brand Board zurücksetzen + Media Board
+> `approved=0` (`docs/LIW_ABNAHME.md` §5).
+
+### Hinzugefügt
+- **Interaktive Weltkarte** `[liw_world_map]` (LP-06, §8): eigene, abhängigkeitsfreie Inline-SVG
+  („Connected World") mit zentraler Liebherr-Zentrale und Regionen-Knoten aus den freigegebenen
+  Verbindungen; Knoten per Tastatur/Screenreader erreichbar, mit vollständiger Text-Alternative (§26).
+  Hover/Fokus synchronisiert Knoten und Liste (`assets/js/liebherr-frontend.js`).
+- **Webfont-Einbindung** `FontFaceService` (§11): `@font-face` für die freigegebenen Liebherr-Fonts
+  (LiebherrHead/LiebherrText), sodass die Brand-Token-Schriften real rendern.
+- **`--brand-on-primary`-Token** (BrandTokens + Brand Board): lesbarer Text auf der Primärfarbe
+  (dunkel auf Liebherr-Gelb) – behebt den Kontrast bei hellen Primärfarben.
+- CI-Anwendung `scripts/liw-apply-liebherr-ci.php` (idempotent, autorisiert): gibt die
+  Media-Board-Kandidaten frei (`approved=1`), belegt die Brand-Tokens mit den echten Liebherr-Werten
+  (Gelb #ffd000, Anthrazit #202326, Blau #2779c4, LiebherrHead/Text) und setzt Logo + Hero-Bild.
+
+### Geändert
+- `assets/css/liebherr-frontend.css`: Weltkarten- und Hero-Feinschliff, CTA-/Marker-Kontrast über
+  `--brand-on-primary`. `src/Bootstrap.php`/`FrontendAssets.php`: WorldMapView + Webfonts registriert.
+
+### Hinweise
+- Die abstrahierte Weltkarte nutzt **keine** externe Kartenbibliothek und keine echten Koordinaten
+  (kein Kategorie-A-Eingriff); eine echte geografische Karte bleibt optionaler Folgepunkt.
+- Verifikation: `php -l`; `tests/run-tests.php` 196/196, `scripts/liw-selftest.php` 196/196; Optik in
+  Desktop-Vorschau bestätigt (Logo, Hero, Weltkarte, gelbe CTAs mit dunklem Text).
+
 ## [0.1.0-alpha.36] – 2026-09-18 – Content-Board-Restpunkte: Sichtbarkeits-Zeitfenster (§19)
 
 ### Hinzugefügt

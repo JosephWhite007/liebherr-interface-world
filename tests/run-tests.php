@@ -214,6 +214,20 @@ liw_assert( 'until in der Zukunft → sichtbar', true === $sw( '', gmdate( 'Y-m-
 liw_assert( 'im Fenster (from<now<until) → sichtbar', true === $sw( gmdate( 'Y-m-d H:i:s', $now - 60 ), gmdate( 'Y-m-d H:i:s', $now + 60 ), $now ), $checks, $failures );
 liw_assert( 'ungültiger Wert wird als offen behandelt', true === $sw( 'kein-datum', '', $now ), $checks, $failures );
 
+// 2l. Optik/CI (Etappe „Optik", §8/§11) – reine Logik.
+echo "-- Optik/CI (alpha.37) --\n";
+require_once $root . '/src/Frontend/WorldMapView.php';
+$cr = [ 'Liebherr\\InterfaceWorld\\Frontend\\WorldMapView', 'canonical_region' ];
+liw_assert( 'canonical_region: DEMO Europe → europe', 'europe' === $cr( 'DEMO Europe' ), $checks, $failures );
+liw_assert( 'canonical_region: North America → north_america', 'north_america' === $cr( 'DEMO North America' ), $checks, $failures );
+liw_assert( 'canonical_region: Südamerika → south_america', 'south_america' === $cr( 'Südamerika' ), $checks, $failures );
+liw_assert( 'canonical_region: Asien-Pazifik → asia_pacific', 'asia_pacific' === $cr( 'DEMO Asia-Pacific' ), $checks, $failures );
+liw_assert( 'canonical_region: Unbekannt → other', 'other' === $cr( 'Irgendwo' ), $checks, $failures );
+$bt2 = \Liebherr\InterfaceWorld\Branding\BrandTokens::css_from( \Liebherr\InterfaceWorld\Branding\BrandTokens::defaults() );
+liw_assert( 'BrandTokens: --brand-on-primary im CSS', str_contains( $bt2, '--brand-on-primary:' ), $checks, $failures );
+$bt3 = \Liebherr\InterfaceWorld\Branding\BrandTokens::sanitize( [ 'on_primary' => '#202326' ] );
+liw_assert( 'BrandTokens: on_primary sanitisiert Hex', '#202326' === $bt3['on_primary'], $checks, $failures );
+
 // 3. strict_types=1 in jeder src/-Datei (Coding Standard, CLAUDE.md Abschnitt 5).
 echo "-- Coding Standard --\n";
 $iterator2 = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $root . '/src', FilesystemIterator::SKIP_DOTS ) );

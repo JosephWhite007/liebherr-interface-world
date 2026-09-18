@@ -1,8 +1,10 @@
 # Liebherr Interface Solutions — Marken-Token-Referenz (KANDIDAT, Freigabe ausstehend)
 
-**Status:** CI-005-Kandidat · **Quelle:** liebherr.com (eigener öffentlicher Auftritt, erfasst 18.09.2026)
-· **Freigabe:** Liebherr, dokumentiert ausstehend. **Bis zur Freigabe nicht öffentlich verwenden**
-(CI-002/CI-005, Markenschutz). Die Werte sind **nicht erfunden**, sondern unverändert aus Liebherrs
+**Status:** seit alpha.37 **vorläufig angewendet** (autorisiert JW 18.09.2026 für Demo/Präsentation;
+Assets im Media Board `approved=1`, Werte im Brand Board aktiv) · **Quelle:** liebherr.com (erfasst
+18.09.2026) · **Freigabe:** endgültige, dokumentierte Liebherr-Freigabe weiterhin ausstehend →
+Voraussetzung für produktiven Launch (CI-002/CI-005, Markenschutz). Rücknahme: Brand Board zurücksetzen
++ Media Board `approved=0`. Die Werte sind **nicht erfunden**, sondern unverändert aus Liebherrs
 eigenem Design-System abgelesen; sie ersetzen bis zur Freigabe die neutralen Fallbacks des geplanten
 Brand-Token-Boards (Release-Plan Etappe 1).
 

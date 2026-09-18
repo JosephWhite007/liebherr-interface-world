@@ -31,6 +31,7 @@ use Liebherr\InterfaceWorld\Frontend\HeaderView;
 use Liebherr\InterfaceWorld\Frontend\HeroView;
 use Liebherr\InterfaceWorld\Frontend\LandingpageView;
 use Liebherr\InterfaceWorld\Frontend\SectionGraphicView;
+use Liebherr\InterfaceWorld\Frontend\WorldMapView;
 use Liebherr\InterfaceWorld\Onboarding\OnboardingForm;
 use Liebherr\InterfaceWorld\Partner\PartnerDocumentsView;
 
@@ -54,6 +55,7 @@ final class Bootstrap {
 		HeaderView::register();
 		HeroView::register();
 		ComponentViews::register();
+		WorldMapView::register();
 		LandingpageView::register();
 		PartnerDocumentsView::register();
 		FrontendAssets::register();
