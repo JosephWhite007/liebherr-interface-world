@@ -8,6 +8,23 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-19 · IW-Fixes: Code-Prüfung (Cache/Nonce), Pflichtfeld-Sternchen, Favicon (0.1.0-alpha.49)
+
+**Frage/Kontext.** Nutzerbefund: Eintritts-Code wird trotz korrekter Eingabe abgewiesen; Sternchen ohne
+Erklärung; WordPress-Favicon soll durch den goldenen Globus ersetzt werden.
+
+**Entscheidungen (Kategorie B).**
+- **Ursache Code-Prüfung = gecachtes WP-Nonce** (WP Rocket Full-Page-Cache backt das REST-Nonce in die Seite;
+  nach Ablauf schlägt die Verifikation fehl → generische „Code ungültig"-Meldung). Für die Prototyp-Landing
+  daher **öffentliche REST-Endpunkte ohne Nonce-Zwang** (`permission_callback => __return_true`); das eigentliche
+  Tor ist der Bestätigungscode, es werden keine echten Kosten/Daten bewegt (§21). Härtung (frisches Token) vor
+  Produktivbetrieb notiert (IMPLEMENTATION_NOTES). Lehre reiht sich in die bekannte WP-Rocket-Falle ein.
+- **Favicon** als eigenes, kontrastreiches SVG (site-weit über wp_head/admin_head/login_head), plus optionale
+  offizielle PNGs (bevorzugt, sobald hinterlegt) – die exakten GoHeal-PNGs kann Claude nicht als Binärdatei
+  erzeugen; WP-weite Pflege zusätzlich via Customizer → Website-Icon.
+
+**Quelle/Version.** Nutzerbefund 19.09.2026; 0.1.0-alpha.49. Prüfung: run-tests 276/276, liw-selftest 268/268.
+
 ### 2026-09-19 · Intelligence World – Eintritt & Welt (0.1.0-alpha.48)
 
 **Frage/Kontext.** Phase 2 nach dem Fundament: Blue-Planet-Landing, Eintrittsschleuse und Sitzungs-/Kostenleiste.

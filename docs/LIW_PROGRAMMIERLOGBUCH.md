@@ -12,6 +12,21 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.49 – IW-Fixes: Code-Prüfung, Pflichtfeld-Sternchen, Favicon
+
+**Geändert:** `src/IntelligenceWorld/Rest.php` – `routes()` nutzt `__return_true` statt Nonce-Zwang
+(`check_nonce` entfällt als Gate; Grund: WP-Rocket-Full-Page-Cache backt Nonce ein → veraltet → Code galt
+fälschlich als ungültig; Prototyp §21, Access-Code ist das Tor). `src/IntelligenceWorld/WorldView.php` –
+Pflichtfeld-Legende „Mit * markierte Felder sind Pflichtfelder." + `.liw-iw__req`-Sternchen an Code und beiden
+Einwilligungen (Consents `required`). `assets/css/liw-intelligence-world.css` – `.liw-iw__required-note`/`.liw-iw__req`.
+**Neu:** `assets/img/liw-planet-icon.svg` (kontrastreiches Gold-Planet-Favicon), `src/Frontend/FaviconService.php`
+(gibt Favicon-Links site-weit in wp_head/admin_head/login_head aus; SVG primär, optionale PNGs bevorzugt;
+Filter `liw_favicon_enabled`), registriert in `src/Bootstrap.php`.
+**Tests:** `scripts/liw-selftest.php` (+Access-Gate akzeptiert/weist ab, +Favicon-Link, +Pflichtfeld-Legende),
+`tests/run-tests.php` (+Favicon-SVG wohlgeformt). `src/Admin/Pages/HandbookPage.php`, `CHANGELOG.md`,
+`docs/LOGBUCH_TECHNIK.md`, `docs/LIW_TODO.md`, Version alpha.49.
+**Prüfung:** `php -l`; run-tests 276/276, liw-selftest 268/268; Browser: Eintritt mit korrektem Code ok.
+
 ## 0.1.0-alpha.48 – Intelligence World: Eintritt & Welt (Blue Planet, Access Gate, Sitzungsleiste)
 
 **Neu (`src/IntelligenceWorld/`):** `WorldContent.php` (Option liw_iw_world: Landing/Gate-Texte + Prototyp-

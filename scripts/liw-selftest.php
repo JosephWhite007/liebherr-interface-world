@@ -651,10 +651,20 @@ try {
 	$__world = do_shortcode( '[liw_intelligence_world]' );
 	liw_st_check( 'IW: Blue-Planet-Hero + Planet-SVG', str_contains( $__world, 'liw-iw__hero' ) && str_contains( $__world, 'liw-iw__planet-svg' ) );
 	liw_st_check( 'IW: Eintrittsschleuse (Code + 2 Einwilligungen + Bestätigung)', str_contains( $__world, 'data-liw-iw-code' ) && 2 === substr_count( $__world, 'data-liw-iw-consent=' ) && str_contains( $__world, 'data-liw-iw-confirm' ) );
+	liw_st_check( 'IW: Pflichtfeld-Legende + 3 markierte Pflichtfelder (Sternchen erklärt)', str_contains( $__world, 'Pflichtfelder' ) && 3 === substr_count( $__world, 'class="liw-iw__req"' ) );
 	liw_st_check( 'IW: Nutzungsbedingungen (5.1–5.8) in der Schleuse eingebunden', str_contains( $__world, '5.1 Prototypstatus' ) && str_contains( $__world, '5.8 Rechtlicher Freigabevorbehalt' ) );
 	liw_st_check( 'IW: Sitzungs-/Kostenleiste + Beenden', str_contains( $__world, 'data-liw-iw-time' ) && str_contains( $__world, 'data-liw-iw-budgetfill' ) && str_contains( $__world, 'data-liw-iw-end' ) );
 	liw_st_check( 'IW: Demo-Code Standard (WorldContent)', 'LIEBHERR-DEMO' === \Liebherr\InterfaceWorld\IntelligenceWorld\WorldContent::access_code() );
 	liw_st_check( 'IW: REST-Route liw-iw/v1 registriert', in_array( '/' . \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::NAMESPACE, array_keys( rest_get_server()->get_routes() ), true ) || array_key_exists( '/' . \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::NAMESPACE . '/session/start', rest_get_server()->get_routes() ) );
+	// Access-Gate serverseitig (Code-Prüfung, alpha.49-Fix: öffentliche Endpunkte).
+	$__ok = \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::start( ( function () { $r = new WP_REST_Request( 'POST' ); $r->set_param( 'code', 'LIEBHERR-DEMO' ); $r->set_param( 'consent_terms', true ); $r->set_param( 'consent_storage', true ); return $r; } )() )->get_data();
+	liw_st_check( 'IW: Access-Gate akzeptiert korrekten Code (ok + session_code)', ! empty( $__ok['ok'] ) && isset( $__ok['session_code'] ) && str_starts_with( (string) $__ok['session_code'], 'LIW-' ) );
+	$__bad = \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::start( ( function () { $r = new WP_REST_Request( 'POST' ); $r->set_param( 'code', 'FALSCH' ); $r->set_param( 'consent_terms', true ); $r->set_param( 'consent_storage', true ); return $r; } )() )->get_data();
+	liw_st_check( 'IW: Access-Gate weist falschen Code ab (ok=false)', empty( $__bad['ok'] ) );
+	if ( isset( $__ok['session_code'] ) ) { global $wpdb; $wpdb->query( $wpdb->prepare( 'DELETE FROM ' . \Liebherr\InterfaceWorld\IntelligenceWorld\Schema::event_table() . ' WHERE session_code = %s', (string) $__ok['session_code'] ) ); $wpdb->query( $wpdb->prepare( 'DELETE FROM ' . \Liebherr\InterfaceWorld\IntelligenceWorld\Schema::session_table() . ' WHERE session_code = %s', (string) $__ok['session_code'] ) ); }
+	// Favicon (goldener Planet, alpha.49).
+	$__fav = ( function (): string { ob_start(); \Liebherr\InterfaceWorld\Frontend\FaviconService::output(); return (string) ob_get_clean(); } )();
+	liw_st_check( 'Favicon: Planet-SVG-Link im <head>', str_contains( $__fav, 'liw-planet-icon.svg' ) && str_contains( $__fav, 'rel="icon"' ) );
 
 	// ── [9] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
 	echo "\n[9] Programmierlogbuch / To-Dos\n";

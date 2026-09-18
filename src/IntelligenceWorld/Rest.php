@@ -34,7 +34,11 @@ final class Rest {
 	}
 
 	public static function routes(): void {
-		$perm = [ self::class, 'check_nonce' ];
+		// PROTOTYP (§21): öffentliche Endpunkte ohne Nonce-Zwang. Grund: Full-Page-Caching (WP Rocket) bäckt
+		// ein WP-Nonce in die gecachte Seite ein → nach Cache-Ablauf schlüge die Prüfung fehl und der Eintritt
+		// würde fälschlich als „Code ungültig" abgewiesen. Das eigentliche Tor ist der Bestätigungscode; es
+		// werden keine echten Kosten/Daten bewegt. Vor Produktivbetrieb: frisches Nonce/Token-Verfahren (Härtung).
+		$perm = '__return_true';
 
 		register_rest_route( self::NAMESPACE, '/session/start', [
 			'methods'             => 'POST',

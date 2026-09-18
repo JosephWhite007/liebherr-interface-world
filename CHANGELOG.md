@@ -1,5 +1,30 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.49] – 2026-09-19 – IW-Fixes: Code-Prüfung, Pflichtfeld-Sternchen, Favicon „goldener Planet"
+
+### Behoben
+- **Eintritts-Code wurde fälschlich abgewiesen:** Die REST-Endpunkte verlangten ein WP-Nonce, das der
+  Full-Page-Cache (WP Rocket) in die gecachte Seite einbackt → nach Ablauf schlug die Prüfung fehl und der
+  korrekte Code („LIEBHERR-DEMO") galt als ungültig. Für die Prototyp-Landing sind die Endpunkte jetzt
+  **öffentlich ohne Nonce-Zwang** (Access-Code ist das Tor, keine echten Kosten/Daten, §21). Serverseitig
+  verifiziert (korrekt → Sitzung; falsch → Ablehnung).
+- **Sternchen ohne Erklärung:** In der Eintrittsschleuse fehlte die Legende zum `*`. Ergänzt:
+  „Mit * markierte Felder sind Pflichtfelder."; Code **und** beide Einwilligungen konsistent als Pflicht markiert.
+
+### Hinzugefügt
+- **Website-Icon „goldener Planet"** statt WordPress-Standard im Browser-Tab: `Frontend\FaviconService`
+  gibt site-weit (Frontend/Admin/Login) ein kontrastreiches Gold-Planet-SVG (`assets/img/liw-planet-icon.svg`)
+  im `<head>` aus; optionale offizielle PNGs (`assets/img/goheal-gold-planet-32|192|180.png`) werden bevorzugt,
+  sobald hinterlegt. Filter `liw_favicon_enabled`.
+
+### Verifikation
+- `tests/run-tests.php` **276/276**, `scripts/liw-selftest.php` **268/268** (Access-Gate akzeptiert/weist ab,
+  Favicon-Link im `<head>`, Pflichtfeld-Legende). Browser: Eintritt mit „LIEBHERR-DEMO" + beiden Zustimmungen ok.
+
+### Manuell (Auftraggeber)
+- Für pixelgenaue Home-Screen-Icons und WP-weite Pflege: offizielle quadratische PNG (idealerweise 512×512)
+  unter Design → Customizer → Website-Icon hochladen; danach Browser-/WP-Cache leeren.
+
 ## [0.1.0-alpha.48] – 2026-09-19 – Intelligence World: Eintritt & Welt (Blue Planet, Access Gate, Sitzungsleiste)
 
 Phase 2 des Pflichtenhefts-2 (Prototyp §21, kein echtes Payment). Baut auf dem Fundament (alpha.47) auf.

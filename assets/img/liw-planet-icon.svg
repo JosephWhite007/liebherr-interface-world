@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Liebherr Intelligence World">
+	<defs>
+		<radialGradient id="liwGold" cx="38%" cy="34%" r="72%">
+			<stop offset="0%" stop-color="#FFE9A0"/>
+			<stop offset="45%" stop-color="#F2B733"/>
+			<stop offset="100%" stop-color="#8A5A10"/>
+		</radialGradient>
+	</defs>
+	<circle cx="32" cy="32" r="29" fill="url(#liwGold)"/>
+	<!-- vereinfachte, kontrastreiche Kontinent-/Datenlinien -->
+	<g fill="none" stroke="#5A3A08" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" opacity="0.85">
+		<path d="M20 22 q8 -4 15 1 q6 4 2 9 q-5 5 -13 3 q-7 -2 -4 -13 z"/>
+		<path d="M34 40 q7 -2 11 3 q3 4 -2 7 q-6 3 -11 -2 q-3 -4 2 -8 z"/>
+		<path d="M14 34 q4 3 3 8"/>
+	</g>
+	<!-- Glanzlicht -->
+	<ellipse cx="24" cy="22" rx="7" ry="4.5" fill="#FFFFFF" opacity="0.35"/>
+	<circle cx="32" cy="32" r="29" fill="none" stroke="#3A2606" stroke-width="1.5" opacity="0.5"/>
+</svg>

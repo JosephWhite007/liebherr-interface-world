@@ -21,6 +21,10 @@ Stand: 18.09.2026 (0.1.0-alpha.41).
 Consent + Preis + Storage-Budget), Sitzungs-/Kostenleiste (§7) via REST `liw-iw/v1`; Seite
 `/liebherr-intelligence-world/` + Menüpunkt „🪐 Intelligence World". Demo-Defaults in `liw_iw_world`.
 
+**Fixes (alpha.49):** Eintritts-Code-Prüfung repariert (öffentliche REST-Endpunkte statt gecachtem Nonce;
+Standard-Demo-Code „LIEBHERR-DEMO"), Pflichtfeld-Sternchen mit Legende, Website-Icon „goldener Planet"
+(SVG site-weit; offizielle PNG via Customizer → Website-Icon nachrüstbar). Härtung (frisches Token) vor Produktiv.
+
 **Offen / nächste Etappen:**
 - Navigation & Hotels: administrierbare 14-Punkte-Taxonomie inkl. Untermenüs + Master-Linkmodell (§19.1),
   Hotels-Welt (6 Knoten, §6.3).

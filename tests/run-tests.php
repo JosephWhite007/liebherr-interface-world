@@ -319,6 +319,7 @@ liw_assert( 'Rest::billing_status: 120s×2,50/min = 5,00 (500 Cent), 10 %', 500 
 $bs2 = \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::billing_status( 1000, 250, 5000 );
 liw_assert( 'Rest::billing_status: Warnstufe high ab 80 %', 'high' === $bs2['level'] && $bs2['budget_pct'] >= 80, $checks, $failures );
 liw_assert( 'Rest::format_duration: §8-Beispiel 02:14:38', '02:14:38' === \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::format_duration( 8078 ) && '00:00:00' === \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::format_duration( 0 ), $checks, $failures );
+liw_assert( 'Favicon: goldenes Planet-SVG vorhanden + XML-wohlgeformt', is_readable( $root . '/assets/img/liw-planet-icon.svg' ) && false !== @simplexml_load_file( $root . '/assets/img/liw-planet-icon.svg' ), $checks, $failures );
 
 // 3. strict_types=1 in jeder src/-Datei (Coding Standard, CLAUDE.md Abschnitt 5).
 echo "-- Coding Standard --\n";

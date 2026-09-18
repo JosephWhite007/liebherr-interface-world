@@ -36,7 +36,9 @@
 .liw-iw__gate[hidden] { display: none; }
 .liw-iw__gate-card { max-width: 640px; margin: 0 auto; background: rgba(6,28,51,.55); border: 1px solid rgba(142,216,255,.18); border-radius: 10px; padding: 1.6rem; }
 .liw-iw__gate-heading { font-family: var(--font-heading, Arial, sans-serif); font-weight: 900; margin: 0 0 .6rem; font-size: 1.4rem; }
-.liw-iw__note { color: var(--iw-ice); font-size: .92rem; margin: 0 0 1.2rem; }
+.liw-iw__note { color: var(--iw-ice); font-size: .92rem; margin: 0 0 .4rem; }
+.liw-iw__required-note { color: var(--iw-gray); font-size: .82rem; margin: 0 0 1.2rem; }
+.liw-iw__req { color: var(--iw-yellow); font-weight: 700; }
 .liw-iw__field { display: block; margin: 0 0 1rem; }
 .liw-iw__field-label { display: block; font-weight: 700; margin-bottom: .3rem; }
 .liw-iw__code { width: 100%; max-width: 20rem; font: inherit; padding: .55rem .7rem; border: 1px solid rgba(142,216,255,.4); border-radius: 4px; background: rgba(255,255,255,.95); color: #111; }

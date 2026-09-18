@@ -97,9 +97,10 @@ final class WorldView {
 				<div class="liw-iw__gate-card">
 					<h2 class="liw-iw__gate-heading"><?php echo esc_html( (string) $c['gate']['heading'] ); ?></h2>
 					<p class="liw-iw__note"><?php echo esc_html( (string) $c['gate']['prototype_note'] ); ?></p>
+					<p class="liw-iw__required-note"><?php echo esc_html__( 'Mit * markierte Felder sind Pflichtfelder.', 'liebherr-interface-world' ); ?></p>
 
 					<label class="liw-iw__field">
-						<span class="liw-iw__field-label"><?php echo esc_html( (string) $c['gate']['code_label'] ); ?> *</span>
+						<span class="liw-iw__field-label"><?php echo esc_html( (string) $c['gate']['code_label'] ); ?> <span class="liw-iw__req" aria-hidden="true">*</span></span>
 						<input type="text" class="liw-iw__code" autocomplete="off" data-liw-iw-code />
 					</label>
 
@@ -115,8 +116,8 @@ final class WorldView {
 					<p class="liw-iw__price"><strong><?php echo esc_html__( 'Preis:', 'liebherr-interface-world' ); ?></strong> <?php echo esc_html( $price_display ); ?> · <strong><?php echo esc_html__( 'Sitzungsbudget:', 'liebherr-interface-world' ); ?></strong> <?php echo esc_html( $budget_display ); ?> · <strong><?php echo esc_html__( 'Lokaler Speicher:', 'liebherr-interface-world' ); ?></strong> <?php echo esc_html( (string) (int) $c['pricing']['storage_budget_mb'] ); ?> MB</p>
 					<p class="liw-iw__price-info"><?php echo esc_html( (string) $c['gate']['price_info'] ); ?></p>
 
-					<label class="liw-iw__consent"><input type="checkbox" data-liw-iw-consent="terms" /> <span><?php echo esc_html( (string) $c['gate']['consent_terms'] ); ?></span></label>
-					<label class="liw-iw__consent"><input type="checkbox" data-liw-iw-consent="storage" /> <span><?php echo esc_html( (string) $c['gate']['consent_storage'] ); ?></span></label>
+					<label class="liw-iw__consent"><input type="checkbox" data-liw-iw-consent="terms" required /> <span><?php echo esc_html( (string) $c['gate']['consent_terms'] ); ?> <span class="liw-iw__req" aria-hidden="true">*</span></span></label>
+					<label class="liw-iw__consent"><input type="checkbox" data-liw-iw-consent="storage" required /> <span><?php echo esc_html( (string) $c['gate']['consent_storage'] ); ?> <span class="liw-iw__req" aria-hidden="true">*</span></span></label>
 
 					<button type="button" class="liw-cta liw-cta--primary liw-iw__confirm" data-liw-iw-confirm disabled><?php echo esc_html( (string) $c['gate']['confirm_label'] ); ?></button>
 					<p class="liw-iw__gate-msg" role="status" data-liw-iw-msg></p>
