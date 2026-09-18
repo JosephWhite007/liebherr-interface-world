@@ -50,6 +50,18 @@ final class AdminMenu {
 			58 // hinter dem ARALIYA-Kernmenü (Konvention: eigenständige Plugins ordnen sich dahinter ein).
 		);
 
+		// Frontpage-Ansicht: Direktlink zur öffentlichen Landingpage (erster Unterpunkt – kein Umschalten nötig).
+		$front_url = self::front_url();
+		if ( '' !== $front_url ) {
+			add_submenu_page(
+				'liw-interface-board',
+				__( 'Frontpage-Ansicht', 'liebherr-interface-world' ),
+				__( '🌐 Frontpage-Ansicht', 'liebherr-interface-world' ),
+				RoleBridge::CAP_MANAGE_CONTENT,
+				$front_url
+			);
+		}
+
 		add_submenu_page(
 			'liw-interface-board',
 			__( 'Interface Board', 'liebherr-interface-world' ),
@@ -194,5 +206,46 @@ final class AdminMenu {
 			'liw-handbook',
 			[ HandbookPage::class, 'render' ]
 		);
+
+		if ( '' !== $front_url ) {
+			self::move_first( 'liw-interface-board', $front_url );
+		}
+	}
+
+	/** URL der öffentlichen Landingpage (Trägerseite mit [liw_landingpage]); leer, wenn keine existiert. */
+	private static function front_url(): string {
+		$page = get_page_by_path( 'interface-world' );
+		if ( $page instanceof \WP_Post && 'publish' === $page->post_status ) {
+			return (string) get_permalink( $page );
+		}
+		$ids = get_posts( [
+			'post_type'      => 'page',
+			'post_status'    => 'publish',
+			'posts_per_page' => 1,
+			'fields'         => 'ids',
+			'no_found_rows'  => true,
+			's'              => '[liw_landingpage',
+		] );
+		if ( ! empty( $ids ) ) {
+			return (string) get_permalink( (int) $ids[0] );
+		}
+		return '';
+	}
+
+	/** Verschiebt den Untermenü-Eintrag mit gegebenem Slug an die erste Position. */
+	private static function move_first( string $parent, string $slug ): void {
+		global $submenu;
+		if ( empty( $submenu[ $parent ] ) || ! is_array( $submenu[ $parent ] ) ) {
+			return;
+		}
+		foreach ( $submenu[ $parent ] as $index => $item ) {
+			if ( isset( $item[2] ) && $item[2] === $slug ) {
+				$entry = $item;
+				unset( $submenu[ $parent ][ $index ] );
+				array_unshift( $submenu[ $parent ], $entry );
+				$submenu[ $parent ] = array_values( $submenu[ $parent ] );
+				return;
+			}
+		}
 	}
 }

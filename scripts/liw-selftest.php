@@ -552,6 +552,10 @@ try {
 	liw_st_check( 'Vollbild-Seitenvorlage registriert + Datei vorhanden', array_key_exists( \Liebherr\InterfaceWorld\Frontend\PageTemplate::TEMPLATE, \Liebherr\InterfaceWorld\Frontend\PageTemplate::add_choice( [] ) ) && is_readable( LIW_PATH . 'templates/full-width.php' ) );
 	$__cw = get_page_by_path( 'interface-world' );
 	liw_st_check( 'Traegerseite nutzt Vollbild-Vorlage', $__cw instanceof WP_Post && \Liebherr\InterfaceWorld\Frontend\PageTemplate::TEMPLATE === get_page_template_slug( $__cw->ID ) );
+	// Frontpage-Ansicht als erster Menü-Unterpunkt (alpha.40).
+	$__am = (string) file_get_contents( LIW_PATH . 'src/Admin/AdminMenu.php' );
+	liw_st_check( 'Menü: Frontpage-Ansicht + move_first verdrahtet', str_contains( $__am, 'Frontpage-Ansicht' ) && str_contains( $__am, 'move_first' ) && str_contains( $__am, 'front_url' ) );
+	liw_st_check( 'Frontpage-Link-Ziel existiert (Trägerseite auffindbar)', get_page_by_path( 'interface-world' ) instanceof WP_Post );
 	liw_st_check( 'Language Board Seite verfügbar', class_exists( \Liebherr\InterfaceWorld\Admin\Pages\LanguageBoardPage::class ) );
 	liw_st_check( 'TranslationBridge::public_scope_post_ids() liefert Array', is_array( \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::public_scope_post_ids() ) );
 	liw_st_check( 'TranslationBridge::readiness_report() liefert je Sprache Kennzahlen', ( function (): bool { $r = \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::readiness_report( [ 'en' ] ); return ! \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::is_available() || ( isset( $r['en'] ) && array_key_exists( 'ready', $r['en'] ) && array_key_exists( 'min_rate', $r['en'] ) ); } )() );

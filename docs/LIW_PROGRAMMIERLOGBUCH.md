@@ -12,6 +12,17 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.40 – Menü „Frontpage-Ansicht" + Landingpage-Layout (Gutter/CI)
+
+**Geändert:** `src/Admin/AdminMenu.php` (`front_url()`, `move_first()`, Untermenü „🌐 Frontpage-Ansicht"
+als erster Eintrag – Direktlink zur Trägerseite), `assets/css/liebherr-frontend.css` (Landingpage-
+Abschnitte + Sprungleiste zentriert mit 4vw-Gutter; Titel/Nav/Border auf `--font-heading`/`--brand-*`),
+`scripts/liw-selftest.php` (+2), `CHANGELOG.md`, `docs/LIW_TODO.md`, `docs/LOGBUCH_TECHNIK.md`,
+`liebherr-interface-world.php` (Version alpha.40).
+**Grund:** Der Text der Landingpage-Abschnitte klebte in der Vollbild-Vorlage am linken Rand (kein
+Theme-Wrapper mehr) → eigener zentrierter Content-Bereich.
+**Prüfung:** `php -l`; `tests/run-tests.php` 203/203, `scripts/liw-selftest.php` 206/206; echte Seite geprüft.
+
 ## 0.1.0-alpha.39 – Wortmarke-Token + Vollbild-Seitenvorlage
 
 **Neu:** `src/Frontend/PageTemplate.php` + `templates/full-width.php` (Vorlage „Interface World –

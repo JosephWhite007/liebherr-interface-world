@@ -227,8 +227,8 @@
 
 /* ── Zusammengesetzte Landingpage ([liw_landingpage], seit alpha.18) ───────── */
 .liw-landingpage {
-	font-family: var(--ar-font-body, var(--font-main, "Cormorant", serif));
-	color: var(--ary-text, #24302a);
+	font-family: var(--font-body, Arial, Helvetica, sans-serif);
+	color: var(--brand-text, #1f1f1f);
 }
 
 /* Sprungleiste (alpha.23): klebt oben, scrollt horizontal auf kleinen Bildschirmen */
@@ -236,15 +236,16 @@
 	position: sticky;
 	top: 0;
 	z-index: 10;
-	background: var(--ary-bg, #f7f5f1);
-	border-bottom: 1px solid var(--ary-highlight, #b6a27a);
+	background: var(--brand-surface, #fff);
+	border-bottom: 1px solid var(--brand-border, #d9d9d9);
 	margin: 0 0 1rem;
 }
 
 .liw-landingpage__nav-list {
 	list-style: none;
-	margin: 0;
-	padding: 0.6rem 0;
+	margin: 0 auto;
+	max-width: var(--content-max, 1440px);
+	padding: 0.6rem 4vw;
 	display: flex;
 	flex-wrap: nowrap;
 	gap: 0.25rem 1.25rem;
@@ -257,12 +258,12 @@
 }
 
 .liw-landingpage__nav-link {
-	font-family: var(--ar-font-button, var(--ar-font-body, inherit));
+	font-family: var(--font-body, Arial, Helvetica, sans-serif);
 	font-size: 0.85em;
 	letter-spacing: 0.05em;
 	text-transform: uppercase;
 	text-decoration: none;
-	color: var(--ary-text, #24302a);
+	color: var(--brand-text, #1f1f1f);
 	padding: 0.25rem 0;
 	border-bottom: 2px solid transparent;
 	white-space: nowrap;
@@ -282,8 +283,8 @@
 }
 
 .liw-landingpage__section {
-	padding: 3rem 0;
-	border-top: 1px solid var(--ary-highlight, #b6a27a);
+	padding: 3rem 4vw;
+	border-top: 1px solid var(--brand-border, #d9d9d9);
 	scroll-margin-top: 4rem; /* Platz für die klebende Sprungleiste */
 }
 
@@ -292,10 +293,19 @@
 	padding-top: 1rem;
 }
 
+/* Inhalt jeder Sektion in einer zentrierten Content-Spalte (kein Ankleben am linken Rand). */
+.liw-landingpage__title,
+.liw-landingpage__content {
+	max-width: var(--content-max, 1440px);
+	margin-left: auto;
+	margin-right: auto;
+}
+
 .liw-landingpage__title {
-	font-family: var(--ar-font-heading, var(--font-heading, "Cormorant", serif));
-	font-weight: var(--ar-weight-heading, 600);
-	color: var(--ary-accent, #61735f);
+	font-family: var(--font-heading, Arial, Helvetica, sans-serif);
+	font-weight: 900;
+	color: var(--brand-text, #1f1f1f);
+	font-size: clamp(1.5rem, 3vw, 2.25rem);
 	margin: 0 0 1.25rem;
 }
 

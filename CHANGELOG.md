@@ -1,5 +1,22 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.40] – 2026-09-18 – Menü „Frontpage-Ansicht" + Landingpage-Layout (Gutter/CI)
+
+### Hinzugefügt
+- **Menü-Direktlink „🌐 Frontpage-Ansicht"** als erster Unterpunkt im Interface-World-Menü: öffnet die
+  öffentliche Landingpage (dynamisch aufgelöste Trägerseiten-URL), damit man nicht manuell umschalten muss.
+  `AdminMenu::front_url()` (Slug `interface-world` bzw. Seite mit `[liw_landingpage]`) + `move_first()`.
+
+### Behoben/Geändert
+- **Layout:** In der Vollbild-Vorlage klebten Abschnitts-Überschriften/Text am linken Rand. Die
+  `[liw_landingpage]`-Abschnitte und die Sprungleiste haben nun einen zentrierten Content-Bereich
+  (`--content-max`) mit seitlichem Gutter (4vw). Landingpage-Titel/Nav/Border an die Liebherr-CI-Tokens
+  (`--font-heading`, `--brand-text`, `--brand-primary`, `--brand-border`) angeglichen.
+
+### Verifikation
+- `php -l`; `tests/run-tests.php` 203/203, `scripts/liw-selftest.php` 206/206; echte Seite
+  `/interface-world/` bestätigt (Gutter korrekt, CI-konforme Überschriften).
+
 ## [0.1.0-alpha.39] – 2026-09-18 – Wortmarke „Liebherr Interface Solutions" + Vollbild-Seitenvorlage
 
 ### Hinzugefügt

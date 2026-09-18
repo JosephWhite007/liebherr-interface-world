@@ -8,6 +8,21 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · Menü-Direktlink zur Frontpage + Landingpage-Gutter (0.1.0-alpha.40)
+
+**Frage/Kontext.** JW: Frontpage als erster Menü-Unterpunkt (kein Umschalten); zudem klebte der
+Abschnittstext der Landingpage am linken Rand (Vollbild-Vorlage ohne Theme-Wrapper).
+
+**Entscheidungen (Kategorie B).**
+- **Menü:** `add_submenu_page` mit URL-Slug (dynamisch aufgelöste Trägerseiten-URL, kein hartcodierter
+  Link) + Reihung an Position 1 über das `$submenu`-Global. Öffnet im selben Tab (kein Inline-JS für
+  target=_blank; bewusst schlicht/konform).
+- **Layout:** eigener zentrierter Content-Bereich (`--content-max`, 4vw-Gutter) für
+  `.liw-landingpage__section`/Sprungleiste; zugleich Titel/Nav/Border von Alt-Tokens (`--ary-*`) auf die
+  CI-Tokens (`--brand-*`, `--font-heading`) umgestellt (Konsistenz mit Hero/Header/Footer).
+
+**Quelle/Version.** JW-Auftrag 18.09.2026; 0.1.0-alpha.40.
+
 ### 2026-09-18 · Wortmarke-Token + Vollbild-Seitenvorlage (0.1.0-alpha.39)
 
 **Frage/Kontext.** Zwei Demo-Feinheiten: (1) Footer/Header zeigten den Dev-Seitentitel statt „Liebherr";
