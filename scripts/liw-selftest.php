@@ -499,6 +499,10 @@ try {
 	$__pd = (string) file_get_contents( LIW_PATH . 'src/Partner/PartnerDocumentService.php' );
 	liw_st_check( 'Upload-Härtung: finfo-MIME + Größenlimit + Whitelist (SEC-009)', str_contains( $__pd, 'finfo' ) && str_contains( $__pd, 'MAX_SIZE' ) && str_contains( $__pd, 'ALLOWED' ) );
 	liw_st_check( 'Contact Board: Aufbewahrungsfrist-Formular', str_contains( (string) file_get_contents( LIW_PATH . 'src/Admin/Pages/ContactBoardPage.php' ), 'set_retention' ) );
+	// Etappe 8: Qualität & Abnahme (alpha.34).
+	liw_st_check( 'Demo-Seeder vorhanden + --confirm-Schutz (§33)', is_readable( LIW_PATH . 'scripts/liw-seed-demo.php' ) && str_contains( (string) file_get_contents( LIW_PATH . 'scripts/liw-seed-demo.php' ), '--confirm' ) );
+	liw_st_check( 'Demo-Seeder legt keine echten Daten an (DEMO-Kennzeichnung)', str_contains( (string) file_get_contents( LIW_PATH . 'scripts/liw-seed-demo.php' ), 'DEMO' ) );
+	liw_st_check( 'Abnahmebericht + Release-Plan dokumentiert', is_readable( LIW_PATH . 'docs/LIW_ABNAHME.md' ) && is_readable( LIW_PATH . 'docs/LIW_RELEASEPLAN.md' ) );
 	liw_st_check( 'Language Board Seite verfügbar', class_exists( \Liebherr\InterfaceWorld\Admin\Pages\LanguageBoardPage::class ) );
 	liw_st_check( 'TranslationBridge::public_scope_post_ids() liefert Array', is_array( \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::public_scope_post_ids() ) );
 	liw_st_check( 'TranslationBridge::readiness_report() liefert je Sprache Kennzahlen', ( function (): bool { $r = \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::readiness_report( [ 'en' ] ); return ! \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::is_available() || ( isset( $r['en'] ) && array_key_exists( 'ready', $r['en'] ) && array_key_exists( 'min_rate', $r['en'] ) ); } )() );

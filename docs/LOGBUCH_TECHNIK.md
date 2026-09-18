@@ -8,6 +8,23 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · Etappe 8: Abschluss Stufe 1 – Demo-Seed + Abnahmebericht (0.1.0-alpha.34)
+
+**Frage/Kontext.** Abschluss des Release-Plans: Demo-Daten (§33) und Abnahme (§32/§35) ohne Staging.
+
+**Entscheidungen (Claude, Kategorie B).**
+- **Seed:** idempotenter CLI-Seeder mit klar gekennzeichneten DEMO-Einträgen (Nichtziel §4: keine
+  echten Daten). Terminal-Regel: Ausführung durch JW; hier im Dev verifiziert (10 angelegt, 2. Lauf
+  0/7 übersprungen nach Case-Fix der Code-Idempotenz).
+- **Testtiefe:** keine neue E2E-/Visual-Regression-/Lighthouse-Toolchain (B-8) – Unit + Docker-
+  Selbsttest + manuelle Browser-/Responsive-Stichprobe; Performance/A11y-Vollmessung erst auf Staging
+  (AC-013/012 offen, ehrlich als offen berichtet statt „grün" zu behaupten).
+- **Abnahmebericht:** `docs/LIW_ABNAHME.md` mit AC-Status (✅/⚠️/⛔), Rollback und §34-Launch-Blockern.
+  Produktion bleibt gesperrt bis ausdrückliche Freigabe (AC-016). Stufe-1-Umfang = Release-Plan-Split;
+  Weltkarte/Router-B/Simulations-Automat/Observability bleiben bewusst Folgeetappen.
+
+**Quelle/Version.** Release-Plan Etappe 8; Pflichtenheft §25–35; 0.1.0-alpha.34.
+
 ### 2026-09-18 · Etappe 7: Rate-Limit + Retention gebaut, Upload/Headers bereits/Plattform (0.1.0-alpha.33)
 
 **Frage/Kontext.** §23/§24: Rate-Limiting (SEC-004), Uploads (SEC-009), Datenminimierung/Löschfristen

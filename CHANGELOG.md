@@ -1,5 +1,26 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.34] – 2026-09-18 – Etappe 8: Qualität & Abnahme (§25–35)
+
+### Hinzugefügt
+- **Demo-/Seed-Daten** (§33): `scripts/liw-seed-demo.php` (idempotent, `--confirm`) legt klar
+  gekennzeichnete DEMO-Schnittstellen, -Verbindungen und eine -Simulationswelt mit Szenarien an –
+  keine echten Geschäftsdaten (§4). Boards/Landingpage sind damit ohne Echtdaten vorführbar.
+- **Abnahmebericht** `docs/LIW_ABNAHME.md` (§32/§35): AC-001…016 mit Status, Testergebnisse (§31),
+  Liefergegenstände (§33), **Rollback-Verfahren**, §34-Launch-Blocker-Liste und bewusst
+  zurückgestellte Folgepunkte.
+
+### Qualität/Abnahme
+- Unit (WP-frei) 174/174, Docker-Integration 180/180 grün. Zusammengesetzte Landingpage
+  (Header + Hero + Komponenten + Map) in Desktop und Mobil im Browser visuell bestätigt.
+- Manuelle A11y-Grundlagen erfüllt (Semantik, Fokus, Tastatur, `aria-current`,
+  `prefers-reduced-motion`, Textalternativen); formale A11y-/Performance-Vollmessung auf Staging offen
+  (AC-012/013). Produktion bleibt gesperrt bis ausdrückliche Freigabe (AC-016).
+
+### Abschluss Stufe 1
+- Release-Plan (`docs/LIW_RELEASEPLAN.md`) Etappen 1–8 (alpha.27–34) umgesetzt. Offene Punkte sind
+  externe §34-Inputs und bewusste Kategorie-A-/YAGNI-Folgepunkte (siehe Abnahmebericht/To-Dos).
+
 ## [0.1.0-alpha.33] – 2026-09-18 – Etappe 7: Sicherheit & Datenschutz (§23/§24)
 
 ### Hinzugefügt

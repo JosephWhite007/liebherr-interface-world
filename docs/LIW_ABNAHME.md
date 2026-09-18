@@ -1,0 +1,87 @@
+# Liebherr Interface Solutions — Abnahmebericht (Stufe 1)
+
+**Stand:** 18.09.2026 · **Version:** 0.1.0-alpha.34 · **Grundlage:** Pflichtenheft
+`Pflichtenheft_Liebherr_Interface_Solutions_Landingpage.md` (v1.0), Release-Plan `docs/LIW_RELEASEPLAN.md`.
+**Umgebung:** Docker-Dev (araliya_wordpress). **Staging/Produktion:** gesperrt bis ausdrückliche Freigabe (§30, AC-016).
+
+Dieser Bericht dokumentiert den Abnahmestand der Stufe 1 (Etappen 1–8, alpha.27–34). „Teilweise"
+bedeutet: bewusst als Stufe-1-Umfang so festgelegt (AC-002 erlaubt Feature-Flag/Vorbereitung) bzw.
+durch einen externen §34-Input blockiert.
+
+## 1. Funktionale Abnahmekriterien (§32)
+
+| ID | Kriterium | Status | Anmerkung |
+|----|-----------|--------|-----------|
+| AC-001 | Landingpage unter administrierbarer, umgebungsabhängiger Route | ✅ | `[liw_landingpage]` auf frei wählbarer WP-Seite; Route `/interface-world` als Fallback, Domain/Route je Umgebung = §34-Input |
+| AC-002 | Alle 14 Abschnitte umgesetzt oder per Feature-Flag vorbereitet | ✅ | LP-01/06/08/11/12/13/14 datengetrieben/gebaut; LP-02/03/04/05/07/09/10 kuratiert (redaktionell), tiefe Interaktivität feature-geflaggt |
+| AC-003 | Inhalte/Bilder/CTAs/Sichtbarkeit ohne Code pflegbar | ✅ | Content Board, Components Board, Header Board, Brand Board, Media Board |
+| AC-004 | DE/EN/PL vollständig, weitere Sprachen strukturell vorbereitet | ⚠️ | Struktur + Sprachumschalter + Readiness-Board vorhanden; 100-%-Kuratierung der Texte = Redaktion (Languages Hub), Messung im Language Board |
+| AC-005 | Sprachwechsel erhält Seite, korrekte Locale-Routen | ✅ | Core-Sprachsteuerung (Cookie/`?lang=`), hreflang/Canonical je Sprache |
+| AC-006 | Liebherr primär, GoHeal nur klein als Solution Provider | ✅ | GoHeal nur Footer/Impressum (CI-003); bis Markenfreigabe neutrale Fallbacks |
+| AC-007 | CI ausschließlich aus freigegebenen/konfigurierbaren Brand Tokens | ✅ | Brand Board `--brand-*`; kein erfundenes Branding (CI-002). Echte Liebherr-Werte = §34 |
+| AC-008 | Kontakt-/Onboarding serverseitig validiert, sicher gespeichert/übergeben, bestätigt | ✅ | Validierung, Nonce, Honeypot, Rate-Limit, Einwilligungsprotokoll, Bestätigung; Empfänger/CRM = §34 (bis dahin Admin-Mail) |
+| AC-009 | Adminrechte serverseitig erzwungen, Änderungen auditiert | ✅ | Capabilities je Board, AuditBridge + Audit Board |
+| AC-010 | Keine produktiven Schnittstellen/Daten unbeabsichtigt angesprochen | ✅ | Keine externen Adapter aktiv; DEMO-Seed klar gekennzeichnet (§4) |
+| AC-011 | Responsive 360–1920 px | ✅ | Header Off-Canvas, fluide Hero/Grids; Desktop/Mobil im Browser geprüft |
+| AC-012 | WCAG 2.2 AA Kernanforderungen | ⚠️ | Semantik/Fokus/Tastatur/`aria-current`/`prefers-reduced-motion`/Textalternativen umgesetzt; formale A11y-Vollprüfung (Screenreader/Kontrast mit echten CI-Farben) nach Markenfreigabe |
+| AC-013 | Performanceziele auf Staging gemessen | ⛔ | Offen bis Staging (Lighthouse/Web-Vitals); Budgets §25 beachtet (Lazy-Load, scoped CSS, ein kleines JS) |
+| AC-014 | SEO-Metadaten, Canonical, hreflang, Sitemap | ✅ | hreflang + Canonical je Locale + OG-Tags; `liw_section` aus Sitemap ausgeschlossen |
+| AC-015 | Tests, Build, Deployment, Rollback dokumentiert | ✅ | Unit + Docker-Selbsttest; Rollback s. Abschnitt 4; Deploy über Core-Deployment-Manager |
+| AC-016 | Staging fachlich/visuell freigegeben, Produktion gesperrt | ⛔ | Ausstehend – Staging-Abnahme + Produktionsfreigabe durch JW/Liebherr |
+
+## 2. Qualität / Tests (§31)
+
+- **Unit (WP-frei):** `php tests/run-tests.php` – 174 Prüfungen grün (Mapper/Validatoren/Fallbacks/
+  Statuslogik, u. a. Ziel-Normalisierung, Alt-Text-Zählung, Brand-Token-Sanitize, OG/Canonical-Logik).
+- **Integration (Docker):** `docker exec araliya_wordpress php scripts/liw-selftest.php` – 177+ Prüfungen
+  grün (Shortcodes, Boards, Audit-Lesen, Lifecycle, SEO, Readiness, Rate-Limit, Retention, Upload-Härtung).
+- **Visual/Responsive:** Header/Hero/Komponenten/Map in Desktop (1280) und Mobil im Browser bestätigt.
+- **E2E / Visual-Regression / automatisierte A11y/Lighthouse:** bewusst nicht eingeführt (keine neue
+  Kategorie-A-Toolchain, B-8) – manuelle Stichproben + Staging-Messung.
+
+## 3. Liefergegenstände (§33)
+
+Modul-Quellcode; DB-Migrationen (dbDelta, idempotent) + **Demo-Seed** `scripts/liw-seed-demo.php`
+(keine echten Daten); Marken-Asset-Import `scripts/liw-import-brand-assets.php` (CI-005-Kandidaten);
+Token-Referenz `docs/LIW_BRAND_TOKENS.md`; Handbuch (Admin-Reiter, 14 Bereiche); Technik-/Architektur-
+Doku `docs/ADR-LIW-001`, `docs/LIW_PROGRAMMIERLOGBUCH.md`, `docs/LOGBUCH_TECHNIK.md`; To-Dos
+`docs/LIW_TODO.md`; dieser Abnahmebericht.
+
+## 4. Rollback-Verfahren
+
+- **Code:** je Etappe ein Git-Commit (alpha.27–34); Rücknahme per `git revert <commit>` bzw.
+  Auslieferung der Vorversion über den Core-Deployment-Manager (Variante A).
+- **DB:** additive, idempotente `dbDelta`-Migrationen – kein destruktives Schema; ein Rückschritt der
+  Plugin-Version lässt bestehende Tabellen unberührt. Optionen (`liw_brand_tokens`, `liw_header`,
+  `liw_components`, `liw_contact_retention_days`) sind unkritisch und können geleert werden.
+- **Cron:** `liw_contact_retention_cron` wird bei Deaktivierung entfernt.
+- **Assets/DEMO:** Media-Kandidaten (`approved=0`) und DEMO-Seed sind gekennzeichnet und löschbar,
+  ohne echte Daten zu berühren.
+
+## 5. Offene Inputs / Launch-Blocker (§34)
+
+| Input | Verantwortlich | blockiert |
+|-------|----------------|-----------|
+| Freigegebenes Liebherr-Logo + Varianten | Liebherr | finales Header/Footer-Branding (Kandidat im Media Board, `approved=0`) |
+| Brand Manual (Farben/Typo/Schutzräume) | Liebherr | finale Design Tokens (Werte in `docs/LIW_BRAND_TOKENS.md` bereit, Freigabe fehlt) |
+| Freigegebenes Bild-/Videomaterial | Liebherr | finale Hero-/Maschinenmotive (Kandidaten `approved=0`) |
+| Freigegebene Marken-/Produkttexte | Liebherr/PL | finale öffentliche Aussagen |
+| Datenschutz-/Impressumsangaben | Recht/Betreiber | produktiver Launch |
+| Zielroute + Domain je Umgebung | Plattformteam | Deployment-Konfiguration |
+| CRM-/Empfängerdefinition | Projektleitung | produktive Formularübergabe (bis dahin Admin-Mail) |
+| Rollen + Freigabeverantwortliche | Projektleitung | Freigabeworkflow |
+| Schrift-Lizenz LiebherrHead/-Text | Liebherr | Einbindung der Marken-Webfonts (bis dahin Fallback-Stack) |
+
+## 6. Bewusst zurückgestellt (Kategorie-A-/YAGNI-Folgepunkte)
+
+Geo-Weltkarte (statt Regionen-Grid), I18n-Router Option B (Präfix-URLs), Simulations-Status-Automat,
+Observability-Dashboard (§28), echte externe Adapter, tiefe Interaktivität der kuratierten Abschnitte,
+Drag-&-Drop-Reihenfolge / zeitgesteuerte Veröffentlichung / Mehrgeräte-Vorschau im Content Board,
+per-Sprache-Overrides der Chrome-Labels, formaler `trx-scan/-audit`-Lauf. Details: `docs/LIW_TODO.md`.
+
+## 7. Definition of Done (§35)
+
+MUSS-Funktionen implementiert, getestet (Unit + Docker) und dokumentiert; DE strukturell vollständig,
+EN/PL vorbereitet; keine kritischen Sicherheits-/Darstellungsfehler bekannt. **Ausstehend für „fertig":**
+Staging-Abnahme + Performance-/A11y-Vollmessung, dokumentierte Liebherr-Markenfreigabe, ausdrückliche
+Produktionsfreigabe. Bis dahin bleibt die Produktivschaltung gesperrt.

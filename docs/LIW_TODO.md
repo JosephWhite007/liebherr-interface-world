@@ -133,6 +133,10 @@ Stand: 18.09.2026 (0.1.0-alpha.26).
 - Sicherheit/Datenschutz (alpha.33): Rate-Limiting der öffentlichen Formulare (SEC-004),
   konfigurierbare Aufbewahrungsfrist + Cron für Kontaktanfragen (SEC-007/§24). Upload-Härtung
   (SEC-009) war bereits erfüllt; Security-Header (SEC-008) = Plattform/Server (dokumentiert).
+- Qualität & Abnahme (alpha.34): Demo-/Seed-Daten (`scripts/liw-seed-demo.php`, §33) und
+  Abnahmebericht (`docs/LIW_ABNAHME.md`, §32/§35 inkl. Rollback + §34-Launch-Blocker). Offen laut
+  Abnahmebericht: Staging-Performance-/A11y-Vollmessung (AC-013/012), Staging-/Produktionsfreigabe
+  (AC-016) und die externen §34-Inputs.
 - Ankernavigation/Sprungleiste der Landingpage (alpha.23).
 - Aktive Hervorhebung des sichtbaren Abschnitts in der Sprungleiste (alpha.26): enqueuetes
   Skript `assets/js/liebherr-frontend.js` (IntersectionObserver, `aria-current`/`is-current`),

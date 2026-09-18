@@ -85,7 +85,7 @@ final class HandbookPage {
 			<?php esc_html_e( 'Seit alpha.10 blättern beide Listen (20 bzw. 50 Einträge pro Seite), statt alle Datensätze auf einmal zu laden – Performance-Schutz bei wachsender Nutzung.', 'liebherr-interface-world' ); ?></p>
 
 			<h2><?php esc_html_e( 'Technische Details', 'liebherr-interface-world' ); ?></h2>
-			<p><?php esc_html_e( 'Tabellen: liw_interface, liw_simulation_world, liw_test_scenario, liw_connection, liw_consent_log, liw_partner_extra. Das Plugin setzt araliya-platform-core voraus und nutzt dessen Übersetzungs-, Rollen-, Audit-, SEO-, Medien-, Partner- und Markdown-Renderer-Services ausschließlich über den CoreBridge-Adapter (src/CoreBridge/) – nie direkt. Details siehe docs/ADR-LIW-001 und docs/LIW_PROGRAMMIERLOGBUCH.md.', 'liebherr-interface-world' ); ?></p>
+			<p><?php esc_html_e( 'Tabellen: liw_interface, liw_simulation_world, liw_test_scenario, liw_connection, liw_consent_log, liw_partner_extra. Das Plugin setzt araliya-platform-core voraus und nutzt dessen Übersetzungs-, Rollen-, Audit-, SEO-, Medien-, Partner- und Markdown-Renderer-Services ausschließlich über den CoreBridge-Adapter (src/CoreBridge/) – nie direkt. CLI-Werkzeuge (im Container durch die Technik): scripts/liw-seed-demo.php legt DEMO-Daten zum Vorführen an (keine echten Daten), scripts/liw-import-brand-assets.php lädt Liebherr-Marken-Assets als Freigabe-Kandidaten ins Media Board. Abnahmestand und offene Freigaben: docs/LIW_ABNAHME.md. Details siehe docs/ADR-LIW-001 und docs/LIW_PROGRAMMIERLOGBUCH.md.', 'liebherr-interface-world' ); ?></p>
 
 			<p><em><?php esc_html_e( 'Dieses Handbuch wird mit jeder fachlichen Erweiterung des Moduls fortgeschrieben.', 'liebherr-interface-world' ); ?></em></p>
 		</div>

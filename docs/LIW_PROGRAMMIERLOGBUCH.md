@@ -12,6 +12,19 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.34 – Etappe 8: Qualität & Abnahme (§25–35)
+
+**Neu:** `scripts/liw-seed-demo.php` (idempotenter DEMO-Seeder, `--confirm`; Interfaces/Connections/
+Simulationswelt+Szenarien über die Services, Code-Vergleich case-insensitiv), `docs/LIW_ABNAHME.md`
+(Abnahmebericht AC-001…016, Rollback, §34-Launch-Blocker).
+**Geändert:** `scripts/liw-selftest.php` ([8] +3), `CHANGELOG.md`, `docs/LIW_TODO.md`,
+`docs/LOGBUCH_TECHNIK.md`, `liebherr-interface-world.php` (Version alpha.34).
+**Befund/Fix beim Seeder:** Interface-Codes werden vom Service kleingeschrieben gespeichert; die
+Idempotenz-Prüfung muss case-insensitiv vergleichen (sonst Duplicate-Key beim zweiten Lauf) – behoben,
+zweiter Lauf 0 angelegt / 7 übersprungen.
+**Prüfung:** `php -l`; `tests/run-tests.php` 174/174, `scripts/liw-selftest.php` 180/180; zusammengesetzte
+Landingpage visuell (Desktop/Mobil) bestätigt.
+
 ## 0.1.0-alpha.33 – Etappe 7: Sicherheit & Datenschutz (§23/§24)
 
 **Neu:** `src/CoreBridge/RateLimitBridge.php` (Wrapper um Core-`RateLimiter::check()`, Graceful
