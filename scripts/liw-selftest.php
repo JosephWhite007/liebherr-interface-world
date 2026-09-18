@@ -540,6 +540,12 @@ try {
 	$__wm = do_shortcode( '[liw_world_map]' );
 	liw_st_check( '[liw_world_map] rendert SVG + Zentrale + Text-Alternative', str_contains( $__wm, 'liw-worldmap__svg' ) && str_contains( $__wm, 'liw-worldmap__hub' ) && str_contains( $__wm, 'liw-worldmap__list' ) );
 	liw_st_check( '[liw_world_map] enthaelt Regionsknoten aus DEMO-Verbindungen', str_contains( $__wm, 'data-region="europe"' ) || str_contains( $__wm, 'data-region="asia_pacific"' ) );
+	// LP-14 Footer + Cache-Buster + RUCSS-Safelist (alpha.38).
+	liw_st_check( 'Shortcode [liw_footer] registriert', shortcode_exists( \Liebherr\InterfaceWorld\Frontend\FooterView::SHORTCODE ) );
+	$__ft = do_shortcode( '[liw_footer]' );
+	liw_st_check( '[liw_footer] rendert Legal-Nav + GoHeal-Hinweis (CI-003)', str_contains( $__ft, 'liw-footer__legal' ) && str_contains( $__ft, 'Impressum' ) && str_contains( $__ft, 'Datenschutzhinweis' ) && str_contains( $__ft, 'GoHeal' ) );
+	liw_st_check( 'FrontendAssets: filemtime-Cache-Buster (bust_src)', str_contains( (string) file_get_contents( LIW_PATH . 'src/Frontend/FrontendAssets.php' ), 'bust_src' ) && str_contains( (string) file_get_contents( LIW_PATH . 'src/Frontend/FrontendAssets.php' ), 'style_loader_src' ) );
+	liw_st_check( 'RocketCompat RUCSS-Safelist enthaelt .liw-worldmap/.liw-footer', str_contains( implode( ',', \Liebherr\InterfaceWorld\Frontend\RocketCompat::safelist( [] ) ), '.liw-worldmap' ) && str_contains( implode( ',', \Liebherr\InterfaceWorld\Frontend\RocketCompat::safelist( [] ) ), '.liw-footer' ) );
 	liw_st_check( 'Language Board Seite verfügbar', class_exists( \Liebherr\InterfaceWorld\Admin\Pages\LanguageBoardPage::class ) );
 	liw_st_check( 'TranslationBridge::public_scope_post_ids() liefert Array', is_array( \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::public_scope_post_ids() ) );
 	liw_st_check( 'TranslationBridge::readiness_report() liefert je Sprache Kennzahlen', ( function (): bool { $r = \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::readiness_report( [ 'en' ] ); return ! \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::is_available() || ( isset( $r['en'] ) && array_key_exists( 'ready', $r['en'] ) && array_key_exists( 'min_rate', $r['en'] ) ); } )() );

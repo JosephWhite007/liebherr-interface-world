@@ -25,10 +25,36 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 final class FrontendAssets {
 
 	private const HANDLE     = 'liw-frontend';
-	private const SHORTCODES = [ 'liw_onboarding_form', 'liw_contact_form', 'liw_world_connections_map', SectionGraphicView::SHORTCODE, LandingpageView::SHORTCODE, PartnerDocumentsView::SHORTCODE, HeaderView::SHORTCODE, HeroView::SHORTCODE, ComponentViews::SC_PROCESS, ComponentViews::SC_ROADMAP, ComponentViews::SC_ONBOARDING, WorldMapView::SHORTCODE ];
+	private const SHORTCODES = [ 'liw_onboarding_form', 'liw_contact_form', 'liw_world_connections_map', SectionGraphicView::SHORTCODE, LandingpageView::SHORTCODE, PartnerDocumentsView::SHORTCODE, HeaderView::SHORTCODE, HeroView::SHORTCODE, ComponentViews::SC_PROCESS, ComponentViews::SC_ROADMAP, ComponentViews::SC_ONBOARDING, WorldMapView::SHORTCODE, FooterView::SHORTCODE ];
 
 	public static function register(): void {
 		add_action( 'wp_enqueue_scripts', [ self::class, 'maybe_enqueue' ] );
+		// Cache-Busting sicherstellen: manche Umgebungen entfernen `?ver` von statischen Assets
+		// (site-weites „remove query strings"), wodurch geänderte CSS/JS im Browser hängen bleiben.
+		// Wir hängen für die eigenen Dateien spät eine filemtime-Version an (überlebt das Stripping).
+		add_filter( 'style_loader_src', [ self::class, 'bust_src' ], 9999, 2 );
+		add_filter( 'script_loader_src', [ self::class, 'bust_src' ], 9999, 2 );
+	}
+
+	/** Dateiversion (filemtime) für sicheres Cache-Busting; Fallback Plugin-Version. */
+	private static function asset_version( string $relative ): string {
+		$path = LIW_PATH . ltrim( $relative, '/' );
+		$mtime = is_readable( $path ) ? (int) filemtime( $path ) : 0;
+		return $mtime > 0 ? (string) $mtime : LIW_VERSION;
+	}
+
+	/** Hängt für die eigenen Frontend-Assets eine filemtime-`?v=` an, falls sie fehlt. */
+	public static function bust_src( $src, $handle ) {
+		if ( self::HANDLE !== $handle || ! is_string( $src ) || false !== strpos( $src, 'v=' ) ) {
+			return $src;
+		}
+		if ( false !== strpos( $src, 'assets/css/liebherr-frontend.css' ) ) {
+			return add_query_arg( 'v', self::asset_version( 'assets/css/liebherr-frontend.css' ), $src );
+		}
+		if ( false !== strpos( $src, 'assets/js/liebherr-frontend.js' ) ) {
+			return add_query_arg( 'v', self::asset_version( 'assets/js/liebherr-frontend.js' ), $src );
+		}
+		return $src;
 	}
 
 	public static function maybe_enqueue(): void {

@@ -1,5 +1,29 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.38] – 2026-09-18 – Demo-Landingpage zusammengestellt + LP-14 Footer + Cache-Buster
+
+### Hinzugefügt
+- **LP-14 Footer** `[liw_footer]` (§8/§14): schwarze Meta-/Legal-Leiste im Liebherr-Stil (Vorbild
+  liebherr.com-Startseite) – Wortmarke + rechtliche Navigation (Impressum, Datenschutzhinweis, Kontakt,
+  Privacy Settings, Barrierefreiheitserklärung; über Filter `liw_footer_legal_links` anpassbar) + sehr
+  kleine Kennzeichnung „Solution Provider: GoHeal" (CI-003) + Copyright.
+- **Demo-Landingpage** `scripts/liw-seed-demo-landing.php` (idempotent): bestückt LP-06/08/11/12/13 mit
+  den Frontend-Shortcodes, veröffentlicht sie, blendet noch nicht aufbereitete Abschnitte aus (Entwurf,
+  reversibel) und legt die Trägerseite „Interface World" (`/interface-world/`) mit
+  `[liw_header]` + `[liw_hero]` + `[liw_landingpage]` + `[liw_footer]` an.
+- **Cache-Busting** der eigenen Frontend-Assets (`FrontendAssets::bust_src`, filemtime-`?v=`): behebt,
+  dass geänderte CSS/JS im Browser hängen bleiben, wenn die Umgebung `?ver` von Assets entfernt.
+- **WP-Rocket-Kompatibilität** `RocketCompat`: `.liw-`-Selektoren in die RUCSS-Safelist, damit die
+  Inline-SVG-Weltkarte u. a. nicht als „unused CSS" gestrippt wird (bekannte Falle).
+
+### Hinweise
+- WP Rocket in dieser Umgebung: RUCSS/Minify/Async waren aus; die Weltkarte war ungestylt wegen
+  browserseitig gecachter CSS ohne `?ver` → durch den filemtime-Cache-Buster gelöst.
+- Der Footer-Wortlaut nutzt den WP-Seitentitel (Filter `liw_footer_legal_links` bzw. Seitentitel für
+  „LIEBHERR"). Der separate Theme-Footer bleibt bestehen (Layout-Frage der Trägerseiten-Vorlage).
+- Verifikation: `php -l`; `tests/run-tests.php` 200/200, `scripts/liw-selftest.php` 200/200; echte Seite
+  `/interface-world/` geprüft (Hero, dunkle Weltkarte, Process, Roadmap, Onboarding, Kontakt, schwarzer Footer).
+
 ## [0.1.0-alpha.37] – 2026-09-18 – Optik: Liebherr-CI angewendet + „Connected World"-Weltkarte
 
 > **Markenhinweis:** Liebherr-CI, -Logo, -Bilder und -Webfonts sind auf ausdrückliche Autorisierung

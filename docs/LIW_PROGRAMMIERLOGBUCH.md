@@ -12,6 +12,24 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.38 – Demo-Landingpage + LP-14 Footer + Cache-Buster
+
+**Neu:** `src/Frontend/FooterView.php` (`[liw_footer]`, schwarze Legal-Leiste, Filter
+`liw_footer_legal_links`, GoHeal-Hinweis), `src/Frontend/RocketCompat.php` (RUCSS-Safelist `.liw-`),
+`scripts/liw-seed-demo-landing.php` (Abschnitte bestücken/veröffentlichen, Platzhalter auf Entwurf,
+Trägerseite `/interface-world/`).
+**Geändert:** `src/Frontend/FrontendAssets.php` (`bust_src`/`asset_version` filemtime-Cache-Buster,
+FooterView als Auslöser), `src/Bootstrap.php` (FooterView + RocketCompat registriert),
+`assets/css/liebherr-frontend.css` (Footer), `scripts/liw-selftest.php` (Footer/Cache/Safelist-Checks),
+`CHANGELOG.md`, `docs/LIW_TODO.md`, `docs/LOGBUCH_TECHNIK.md`, `src/Admin/Pages/HandbookPage.php`,
+`liebherr-interface-world.php` (Version alpha.38).
+**Befund (WP-Rocket-Falle):** Weltkarte auf der echten Seite ungestylt – Ursache war NICHT RUCSS
+(war aus), sondern eine browserseitig gecachte CSS ohne `?ver` (Umgebung entfernt Query-Strings).
+Fix: filemtime-`?v=` spät im `style_loader_src`/`script_loader_src` anhängen. RUCSS-Safelist zusätzlich
+als Schutz für Produktion.
+**Prüfung:** `php -l`; `tests/run-tests.php` 200/200, `scripts/liw-selftest.php` 200/200; echte Seite
+`/interface-world/` visuell bestätigt.
+
 ## 0.1.0-alpha.37 – Optik: Liebherr-CI angewendet + Connected-World-Weltkarte
 
 **Neu:** `src/Frontend/WorldMapView.php` (`[liw_world_map]`, abstrahierte SVG-Weltkarte, reine

@@ -652,3 +652,39 @@
 /* Hero-Feinschliff: gelbe Keyline unter der Headline */
 .liw-hero__headline { border-bottom: none; }
 .liw-hero__headline::after { content: ""; display: block; width: 72px; height: 4px; margin-top: .6rem; background: var(--brand-primary, #ffd000); }
+
+/* ═══ Footer (LP-14, Liebherr-Meta-Leiste, alpha.38) ══════════════════════════════ */
+.liw-footer { background: #000; color: #fff; font-family: var(--font-body, sans-serif); }
+.liw-footer__inner {
+	max-width: var(--content-max, 1440px);
+	margin: 0 auto;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 1rem 2rem;
+	padding: 1.1rem 4vw;
+}
+.liw-footer__brand {
+	font-family: var(--font-heading, sans-serif);
+	font-weight: 900;
+	letter-spacing: .04em;
+	text-transform: uppercase;
+	color: #fff;
+	text-decoration: none;
+	font-size: 1.2rem;
+}
+.liw-footer__legal { display: flex; flex-wrap: wrap; gap: .5rem 1.75rem; margin-left: auto; }
+.liw-footer__legal-link { color: #e5e8ed; text-decoration: none; font-size: .9rem; }
+.liw-footer__legal-link:hover, .liw-footer__legal-link:focus-visible { color: var(--brand-primary, #ffd000); }
+.liw-footer__meta {
+	max-width: var(--content-max, 1440px);
+	margin: 0 auto;
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: .5rem 4vw 1.1rem;
+	border-top: 1px solid rgba(255,255,255,.12);
+	font-size: .8rem;
+	color: #9ea4ab;
+}
+@media (max-width: 700px) { .liw-footer__legal { margin-left: 0; } .liw-footer__meta { flex-direction: column; } }

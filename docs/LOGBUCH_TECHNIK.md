@@ -8,6 +8,30 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · Demo-Landingpage + LP-14 Footer; Cache-Buster gegen Query-String-Stripping (0.1.0-alpha.38)
+
+**Frage/Kontext.** JW: Demo-Landingpage vorzeigbar machen + „LP-14 von der Liebherr-Startseite übernehmen".
+Beim Aufruf der echten Seite `/interface-world/` war die Weltkarte ungestylt.
+
+**Diagnose (wichtige Lehre).** Zuerst WP-Rocket-RUCSS vermutet (Memory-Warnung), aber
+`minify_css/remove_unused_css/async_css = 0`. Tatsächliche Ursache: die Asset-URL trug **kein `?ver`**
+(die Umgebung entfernt Query-Strings von statischen Dateien), sodass der Browser eine **alte CSS**
+(ohne die neuen Weltkarten-Regeln) dauerhaft cachte – die Server-Datei war korrekt. Erst per JS-Inspektion
+(geladene Stylesheets, cssRules, computed styles) eindeutig belegt statt weiter zu raten.
+
+**Entscheidungen (Kategorie B).**
+- **Cache-Buster:** `FrontendAssets::bust_src` hängt spät (Prio 9999) am `style_loader_src`/
+  `script_loader_src` eine `?v=filemtime` an die eigenen Dateien – überlebt das Query-Stripping und
+  bustet zuverlässig bei jeder Dateiänderung.
+- **RocketCompat (Vorsorge):** `.liw-`-Selektoren in die RUCSS-Safelist, falls RUCSS in Produktion aktiv
+  ist (SVG-Klassen der Weltkarte würden sonst gestrippt).
+- **LP-14 Footer:** `[liw_footer]` als schwarze Meta-Leiste nach Liebherr-Vorbild; Legal-Links per Filter,
+  GoHeal klein (CI-003). Wortmarke = WP-Seitentitel (kein erfundenes Logo).
+- **Demo-Aufbereitung:** Seeder veröffentlicht nur die bestückten Abschnitte und setzt die übrigen auf
+  Entwurf (reversibel), damit die Präsentation ohne Platzhaltertexte wirkt.
+
+**Quelle/Version.** JW-Auftrag 18.09.2026 + Screenshot Liebherr-Footer; Pflichtenheft §8/§14; 0.1.0-alpha.38.
+
 ### 2026-09-18 · Optik: Liebherr-CI vorläufig angewendet, Connected-World-Karte (0.1.0-alpha.37)
 
 **Frage/Kontext.** JW: „attraktive Plattform vorn, ganze Liebherr-Welt verbunden; spezifische

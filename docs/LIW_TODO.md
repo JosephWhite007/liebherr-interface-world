@@ -139,6 +139,11 @@ Stand: 18.09.2026 (0.1.0-alpha.26).
   Abnahmebericht (`docs/LIW_ABNAHME.md`, §32/§35 inkl. Rollback + §34-Launch-Blocker). Offen laut
   Abnahmebericht: Staging-Performance-/A11y-Vollmessung (AC-013/012), Staging-/Produktionsfreigabe
   (AC-016) und die externen §34-Inputs.
+- Optik/Demo (alpha.37/38): Liebherr-CI vorläufig angewendet, „Connected World"-Weltkarte
+  `[liw_world_map]`, LP-14 Footer `[liw_footer]` nach Liebherr-Vorbild, zusammengestellte
+  Demo-Landingpage `/interface-world/` (`scripts/liw-seed-demo-landing.php`). Cache-Buster für
+  Frontend-Assets + WP-Rocket-RUCSS-Safelist. **Offen:** Footer-Wortmarke = WP-Seitentitel
+  (für „LIEBHERR" Seitentitel/Filter setzen); separater Theme-Footer der Trägerseite (Template-Frage).
 - Ankernavigation/Sprungleiste der Landingpage (alpha.23).
 - Aktive Hervorhebung des sichtbaren Abschnitts in der Sprungleiste (alpha.26): enqueuetes
   Skript `assets/js/liebherr-frontend.js` (IntersectionObserver, `aria-current`/`is-current`),
