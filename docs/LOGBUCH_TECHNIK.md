@@ -8,6 +8,21 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · Etappe 3: Kern-Komponenten datengetrieben, übrige Abschnitte kuratiert (0.1.0-alpha.29)
+
+**Frage/Kontext.** §16 markiert mehrere LP-Komponenten als „administrierbar". Welche werden in Stufe 1
+echt datengetrieben, welche bleiben kuratierte Grafik/HTML (AC-002 erlaubt Feature-Flag/Vorbereitung)?
+
+**Entscheidung (Claude, Kategorie B; Release-Plan-Split).** Datengetrieben: LP-08 Process World Cards,
+LP-12 Roadmap, LP-11 Onboarding-Schritte – reine Listen, hoher Nutzen, geringes Risiko, rein textbasiert
+(damit §26-Textalternative inhärent). Umsetzung als Option `liw_components` + drei Shortcodes +
+Components Board (Muster wie Header, „Titel | Text"-Zeilen). Kuratiert (redaktionell im Abschnitt,
+teils vorhandene SVGs via `[liw_graphic]`): LP-02 Risk Matrix, LP-03 Zielbild, LP-04 Magic Cube,
+LP-05 Interface LogiQ, LP-07 Data Model, LP-09 Goods&Finance, LP-10 Security/Validation Ladder –
+interaktive Vertiefung bleibt Folgeetappe. Labels/Standards mehrsprachig via `__()` (wie Etappe 2).
+
+**Quelle/Version.** Release-Plan Etappe 3; Pflichtenheft §8/§16; 0.1.0-alpha.29.
+
 ### 2026-09-18 · Etappe 2: Header/Navigation + Hero – Shortcodes + Option-Config (0.1.0-alpha.28)
 
 **Frage/Kontext.** §7 verlangt eine administrierbare, sticky Hauptnavigation mit Logo, CTAs,

@@ -1,5 +1,25 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.29] – 2026-09-18 – Etappe 3: Datengetriebene Kern-Komponenten (LP-08/11/12)
+
+### Hinzugefügt
+- **`[liw_process_worlds]`** (LP-08): Karten-Grid Sales, Configuration, Order, Goods, Finance,
+  Service, Warranty. **`[liw_roadmap]`** (LP-12): nummerierte Phasen-Zeitleiste (Contract Model …
+  Global Rollout). **`[liw_onboarding_steps]`** (LP-11): neunstufige Schrittliste. Alle reiner
+  Text/HTML → von sich aus barrierearm (§26 Textalternative), Gestaltung über `--brand-*` (§11).
+- **`src/Settings/ComponentContent.php`** – administrierbarer Inhalt der drei Listen (Option
+  `liw_components`), Standardinhalte je §8 via `__()`; leere Liste = Standard zurück.
+- **`src/Admin/Pages/ComponentsBoardPage.php`** – „🧩 Components Board" (Eingabe „Titel | Text" je
+  Zeile), Capability `liw_manage_content`, Nonce, Audit (SEC-005).
+- CSS für Karten/Zeitleiste/Schritte über `--brand-*`. `[liw_*]` als Asset-Auslöser.
+
+### Hinweise
+- Kuratierte Abschnitte LP-02/03/04/05/07/09/10 bleiben redaktionell (Grafik/HTML im Abschnitt);
+  interaktive Vertiefung ist Feature-Flag/Folgeetappe (AC-002).
+- Labels wie in Etappe 2: Standard mehrsprachig via `__()`, Overrides literal (Verfeinerung, To-Dos).
+- Verifikation: `php -l`; `tests/run-tests.php` 158/158, `scripts/liw-selftest.php` 149/149 im
+  Docker-Container; die drei Komponenten visuell im Browser bestätigt.
+
 ## [0.1.0-alpha.28] – 2026-09-18 – Etappe 2: Header/Navigation (§7) + Hero (LP-01)
 
 ### Hinzugefügt

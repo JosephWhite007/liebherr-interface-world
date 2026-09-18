@@ -84,6 +84,7 @@ foreach ( $iterator_schema as $file ) {
 echo "-- Landingpage-Bauplan (Pflichtenheft §8) --\n";
 if ( ! defined( 'ABSPATH' ) ) { define( 'ABSPATH', $root . '/' ); }
 if ( ! function_exists( 'esc_html' ) ) { function esc_html( $s ) { return htmlspecialchars( (string) $s, ENT_QUOTES ); } }
+if ( ! function_exists( '__' ) ) { function __( $s, $d = '' ) { return $s; } }
 require_once $root . '/src/Content/SectionBlueprint.php';
 $blueprint = \Liebherr\InterfaceWorld\Content\SectionBlueprint::all();
 $codes     = array_keys( $blueprint );
@@ -167,6 +168,21 @@ liw_assert( 'normalize_target: http(s)-URL bleibt', 'https://example.com/x' === 
 liw_assert( 'normalize_target: javascript: verworfen', '' === $nt( 'javascript:alert(1)' ), $checks, $failures );
 liw_assert( 'normalize_target: protokollrelativ verworfen', '' === $nt( '//evil.example' ), $checks, $failures );
 liw_assert( 'normalize_target: leer bleibt leer', '' === $nt( '   ' ), $checks, $failures );
+
+// 2h. Kern-Komponenten-Inhalt (Etappe 3, §8) – Struktur der Standardlisten.
+echo "-- Component Content (alpha.29) --\n";
+require_once $root . '/src/Settings/ComponentContent.php';
+$cc = \Liebherr\InterfaceWorld\Settings\ComponentContent::defaults();
+liw_assert( 'Process: 7 Karten (Sales…Warranty)', isset( $cc['process'] ) && count( $cc['process'] ) === 7, $checks, $failures );
+liw_assert( 'Roadmap: 6 Phasen (Contract…Global Rollout)', isset( $cc['roadmap'] ) && count( $cc['roadmap'] ) === 6, $checks, $failures );
+liw_assert( 'Onboarding: 9 Schritte (§8/§11 neunstufig)', isset( $cc['onboarding'] ) && count( $cc['onboarding'] ) === 9, $checks, $failures );
+$cc_all_titled = true;
+foreach ( [ 'process', 'roadmap', 'onboarding' ] as $lk ) {
+	foreach ( $cc[ $lk ] as $it ) { if ( '' === trim( (string) ( $it['title'] ?? '' ) ) ) { $cc_all_titled = false; } }
+}
+liw_assert( 'jeder Listeneintrag hat einen Titel', $cc_all_titled, $checks, $failures );
+$cc_first = $cc['process'][0]['title'];
+liw_assert( 'Process erste Karte = Sales', 'Sales' === $cc_first, $checks, $failures );
 
 // 3. strict_types=1 in jeder src/-Datei (Coding Standard, CLAUDE.md Abschnitt 5).
 echo "-- Coding Standard --\n";

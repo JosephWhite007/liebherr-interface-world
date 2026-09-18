@@ -23,6 +23,7 @@ use Liebherr\InterfaceWorld\CoreBridge\MediaBridge;
 use Liebherr\InterfaceWorld\CoreBridge\SeoBridge;
 use Liebherr\InterfaceWorld\CoreBridge\TranslationBridge;
 use Liebherr\InterfaceWorld\CPT\LiwSectionCpt;
+use Liebherr\InterfaceWorld\Frontend\ComponentViews;
 use Liebherr\InterfaceWorld\Frontend\FrontendAssets;
 use Liebherr\InterfaceWorld\Frontend\HeaderView;
 use Liebherr\InterfaceWorld\Frontend\HeroView;
@@ -48,6 +49,7 @@ final class Bootstrap {
 		SectionGraphicView::register();
 		HeaderView::register();
 		HeroView::register();
+		ComponentViews::register();
 		LandingpageView::register();
 		PartnerDocumentsView::register();
 		FrontendAssets::register();

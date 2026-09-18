@@ -121,6 +121,10 @@ Stand: 18.09.2026 (0.1.0-alpha.26).
 - Zusammengesetzte Landingpage `[liw_landingpage]` (alpha.18) umgesetzt.
 - LP-13 Kontaktformular + Contact Board (alpha.19) umgesetzt – Folgepunkte s. oben.
 - Partnerbereich Stufe 1: Rolle `liw_partner` + Kontoanlage im Onboarding Board (alpha.21).
+- Datengetriebene Kern-Komponenten LP-08 Process Worlds, LP-12 Roadmap, LP-11 Onboarding-Schritte
+  (alpha.29): Shortcodes `[liw_process_worlds]`/`[liw_roadmap]`/`[liw_onboarding_steps]` + Components
+  Board. **Bewusst kuratiert (redaktionell, keine Extra-Komponente):** LP-02/03/04/05/07/09/10 –
+  interaktive Vertiefung ist Feature-Flag/Folgeetappe (AC-002).
 - Ankernavigation/Sprungleiste der Landingpage (alpha.23).
 - Aktive Hervorhebung des sichtbaren Abschnitts in der Sprungleiste (alpha.26): enqueuetes
   Skript `assets/js/liebherr-frontend.js` (IntersectionObserver, `aria-current`/`is-current`),

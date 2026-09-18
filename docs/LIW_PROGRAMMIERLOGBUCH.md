@@ -12,6 +12,22 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.29 – Etappe 3: Datengetriebene Kern-Komponenten (LP-08/11/12)
+
+**Neu:** `src/Settings/ComponentContent.php` (Option `liw_components`; drei Listen process/roadmap/
+onboarding, `defaults()` je §8, `get()/save()/sanitize()`), `src/Frontend/ComponentViews.php`
+(Shortcodes `[liw_process_worlds]`, `[liw_roadmap]`, `[liw_onboarding_steps]`),
+`src/Admin/Pages/ComponentsBoardPage.php` (Components Board, „Titel | Text" je Zeile, Capability/
+Nonce/Audit, `parse_lines()`).
+**Geändert:** `src/Bootstrap.php` (ComponentViews registriert), `src/Admin/AdminMenu.php` (Untermenü
+„🧩 Components Board", use-Import), `src/Frontend/FrontendAssets.php` (drei Shortcodes als
+Asset-Auslöser), `assets/css/liebherr-frontend.css` (`.liw-pcard`/`.liw-roadmap`/`.liw-steps` über
+`--brand-*`), `tests/run-tests.php` (+5, `__()`-Stub ergänzt), `scripts/liw-selftest.php` ([8] +6),
+`CHANGELOG.md`, `docs/LIW_TODO.md`, `docs/LOGBUCH_TECHNIK.md`, `src/Admin/Pages/HandbookPage.php`,
+`liebherr-interface-world.php` (Version).
+**Prüfung:** `php -l`; `tests/run-tests.php` 158/158, `scripts/liw-selftest.php` 149/149; Rendering
+der drei Komponenten visuell bestätigt (Karten-Grid, Roadmap-Kreise, Schritt-Liste).
+
 ## 0.1.0-alpha.28 – Etappe 2: Header/Navigation + Hero (LP-01)
 
 **Neu:** `src/Settings/HeaderSettings.php` (Option `liw_header`; `defaults()`/`get()/save()/sanitize()`,

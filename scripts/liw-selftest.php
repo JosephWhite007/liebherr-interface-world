@@ -450,6 +450,16 @@ try {
 	liw_st_check( 'CSS enthält Header/CTA/Hero-Klassen', str_contains( $liw_front_css, '.liw-header {' ) && str_contains( $liw_front_css, '.liw-cta {' ) && str_contains( $liw_front_css, '.liw-hero {' ) );
 	liw_st_check( 'Hero-Animation respektiert prefers-reduced-motion', str_contains( $liw_front_css, 'prefers-reduced-motion: no-preference' ) );
 	liw_st_check( 'FrontendAssets: [liw_header]/[liw_hero] als Asset-Auslöser', str_contains( $liw_front_assets_src, 'HeaderView::SHORTCODE' ) && str_contains( $liw_front_assets_src, 'HeroView::SHORTCODE' ) );
+	// Kern-Komponenten (alpha.29, Etappe 3).
+	liw_st_check( 'Shortcodes [liw_process_worlds]/[liw_roadmap]/[liw_onboarding_steps] registriert', shortcode_exists( 'liw_process_worlds' ) && shortcode_exists( 'liw_roadmap' ) && shortcode_exists( 'liw_onboarding_steps' ) );
+	liw_st_check( 'Components Board Seite verfügbar', class_exists( \Liebherr\InterfaceWorld\Admin\Pages\ComponentsBoardPage::class ) );
+	$pw = do_shortcode( '[liw_process_worlds]' );
+	liw_st_check( '[liw_process_worlds] rendert 7 Karten mit Sales', substr_count( $pw, 'liw-pcard__title' ) === 7 && str_contains( $pw, 'Sales' ) );
+	$rm = do_shortcode( '[liw_roadmap]' );
+	liw_st_check( '[liw_roadmap] rendert 6 Phasen mit Global Rollout', substr_count( $rm, 'liw-roadmap__phase' ) === 6 && str_contains( $rm, 'Global Rollout' ) );
+	$ob = do_shortcode( '[liw_onboarding_steps]' );
+	liw_st_check( '[liw_onboarding_steps] rendert 9 Schritte', substr_count( $ob, 'liw-steps__item' ) === 9 );
+	liw_st_check( 'CSS enthält Komponenten-Klassen (pcard/roadmap/steps)', str_contains( $liw_front_css, '.liw-pcard {' ) && str_contains( $liw_front_css, '.liw-roadmap {' ) && str_contains( $liw_front_css, '.liw-steps {' ) );
 
 	// ── [9] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
 	echo "\n[9] Programmierlogbuch / To-Dos\n";
