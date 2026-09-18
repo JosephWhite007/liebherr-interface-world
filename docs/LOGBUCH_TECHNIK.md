@@ -8,6 +8,27 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · Etappe 6: Canonical via Filter, LANG-006-Readiness aus Core-Registry (0.1.0-alpha.32)
+
+**Frage/Kontext.** §21 fordert Canonical/OG je Sprache und korrekte Sitemap; LANG-006 ein
+Release-Gate je Sprache. Wie ohne Doppelungen und ohne Nachbau eines Sprachsystems?
+
+**Entscheidungen (Claude, Kategorie B).**
+- **Canonical:** über den WP-Filter `get_canonical_url` (Sprachparameter anhängen) statt eines zweiten
+  `<link rel=canonical>` – WordPress gibt auf Singular/Seiten bereits ein Canonical aus; ein zweites
+  Tag wäre ein Fehler. OG-Tags dagegen additiv per `wp_head` (kein SEO-Plugin aktiv).
+- **Sitemap:** `liw_section` via `wp_sitemaps_post_types` ausgeschlossen – die Abschnitte sind
+  Fragmente, kanonisch ist die Landingpage (vermeidet Index von Teilinhalten).
+- **LANG-006:** echte Messung über die Core-`TranslationRegistry` (`page_metrics()`/`is_complete()`,
+  `PageScope::post()`), die beim Code-Studium gefunden wurde – kein Raten. Der vorhandene
+  `is_locale_release_ready()`-Platzhalter rief `TranslationGate::is_ready()` auf, das es nicht gibt
+  (lieferte immer false); jetzt auf die Registry-Metriken umgestellt. Geprüfte Flächen: veröffentlichte
+  `liw_section` + Trägerseite(n). UI-Chrome (gettext/Slots) bleibt Sache des Languages Hub; das harte
+  Gate ist Betrieb (Kategorie A). Quellsprache DE gilt als vollständig.
+
+**Quelle/Version.** Release-Plan Etappe 6; Pflichtenheft §20/§21, LANG-006; Core
+`TranslationRegistry`/`PageScope`; 0.1.0-alpha.32.
+
 ### 2026-09-18 · Etappe 5: Audit Board als Lese-Ansicht, Release Board über Core-Deploy (0.1.0-alpha.31)
 
 **Frage/Kontext.** §18 nennt Audit Board und Release Board. Eigene Datenmodelle/Boards oder Core nutzen?

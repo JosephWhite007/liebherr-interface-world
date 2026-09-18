@@ -12,6 +12,20 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.32 – Etappe 6: SEO-Rest & Sprach-Release-Readiness (LANG-006)
+
+**Neu:** `src/Admin/Pages/LanguageBoardPage.php` (Readiness-Lese-Ansicht, Capability
+`liw_manage_content`).
+**Geändert:** `src/CoreBridge/SeoBridge.php` (`filter_canonical()` via `get_canonical_url`,
+`render_open_graph()`/`open_graph_markup()`/`og_image_url()`, `filter_sitemap_post_types()`,
+`is_liw_post()`), `src/CoreBridge/TranslationBridge.php` (`readiness_report()`,
+`public_scope_post_ids()`; `is_locale_release_ready()` auf Registry-Metriken umgestellt –
+nutzt `TranslationRegistry::page_metrics()` + `PageScope::post()`), `src/Admin/AdminMenu.php`
+(Untermenü „🌐 Language Board", use-Import), `scripts/liw-selftest.php` ([8] +8), `CHANGELOG.md`,
+`docs/LIW_TODO.md`, `docs/LOGBUCH_TECHNIK.md`, `src/Admin/Pages/HandbookPage.php`,
+`liebherr-interface-world.php` (Version).
+**Prüfung:** `php -l`; `tests/run-tests.php` 169/169, `scripts/liw-selftest.php` 168/168.
+
 ## 0.1.0-alpha.31 – Etappe 5: Audit Board & Interface-Lifecycle-Status (§18)
 
 **Neu:** `src/Admin/Pages/AuditBoardPage.php` (Lese-Ansicht, paginiert, Capability

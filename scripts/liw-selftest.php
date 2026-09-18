@@ -473,6 +473,19 @@ try {
 	liw_st_check( 'Audit-Lesen filtert auf liw_-Eintraege', str_contains( (string) file_get_contents( LIW_PATH . 'src/CoreBridge/AuditBridge.php' ), "entity_type LIKE 'liw" ) );
 	liw_st_check( 'Interface-Lifecycle: ungueltiger Status → WP_Error', is_wp_error( \Liebherr\InterfaceWorld\Interfaces\InterfaceCatalogService::set_lifecycle_status( 0, 'bogus_status', 0 ) ) );
 	liw_st_check( 'Interface Board: Statuswechsel-Formular (set_lifecycle)', str_contains( (string) file_get_contents( LIW_PATH . 'src/Admin/Pages/InterfaceBoardPage.php' ), "value=\"set_lifecycle\"" ) && str_contains( (string) file_get_contents( LIW_PATH . 'src/Admin/Pages/InterfaceBoardPage.php' ), 'lifecycle_status' ) );
+	// Etappe 6: SEO-Rest + Release-Readiness (alpha.32).
+	$og = \Liebherr\InterfaceWorld\CoreBridge\SeoBridge::open_graph_markup( 'Titel', 'https://example.com/x', 'en', 'https://example.com/i.jpg' );
+	liw_st_check( 'OG-Markup: title/url(+lang)/locale/image', str_contains( $og, 'og:title' ) && str_contains( $og, 'lang=en' ) && str_contains( $og, 'og:locale' ) && str_contains( $og, 'og:image' ) );
+	$og_de = \Liebherr\InterfaceWorld\CoreBridge\SeoBridge::open_graph_markup( 'Titel', 'https://example.com/x', 'de', '' );
+	liw_st_check( 'OG-Markup: Standardsprache DE ohne lang-Parameter, ohne Bild', ! str_contains( $og_de, 'lang=de' ) && ! str_contains( $og_de, 'og:image' ) );
+	liw_st_check( 'Sitemap: liw_section ausgeschlossen', ! array_key_exists( 'liw_section', \Liebherr\InterfaceWorld\CoreBridge\SeoBridge::filter_sitemap_post_types( [ 'liw_section' => 'x', 'page' => 'y' ] ) ) );
+	$non_liw_post = new WP_Post( (object) [ 'post_type' => 'page', 'post_content' => 'nur Text ohne Shortcode' ] );
+	liw_st_check( 'Canonical-Filter: Nicht-LIW-Seite unveraendert', 'https://example.com/x' === \Liebherr\InterfaceWorld\CoreBridge\SeoBridge::filter_canonical( 'https://example.com/x', $non_liw_post ) );
+	$liw_post = new WP_Post( (object) [ 'post_type' => 'liw_section', 'post_content' => '' ] );
+	liw_st_check( 'is_liw_post erkennt Abschnitt', \Liebherr\InterfaceWorld\CoreBridge\SeoBridge::is_liw_post( $liw_post ) );
+	liw_st_check( 'Language Board Seite verfügbar', class_exists( \Liebherr\InterfaceWorld\Admin\Pages\LanguageBoardPage::class ) );
+	liw_st_check( 'TranslationBridge::public_scope_post_ids() liefert Array', is_array( \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::public_scope_post_ids() ) );
+	liw_st_check( 'TranslationBridge::readiness_report() liefert je Sprache Kennzahlen', ( function (): bool { $r = \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::readiness_report( [ 'en' ] ); return ! \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::is_available() || ( isset( $r['en'] ) && array_key_exists( 'ready', $r['en'] ) && array_key_exists( 'min_rate', $r['en'] ) ); } )() );
 
 	// ── [9] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
 	echo "\n[9] Programmierlogbuch / To-Dos\n";

@@ -91,8 +91,10 @@ Stand: 18.09.2026 (0.1.0-alpha.26).
 
 - **I18nSeo – Option B (Core-Router erweitern).** Entschieden 18.09.2026 (Logbuch alpha.24):
   Option A umgesetzt – Core-Sprachsteuerung (Cookie/`?lang=`) genügt funktional, `SeoBridge` liefert
-  hreflang auf der Trägerseite mit `?lang=`-URLs, `[liw_language_switcher]` nutzt das Core-Widget,
-  Einwilligungs-Textversionen sprachabhängig. Offen bleibt Option B als Kategorie-A-Folgepunkt:
+  hreflang, seit alpha.32 zusätzlich Canonical je Locale (`get_canonical_url`-Filter), Open-Graph-Tags
+  und Sitemap-Ausschluss der Abschnitts-Fragmente; `[liw_language_switcher]` nutzt das Core-Widget,
+  Einwilligungs-Textversionen sprachabhängig. Release-Readiness je Sprache (LANG-006) im Language Board
+  (alpha.32). Offen bleibt Option B als Kategorie-A-Folgepunkt:
   Core-`I18nRouter` um `page` (Trägerseite) und `liw_section` erweitern, sobald der Router
   plattformweit aktiv geschaltet wird – dann saubere `/en/interface-world`-URLs; die `SeoBridge`
   schweigt in diesem Fall bereits automatisch.
@@ -100,11 +102,11 @@ Stand: 18.09.2026 (0.1.0-alpha.26).
 
 ## Betrieb / Qualitätssicherung
 
-- **Mehrsprachigkeits-Audit (DoD Punkt 9).** Für `liebherr-interface-world` als
-  eigenständiges Plugin bislang nicht gegen das Core-Übersetzungssystem geprüft
-  (`trx-scan`/`trx-audit` laufen bisher nur für Core-Module). Zu klären, ob/wie die
-  Mehrsprachigkeits-Regel für dieses Ausnahme-Plugin greift.
-  *Quelle: CLAUDE.md Abschnitt 5/DoD Punkt 9 – nicht auf dieses Plugin angewendet, seit alpha.1.*
+- **Mehrsprachigkeits-Audit (DoD Punkt 9).** Seit alpha.32 liest das Language Board die
+  Vollständigkeit je Sprache direkt aus der Core-Registry (`page_metrics()`/`is_complete()`) für die
+  LIW-Flächen. Offen bleibt der formale `trx-scan`/`trx-audit`-Lauf je Seite×Sprache (Core-CI-Gate)
+  für dieses Ausnahme-Plugin sowie die Entscheidung zum harten Sprach-Gate (Kategorie A, Betrieb).
+  *Quelle: CLAUDE.md DoD Punkt 9; CHANGELOG alpha.32.*
 
 ---
 

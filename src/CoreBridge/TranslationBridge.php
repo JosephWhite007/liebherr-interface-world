@@ -30,6 +30,7 @@ final class TranslationBridge {
 
 	private const REGISTRY_CLASS = 'Araliya\\Platform\\Core\\Modules\\Translation\\Registry\\TranslationRegistry';
 	private const GATE_CLASS     = 'Araliya\\Platform\\Core\\Modules\\Translation\\Registry\\TranslationGate';
+	private const SCOPE_CLASS    = 'Araliya\\Platform\\Core\\Modules\\Translation\\Registry\\PageScope';
 
 	public static function is_available(): bool {
 		return class_exists( self::REGISTRY_CLASS );
@@ -69,9 +70,82 @@ final class TranslationBridge {
 	 * ungedecktes Raten der Rückgabe – bei Nichtverfügbarkeit false, nie „ready" erfinden).
 	 */
 	public static function is_locale_release_ready( string $locale ): bool {
-		if ( ! class_exists( self::GATE_CLASS ) || ! method_exists( self::GATE_CLASS, 'is_ready' ) ) {
-			return false;
+		$report = self::readiness_report( [ $locale ] );
+		return isset( $report[ $locale ] ) && $report[ $locale ]['ready'];
+	}
+
+	/**
+	 * Öffentliche LIW-Flächen für das Release-Gate: veröffentlichte Abschnitte (`liw_section`)
+	 * und die Trägerseite(n) mit `[liw_landingpage]`.
+	 *
+	 * @return int[] Post-IDs
+	 */
+	public static function public_scope_post_ids(): array {
+		$ids = get_posts( [
+			'post_type'      => self::POST_TYPE,
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'fields'         => 'ids',
+			'no_found_rows'  => true,
+		] );
+		$ids = array_map( 'intval', (array) $ids );
+
+		$pages = get_posts( [
+			'post_type'      => 'page',
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'fields'         => 'ids',
+			'no_found_rows'  => true,
+			's'              => '[liw_landingpage',
+		] );
+		foreach ( (array) $pages as $pid ) {
+			$post = get_post( (int) $pid );
+			if ( $post instanceof \WP_Post && has_shortcode( (string) $post->post_content, 'liw_landingpage' ) ) {
+				$ids[] = (int) $pid;
+			}
 		}
-		return (bool) call_user_func( [ self::GATE_CLASS, 'is_ready' ], $locale, self::POST_TYPE );
+		return array_values( array_unique( $ids ) );
+	}
+
+	/**
+	 * Release-Readiness je Sprache (LANG-006) auf Basis der Core-Registry-Vollständigkeit.
+	 * `ready` = jede LIW-Fläche in dieser Sprache vollständig (alle Pflichtsegmente übersetzt,
+	 * nichts veraltet, kritische Segmente freigegeben). Ohne Core-Registry: leeres Ergebnis
+	 * (nie „ready" erfinden).
+	 *
+	 * @param string[] $langs
+	 * @return array<string,array{pages:int,complete:int,min_rate:float,ready:bool}>
+	 */
+	public static function readiness_report( array $langs ): array {
+		if ( ! self::is_available() || ! class_exists( self::SCOPE_CLASS ) ) {
+			return [];
+		}
+		$ids = self::public_scope_post_ids();
+		$out = [];
+		foreach ( $langs as $lang ) {
+			$lang = (string) $lang;
+			$pages = 0;
+			$complete = 0;
+			$min_rate = 100.0;
+			foreach ( $ids as $pid ) {
+				$scope   = call_user_func( [ self::SCOPE_CLASS, 'post' ], (int) $pid );
+				$metrics = call_user_func( [ self::REGISTRY_CLASS, 'page_metrics' ], $scope, $lang );
+				if ( ! is_array( $metrics ) ) {
+					continue;
+				}
+				$pages++;
+				if ( ! empty( $metrics['complete'] ) ) {
+					$complete++;
+				}
+				$min_rate = min( $min_rate, (float) ( $metrics['translation_rate'] ?? 0.0 ) );
+			}
+			$out[ $lang ] = [
+				'pages'    => $pages,
+				'complete' => $complete,
+				'min_rate' => $pages > 0 ? $min_rate : 0.0,
+				'ready'    => $pages > 0 && $complete === $pages,
+			];
+		}
+		return $out;
 	}
 }

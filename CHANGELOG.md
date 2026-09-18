@@ -1,5 +1,28 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.32] – 2026-09-18 – Etappe 6: SEO-Rest (§21) & Sprach-Release-Readiness (LANG-006)
+
+### Hinzugefügt
+- **SEO je Sprache** (SeoBridge, §21): Canonical je Locale über den WP-Filter `get_canonical_url`
+  (hängt `?lang=xx` bei Nicht-Standardsprache an – kein doppeltes Canonical-Tag), Open-Graph-Tags
+  (`og:type/title/url/locale`, optional `og:image` aus dem freigegebenen Hero-Bild), Sitemap-Ausschluss
+  der Abschnitts-Fragmente `liw_section` (kanonisch ist die Landingpage). Ergänzt das bestehende
+  hreflang (Option A); schweigt weiterhin bei aktivem Core-Router.
+- **Language Board – Release-Readiness** ([LanguageBoardPage](src/Admin/Pages/LanguageBoardPage.php),
+  „🌐 Language Board", LANG-006): je aktiver Sprache Vollständigkeit der öffentlichen Flächen
+  (veröffentlichte Abschnitte + Trägerseite) aus der Core-Translation-Registry
+  (`page_metrics()`/`is_complete()`): Flächen vollständig, Mindest-Übersetzungsgrad, Release-fähig.
+  - Neu: `TranslationBridge::readiness_report()`, `public_scope_post_ids()`; `is_locale_release_ready()`
+    nutzt jetzt echte Registry-Metriken statt des nie erfüllten Gate-Aufrufs.
+
+### Hinweise
+- UI-Chrome (Nav/CTA/Formular/Fehlermeldungen) läuft über Programmtexte (`__()`/Sprachdateien)/Slots
+  und wird im Core Languages Hub gepflegt; das Board misst die redaktionellen Flächeninhalte. Das
+  *harte* Sprach-Gate bleibt Betriebsentscheidung (Kategorie A, Core). I18n-Router Option B (Präfix-URLs)
+  weiterhin offener Folgepunkt.
+- Verifikation: `php -l`; `tests/run-tests.php` 169/169, `scripts/liw-selftest.php` 168/168 im
+  Docker-Container.
+
 ## [0.1.0-alpha.31] – 2026-09-18 – Etappe 5: Audit Board & Interface-Lifecycle-Status (§18)
 
 ### Hinzugefügt

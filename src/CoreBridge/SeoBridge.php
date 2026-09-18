@@ -35,6 +35,78 @@ final class SeoBridge {
 
 	public static function register(): void {
 		add_action( 'wp_head', [ self::class, 'render_hreflang' ], 5 );
+		add_action( 'wp_head', [ self::class, 'render_open_graph' ], 6 );
+		add_filter( 'get_canonical_url', [ self::class, 'filter_canonical' ], 10, 2 );
+		add_filter( 'wp_sitemaps_post_types', [ self::class, 'filter_sitemap_post_types' ] );
+	}
+
+	/**
+	 * Canonical je Sprache (§21): hängt bei aktiver Nicht-Standardsprache `?lang=xx` an die von
+	 * WordPress erzeugte Canonical-URL an – kein zweites Canonical-Tag (Doppelungen vermeiden).
+	 * Schweigt bei aktivem Core-Router (der erzeugt eigene Präfix-URLs).
+	 */
+	public static function filter_canonical( string $canonical_url, \WP_Post $post ): string {
+		if ( LanguageBridge::core_router_active() || ! self::is_liw_post( $post ) ) {
+			return $canonical_url;
+		}
+		$lang = LanguageBridge::current_lang();
+		if ( '' === $lang || 'de' === $lang ) {
+			return $canonical_url; // Standardsprache = Basis-URL.
+		}
+		return add_query_arg( 'lang', $lang, $canonical_url );
+	}
+
+	/** Open-Graph-Tags je Sprache (§21): Titel/URL/Locale, optional Bild – nur auf LIW-Flächen. */
+	public static function render_open_graph(): void {
+		if ( LanguageBridge::core_router_active() || ! self::is_liw_public_view() ) {
+			return;
+		}
+		echo self::open_graph_markup( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- in open_graph_markup() escaped.
+			wp_strip_all_tags( (string) wp_get_document_title() ),
+			(string) get_permalink(),
+			LanguageBridge::current_lang(),
+			self::og_image_url()
+		);
+	}
+
+	/**
+	 * Reine Markup-Erzeugung (testbar): og:type/title/url/locale und optional og:image.
+	 */
+	public static function open_graph_markup( string $title, string $url, string $lang, string $image_url = '' ): string {
+		$out  = sprintf( '<meta property="og:type" content="website" />' . "\n" );
+		$out .= sprintf( '<meta property="og:title" content="%s" />' . "\n", esc_attr( $title ) );
+		$out .= sprintf( '<meta property="og:url" content="%s" />' . "\n", esc_url( '' !== $lang && 'de' !== $lang ? add_query_arg( 'lang', $lang, $url ) : $url ) );
+		if ( '' !== $lang ) {
+			$out .= sprintf( '<meta property="og:locale" content="%s" />' . "\n", esc_attr( $lang ) );
+		}
+		if ( '' !== $image_url ) {
+			$out .= sprintf( '<meta property="og:image" content="%s" />' . "\n", esc_url( $image_url ) );
+		}
+		return $out;
+	}
+
+	/** OG-Bild = freigegebenes Hero-Bild (CI-005); leer, wenn keines gewählt/freigegeben. */
+	private static function og_image_url(): string {
+		$hero_id = (int) ( \Liebherr\InterfaceWorld\Settings\HeaderSettings::get()['hero_image_id'] ?? 0 );
+		if ( $hero_id > 0 && MediaBridge::is_approved( $hero_id ) ) {
+			$url = wp_get_attachment_image_url( $hero_id, 'full' );
+			return is_string( $url ) ? $url : '';
+		}
+		return '';
+	}
+
+	/** Abschnitts-Fragmente nicht einzeln in die Sitemap (§21): kanonisch ist die Landingpage. */
+	public static function filter_sitemap_post_types( array $post_types ): array {
+		unset( $post_types['liw_section'] );
+		return $post_types;
+	}
+
+	/** Gehört der Post zu den LIW-Flächen (Trägerseite mit Shortcode oder Abschnitt)? */
+	public static function is_liw_post( \WP_Post $post ): bool {
+		if ( 'liw_section' === $post->post_type ) {
+			return true;
+		}
+		return 'page' === $post->post_type && has_shortcode( (string) $post->post_content, 'liw_landingpage' );
 	}
 
 	/**
