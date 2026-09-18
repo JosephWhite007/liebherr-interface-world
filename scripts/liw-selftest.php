@@ -616,6 +616,35 @@ try {
 	$__robots = ( function (): string { ob_start(); SeoBridge::render_robots(); return (string) ob_get_clean(); } )();
 	liw_st_check( 'SEO: render_robots schweigt außerhalb einer LIW-Ansicht (CLI)', '' === $__robots );
 
+	// ── [8c] Intelligence World – Fundament (DB-Lebenszyklus, Pflichtenheft-2 §11–§13, alpha.47) ──
+	echo "\n[8c] Intelligence World – Fundament\n";
+	\Liebherr\InterfaceWorld\IntelligenceWorld\Schema::create_tables();
+	$IWS = '\Liebherr\InterfaceWorld\IntelligenceWorld\SessionService';
+	$EL  = '\Liebherr\InterfaceWorld\IntelligenceWorld\EventLog';
+	$ET  = '\Liebherr\InterfaceWorld\IntelligenceWorld\EventTypes';
+	liw_st_check( 'IW: Tabellen vorhanden (session + event)', '' !== \Liebherr\InterfaceWorld\IntelligenceWorld\Schema::session_table() && '' !== \Liebherr\InterfaceWorld\IntelligenceWorld\Schema::event_table() );
+	$__code = $IWS::start( [ 'price_rule_version' => 'v1', 'meta' => [ 'selftest' => 1 ] ] );
+	liw_st_check( 'IW: Sitzung gestartet (Code LIW- + Startereignis)', str_starts_with( $__code, 'LIW-' ) && null !== $IWS::get( $__code ) );
+	$__row  = $IWS::get( $__code );
+	$__base = (int) strtotime( ( (string) $__row['started_at'] ) . ' UTC' );
+	foreach ( [ 30, 60, 90 ] as $__off ) {
+		$EL::append( $__code, $ET::SESSION_HEARTBEAT, [ 'occurred_at' => gmdate( 'Y-m-d H:i:s', $__base + $__off ), 'dedupe_key' => 'hb-' . $__off ] );
+	}
+	$EL::append( $__code, $ET::SESSION_ENDED, [ 'occurred_at' => gmdate( 'Y-m-d H:i:s', $__base + 100 ) ] );
+	$IWS::recompute( $__code );
+	$__row2 = $IWS::get( $__code );
+	liw_st_check( 'IW: aktive Sekunden korrekt (3×30 + 10 Abschluss = 100)', 100 === (int) $__row2['active_seconds'] );
+	liw_st_check( 'IW: Ereignis-Hash-Kette gültig', $EL::verify_chain( $__code ) );
+	$__a = $EL::append( $__code, $ET::SESSION_HEARTBEAT, [ 'occurred_at' => gmdate( 'Y-m-d H:i:s', $__base + 130 ), 'dedupe_key' => 'hb-dup' ] );
+	$__b = $EL::append( $__code, $ET::SESSION_HEARTBEAT, [ 'occurred_at' => gmdate( 'Y-m-d H:i:s', $__base + 130 ), 'dedupe_key' => 'hb-dup' ] );
+	liw_st_check( 'IW: Idempotenz (dedupe_key verhindert Doppelbuchung)', false === $__a['duplicate'] && true === $__b['duplicate'] && $__a['id'] === $__b['id'] );
+	$__et = \Liebherr\InterfaceWorld\IntelligenceWorld\Schema::event_table();
+	$wpdb->query( $wpdb->prepare( "UPDATE {$__et} SET occurred_at = '2000-01-01 00:00:00' WHERE session_code = %s AND seq = 2", $__code ) ); // phpcs:ignore WordPress.DB
+	liw_st_check( 'IW: Manipulation der Kette wird erkannt (verify = false)', false === $EL::verify_chain( $__code ) );
+	$wpdb->query( $wpdb->prepare( "DELETE FROM {$__et} WHERE session_code = %s", $__code ) ); // phpcs:ignore WordPress.DB
+	$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . \Liebherr\InterfaceWorld\IntelligenceWorld\Schema::session_table() . ' WHERE session_code = %s', $__code ) ); // phpcs:ignore WordPress.DB
+	liw_st_check( 'IW: Testdaten entfernt', null === $IWS::get( $__code ) );
+
 	// ── [9] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
 	echo "\n[9] Programmierlogbuch / To-Dos\n";
 	liw_st_check( 'docs/LIW_PROGRAMMIERLOGBUCH.md vorhanden', is_readable( LIW_PATH . 'docs/LIW_PROGRAMMIERLOGBUCH.md' ) );

@@ -1,5 +1,35 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.47] – 2026-09-19 – Intelligence World: Fundament (Datenmodell, Ereignis-Ledger, Session-Meter)
+
+Start des zweiten Pflichtenhefts „Liebherr Intelligence World" (globale Simulations-/Nutzungs-/
+Abrechnungsplattform). Gebaut wird im selben Plugin als eigenständige Ebene neben Local Intelligence.
+Diese Etappe legt das **serverseitige Fundament** (ohne UI, ohne echtes Payment – Prototyp §21).
+
+### Hinzugefügt (`src/IntelligenceWorld/`)
+- **Schema** `liw_iw_session` (Sitzungen) + `liw_iw_event` (append-only Ereignis-Ledger mit Hash-Kette),
+  registriert in der Plugin-Aktivierung/Upgrade (§12).
+- **EventTypes** – die 23 Ereignistypen aus §11.
+- **Money** – Geld ausschließlich als Integer-Minor-Units (§9), niemals Float; Anzeigeformat de/en.
+- **PriceRule** – 10 Tarifarten (§13.2), Kostenrechnung, Gültigkeitsfenster + Auswahl der zum Zeitpunkt
+  gültigen Version (keine rückwirkende Preisänderung, §13.3).
+- **SessionMeter** – reine, konservative Berechnung abrechenbarer aktiver Zeit aus Heartbeats +
+  Inaktivitäts-Timeout (§13.1; nicht nutzbare Zeit wird nicht berechnet).
+- **EventLog** – manipulationsgeschütztes Anhängen (SHA-256-Hash-Kette) + Idempotenz via `dedupe_key`
+  (Schutz gegen Doppelbuchung/Replay, §16); `verify_chain()` erkennt nachträgliche Änderungen.
+- **SessionService** – serverseitiger Lebenszyklus Start/Heartbeat/Pause/Resume/Ende + Timeout-Kehrlauf,
+  UTC-Zeit, administrierbarer Timeout (`liw_iw_timeout`).
+- `docs/IMPLEMENTATION_NOTES.md` (§22.8): Entscheidungen, Prototyp-Grenzen, Etappenstatus, offene Punkte.
+
+### Verifikation
+- `tests/run-tests.php` **262/262** (Money/PriceRule/SessionMeter/EventLog-Hash/EventTypes),
+  `scripts/liw-selftest.php` **257/257** (DB-Lebenszyklus, aktive-Sekunden = 100 im Testszenario,
+  Hash-Kette gültig, Idempotenz, Manipulation erkannt, Testdaten entfernt).
+
+### Prototyp-Hinweis (§21)
+- Kein echtes Rechnungswesen/Payment, keine Produktivdaten. Beträge werden nur korrekt geführt/berechnet,
+  nicht eingezogen. Produktivschaltung erst nach rechtlicher Freigabe (Release-Gate).
+
 ## [0.1.0-alpha.46] – 2026-09-19 – Erweiterte Nutzungsbedingungen (5.1–5.8) im Intro-Fenster
 
 ### Hinzugefügt/Geändert

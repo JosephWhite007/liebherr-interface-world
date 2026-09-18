@@ -10,6 +10,23 @@ Stand: 18.09.2026 (0.1.0-alpha.41).
 
 ---
 
+## Intelligence World (Pflichtenheft-2, ab alpha.47)
+
+**Geliefert (alpha.47) – Fundament, serverseitig, ohne UI:** Datenmodell (`liw_iw_session`/`liw_iw_event`),
+23 Ereignistypen (§11), Geld als Integer-Minor-Units (`Money`), `PriceRule` (10 Tarifarten, Gültigkeit),
+`SessionMeter` (aktive Zeit §13.1), `EventLog` (Hash-Kette + Idempotenz §16), `SessionService`
+(Start/Heartbeat/Pause/Resume/Ende + Timeout). Details/Entscheidungen: `docs/IMPLEMENTATION_NOTES.md`.
+
+**Offen / nächste Etappen:**
+- Eintritt & Welt: Blue-Planet-Landing (§4.1), Access Gate (§4.2: Code + Consent + Preis + Storage-Budget),
+  Sitzungsticker/Kostenanzeige (§7).
+- Navigation & Hotels: administrierbare 14-Punkte-Taxonomie inkl. Untermenüs + Master-Linkmodell (§19.1),
+  Hotels-Welt (6 Knoten, §6.3).
+- Simulation & Protokoll: Simulation Builder (§6.4), Compute-Metering (Mock), Nutzungs-/Kostenprotokoll
+  PDF+JSON (§5.5/§8).
+- Pricing/Storage/Admin/Rollen/Audit (§14–§16, §19).
+- **Prototyp-Grenzen (§21):** kein echtes Payment/Produktivdaten; Produktivschaltung erst nach Freigabe.
+
 ## Local Intelligence – Hauptseite (LI-Pflichtenheft, alpha.41)
 
 **Geliefert (alpha.41):** übergeordnete Hauptseite „Liebherr Local Intelligence" mit allen elf Modulen

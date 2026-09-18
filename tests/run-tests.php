@@ -256,6 +256,57 @@ $seo_src = (string) file_get_contents( $root . '/src/CoreBridge/SeoBridge.php' )
 liw_assert( 'SeoBridge: LI-Composite als Träger-Shortcode erfasst', str_contains( $seo_src, "'liw_landingpage', 'liw_local_intelligence'" ), $checks, $failures );
 liw_assert( 'SeoBridge: noindex-Guard (render_robots + indexing_allowed)', str_contains( $seo_src, 'render_robots' ) && str_contains( $seo_src, 'noindex,follow' ) && str_contains( $seo_src, 'liw_public_release' ), $checks, $failures );
 
+// 2n. Intelligence World – Fundament (Pflichtenheft-2 §11/§12/§13, alpha.47) – reine Logik ohne WP.
+echo "-- Intelligence World Fundament (alpha.47) --\n";
+if ( ! function_exists( 'wp_json_encode' ) ) { function wp_json_encode( $data, $options = 0, $depth = 512 ) { return json_encode( $data, $options, $depth ); } }
+require_once $root . '/src/IntelligenceWorld/EventTypes.php';
+require_once $root . '/src/IntelligenceWorld/Money.php';
+require_once $root . '/src/IntelligenceWorld/PriceRule.php';
+require_once $root . '/src/IntelligenceWorld/SessionMeter.php';
+require_once $root . '/src/IntelligenceWorld/EventLog.php';
+
+use Liebherr\InterfaceWorld\IntelligenceWorld\EventLog;
+use Liebherr\InterfaceWorld\IntelligenceWorld\EventTypes;
+use Liebherr\InterfaceWorld\IntelligenceWorld\Money;
+use Liebherr\InterfaceWorld\IntelligenceWorld\PriceRule;
+use Liebherr\InterfaceWorld\IntelligenceWorld\SessionMeter;
+
+liw_assert( 'EventTypes: 23 Typen aus §11, is_valid greift', 23 === count( EventTypes::all() ) && EventTypes::is_valid( 'session_started' ) && ! EventTypes::is_valid( 'bogus' ), $checks, $failures );
+
+liw_assert( 'Money: multiply/sum Integer-genau', 4500 === Money::multiply( 150, 30 ) && 175 === Money::sum( [ 100, 50, 25 ] ) && 0 === Money::multiply( 150, -5 ), $checks, $failures );
+liw_assert( 'Money: Format de/en aus Minor-Units', '1.234,56 EUR' === Money::format( 123456, 'EUR', 'de' ) && 'EUR 1,234.56' === Money::format( 123456, 'EUR', 'en' ) && '-0,05 EUR' === Money::format( -5, 'EUR', 'de' ), $checks, $failures );
+
+$pr_min  = new PriceRule( PriceRule::UNIT_MINUTE, 20, 'EUR', 'v1', 1000, null );
+$pr_flat = new PriceRule( PriceRule::UNIT_FLAT_PROJECT, 5000, 'EUR', 'v1', 1000, null );
+$pr_free = new PriceRule( PriceRule::UNIT_FREE, 999, 'EUR', 'v1', 1000, null );
+liw_assert( 'PriceRule: per_minute = Preis×Menge', 200 === $pr_min->cost_minor( 10 ), $checks, $failures );
+liw_assert( 'PriceRule: flat_project mengenunabhängig', 5000 === $pr_flat->cost_minor( 99 ), $checks, $failures );
+liw_assert( 'PriceRule: free = 0', 0 === $pr_free->cost_minor( 100 ), $checks, $failures );
+liw_assert( 'PriceRule: 10 Tarifarten (§13.2)', 10 === count( PriceRule::units() ), $checks, $failures );
+$pr_old = new PriceRule( PriceRule::UNIT_CALL, 100, 'EUR', 'v1', 1000, 1999 );
+$pr_new = new PriceRule( PriceRule::UNIT_CALL, 120, 'EUR', 'v2', 2000, null );
+liw_assert( 'PriceRule: select_active nicht rückwirkend (§13.3)', 'v1' === PriceRule::select_active( [ $pr_old, $pr_new ], 1500 )->version && 'v2' === PriceRule::select_active( [ $pr_old, $pr_new ], 2500 )->version, $checks, $failures );
+
+// SessionMeter (§13.1): aktive Sekunden aus Heartbeats + Timeout.
+$t = 120;
+liw_assert( 'SessionMeter: leere Liste = 0', 0 === SessionMeter::active_seconds( [], $t ), $checks, $failures );
+liw_assert( 'SessionMeter: regelmäßige Heartbeats summieren Lücken', 90 === SessionMeter::active_seconds( [ 1000, 1030, 1060, 1090 ], $t ), $checks, $failures );
+liw_assert( 'SessionMeter: Lücke > Timeout zählt nicht (nicht nutzbare Zeit)', 60 === SessionMeter::active_seconds( [ 1000, 1030, 1600, 1630 ], $t ), $checks, $failures );
+liw_assert( 'SessionMeter: Abschluss zeitnah wird angerechnet', 40 === SessionMeter::active_seconds( [ 1000, 1030 ], $t, 1040 ), $checks, $failures );
+liw_assert( 'SessionMeter: Abschluss nach Timeout nicht angerechnet', 30 === SessionMeter::active_seconds( [ 1000, 1030 ], $t, 5000 ), $checks, $failures );
+liw_assert( 'SessionMeter: is_timed_out', SessionMeter::is_timed_out( 1000, $t, 1200 ) && ! SessionMeter::is_timed_out( 1000, $t, 1100 ), $checks, $failures );
+
+// EventLog Hash-Kette (reine Funktionen).
+$core1 = [ 'event_uid' => 'e1', 'session_code' => 'S', 'seq' => 1, 'type' => 'session_started', 'module' => '', 'occurred_at' => '2026-09-19 10:00:00', 'price_rule_version' => 'v1', 'metadata' => [ 'b' => 2, 'a' => 1 ] ];
+$h1a = EventLog::hash( '', $core1 );
+$core1b = $core1; $core1b['metadata'] = [ 'a' => 1, 'b' => 2 ]; // andere Schlüsselreihenfolge
+liw_assert( 'EventLog: canonical stabil (Schlüsselreihenfolge egal)', EventLog::hash( '', $core1 ) === EventLog::hash( '', $core1b ), $checks, $failures );
+$core2 = [ 'event_uid' => 'e2', 'session_code' => 'S', 'seq' => 2, 'type' => 'session_heartbeat', 'module' => '', 'occurred_at' => '2026-09-19 10:00:30', 'price_rule_version' => '', 'metadata' => [] ];
+$h2 = EventLog::hash( $h1a, $core2 );
+liw_assert( 'EventLog: Kette verknüpft (prev_hash geht ein)', $h2 !== EventLog::hash( 'anders', $core2 ) && 64 === strlen( $h1a ), $checks, $failures );
+$core1_tampered = $core1; $core1_tampered['occurred_at'] = '2026-09-19 09:00:00';
+liw_assert( 'EventLog: Manipulation ändert Hash', EventLog::hash( '', $core1 ) !== EventLog::hash( '', $core1_tampered ), $checks, $failures );
+
 // 3. strict_types=1 in jeder src/-Datei (Coding Standard, CLAUDE.md Abschnitt 5).
 echo "-- Coding Standard --\n";
 $iterator2 = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $root . '/src', FilesystemIterator::SKIP_DOTS ) );

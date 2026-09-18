@@ -8,6 +8,28 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-19 · Intelligence World – Fundament (0.1.0-alpha.47)
+
+**Frage/Kontext.** Zweites Pflichtenheft „Liebherr Intelligence World" (globale Simulations-/Nutzungs-/
+Abrechnungsplattform). JW-Entscheide: eigenständige Ebene **neben** Local Intelligence, im **selben Plugin**;
+Start mit dem **Fundament** (Datenmodell/Ereignisse/Session-Meter) vor der UI.
+
+**Entscheidungen (Kategorie B).**
+- Neues Modul `IntelligenceWorld\` statt neues Plugin (Wiederverwendung von CoreBridge/BrandTokens/Intro etc.,
+  keine Redundanz). Eigenes Schema (2 Tabellen) parallel zu den bestehenden.
+- **Abrechnungswahrheit serverseitig** (§9): Beträge nur als Integer-Minor-Units (`Money`), UTC-Zeit,
+  idempotente Buchungen (`dedupe_key`), append-only Ledger mit SHA-256-**Hash-Kette** (`EventLog`) gegen
+  Manipulation/Replay/Doppelbuchung (§16). Kein Float, kein Client-Vertrauen.
+- **Session-Meter konservativ** (§13.1/§5.3/§8): Lücken > Timeout zählen gar nicht (lieber zu wenig als zu
+  viel berechnen). Pause/Ende schließen aktive Segmente; `SessionService::recompute()` summiert Segmente.
+- Reine Kern-Bausteine (`Money`, `PriceRule`, `SessionMeter`, `EventLog::hash/canonical`) bewusst WP-frei →
+  im schnellen Unit-Test abgesichert; DB-gebundenes im Docker-Selbsttest.
+- **Prototyp-Grenzen (§21):** kein echtes Payment/Rechnungswesen, keine Produktivdaten. Beträge werden
+  berechnet/geführt, nicht eingezogen. (Ich führe generell keine echten Finanztransaktionen aus.)
+
+**Quelle/Version.** Pflichtenheft-2 §9–§20; JW-Auftrag 19.09.2026; 0.1.0-alpha.47. Prüfung: run-tests 262/262,
+liw-selftest 257/257. Offene Entscheidungen + nächste Etappen in `docs/IMPLEMENTATION_NOTES.md`.
+
 ### 2026-09-18 · Prototyp-SEO-Konformität + SEO-Erfassung der LI-Hauptseite (0.1.0-alpha.42)
 
 **Frage/Kontext.** Nachzug zu alpha.41: (1) die neue Hauptseite nutzt `[liw_local_intelligence]`, fiel damit

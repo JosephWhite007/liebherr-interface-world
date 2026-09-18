@@ -12,6 +12,22 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.47 – Intelligence World: Fundament (Datenmodell, Ereignis-Ledger, Session-Meter)
+
+**Neu (`src/IntelligenceWorld/`):** `Schema.php` (Tabellen liw_iw_session + liw_iw_event, dbDelta,
+COMMENT ohne Klammern), `EventTypes.php` (23 Typen §11), `Money.php` (Integer-Minor-Units, rein),
+`PriceRule.php` (10 Tarifarten, cost_minor, select_active/Gültigkeit, rein), `SessionMeter.php`
+(aktive Sekunden aus Heartbeats+Timeout, rein/konservativ), `EventLog.php` (append + Hash-Kette +
+Idempotenz via dedupe_key + verify_chain; reine canonical()/hash()), `SessionService.php`
+(Start/Heartbeat/Pause/Resume/Ende + sweep_timeouts, UTC, Option liw_iw_timeout).
+`docs/IMPLEMENTATION_NOTES.md` (§22.8).
+**Geändert:** `liebherr-interface-world.php` – `create_tables()` ruft `IntelligenceWorld\Schema::create_tables()`;
+Version alpha.47. `tests/run-tests.php` (+Block „Intelligence World Fundament", wp_json_encode-Stub),
+`scripts/liw-selftest.php` (+Block [8c] DB-Lebenszyklus), `CHANGELOG.md`, `docs/LOGBUCH_TECHNIK.md`.
+**Grund:** Start Pflichtenheft-2, Entscheidung „Fundament zuerst": serverseitige Abrechnungswahrheit vor UI.
+**Prüfung:** `php -l` (alle); run-tests 262/262, liw-selftest 257/257 (aktive Sekunden=100, Hash-Kette,
+Idempotenz, Manipulation erkannt).
+
 ## 0.1.0-alpha.46 – Erweiterte Nutzungsbedingungen (5.1–5.8) im Intro-Fenster
 
 **Geändert:** `src/Settings/LocalIntelligenceContent.php` – neue `default_terms()` (Abschnitte 5.1–5.8 als
