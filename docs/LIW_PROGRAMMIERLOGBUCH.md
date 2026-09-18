@@ -12,6 +12,15 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.24 – I18nSeo Option A
+
+**Neu:** `src/CoreBridge/LanguageBridge.php` (Sprache, Umschalter-Shortcode, Router-Status, `versioned()`).
+**Geändert:** `src/CoreBridge/SeoBridge.php` (Ziel Trägerseite, Router-Guard, `hreflang_markup()`),
+`src/Bootstrap.php` (LanguageBridge registriert), `src/Onboarding/OnboardingService.php` und
+`src/Contact/ContactService.php` (Textversion mit Sprachsuffix), `assets/css/liebherr-frontend.css`
+(`.liw-language-switcher`), `src/Admin/Pages/HandbookPage.php`, `scripts/liw-selftest.php` ([6b] neu),
+`docs/LIW_TODO.md`, `CHANGELOG.md`, `docs/LOGBUCH_TECHNIK.md`, `liebherr-interface-world.php` (Version).
+
 ## 0.1.0-alpha.23 – Landingpage: Sprungleiste
 
 **Geändert:** `src/Frontend/LandingpageView.php` (`render_shortcode()` mit Attribut `nav`,

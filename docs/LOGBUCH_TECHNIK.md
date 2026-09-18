@@ -8,6 +8,35 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · I18nSeo: Option A – vorhandene Core-Sprachsteuerung nutzen, Router-Eingriff vertagen (0.1.0-alpha.24)
+
+**Frage/Kontext.** Seit alpha.1 offene Kategorie-A-Frage (ADR-LIW-001): `liw_section` in den
+Core-`I18nRouter` aufnehmen oder eigenständige `SeoBridge` behalten? Inzwischen hingen drei Punkte
+daran (Sprache der Trägerseite, §24-Textversion, Login-Seite). Joseph gab die Analyse und mit „ja"
+die Umsetzung der Empfehlung frei.
+
+**Befund (Core per device_bash gelesen).** `Language\LanguageService`: Sprache aus Cookie oder
+`?lang=`, Titel/Inhalt-Filter wirken auf alle Beiträge → Landingpage und Abschnitte sind bereits
+mehrsprachig bedienbar. `LanguageSwitcherWidget::render()` existiert (Flaggen-Dropdown, `?lang=`).
+`Modules\I18nSeo\I18nRouter`: feature-geflaggt (`ary_i18n_router_enabled`), Scope Startseite +
+`suite/apartment/treeroom`, Rewrite nur für `post_type=…&name=…` – der Post-Type `page`, auf dem die
+Landingpage liegt, ist nicht abgedeckt. Eigene `SeoBridge` gab hreflang nur auf Einzelansichten aus –
+seit alpha.18 die falsche Fläche.
+
+**Optionen.** (A) Vorhandenes nutzen, kein Core-Eingriff: SeoBridge auf Trägerseite ausrichten,
+Core-Widget per Shortcode, §24-Sprachsuffix; (B) Core-Router um `page` + `liw_section` erweitern,
+SeoBridge abschaffen (Kategorie A, Core-Release, nur sinnvoll bei aktivem Router); (C) eigenes Routing
+im Plugin (Doppelentwicklung – abgelehnt).
+
+**Entscheidung (Joseph White „ja" auf Empfehlung A).** A jetzt, B als Folgepunkt. Leitplanken: kein
+eigener Umschalter (Core-Widget gekapselt), keine eigene Sprachermittlung (LanguageBridge kapselt nur),
+SeoBridge schweigt bei aktivem Core-Router, damit B später ohne Doppel-hreflang eingeführt werden kann.
+Login-Seite bleibt WP-Standard (kein Sprach- oder Design-Eingriff nötig, Core-Cookie gilt auch dort).
+
+**Quelle/Version.** Core `Language/LanguageService.php`, `Language/LanguageSwitcherWidget.php`,
+`Modules/I18nSeo/I18nRouter.php` (gelesen 18.09.2026); Pflichtenheft §20/§24; ADR-LIW-001;
+0.1.0-alpha.24.
+
 ### 2026-09-18 · Partnerdokumente: Core-Muster kopiert statt Core-Modul gebogen (0.1.0-alpha.22)
 
 **Frage/Kontext.** Joseph gab mit „ja" Stufe 2 frei. Die zwei Vorab-Fragen (PDF-Fassung, Konto-

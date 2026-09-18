@@ -38,10 +38,12 @@ use Liebherr\InterfaceWorld\Contact\ContactSchema;
 use Liebherr\InterfaceWorld\Contact\ContactService;
 use Liebherr\InterfaceWorld\Content\SectionBlueprint;
 use Liebherr\InterfaceWorld\Content\SectionSeeder;
+use Liebherr\InterfaceWorld\CoreBridge\LanguageBridge;
 use Liebherr\InterfaceWorld\CoreBridge\MarkdownBridge;
 use Liebherr\InterfaceWorld\CoreBridge\MediaBridge;
 use Liebherr\InterfaceWorld\CoreBridge\PartnerBridge;
 use Liebherr\InterfaceWorld\CoreBridge\RoleBridge;
+use Liebherr\InterfaceWorld\CoreBridge\SeoBridge;
 use Liebherr\InterfaceWorld\CPT\LiwSectionCpt;
 use Liebherr\InterfaceWorld\Frontend\LandingpageView;
 use Liebherr\InterfaceWorld\Frontend\SectionGraphicView;
@@ -387,6 +389,18 @@ try {
 		liw_st_check( '[liw_landingpage nav="0"] ohne Sprungleiste, Abschnitt weiterhin da', ! str_contains( do_shortcode( '[liw_landingpage nav="0"]' ), 'liw-landingpage__nav' ) && str_contains( do_shortcode( '[liw_landingpage nav="0"]' ), "{$run} Testabschnitt" ) );
 		liw_st_check( 'get_published_sections() liefert nur publish', [] === array_filter( LandingpageView::get_published_sections(), static fn( WP_Post $p ): bool => 'publish' !== $p->post_status ) );
 	}
+
+	// ── [6b] Sprache & SEO (I18nSeo-Analyse Option A, alpha.24) ─────────────────
+	echo "\n[6b] Sprache & hreflang (Pflichtenheft §20/§24, Option A)\n";
+	$langs = LanguageBridge::active_langs();
+	liw_st_check( 'Aktive Sprachen vom Core (oder Fallback DE/EN/PL), Default-Sprache enthalten', count( $langs ) >= 1 && in_array( LanguageBridge::current_lang(), $langs, true ) );
+	$hl = SeoBridge::hreflang_markup( 'https://example.test/interface-world/', [ 'de', 'en' ] );
+	liw_st_check( 'hreflang-Markup: je Sprache ?lang=, x-default = Basis-URL', str_contains( $hl, 'hreflang="de"' ) && str_contains( $hl, 'lang=en' ) && str_contains( $hl, 'hreflang="x-default" href="https://example.test/interface-world/"' ) && 3 === substr_count( $hl, '<link ' ) );
+	liw_st_check( 'Core-Router-Status abfragbar (bool), SeoBridge schweigt bei aktivem Router', is_bool( LanguageBridge::core_router_active() ) );
+	liw_st_check( '[liw_language_switcher] registriert, liefert Core-Widget oder leer', shortcode_exists( LanguageBridge::SHORTCODE ) && ( '' === do_shortcode( '[liw_language_switcher]' ) || str_contains( do_shortcode( '[liw_language_switcher]' ), 'liw-language-switcher' ) ) );
+	liw_st_check( 'Einwilligungs-Textversion sprachabhängig (§24)', str_ends_with( LanguageBridge::versioned( 'x-v1' ), '-' . LanguageBridge::current_lang() ) );
+	$cl_ver = $wpdb->get_var( $wpdb->prepare( 'SELECT text_version FROM ' . ConsentLogSchema::table_name() . ' WHERE request_id = %d AND request_kind = %s AND consent_type = %s', $partner_id, 'onboarding', 'privacy' ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+	liw_st_check( 'Onboarding-Einwilligung dieses Laufs trägt Sprachsuffix', is_string( $cl_ver ) && str_ends_with( $cl_ver, '-' . LanguageBridge::current_lang() ) );
 
 	// ── [7] Media Board (§18) ─────────────────────────────────────────────────
 	echo "\n[7] Media Board – CI-005-Freigabe\n";

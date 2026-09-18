@@ -6,7 +6,7 @@ oder als offene Rückfrage an Joseph White dokumentiert wurden (Quelle jeweils a
 Sichtbar im Backend unter „Interface World → 📋 To-Dos". Wird bei jeder Aufgabe, die einen
 Punkt hier abschließt oder ergänzt, gepflegt.
 
-Stand: 18.09.2026 (0.1.0-alpha.23).
+Stand: 18.09.2026 (0.1.0-alpha.24).
 
 ---
 
@@ -36,11 +36,10 @@ Stand: 18.09.2026 (0.1.0-alpha.23).
   „Export- und Löschprozesse vorbereiten" – Löschen ist umgesetzt, Export nicht), fachliche
   Wertelisten für Land/Region und Projektinteresse (ANNAHME-LIW-8/-9, aktuell Filter
   `liw_contact_regions`/`liw_contact_interests`), sprachabhängige Datenschutztext-Versionierung
-  (§24, hängt an der I18nSeo-Frage).
+  (§24) – seit alpha.24 mit Sprachsuffix umgesetzt.
   *Quelle: CHANGELOG.md alpha.19; Pflichtenheft §22/§24/§31.*
 
-- **Landingpage-Feinheiten nach dem ersten Gerüst (alpha.18).** Sprachumschaltung/SEO-Metadaten
-  der Trägerseite (hängt an der offenen I18nSeo-Frage), Hero-Bildmotiv (freigegebenes
+- **Landingpage-Feinheiten nach dem ersten Gerüst (alpha.18).** Hero-Bildmotiv (freigegebenes
   Liebherr-Motiv, redaktionell), aktive Hervorhebung des sichtbaren Abschnitts in der Sprungleiste
   (bräuchte ein eigenes, enqueuetes Skript – YAGNI bis Bedarf). Ankernavigation selbst: alpha.23.
   *Quelle: CHANGELOG.md alpha.18, alpha.23.*
@@ -76,10 +75,14 @@ Stand: 18.09.2026 (0.1.0-alpha.23).
 
 ## Architektur – offene Rückfrage an Joseph White
 
-- **I18nSeo-Anbindung.** Aktuell eine eigenständige, schlanke Lösung (`CoreBridge\SeoBridge`),
-  da der Core-Router fest auf andere CPTs verdrahtet ist. Ob das langfristig so bleibt oder
-  der Core-Router erweitert wird, ist eine offene Kategorie-A-Entscheidung.
-  *Quelle: CHANGELOG.md alpha.1, ADR-LIW-001.*
+- **I18nSeo – Option B (Core-Router erweitern).** Entschieden 18.09.2026 (Logbuch alpha.24):
+  Option A umgesetzt – Core-Sprachsteuerung (Cookie/`?lang=`) genügt funktional, `SeoBridge` liefert
+  hreflang auf der Trägerseite mit `?lang=`-URLs, `[liw_language_switcher]` nutzt das Core-Widget,
+  Einwilligungs-Textversionen sprachabhängig. Offen bleibt Option B als Kategorie-A-Folgepunkt:
+  Core-`I18nRouter` um `page` (Trägerseite) und `liw_section` erweitern, sobald der Router
+  plattformweit aktiv geschaltet wird – dann saubere `/en/interface-world`-URLs; die `SeoBridge`
+  schweigt in diesem Fall bereits automatisch.
+  *Quelle: docs/LOGBUCH_TECHNIK.md alpha.24; ADR-LIW-001.*
 
 ## Betrieb / Qualitätssicherung
 
@@ -106,6 +109,7 @@ Stand: 18.09.2026 (0.1.0-alpha.23).
 - LP-13 Kontaktformular + Contact Board (alpha.19) umgesetzt – Folgepunkte s. oben.
 - Partnerbereich Stufe 1: Rolle `liw_partner` + Kontoanlage im Onboarding Board (alpha.21).
 - Ankernavigation/Sprungleiste der Landingpage (alpha.23).
+- I18nSeo Option A: Sprachumschalter-Shortcode, hreflang auf Trägerseite, §24-Sprachsuffix (alpha.24).
 - Partnerbereich Stufe 2: geschützte Partnerdokumente – Board, Service, `[liw_partner_documents]` (alpha.22).
 - Anonymisierte Grafiken LP-03/LP-04/LP-12 (alpha.20) geliefert – damit haben acht von 14
   Abschnitten einen gebauten Baustein; LP-01/02/05/09/10/14 sind reine Redaktion/Bildsprache.

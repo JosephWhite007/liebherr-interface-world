@@ -16,6 +16,7 @@ namespace Liebherr\InterfaceWorld\Onboarding;
 
 use Liebherr\InterfaceWorld\Consent\ConsentLogService;
 use Liebherr\InterfaceWorld\CoreBridge\AuditBridge;
+use Liebherr\InterfaceWorld\CoreBridge\LanguageBridge;
 use Liebherr\InterfaceWorld\CoreBridge\PartnerBridge;
 use Liebherr\InterfaceWorld\CoreBridge\RoleBridge;
 
@@ -83,9 +84,10 @@ final class OnboardingService {
 			return new \WP_Error( 'liw_db_error', __( 'Anfrage konnte nicht gespeichert werden.', 'liebherr-interface-world' ) );
 		}
 
-		ConsentLogService::record( $partner_id, ConsentLogService::TYPE_PRIVACY, self::PRIVACY_TEXT_VERSION );
+		$text_version = LanguageBridge::versioned( self::PRIVACY_TEXT_VERSION ); // §24: sprachabhängig, z. B. …-v1-de (alpha.24)
+		ConsentLogService::record( $partner_id, ConsentLogService::TYPE_PRIVACY, $text_version );
 		if ( ! empty( $data['marketing_consent'] ) ) {
-			ConsentLogService::record( $partner_id, ConsentLogService::TYPE_MARKETING, self::PRIVACY_TEXT_VERSION );
+			ConsentLogService::record( $partner_id, ConsentLogService::TYPE_MARKETING, $text_version );
 		}
 
 		// actor_id 0: öffentliches Formular, kein eingeloggter Benutzer (SEC-005 – Nachvollziehbarkeit

@@ -304,6 +304,11 @@
 	font-weight: normal;
 }
 
+/* ── Sprachumschalter-Hülle ([liw_language_switcher], alpha.24; Widget-Stil kommt vom Core) ── */
+.liw-language-switcher {
+	display: inline-block;
+}
+
 /* ── Partnerdokumente ([liw_partner_documents], seit alpha.22) ─────────────── */
 .liw-partner-docs {
 	list-style: none;

@@ -27,6 +27,7 @@ namespace Liebherr\InterfaceWorld\Contact;
 
 use Liebherr\InterfaceWorld\Consent\ConsentLogService;
 use Liebherr\InterfaceWorld\CoreBridge\AuditBridge;
+use Liebherr\InterfaceWorld\CoreBridge\LanguageBridge;
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
@@ -137,9 +138,10 @@ final class ContactService {
 		$id = (int) $wpdb->insert_id;
 
 		// §24: Einwilligungen mit Version/Zeitstempel; Marketing nur bei eigener, separater Zustimmung.
-		ConsentLogService::record( $id, ConsentLogService::TYPE_PRIVACY, self::PRIVACY_TEXT_VERSION, ConsentLogService::KIND_CONTACT );
+		$text_version = LanguageBridge::versioned( self::PRIVACY_TEXT_VERSION ); // §24: sprachabhängig (alpha.24)
+		ConsentLogService::record( $id, ConsentLogService::TYPE_PRIVACY, $text_version, ConsentLogService::KIND_CONTACT );
 		if ( ! empty( $data['marketing_consent'] ) ) {
-			ConsentLogService::record( $id, ConsentLogService::TYPE_MARKETING, self::PRIVACY_TEXT_VERSION, ConsentLogService::KIND_CONTACT );
+			ConsentLogService::record( $id, ConsentLogService::TYPE_MARKETING, $text_version, ConsentLogService::KIND_CONTACT );
 		}
 
 		// Audit ohne personenbezogene Freitexte (SEC-005, Datensparsamkeit): nur Klassifizierung.

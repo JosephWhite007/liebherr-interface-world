@@ -18,6 +18,7 @@ use Liebherr\InterfaceWorld\Admin\AdminAssets;
 use Liebherr\InterfaceWorld\Admin\AdminMenu;
 use Liebherr\InterfaceWorld\Connection\ConnectionMapView;
 use Liebherr\InterfaceWorld\Contact\ContactForm;
+use Liebherr\InterfaceWorld\CoreBridge\LanguageBridge;
 use Liebherr\InterfaceWorld\CoreBridge\MediaBridge;
 use Liebherr\InterfaceWorld\CoreBridge\SeoBridge;
 use Liebherr\InterfaceWorld\CoreBridge\TranslationBridge;
@@ -37,6 +38,7 @@ final class Bootstrap {
 		add_action( 'init', [ TranslationBridge::class, 'register' ], 21 ); // nach Translation-Modul (Core-Bootstrap-Reihenfolge).
 
 		SeoBridge::register();
+		LanguageBridge::register();
 		MediaBridge::register();
 		OnboardingForm::register();
 		ContactForm::register();

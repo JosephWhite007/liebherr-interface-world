@@ -1,5 +1,36 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.24] – 2026-09-18 – I18nSeo Option A: Sprache, hreflang, §24-Sprachsuffix
+
+### Entscheidung (Analyse 18.09.2026, Joseph White „ja" zu Option A)
+- Befund: Die Core-Sprachsteuerung (Cookie + `?lang=xx`, `LanguageService`) greift bereits auf
+  allen Seiten inkl. Trägerseite und Abschnitten; der Core hat ein fertiges
+  `LanguageSwitcherWidget`. Der Core-`I18nRouter` (Präfix-URLs `/en/…`) ist feature-geflaggt und
+  deckt nur Startseite + `suite/apartment/treeroom` ab – **nicht** den Post-Type `page`, auf dem
+  die Landingpage liegt; ein Ergänzen von `liw_section` allein hätte die Trägerseite nicht erfasst.
+  Die bisherige `SeoBridge` zielte auf Einzelansichten statt auf die Trägerseite.
+- Option A (kein Core-Eingriff) umgesetzt; Option B (Router um `page` + `liw_section` erweitern)
+  als Folgepunkt, wenn der Router plattformweit aktiv ist.
+
+### Hinzugefügt / Geändert
+- **`CoreBridge\LanguageBridge`** (neu): einziger Kopplungspunkt zur Core-Sprache –
+  `current_lang()`/`active_langs()` (Fallback DE/EN/PL, Pflichtenheft §20), `switcher_html()`
+  (Core-Widget), `core_router_active()`, `versioned()`; Shortcode **`[liw_language_switcher]`**
+  (Hülle `.liw-language-switcher` um das Core-Widget, kein eigener Umschalter).
+- **`CoreBridge\SeoBridge`** neu ausgerichtet: hreflang (je Sprache `?lang=`, `x-default` =
+  Basis-URL) auf der **Trägerseite** (Seite mit `[liw_landingpage]`) und auf Einzelansichten;
+  **schweigt, sobald der Core-Router aktiv ist** (kein doppeltes hreflang). Markup-Erzeugung als
+  testbare Funktion `hreflang_markup()`.
+- **§24 „Datenschutztexte sprachabhängig versionieren":** Einwilligungen aus Onboarding und
+  Kontaktformular tragen jetzt die Textversion mit Sprachsuffix (z. B. `2026-09-18-contact-v1-de`).
+- Handbuch: Absatz Mehrsprachigkeit im Landingpage-Abschnitt; `docs/LIW_TODO.md`: I18nSeo-Punkt
+  auf Option B umgestellt, §24-Punkt erledigt.
+
+### Geprüft
+- `tests/run-tests.php`: 112/112. `scripts/liw-selftest.php`: neuer Abschnitt [6b] mit sechs
+  Prüfungen (aktive Sprachen, hreflang-Markup, Router-Status, Umschalter-Shortcode, Sprachsuffix
+  in `versioned()` und in der realen Onboarding-Einwilligung des Laufs). Docker-Lauf steht aus.
+
 ## [0.1.0-alpha.23] – 2026-09-18 – Landingpage: klebende Sprungleiste (Ankernavigation)
 
 ### Hinzugefügt
