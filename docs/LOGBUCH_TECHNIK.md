@@ -8,6 +8,32 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · Aktive Anker-Hervorhebung der Sprungleiste – enqueuetes Skript statt Verzicht (0.1.0-alpha.26)
+
+**Frage/Kontext.** Fortsetzung aus dem Chat, gewählte „Scheibe" (JW „weiter mit 1"): die seit alpha.18
+als YAGNI vertagte aktive Hervorhebung des sichtbaren Abschnitts in der Landingpage-Sprungleiste
+(`.liw-landingpage__nav`, seit alpha.23 sticky). „Bedarf" ist jetzt gegeben, YAGNI greift nicht mehr.
+
+**Optionen.** (a) Weiter verzichten; (b) kleines, abhängigkeitsfreies Frontend-Skript, an die
+Nav-Klasse gebunden, das per IntersectionObserver `aria-current`/`is-current` setzt; (c) zusätzlich
+die Kopf-Navigation sticky machen – entfällt hier, denn die Sprungleiste ist bereits `position: sticky`.
+
+**Entscheidung (Claude, Kategorie B).** (b): erstes Frontend-Skript des Plugins
+`assets/js/liebherr-frontend.js`, im selben `maybe_enqueue()`-Auslöser wie das Stylesheet (nur auf
+Seiten mit einem `liw_*`-Shortcode), im Footer, `LIW_VERSION` als Cache-Buster. Kein Inline-Code
+(CLAUDE.md Abschnitt 5), fortschreitende Verbesserung: ohne JS/ohne IntersectionObserver bleibt die
+Sprungleiste voll funktionsfähig. Markup unverändert (Skript bindet an `.liw-landingpage__nav`).
+Lesefenster `rootMargin: -42% 0px -53%` → genau ein aktiver Eintrag; bei Überlappung gewinnt der
+oberste in Dokumentreihenfolge, bei keinem sichtbaren bleibt die letzte Markierung.
+
+**Prozesshinweis.** Die Scheibe wurde zu Sitzungsbeginn versehentlich zuerst im Core-Plugin
+(`araliya-platform-core`, SAV „Kleiner Zaubermeister") gebaut, weil beide Projekte eine
+Landingpage mit Anker-Sprungleiste haben. Nach dem Hinweis „Interface World / drei Bücher" korrigiert:
+hier korrekt umgesetzt; der Core-Fehlgriff wurde als (nicht gepushter) Auto-Commit alpha.718 erkannt
+und Joseph zur Entscheidung übergeben (Rücknahme vs. behalten).
+
+**Quelle/Version.** Chat-Fortsetzung; `docs/LIW_TODO.md` (Punkt seit alpha.18); 0.1.0-alpha.26.
+
 ### 2026-09-18 · Befund aus alpha.24-Lauf: Core-Sprachliste sind Datensätze, nicht Strings (0.1.0-alpha.25)
 
 **Kontext.** Erster Docker-Lauf nach alpha.24: 124/125, eine PHP-Warning `Array to string conversion`

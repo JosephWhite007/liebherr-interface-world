@@ -425,6 +425,12 @@ try {
 	liw_st_check( 'assets/css/liebherr-frontend.css vorhanden', is_readable( LIW_PATH . 'assets/css/liebherr-frontend.css' ) );
 	liw_st_check( 'assets/css/liebherr-admin.css vorhanden', is_readable( LIW_PATH . 'assets/css/liebherr-admin.css' ) );
 	liw_st_check( 'AdminPagination-Klasse verfügbar', class_exists( AdminPagination::class ) );
+	// Aktive Anker-Hervorhebung (alpha.26): enqueuetes Frontend-Skript + Aktiv-Zustand im CSS.
+	liw_st_check( 'assets/js/liebherr-frontend.js vorhanden', is_readable( LIW_PATH . 'assets/js/liebherr-frontend.js' ) );
+	$liw_front_assets_src = (string) file_get_contents( LIW_PATH . 'src/Frontend/FrontendAssets.php' );
+	liw_st_check( 'FrontendAssets registriert liebherr-frontend.js (Footer, LIW_VERSION)', str_contains( $liw_front_assets_src, "assets/js/liebherr-frontend.js" ) && str_contains( $liw_front_assets_src, 'wp_enqueue_script' ) );
+	liw_st_check( 'liebherr-frontend.js: IntersectionObserver + aria-current + is-current, an .liw-landingpage__nav gebunden', ( static function (): bool { $s = (string) file_get_contents( LIW_PATH . 'assets/js/liebherr-frontend.js' ); return str_contains( $s, 'IntersectionObserver' ) && str_contains( $s, 'aria-current' ) && str_contains( $s, 'is-current' ) && str_contains( $s, '.liw-landingpage__nav' ); } )() );
+	liw_st_check( 'liebherr-frontend.css: Aktiv-Zustand .liw-landingpage__nav-link.is-current', str_contains( (string) file_get_contents( LIW_PATH . 'assets/css/liebherr-frontend.css' ), '.liw-landingpage__nav-link.is-current' ) );
 
 	// ── [9] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
 	echo "\n[9] Programmierlogbuch / To-Dos\n";

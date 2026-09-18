@@ -6,7 +6,7 @@ oder als offene Rückfrage an Joseph White dokumentiert wurden (Quelle jeweils a
 Sichtbar im Backend unter „Interface World → 📋 To-Dos". Wird bei jeder Aufgabe, die einen
 Punkt hier abschließt oder ergänzt, gepflegt.
 
-Stand: 18.09.2026 (0.1.0-alpha.24).
+Stand: 18.09.2026 (0.1.0-alpha.26).
 
 ---
 
@@ -40,9 +40,9 @@ Stand: 18.09.2026 (0.1.0-alpha.24).
   *Quelle: CHANGELOG.md alpha.19; Pflichtenheft §22/§24/§31.*
 
 - **Landingpage-Feinheiten nach dem ersten Gerüst (alpha.18).** Hero-Bildmotiv (freigegebenes
-  Liebherr-Motiv, redaktionell), aktive Hervorhebung des sichtbaren Abschnitts in der Sprungleiste
-  (bräuchte ein eigenes, enqueuetes Skript – YAGNI bis Bedarf). Ankernavigation selbst: alpha.23.
-  *Quelle: CHANGELOG.md alpha.18, alpha.23.*
+  Liebherr-Motiv, redaktionell) offen. Ankernavigation: alpha.23; aktive Hervorhebung des
+  sichtbaren Abschnitts in der Sprungleiste: umgesetzt in alpha.26 (s. „Bereits erledigt").
+  *Quelle: CHANGELOG.md alpha.18, alpha.23, alpha.26.*
 
 - **Visuelles Gesamt-Layout/Wireframe der Landingpage.** Der inhaltliche Bauplan
   (LP-01…LP-14) steht im Pflichtenheft und ist seit alpha.12 in
@@ -109,6 +109,9 @@ Stand: 18.09.2026 (0.1.0-alpha.24).
 - LP-13 Kontaktformular + Contact Board (alpha.19) umgesetzt – Folgepunkte s. oben.
 - Partnerbereich Stufe 1: Rolle `liw_partner` + Kontoanlage im Onboarding Board (alpha.21).
 - Ankernavigation/Sprungleiste der Landingpage (alpha.23).
+- Aktive Hervorhebung des sichtbaren Abschnitts in der Sprungleiste (alpha.26): enqueuetes
+  Skript `assets/js/liebherr-frontend.js` (IntersectionObserver, `aria-current`/`is-current`),
+  CSS-Aktivzustand, Selbsttests. Der zuvor als YAGNI vertagte Punkt aus alpha.18 ist damit erledigt.
 - I18nSeo Option A: Sprachumschalter-Shortcode, hreflang auf Trägerseite, §24-Sprachsuffix (alpha.24).
 - Partnerbereich Stufe 2: geschützte Partnerdokumente – Board, Service, `[liw_partner_documents]` (alpha.22).
 - Anonymisierte Grafiken LP-03/LP-04/LP-12 (alpha.20) geliefert – damit haben acht von 14

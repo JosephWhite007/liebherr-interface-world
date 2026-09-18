@@ -12,6 +12,24 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.26 – Landingpage: aktive Anker-Hervorhebung der Sprungleiste
+
+**Neu:** `assets/js/liebherr-frontend.js` (erstes Frontend-Skript des Plugins; IIFE, ES5,
+abhängigkeitsfrei; `initNav()` bildet `a.liw-landingpage__nav-link[href^="#"]` → `#anchor`-Abschnitte
+ab, ein `IntersectionObserver` mit `rootMargin: -42% 0px -53%` setzt am gerade sichtbaren Abschnitt
+`aria-current="true"` + Klasse `is-current`, sonst entfernt; obersten sichtbaren in Dokumentreihenfolge
+gewählt, keiner sichtbar → letzte Markierung bleibt; Guard auf `IntersectionObserver`-Verfügbarkeit
+und `DOMContentLoaded`).
+**Geändert:** `src/Frontend/FrontendAssets.php` (`maybe_enqueue()` enqueued zusätzlich
+`assets/js/liebherr-frontend.js` unter dem Handle `liw-frontend`, im Footer, `LIW_VERSION`),
+`assets/css/liebherr-frontend.css` (Regel `.liw-landingpage__nav-link.is-current`),
+`src/Frontend/LandingpageView.php` (nur Kommentar von `render_nav()` aktualisiert; kein Markup-Eingriff),
+`tests/run-tests.php` (Abschnitt „Aktive Anker-Hervorhebung", +7 Checks), `scripts/liw-selftest.php`
+([8] +4 Checks), `docs/LIW_TODO.md`, `CHANGELOG.md`, `docs/LOGBUCH_TECHNIK.md`,
+`src/Admin/Pages/HandbookPage.php`, `liebherr-interface-world.php` (Version).
+**Prüfung:** `php -l` je Datei; `tests/run-tests.php` 119/119 im Docker-Container; JS-Parse und
+Scrollspy-Verhalten real in der Browser-JS-Engine simuliert. Docker-`liw-selftest.php`-Lauf steht aus.
+
 ## 0.1.0-alpha.25 – Bugfix Sprachcodes
 
 **Geändert:** `src/CoreBridge/LanguageBridge.php` (`active_langs()` verarbeitet Core-Datensätze,

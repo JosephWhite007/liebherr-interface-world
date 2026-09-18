@@ -1,5 +1,39 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.26] – 2026-09-18 – Landingpage: aktive Hervorhebung des sichtbaren Abschnitts in der Sprungleiste
+
+### Hinzugefügt
+- **`assets/js/liebherr-frontend.js`** – erstes Frontend-Skript des Plugins: ein
+  abhängigkeitsfreier Scrollspy, der in der Sprungleiste (`.liw-landingpage__nav`, seit alpha.23)
+  den gerade sichtbaren Abschnitt markiert. Per `IntersectionObserver` (schmales Lesefenster ~42 %)
+  erhält der zugehörige Link `aria-current="true"` und die Klasse `is-current`, alle anderen
+  verlieren sie. Fortschreitende Verbesserung: Ohne JavaScript (oder ohne `IntersectionObserver`)
+  bleibt die Sprungleiste voll funktionsfähig. Kein Inline-Code, keine Netzwerk-/Personendaten.
+- CSS-Aktivzustand `.liw-landingpage__nav-link.is-current` (Akzentfarbe + Unterstrich wie beim
+  Hover, zusätzlich fett) in `assets/css/liebherr-frontend.css`.
+- Selbsttests: `tests/run-tests.php` (WP-frei) prüft Asset-Vorhandensein, Enqueue-Registrierung
+  (Footer, `LIW_VERSION`), Bindung an `.liw-landingpage__nav`, `IntersectionObserver`/`aria-current`/
+  `is-current` und den CSS-Aktivzustand; `scripts/liw-selftest.php` [8] ergänzt die gleichen Checks
+  in der Docker-Umgebung.
+
+### Geändert
+- `src/Frontend/FrontendAssets.php` – `maybe_enqueue()` bindet zusätzlich zum Stylesheet das
+  Frontend-Skript ein (gleicher Auslöser: eine Seite mit einem der `liw_*`-Shortcodes; Footer,
+  `LIW_VERSION` als Cache-Buster).
+- `src/Frontend/LandingpageView.php` – Kommentar von `render_nav()` an den neuen Stand angepasst
+  (JS-Hervorhebung seit alpha.26; Markup unverändert, das Skript bindet an die Nav-Klasse).
+
+### Umgesetzter To-Do-Punkt
+- „Aktive Hervorhebung des sichtbaren Abschnitts in der Sprungleiste" (offen seit alpha.18,
+  YAGNI-vertagt) – siehe `docs/LIW_TODO.md`.
+
+### Hinweise
+- Keine neuen sichtbaren Texte: `aria-current`/`is-current` sind Zustände, keine Inhalte; die
+  Nav-Titel stammen unverändert aus den Abschnitts-Titeln (Core-Übersetzung). DoD Punkt 9 nicht berührt.
+- Verifikation: `php -l` je geänderter Datei; `tests/run-tests.php` 119/119 im Docker-Container;
+  JS-Parse und Scrollspy-Verhalten (genau ein aktiver Link, Dokumentreihenfolge gewinnt, letzte
+  Markierung bleibt) real in der Browser-JS-Engine simuliert. Docker-`liw-selftest.php`-Lauf steht aus.
+
 ## [0.1.0-alpha.25] – 2026-09-18 – Bugfix: Sprachcodes aus dem Core („Array" statt `de`)
 
 ### Behoben

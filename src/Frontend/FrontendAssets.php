@@ -42,6 +42,16 @@ final class FrontendAssets {
 			[],
 			LIW_VERSION
 		);
+
+		// Aktive Hervorhebung des sichtbaren Abschnitts in der Sprungleiste (alpha.26):
+		// fortschreitende Verbesserung, im Footer, ohne Abhängigkeit, kein Inline-Code.
+		wp_enqueue_script(
+			self::HANDLE,
+			LIW_URL . 'assets/js/liebherr-frontend.js',
+			[],
+			LIW_VERSION,
+			true
+		);
 	}
 
 	private static function current_post_has_shortcode(): bool {

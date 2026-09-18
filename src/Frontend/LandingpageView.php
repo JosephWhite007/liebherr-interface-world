@@ -83,9 +83,11 @@ final class LandingpageView {
 	}
 
 	/**
-	 * Sprungleiste (alpha.23): ein Link je veröffentlichtem Abschnitt mit Titel. Reines HTML/CSS
-	 * (position: sticky) – keine aktive Hervorhebung per JS (kein Inline-JS; ein eigenes Skript wäre
-	 * für dieses Gerüst YAGNI). Abschnitte ohne Titel oder Anker werden übersprungen.
+	 * Sprungleiste (alpha.23): ein Link je veröffentlichtem Abschnitt mit Titel, HTML/CSS
+	 * (position: sticky) und ohne Inline-JS. Seit alpha.26 markiert das enqueuete Skript
+	 * assets/js/liebherr-frontend.js den gerade sichtbaren Abschnitt (Klasse `is-current`,
+	 * `aria-current`) – fortschreitende Verbesserung, ohne die die Sprungleiste voll funktioniert.
+	 * Abschnitte ohne Titel oder Anker werden übersprungen.
 	 *
 	 * @param \WP_Post[] $sections
 	 */
