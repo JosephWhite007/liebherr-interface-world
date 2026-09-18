@@ -1,5 +1,25 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.46] – 2026-09-19 – Erweiterte Nutzungsbedingungen (5.1–5.8) im Intro-Fenster
+
+### Hinzugefügt/Geändert
+- **Vollständige Nutzungsbedingungen** (Abschnitte 5.1–5.8: Prototypstatus/Vertraulichkeit, lokale
+  Speicherung, kostenpflichtige Nutzungszeit, Modul-/Daten-/Rechengebühren, Nutzungs-/Kostenprotokoll,
+  Verantwortlichkeit für Simulationen, Zugang/Sicherheit, rechtlicher Freigabevorbehalt) als Standardtext
+  im Intro-Fenster hinter „Nutzungsbedingungen anzeigen" (`LocalIntelligenceContent::default_terms()`).
+- **Strukturierte Darstellung:** Der Text wird als schlichtes Markup gepflegt (`## Abschnitt`, `- Punkt`,
+  `1. Punkt`) und in `IntroOverlay::terms_html()` **escaped** zu HTML gerendert (h4/p/ul/ol/li) – kein roher
+  HTML-Durchlass aus der Option, `sanitize_textarea_field`-sicher, im Board editierbar.
+- Panel-Höhe auf 46vh erhöht (scrollbar); Styling für Abschnittsüberschriften/Listen im dunklen Panel.
+
+### Hinweis (LI §9.2/§5.8)
+- Der hinterlegte Text ist die verbindliche Umsetzungsvorgabe, jedoch noch **keine rechtsgeprüfte AGB-Fassung**;
+  Produktivbetrieb erst nach der in 5.8 genannten Freigabe (passt zum bestehenden `liw_public_release`-noindex-Gate).
+
+### Verifikation
+- `tests/run-tests.php` 230/230, `scripts/liw-selftest.php` **250/250** (u. a.: 5.1–5.8 als HTML gerendert,
+  Renderer escaped `<script>`). Real geprüft: Nutzungsbedingungen erscheinen formatiert und scrollbar im Fenster.
+
 ## [0.1.0-alpha.45] – 2026-09-18 – Intro-Overlay „Sternenregen" + Eintritts-Fenster (Rechen-Gate)
 
 ### Hinzugefügt

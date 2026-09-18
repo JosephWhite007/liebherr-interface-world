@@ -250,6 +250,7 @@ liw_assert( 'sanitize übernimmt Hero-Override', 'Neue Headline' === $li_over['h
 liw_assert( 'sanitize: leere Liste fällt auf Standard zurück', $li_over['vision']['fields'] === $li['vision']['fields'], $checks, $failures );
 liw_assert( 'Hero enthält Dreiklang-Kurzzeile', 'Simulieren. Verstehen. Entscheiden.' === $li['hero']['tagline'], $checks, $failures );
 liw_assert( 'Intro-Zweig vorhanden (Titel + Nutzungsbedingungen + Rechen-Labels)', isset( $li['intro'] ) && '' !== trim( (string) $li['intro']['title'] ) && '' !== trim( (string) $li['intro']['terms_body'] ) && '' !== trim( (string) $li['intro']['math_label'] ), $checks, $failures );
+liw_assert( 'Nutzungsbedingungen enthalten Abschnitte 5.1–5.8', str_contains( $li['intro']['terms_body'], '## 5.1 ' ) && str_contains( $li['intro']['terms_body'], '## 5.8 ' ) && str_contains( $li['intro']['terms_body'], 'Heartbeat' ), $checks, $failures );
 // SEO-Prototyp-Konformität (LI §9.2/§12.7): SeoBridge kennt den Composite-Shortcode + noindex-Logik.
 $seo_src = (string) file_get_contents( $root . '/src/CoreBridge/SeoBridge.php' );
 liw_assert( 'SeoBridge: LI-Composite als Träger-Shortcode erfasst', str_contains( $seo_src, "'liw_landingpage', 'liw_local_intelligence'" ), $checks, $failures );

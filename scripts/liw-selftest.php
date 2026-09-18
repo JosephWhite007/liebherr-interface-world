@@ -601,6 +601,8 @@ try {
 	liw_st_check( 'Intro: Rechen-Gate (zwei zweistellige Zahlen, data-liw-sum)', ( bool ) preg_match( '/data-liw-sum="(\d+)"/', $__intro, $__m ) && (int) $__m[1] >= 20 && (int) $__m[1] <= 198 && str_contains( $__intro, 'liw-intro__answer' ) );
 	liw_st_check( 'Intro: Summe passt zur angezeigten Gleichung', ( function () use ( $__intro ): bool { if ( ! preg_match( '/(\d+) \+ (\d+) =/', $__intro, $e ) || ! preg_match( '/data-liw-sum="(\d+)"/', $__intro, $s ) ) { return false; } return ( (int) $e[1] + (int) $e[2] ) === (int) $s[1]; } )() );
 	liw_st_check( 'Intro: Content-Modell hat intro-Zweig', isset( \Liebherr\InterfaceWorld\Settings\LocalIntelligenceContent::defaults()['intro']['title'] ) );
+	liw_st_check( 'Intro: Nutzungsbedingungen 5.1–5.8 als HTML gerendert', str_contains( $__intro, 'liw-intro__terms-section' ) && str_contains( $__intro, '5.1 Prototypstatus' ) && str_contains( $__intro, '5.8 Rechtlicher Freigabevorbehalt' ) && str_contains( $__intro, '<ul>' ) && str_contains( $__intro, '<ol>' ) );
+	liw_st_check( 'Intro: Terms-Renderer escaped (kein rohes <script>)', ! str_contains( \Liebherr\InterfaceWorld\Frontend\IntroOverlay::terms_html( "## Titel\n- <script>alert(1)</script>" ), '<script>' ) );
 	// Prototyp-Konformität (LI §9.2/§12.7): noindex bis Freigabe; SEO erkennt die LI-Hauptseite.
 	delete_option( 'liw_public_release' );
 	liw_st_check( 'SEO: Prototyp nicht indexierbar (Standard)', false === SeoBridge::indexing_allowed() );

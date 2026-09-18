@@ -80,7 +80,7 @@ final class IntroOverlay {
 					</button>
 					<div class="liw-intro__terms" id="liw-intro-terms" hidden>
 						<h3 class="liw-intro__terms-heading"><?php echo esc_html( (string) $c['terms_heading'] ); ?></h3>
-						<div class="liw-intro__terms-body"><?php echo wp_kses_post( wpautop( (string) $c['terms_body'] ) ); ?></div>
+						<div class="liw-intro__terms-body"><?php echo self::terms_html( (string) $c['terms_body'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pro Segment mit esc_html() escaped. ?></div>
 					</div>
 
 					<form class="liw-intro__gate" data-liw-gate>
@@ -100,5 +100,40 @@ final class IntroOverlay {
 		</div>
 		<?php
 		return (string) ob_get_clean();
+	}
+
+	/**
+	 * Rendert die als schlichtes Markup gepflegten Nutzungsbedingungen zu sicherem HTML:
+	 *   `## …`  → Abschnittsüberschrift (h4)
+	 *   `- …`   → Aufzählung (ul/li)
+	 *   `1. …`  → nummerierte Liste (ol/li)
+	 *   sonst   → Absatz (p), Leerzeile trennt/schließt Listen.
+	 * Jedes Textsegment wird mit `esc_html()` escaped (kein roher HTML-Durchlass aus der Option).
+	 */
+	public static function terms_html( string $raw ): string {
+		$out  = '';
+		$list = ''; // '' | 'ul' | 'ol'
+		$close_list = static function () use ( &$list, &$out ): void {
+			if ( '' !== $list ) { $out .= '</' . $list . '>'; $list = ''; }
+		};
+		foreach ( preg_split( '/\r\n|\r|\n/', $raw ) as $line ) {
+			$line = trim( (string) $line );
+			if ( '' === $line ) { $close_list(); continue; }
+			if ( 0 === strpos( $line, '## ' ) ) {
+				$close_list();
+				$out .= '<h4 class="liw-intro__terms-section">' . esc_html( substr( $line, 3 ) ) . '</h4>';
+			} elseif ( 0 === strpos( $line, '- ' ) ) {
+				if ( 'ul' !== $list ) { $close_list(); $out .= '<ul>'; $list = 'ul'; }
+				$out .= '<li>' . esc_html( substr( $line, 2 ) ) . '</li>';
+			} elseif ( preg_match( '/^\d+\.\s+(.*)$/', $line, $m ) ) {
+				if ( 'ol' !== $list ) { $close_list(); $out .= '<ol>'; $list = 'ol'; }
+				$out .= '<li>' . esc_html( $m[1] ) . '</li>';
+			} else {
+				$close_list();
+				$out .= '<p>' . esc_html( $line ) . '</p>';
+			}
+		}
+		$close_list();
+		return $out;
 	}
 }

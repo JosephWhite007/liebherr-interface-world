@@ -12,6 +12,21 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.46 – Erweiterte Nutzungsbedingungen (5.1–5.8) im Intro-Fenster
+
+**Geändert:** `src/Settings/LocalIntelligenceContent.php` – neue `default_terms()` (Abschnitte 5.1–5.8 als
+schlichtes Markup, Single-Quote-Zeilen), `intro.terms_body` nutzt sie; `terms_heading` = „Erweiterte
+Nutzungsbedingungen …". `src/Frontend/IntroOverlay.php` – neue `terms_html()` (Markup→HTML: `## `→h4,
+`- `→ul/li, `\d+. `→ol/li, sonst p; jedes Segment `esc_html()`); Terms-Panel rendert darüber statt `wpautop`.
+`assets/css/liebherr-frontend.css` – Styles für `.liw-intro__terms-section`/Listen, Panelhöhe 46vh.
+`scripts/liw-selftest.php` (+2), `tests/run-tests.php` (+1), `CHANGELOG.md`, `liebherr-interface-world.php`
+(alpha.46).
+**Grund:** Vorgabe des vollständigen Nutzungsbedingungstextes (Prototyp/Vertraulichkeit, lokale Speicherung,
+kostenpflichtige Nutzung, Gebühren, Kostenprotokoll, Verantwortlichkeit, Sicherheit, Freigabevorbehalt) im
+Anfangs-Fenster. Markup statt HTML in der Option, damit `sanitize_textarea_field` nichts entfernt und keine
+rohen Tags gespeichert werden (Sicherheit).
+**Prüfung:** `php -l`; run-tests 230/230, liw-selftest 250/250; real geprüft (formatiert + scrollbar).
+
 ## 0.1.0-alpha.45 – Intro-Overlay „Sternenregen" + Eintritts-Fenster (Rechen-Gate)
 
 **Neu:** `src/Frontend/IntroOverlay.php` – Shortcode `[liw_intro]`: Overlay (role=dialog, ohne JS `hidden`),
