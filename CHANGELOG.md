@@ -1,5 +1,30 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.45] – 2026-09-18 – Intro-Overlay „Sternenregen" + Eintritts-Fenster (Rechen-Gate)
+
+### Hinzugefügt
+- **Intro-Overlay** (`[liw_intro]`, `Frontend\IntroOverlay`) für die Local-Intelligence-Seite: cineastischer
+  Einstieg aus dem Dunkel – Titel „Liebherr Local Intelligence"; kleine (freigegebene) Liebherr-Logos
+  fliegen **kreuz und quer**, **wachsen und schrumpfen**, verschwinden aus dem Bild oder werden sternenklein;
+  dazu **funkelnde Sterne**, die immer wieder aufblitzen. Nach dem Eintreten bleiben Sterne und Logos noch
+  einige Sekunden sichtbar, während die Plattform **sehr weich** durchscheint (mehrphasiger Soft-In:
+  Dunkel blendet aus → Sterne klingen aus → Overlay entfernt).
+- **Wegklickbares Eintritts-Fenster** mit aufklappbaren **Nutzungsbedingungen** (Button) und – statt eines
+  CAPTCHA-Codes – einer **Rechenaufgabe aus zwei zweistelligen Zahlen** als Bestätigung/„Kontrollkästchen".
+  Erwartungswert serverseitig erzeugt (`wp_rand`), clientseitig geprüft; „Eintreten" erst bei korrekter Summe.
+- Inhalte administrierbar über `Settings\LocalIntelligenceContent['intro']` + neue Board-Gruppe
+  „Intro-Overlay" im Reiter „🧠 Local Intelligence".
+
+### Barrierefreiheit / Robustheit
+- Ohne JavaScript bleibt das Overlay `hidden` (kein Trap – Seite voll nutzbar). `prefers-reduced-motion`
+  schaltet den Sternenregen ab (nur ruhiges Ein-/Ausblenden). `role="dialog"`/`aria-modal`, Fokus ins
+  Fenster, Geschwister werden für Screenreader ausgeblendet; einmal pro Sitzung (sessionStorage).
+
+### Verifikation
+- `tests/run-tests.php` 229/229, `scripts/liw-selftest.php` **248/248** (u. a.: Summe passt zur angezeigten
+  Gleichung, Overlay ohne JS hidden). Real geprüft: Intro erscheint, Rechen-Gate akzeptiert die korrekte
+  Summe, Seite blendet danach auf; Logo-Sterne sichtbar.
+
 ## [0.1.0-alpha.44] – 2026-09-18 – Obere Menüleiste der LI-Seite repariert + Logo-Fix
 
 ### Behoben

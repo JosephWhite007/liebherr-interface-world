@@ -12,6 +12,31 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.45 – Intro-Overlay „Sternenregen" + Eintritts-Fenster (Rechen-Gate)
+
+**Neu:** `src/Frontend/IntroOverlay.php` – Shortcode `[liw_intro]`: Overlay (role=dialog, ohne JS `hidden`),
+Sternenhimmel-Container, Eintritts-Fenster mit aufklappbaren Nutzungsbedingungen und Rechen-Gate
+(zwei zweistellige Zahlen via `wp_rand`, Summe in `data-liw-sum`).
+**Geändert:** `src/Settings/LocalIntelligenceContent.php` – neuer `intro`-Zweig (defaults + sanitize).
+`src/Admin/Pages/LocalIntelligenceBoardPage.php` – Board-Gruppe „Intro-Overlay".
+`src/Bootstrap.php` (Registrierung), `src/Frontend/FrontendAssets.php` (Shortcode als Enqueue-Auslöser),
+`src/Frontend/RocketCompat.php` (`.liw-intro` Safelist).
+`assets/js/liebherr-frontend.js` – Intro-IIFE: spawnt kreuz-und-quer fliegende Logos (zufällige Start-/
+Zielpunkte in vw/vh + Skalierung `--s1`/`--s2`, manche schrumpfen sternenklein) **und** funkelnde Sterne;
+Terms-Toggle, Rechen-Gate; mehrphasiger Soft-In in `dismiss()` (Phase 1 `is-revealing` = Dunkel aus/Fenster
+weg/Scroll frei, Phase 2 `is-clearing` = Sterne aus nach ~2,6 s, Phase 3 Entfernen nach ~5,4 s);
+sessionStorage `liwIntroDone`, Screenreader-Geschwister ausblenden, reduced-motion.
+`assets/css/liebherr-frontend.css` – `.liw-intro*` (eigene `__backdrop`-Ebene für das Dunkel, `__sky` für
+Sterne/Logos; Keyframes `liw-intro-fly` [Translate+Scale+Rotate] & `liw-intro-twinkle`; z-index über globalen
+Widgets; `is-revealing`/`is-clearing`-Phasen mit weichen Opazitäts-Transitions; reduced-motion). `scripts/liw-seed-local-intelligence.php` – `[liw_intro]` an den
+Seitenanfang. `scripts/liw-selftest.php` (+7), `tests/run-tests.php` (+1), `CHANGELOG.md`,
+`liebherr-interface-world.php` (alpha.45).
+**Grund:** Nutzerwunsch – cineastischer ~7-s-Einstieg (Sternenregen mit Liebherr-Logos, Aufblenden aus dem
+Dunkel) + wegklickbares Fenster mit Nutzungsbedingungen und einer Rechenaufgabe („ohne Code") als Eintritt.
+**Falle:** globaler Sprachumschalter lag über dem Overlay → `.liw-intro` z-index auf 2147483000 angehoben.
+**Prüfung:** `php -l`; run-tests 229/229, liw-selftest 248/248; real end-to-end getestet (Gate akzeptiert
+korrekte Summe, Seite blendet auf).
+
 ## 0.1.0-alpha.44 – Obere Menüleiste (LI) repariert + Logo-Fix
 
 **Geändert:** `src/Frontend/HeaderView.php` – `render()` nimmt jetzt `nav`-Attribut; neue `li_nav_config()`

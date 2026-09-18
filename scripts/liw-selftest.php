@@ -592,6 +592,15 @@ try {
 	liw_st_check( 'Local-Intelligence-Board verfuegbar', class_exists( \Liebherr\InterfaceWorld\Admin\Pages\LocalIntelligenceBoardPage::class ) );
 	liw_st_check( 'JS: Szenario-Schalter + Einsatzfeld-Filter', ( function (): bool { $j = (string) file_get_contents( LIW_PATH . 'assets/js/liebherr-frontend.js' ); return str_contains( $j, 'data-liw-sim' ) && str_contains( $j, 'data-liw-usecase-filter' ); } )() );
 	liw_st_check( 'CSS: .liw-li-Bloecke + reduzierte Bewegung', ( function (): bool { $c = (string) file_get_contents( LIW_PATH . 'assets/css/liebherr-frontend.css' ); return str_contains( $c, '.liw-li__hero' ) && str_contains( $c, 'prefers-reduced-motion' ); } )() );
+	// Intro-Overlay (Sternenregen + Eintritts-Fenster, alpha.45).
+	liw_st_check( 'Shortcode [liw_intro] registriert', shortcode_exists( 'liw_intro' ) );
+	$__intro = do_shortcode( '[liw_intro]' );
+	liw_st_check( 'Intro: Overlay ohne JS hidden (kein Trap)', ( bool ) preg_match( '/<div class="liw-intro"[^>]*\shidden>/', $__intro ) );
+	liw_st_check( 'Intro: Sternenhimmel + Bühne + Fenster', str_contains( $__intro, 'liw-intro__sky' ) && str_contains( $__intro, 'liw-intro__stage' ) && str_contains( $__intro, 'liw-intro__window' ) );
+	liw_st_check( 'Intro: Nutzungsbedingungen aufklappbar', str_contains( $__intro, 'liw-intro__terms-toggle' ) && str_contains( $__intro, 'aria-controls="liw-intro-terms"' ) );
+	liw_st_check( 'Intro: Rechen-Gate (zwei zweistellige Zahlen, data-liw-sum)', ( bool ) preg_match( '/data-liw-sum="(\d+)"/', $__intro, $__m ) && (int) $__m[1] >= 20 && (int) $__m[1] <= 198 && str_contains( $__intro, 'liw-intro__answer' ) );
+	liw_st_check( 'Intro: Summe passt zur angezeigten Gleichung', ( function () use ( $__intro ): bool { if ( ! preg_match( '/(\d+) \+ (\d+) =/', $__intro, $e ) || ! preg_match( '/data-liw-sum="(\d+)"/', $__intro, $s ) ) { return false; } return ( (int) $e[1] + (int) $e[2] ) === (int) $s[1]; } )() );
+	liw_st_check( 'Intro: Content-Modell hat intro-Zweig', isset( \Liebherr\InterfaceWorld\Settings\LocalIntelligenceContent::defaults()['intro']['title'] ) );
 	// Prototyp-Konformität (LI §9.2/§12.7): noindex bis Freigabe; SEO erkennt die LI-Hauptseite.
 	delete_option( 'liw_public_release' );
 	liw_st_check( 'SEO: Prototyp nicht indexierbar (Standard)', false === SeoBridge::indexing_allowed() );

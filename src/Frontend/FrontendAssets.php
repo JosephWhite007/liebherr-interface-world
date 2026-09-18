@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 final class FrontendAssets {
 
 	private const HANDLE     = 'liw-frontend';
-	private const SHORTCODES = [ 'liw_onboarding_form', 'liw_contact_form', 'liw_world_connections_map', SectionGraphicView::SHORTCODE, LandingpageView::SHORTCODE, PartnerDocumentsView::SHORTCODE, HeaderView::SHORTCODE, HeroView::SHORTCODE, ComponentViews::SC_PROCESS, ComponentViews::SC_ROADMAP, ComponentViews::SC_ONBOARDING, WorldMapView::SHORTCODE, FooterView::SHORTCODE, LocalIntelligenceView::SHORTCODE, 'liw_li_hero', 'liw_li_vision', 'liw_li_flow', 'liw_simulation_world', 'liw_li_knowledge', 'liw_li_trust', 'liw_li_global', 'liw_li_usecases', 'liw_interface_bridge', 'liw_li_rollout', 'liw_li_contact', 'liw_context_nav' ];
+	private const SHORTCODES = [ 'liw_onboarding_form', 'liw_contact_form', 'liw_world_connections_map', SectionGraphicView::SHORTCODE, LandingpageView::SHORTCODE, PartnerDocumentsView::SHORTCODE, HeaderView::SHORTCODE, HeroView::SHORTCODE, ComponentViews::SC_PROCESS, ComponentViews::SC_ROADMAP, ComponentViews::SC_ONBOARDING, WorldMapView::SHORTCODE, FooterView::SHORTCODE, LocalIntelligenceView::SHORTCODE, 'liw_li_hero', 'liw_li_vision', 'liw_li_flow', 'liw_simulation_world', 'liw_li_knowledge', 'liw_li_trust', 'liw_li_global', 'liw_li_usecases', 'liw_interface_bridge', 'liw_li_rollout', 'liw_li_contact', 'liw_context_nav', IntroOverlay::SHORTCODE ];
 
 	public static function register(): void {
 		add_action( 'wp_enqueue_scripts', [ self::class, 'maybe_enqueue' ] );

@@ -283,3 +283,155 @@
 		init();
 	}
 }() );
+
+/**
+ * Intro-Overlay ([liw_intro], alpha.45): Sternenregen mit fliegenden Liebherr-Logos, Eintritts-Fenster
+ * mit aufklappbaren Nutzungsbedingungen und einer Rechenaufgabe (zwei zweistellige Zahlen) als
+ * Eintritts-Bestätigung; danach blendet die Seite aus dem Dunkel auf. Fortschreitende Verbesserung:
+ * ohne JS bleibt das Overlay `hidden` (kein Trap). `prefers-reduced-motion` schaltet den Sternenregen ab.
+ * Einmal bestätigt pro Sitzung (sessionStorage), damit interne Navigation nicht erneut gated wird.
+ */
+( function () {
+	'use strict';
+	var KEY = 'liwIntroDone';
+
+	function reduced() {
+		return !! ( window.matchMedia && window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches );
+	}
+
+	function rnd( min, max ) { return min + Math.random() * ( max - min ); }
+
+	function spawnStars( overlay ) {
+		var sky = overlay.querySelector( '.liw-intro__sky' );
+		if ( ! sky ) { return; }
+		var logo = overlay.getAttribute( 'data-liw-logo' );
+
+		// Kreuz-und-quer fliegende Logos: zufälliger Start-/Zielpunkt (viewport-relativ), zufällige
+		// Skalierung (größer/kleiner – manche schrumpfen sternenklein), Ein-/Ausblenden (verschwinden).
+		var flyers = logo ? 22 : 16;
+		for ( var i = 0; i < flyers; i++ ) {
+			var f = document.createElement( 'span' );
+			f.className = 'liw-intro__star';
+			var size = Math.round( rnd( 26, 78 ) );
+			f.style.left = rnd( -5, 95 ).toFixed( 2 ) + 'vw';
+			f.style.top  = rnd( -5, 95 ).toFixed( 2 ) + 'vh';
+			f.style.setProperty( '--x1', Math.round( rnd( -20, 20 ) ) + 'vw' );
+			f.style.setProperty( '--y1', Math.round( rnd( -20, 20 ) ) + 'vh' );
+			f.style.setProperty( '--x2', Math.round( rnd( -60, 60 ) ) + 'vw' );
+			f.style.setProperty( '--y2', Math.round( rnd( -60, 60 ) ) + 'vh' );
+			f.style.setProperty( '--s1', rnd( 0.15, 1.1 ).toFixed( 2 ) );
+			f.style.setProperty( '--s2', ( Math.random() < 0.5 ? rnd( 0.08, 0.4 ) : rnd( 1.0, 1.8 ) ).toFixed( 2 ) );
+			f.style.setProperty( '--rot', Math.round( rnd( -40, 40 ) ) + 'deg' );
+			f.style.setProperty( '--liw-dur', rnd( 6, 12 ).toFixed( 2 ) + 's' );
+			f.style.setProperty( '--liw-delay', rnd( 0, 7 ).toFixed( 2 ) + 's' );
+			f.style.setProperty( '--liw-op', rnd( 0.25, 0.85 ).toFixed( 2 ) );
+			if ( logo ) {
+				var img = document.createElement( 'img' );
+				img.src = logo; img.alt = ''; img.setAttribute( 'aria-hidden', 'true' );
+				f.style.width = size + 'px';
+				f.appendChild( img );
+			} else {
+				var d = Math.max( 3, Math.round( size / 10 ) );
+				f.style.width = d + 'px'; f.style.height = d + 'px';
+				f.className += ' liw-intro__star--dot';
+			}
+			sky.appendChild( f );
+		}
+
+		// Funkelnde Sterne: kleine Punkte, die immer wieder aufblitzen.
+		for ( var j = 0; j < 40; j++ ) {
+			var t = document.createElement( 'span' );
+			t.className = 'liw-intro__twinkle';
+			var td = rnd( 1.5, 3.5 ).toFixed( 1 );
+			t.style.left = rnd( 0, 100 ).toFixed( 2 ) + 'vw';
+			t.style.top  = rnd( 0, 100 ).toFixed( 2 ) + 'vh';
+			t.style.width = td + 'px'; t.style.height = td + 'px';
+			t.style.setProperty( '--liw-dur', rnd( 1.6, 4.2 ).toFixed( 2 ) + 's' );
+			t.style.setProperty( '--liw-delay', rnd( 0, 4 ).toFixed( 2 ) + 's' );
+			sky.appendChild( t );
+		}
+	}
+
+	function init() {
+		var overlay = document.getElementById( 'liw-intro' );
+		if ( ! overlay ) { return; }
+
+		var done = false;
+		try { done = sessionStorage.getItem( KEY ) === '1'; } catch ( e ) {}
+		if ( done ) { if ( overlay.parentNode ) { overlay.parentNode.removeChild( overlay ); } return; }
+
+		overlay.hidden = false;
+		document.documentElement.classList.add( 'liw-intro-lock' );
+		window.requestAnimationFrame( function () { window.requestAnimationFrame( function () { overlay.classList.add( 'is-active' ); } ); } );
+
+		var hiddenSiblings = [];
+		if ( overlay.parentNode ) {
+			[].forEach.call( overlay.parentNode.children, function ( el ) {
+				if ( el !== overlay && 'true' !== el.getAttribute( 'aria-hidden' ) ) {
+					el.setAttribute( 'aria-hidden', 'true' );
+					hiddenSiblings.push( el );
+				}
+			} );
+		}
+
+		if ( ! reduced() ) { spawnStars( overlay ); }
+
+		var toggle = overlay.querySelector( '.liw-intro__terms-toggle' );
+		var terms  = overlay.querySelector( '#liw-intro-terms' );
+		if ( toggle && terms ) {
+			toggle.addEventListener( 'click', function () {
+				var willOpen = terms.hasAttribute( 'hidden' );
+				if ( willOpen ) { terms.removeAttribute( 'hidden' ); } else { terms.setAttribute( 'hidden', 'hidden' ); }
+				toggle.setAttribute( 'aria-expanded', willOpen ? 'true' : 'false' );
+			} );
+		}
+
+		var form  = overlay.querySelector( '[data-liw-gate]' );
+		var input = overlay.querySelector( '.liw-intro__answer' );
+		var enter = overlay.querySelector( '.liw-intro__enter' );
+		var hint  = overlay.querySelector( '.liw-intro__hint' );
+		var sum   = parseInt( overlay.getAttribute( 'data-liw-sum' ), 10 );
+
+		function correct() { return parseInt( input.value, 10 ) === sum; }
+		function refresh() { enter.disabled = ! correct(); }
+
+		function cleanup() {
+			document.documentElement.classList.remove( 'liw-intro-lock' );
+			for ( var i = 0; i < hiddenSiblings.length; i++ ) { hiddenSiblings[ i ].removeAttribute( 'aria-hidden' ); }
+			if ( overlay.parentNode ) { overlay.parentNode.removeChild( overlay ); }
+		}
+
+		function dismiss() {
+			try { sessionStorage.setItem( KEY, '1' ); } catch ( e ) {}
+			// Phase 1: Fenster weg, Dunkel blendet langsam aus (Plattform scheint durch), Sterne bleiben.
+			overlay.classList.remove( 'is-active' );
+			overlay.classList.add( 'is-revealing' );
+			document.documentElement.classList.remove( 'liw-intro-lock' ); // Scrollen wieder erlaubt
+			if ( reduced() ) { window.setTimeout( cleanup, 300 ); return; }
+			// Phase 2: nach einigen Sekunden klingen Sterne + Logos weich aus.
+			window.setTimeout( function () { overlay.classList.add( 'is-clearing' ); }, 2600 );
+			// Phase 3: Overlay vollständig entfernen (sehr weicher Soft-In).
+			window.setTimeout( cleanup, 5400 );
+		}
+
+		if ( form && input && enter ) {
+			input.addEventListener( 'input', refresh );
+			form.addEventListener( 'submit', function ( e ) {
+				e.preventDefault();
+				if ( ! correct() ) {
+					if ( hint ) { hint.textContent = 'Das Ergebnis stimmt noch nicht – bitte erneut rechnen.'; }
+					input.focus();
+					return;
+				}
+				dismiss();
+			} );
+			try { input.focus( { preventScroll: true } ); } catch ( e ) { input.focus(); }
+		}
+	}
+
+	if ( document.readyState === 'loading' ) {
+		document.addEventListener( 'DOMContentLoaded', init );
+	} else {
+		init();
+	}
+}() );

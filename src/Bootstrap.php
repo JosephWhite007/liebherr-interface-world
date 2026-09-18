@@ -30,6 +30,7 @@ use Liebherr\InterfaceWorld\Frontend\FooterView;
 use Liebherr\InterfaceWorld\Frontend\FrontendAssets;
 use Liebherr\InterfaceWorld\Frontend\HeaderView;
 use Liebherr\InterfaceWorld\Frontend\HeroView;
+use Liebherr\InterfaceWorld\Frontend\IntroOverlay;
 use Liebherr\InterfaceWorld\Frontend\LandingpageView;
 use Liebherr\InterfaceWorld\Frontend\LegacyRedirect;
 use Liebherr\InterfaceWorld\Frontend\LocalIntelligenceView;
@@ -61,6 +62,7 @@ final class Bootstrap {
 		ComponentViews::register();
 		WorldMapView::register();
 		LandingpageView::register();
+		IntroOverlay::register();          // Intro-Overlay (Sternenregen + Eintritts-Fenster).
 		LocalIntelligenceView::register(); // Hauptseite Local Intelligence (11 Module, LI-Pflichtenheft §8).
 		LegacyRedirect::register();        // 301 Altroute /interface-world/ → Unterseite (LI §3.2).
 		PartnerDocumentsView::register();

@@ -33,6 +33,18 @@ final class LocalIntelligenceContent {
 	 */
 	public static function defaults(): array {
 		return [
+			// Intro-Overlay (Sternenregen + Eintritts-Fenster, alpha.45).
+			'intro' => [
+				'title'              => __( 'Liebherr Local Intelligence', 'liebherr-interface-world' ),
+				'subtitle'           => __( 'Simulieren. Verstehen. Entscheiden.', 'liebherr-interface-world' ),
+				'text'               => __( 'Willkommen im geschützten Entscheidungsraum. Bitte bestätigen Sie den Eintritt.', 'liebherr-interface-world' ),
+				'terms_button_label' => __( 'Nutzungsbedingungen anzeigen', 'liebherr-interface-world' ),
+				'terms_heading'      => __( 'Nutzungsbedingungen', 'liebherr-interface-world' ),
+				'terms_body'         => __( 'Diese Seite ist eine interne Demonstration (Prototyp). Es gelten die noch festzulegenden Nutzungsbedingungen; die verbindliche Fassung folgt mit der offiziellen Freigabe. Inhalte und dargestellte Zahlen sind Beispieldaten. Bitte behandeln Sie die Inhalte vertraulich. Ergänzend gelten Impressum und Datenschutzhinweis im Seitenfuß.', 'liebherr-interface-world' ),
+				'math_label'         => __( 'Zur Bestätigung bitte rechnen:', 'liebherr-interface-world' ),
+				'accept_label'       => __( 'Eintreten', 'liebherr-interface-world' ),
+				'accept_hint'        => __( 'Bitte lösen Sie die Rechenaufgabe, um einzutreten.', 'liebherr-interface-world' ),
+			],
 			// Modul 1 – Hero und Einstieg.
 			'hero' => [
 				'eyebrow'  => __( 'LIEBHERR LOCAL INTELLIGENCE', 'liebherr-interface-world' ),
@@ -223,6 +235,16 @@ final class LocalIntelligenceContent {
 
 		$scalar = static fn( $v ): string => sanitize_text_field( (string) $v );
 		$multi  = static fn( $v ): string => sanitize_textarea_field( (string) $v );
+
+		// Intro-Overlay.
+		if ( isset( $raw['intro'] ) && is_array( $raw['intro'] ) ) {
+			foreach ( [ 'title', 'subtitle', 'terms_button_label', 'terms_heading', 'math_label', 'accept_label', 'accept_hint' ] as $k ) {
+				if ( isset( $raw['intro'][ $k ] ) ) { $out['intro'][ $k ] = $scalar( $raw['intro'][ $k ] ); }
+			}
+			foreach ( [ 'text', 'terms_body' ] as $k ) {
+				if ( isset( $raw['intro'][ $k ] ) ) { $out['intro'][ $k ] = $multi( $raw['intro'][ $k ] ); }
+			}
+		}
 
 		// Hero.
 		if ( isset( $raw['hero'] ) && is_array( $raw['hero'] ) ) {

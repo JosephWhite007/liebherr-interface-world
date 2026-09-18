@@ -47,6 +47,18 @@ final class LocalIntelligenceBoardPage {
 		wp_nonce_field( self::NONCE_ACTION, self::NONCE_NAME );
 		echo '<input type="hidden" name="liw_action" value="save_li" />';
 
+		// Intro-Overlay (Sternenregen + Eintritts-Fenster).
+		self::group( __( 'Intro-Overlay (Sternenregen + Eintritt)', 'liebherr-interface-world' ) );
+		self::text( 'intro][title', __( 'Titel', 'liebherr-interface-world' ), (string) $d['intro']['title'] );
+		self::text( 'intro][subtitle', __( 'Untertitel', 'liebherr-interface-world' ), (string) $d['intro']['subtitle'] );
+		self::area( 'intro][text', __( 'Begrüßungstext', 'liebherr-interface-world' ), (string) $d['intro']['text'] );
+		self::text( 'intro][terms_button_label', __( 'Button „Nutzungsbedingungen"', 'liebherr-interface-world' ), (string) $d['intro']['terms_button_label'] );
+		self::text( 'intro][terms_heading', __( 'Überschrift Nutzungsbedingungen', 'liebherr-interface-world' ), (string) $d['intro']['terms_heading'] );
+		self::area( 'intro][terms_body', __( 'Nutzungsbedingungen (Text)', 'liebherr-interface-world' ), (string) $d['intro']['terms_body'] );
+		self::text( 'intro][math_label', __( 'Label Rechenaufgabe', 'liebherr-interface-world' ), (string) $d['intro']['math_label'] );
+		self::text( 'intro][accept_label', __( 'Button „Eintreten"', 'liebherr-interface-world' ), (string) $d['intro']['accept_label'] );
+		self::text( 'intro][accept_hint', __( 'Hinweistext (Eintritt)', 'liebherr-interface-world' ), (string) $d['intro']['accept_hint'] );
+
 		// Modul 1 – Hero.
 		self::group( __( 'Modul 1 – Hero', 'liebherr-interface-world' ) );
 		self::text( 'hero][eyebrow', __( 'Eyebrow', 'liebherr-interface-world' ), (string) $d['hero']['eyebrow'] );

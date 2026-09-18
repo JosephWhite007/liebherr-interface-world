@@ -902,3 +902,145 @@
 	.liw-li__hero-bg { opacity: .35; }
 	.liw-li * { scroll-behavior: auto !important; }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Intro-Overlay ([liw_intro], alpha.45): Sternenregen + Eintritts-Fenster.
+   Ohne JS bleibt das Element `hidden` (kein Trap). --brand-*-Tokens.
+   ══════════════════════════════════════════════════════════════════════════ */
+html.liw-intro-lock { overflow: hidden; }
+.liw-intro {
+	position: fixed;
+	inset: 0;
+	z-index: 2147483000; /* über globalen Widgets (z. B. Sprachumschalter/Theme-Leisten) */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 1.5rem;
+	color: #fff;
+	overflow: hidden;
+}
+.liw-intro[hidden] { display: none; }
+
+/* Dunkle Grundebene – blendet beim Soft-In langsam aus (Plattform scheint durch). */
+.liw-intro__backdrop {
+	position: absolute; inset: 0;
+	background: radial-gradient(120% 120% at 70% 10%, #10131a 0%, #05070a 70%);
+	opacity: 1;
+	transition: opacity 2.6s ease;
+}
+.liw-intro.is-revealing .liw-intro__backdrop { opacity: 0; }
+
+/* Sternen-/Logo-Ebene – bleibt nach dem Wegklicken noch sichtbar, klingt dann weich aus. */
+.liw-intro__sky { position: absolute; inset: 0; overflow: hidden; pointer-events: none; opacity: 1; transition: opacity 2.4s ease; }
+.liw-intro.is-clearing .liw-intro__sky { opacity: 0; }
+/* Ab Soft-In lässt das Overlay Klicks zur Plattform durch. */
+.liw-intro.is-revealing { pointer-events: none; }
+
+/* Kreuz-und-quer fliegende Logos: zufälliger Weg + Skalierung (größer/kleiner), Ein-/Ausblenden. */
+.liw-intro__star {
+	position: absolute;
+	opacity: 0;
+	will-change: transform, opacity;
+	animation: liw-intro-fly var(--liw-dur, 8s) ease-in-out var(--liw-delay, 0s) infinite;
+}
+.liw-intro__star img { display: block; width: 100%; height: auto; filter: drop-shadow( 0 0 6px rgba(255,255,255,.35) ); }
+.liw-intro__star--dot { border-radius: 50%; background: var(--brand-primary, #ffd000); box-shadow: 0 0 8px rgba(255,208,0,.6); }
+@keyframes liw-intro-fly {
+	0%   { transform: translate3d(var(--x1, 0), var(--y1, 0), 0) scale(var(--s1, .8)) rotate(0deg); opacity: 0; }
+	15%  { opacity: var(--liw-op, .6); }
+	85%  { opacity: var(--liw-op, .6); }
+	100% { transform: translate3d(var(--x2, 0), var(--y2, 0), 0) scale(var(--s2, .3)) rotate(var(--rot, 0deg)); opacity: 0; }
+}
+
+/* Funkelnde Sterne: blitzen immer wieder auf. */
+.liw-intro__twinkle {
+	position: absolute;
+	border-radius: 50%;
+	background: #fff;
+	box-shadow: 0 0 6px rgba(255,255,255,.9);
+	opacity: 0;
+	will-change: opacity, transform;
+	animation: liw-intro-twinkle var(--liw-dur, 3s) ease-in-out var(--liw-delay, 0s) infinite;
+}
+@keyframes liw-intro-twinkle {
+	0%, 100% { opacity: 0; transform: scale(.4); }
+	50%      { opacity: 1; transform: scale(1.15); }
+}
+
+/* Bühne: Titel + Fenster */
+.liw-intro__stage {
+	position: relative;
+	z-index: 1;
+	width: 100%;
+	max-width: 560px;
+	text-align: center;
+	opacity: 0;
+	transform: translateY(12px) scale(.98);
+	transition: opacity .9s ease .2s, transform .9s ease .2s;
+}
+.liw-intro.is-active .liw-intro__stage { opacity: 1; transform: none; }
+.liw-intro__title {
+	font-family: var(--font-heading, Arial, sans-serif);
+	font-weight: 900;
+	font-size: clamp(1.6rem, 5vw, 2.6rem);
+	line-height: 1.1;
+	margin: 0 0 .4rem;
+}
+.liw-intro__subtitle { margin: 0 0 1.6rem; color: var(--brand-primary, #ffd000); font-weight: 700; letter-spacing: .02em; }
+
+.liw-intro__window {
+	background: rgba(255,255,255,.06);
+	border: 1px solid rgba(255,255,255,.15);
+	border-radius: 8px;
+	padding: 1.4rem;
+	backdrop-filter: blur(2px);
+	text-align: left;
+}
+.liw-intro__text { margin: 0 0 1rem; color: rgba(255,255,255,.9); }
+.liw-intro__terms-toggle {
+	font: inherit;
+	cursor: pointer;
+	background: transparent;
+	border: 1px solid rgba(255,255,255,.4);
+	color: #fff;
+	border-radius: var(--radius-control, 2px);
+	padding: .5rem .9rem;
+	margin-bottom: 1rem;
+}
+.liw-intro__terms-toggle:hover, .liw-intro__terms-toggle:focus-visible { border-color: var(--brand-primary, #ffd000); color: var(--brand-primary, #ffd000); }
+.liw-intro__terms {
+	max-height: 34vh;
+	overflow: auto;
+	background: rgba(0,0,0,.25);
+	border: 1px solid rgba(255,255,255,.12);
+	border-radius: var(--radius-control, 2px);
+	padding: .9rem 1rem;
+	margin-bottom: 1rem;
+	font-size: .9rem;
+	color: rgba(255,255,255,.85);
+}
+.liw-intro__terms[hidden] { display: none; }
+.liw-intro__terms-heading { margin: 0 0 .5rem; font-size: 1rem; }
+
+.liw-intro__gate { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; }
+.liw-intro__gate-label { flex: 1 1 100%; font-weight: 700; }
+.liw-intro__equation { margin-left: .4rem; color: var(--brand-primary, #ffd000); font-variant-numeric: tabular-nums; }
+.liw-intro__answer {
+	width: 6rem;
+	font: inherit;
+	padding: .5rem .6rem;
+	border: 1px solid rgba(255,255,255,.4);
+	border-radius: var(--radius-control, 2px);
+	background: rgba(255,255,255,.95);
+	color: #111;
+	text-align: center;
+}
+.liw-intro__enter[disabled] { opacity: .5; cursor: not-allowed; }
+.liw-intro__hint { flex: 1 1 100%; margin: .2rem 0 0; font-size: .82rem; color: rgba(255,255,255,.7); }
+
+@media (prefers-reduced-motion: reduce) {
+	.liw-intro__stage { transition: none; opacity: 1; transform: none; }
+	.liw-intro__star, .liw-intro__twinkle { display: none; }
+	.liw-intro__backdrop { transition: opacity .3s ease; }
+	.liw-intro__sky { transition: opacity .3s ease; }
+}
