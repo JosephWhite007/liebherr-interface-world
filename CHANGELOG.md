@@ -1,5 +1,33 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.16] – 2026-09-18 – Bugfix: dbDelta-Fehler beim Schema-Abgleich
+
+### Behoben
+- Bei jedem Versionswechsel (`maybe_upgrade_database()` → `dbDelta()`) erschienen sechs
+  SQL-Syntaxfehler `ALTER TABLE {$p}liw_* ADD COLUMN ) DEFAULT CHARACTER SET …` im Log
+  (Befund Docker-Praxistest alpha.15, erster Request nach dem Update). Ursache: `dbDelta()`
+  extrahiert den Spaltenblock mit einem gierigen Regex bis zur **letzten** `)` der
+  Anweisung; unsere Tabellen-`COMMENT`s enthielten Klammern (z. B. `… (Pflichtenheft §17
+  liw_interface)`), sodass dbDelta die Zeile `) DEFAULT … COMMENT='…` für eine neue Spalte
+  namens `)` hielt. Die Tabellen selbst waren nie betroffen (Fehlerquery schlug einfach fehl),
+  aber sechs Fehler pro Update verstoßen gegen „Fehlervermeidung".
+- Fix: Klammern in allen sechs Tabellen-`COMMENT`s durch Kommata ersetzt (Inhalt unverändert).
+  Kein Datenmodell-Eingriff; bestehende Installationen behalten den alten COMMENT-Text in
+  MySQL (dbDelta ändert Tabellen-Kommentare nicht), was fachlich irrelevant ist.
+
+### Geprüft
+- `tests/run-tests.php`: 77/77 grün – neue statische Prüfung „Tabellen-COMMENT ohne
+  Klammern" je Schema-Datei (Regressionsschutz ohne WP).
+- `scripts/liw-selftest.php` [0]: neue Live-Prüfung „dbDelta-Wiederholung (create_tables)
+  ohne DB-Fehler" – wäre vor dem Fix rot gewesen. Docker-Lauf durch Joseph steht aus.
+
+### Hinweis an den Core (nicht umgesetzt, außerhalb dieses Plugins)
+- Dasselbe Muster (Klammern im Tabellen-`COMMENT`) findet sich in mindestens fünf
+  Core-Tabellen (`src/Core/VersionManager.php` ×3, `src/Language/TranslationRepository.php`,
+  `src/Modules/Notification/NotificationSchema.php`). Dort dürfte bei jedem Core-Versionswechsel
+  derselbe Log-Fehler auftreten. Dokumentiert in `docs/LOGBUCH_TECHNIK.md`, Entscheidung liegt
+  beim Core (Refactoring nur auf Freigabe).
+
 ## [0.1.0-alpha.15] – 2026-09-18 – LP-07/LP-08-Grafiken einbettbar (Shortcode `[liw_graphic]`)
 
 ### Hinzugefügt

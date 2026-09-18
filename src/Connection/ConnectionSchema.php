@@ -41,6 +41,6 @@ final class ConnectionSchema {
 			PRIMARY KEY (id),
 			KEY idx_region (region),
 			KEY idx_public (public_flag)
-		) {$charset} COMMENT='Liebherr Interface World – World Connections Map (§17 liw_connection, keine realen Standorte ohne Freigabe LP-06)';" );
+		) {$charset} COMMENT='Liebherr Interface World – World Connections Map, §17 liw_connection, keine realen Standorte ohne Freigabe LP-06';" );
 	}
 }

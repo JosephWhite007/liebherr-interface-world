@@ -44,7 +44,7 @@ final class SimulationSchema {
 			updated_at        DATETIME NULL ON UPDATE CURRENT_TIMESTAMP,
 			PRIMARY KEY (id),
 			KEY idx_validation (validation_status)
-		) {$charset} COMMENT='Liebherr Interface World – Simulationswelten (Magic Cube, §17 liw_simulation_world)';" );
+		) {$charset} COMMENT='Liebherr Interface World – Simulationswelten, Magic Cube, §17 liw_simulation_world';" );
 
 		$scenarios = self::scenarios_table();
 		dbDelta( "CREATE TABLE {$scenarios} (
@@ -59,6 +59,6 @@ final class SimulationSchema {
 			PRIMARY KEY (id),
 			KEY idx_world (world_id),
 			KEY idx_status (status)
-		) {$charset} COMMENT='Liebherr Interface World – Testszenarien je Simulationswelt (§17 liw_test_scenario)';" );
+		) {$charset} COMMENT='Liebherr Interface World – Testszenarien je Simulationswelt, §17 liw_test_scenario';" );
 	}
 }

@@ -12,6 +12,22 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.16 – Bugfix: dbDelta-Fehler beim Schema-Abgleich
+
+**Geändert:**
+- `src/Interfaces/InterfaceCatalogSchema.php`, `src/Simulation/SimulationSchema.php` (×2),
+  `src/Connection/ConnectionSchema.php`, `src/Consent/ConsentLogSchema.php`,
+  `src/Onboarding/OnboardingSchema.php` – Klammern in den Tabellen-`COMMENT`s durch Kommata
+  ersetzt; Regel als Kommentar in `InterfaceCatalogSchema::create_table()` festgehalten.
+- `tests/run-tests.php` – neue Prüfgruppe „dbDelta-Kompatibilität" (COMMENT ohne Klammern).
+- `scripts/liw-selftest.php` – Abschnitt [0]: erneuter `create_tables()`-Lauf muss ohne
+  `$wpdb->last_error` bleiben.
+- `liebherr-interface-world.php` – Version auf `0.1.0-alpha.16`.
+
+**Fund:** sechs `ALTER TABLE … ADD COLUMN )`-Fehler im Log des Docker-Selbsttests alpha.15
+(erster Request nach Versionswechsel). Gleiches Muster im Core vorhanden – dort nur
+dokumentiert, nicht angefasst.
+
 ## 0.1.0-alpha.15 – LP-07/LP-08-Grafiken einbettbar (Shortcode `[liw_graphic]`)
 
 **Neu:**

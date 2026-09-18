@@ -32,6 +32,11 @@ final class InterfaceCatalogSchema {
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 		// dbDelta kennt kein ENUM — VARCHAR mit Anwendungsvalidierung (Muster: CertificationSchema).
+		// Regel für alle Schemata dieses Plugins (Befund Docker-Praxistest 18.09.2026, alpha.16):
+		// Tabellen-COMMENT ohne runde Klammern! dbDelta() extrahiert den Spaltenblock gierig bis
+		// zur LETZTEN ')' der Anweisung – eine Klammer im COMMENT erzeugt bei jedem erneuten
+		// Abgleich (maybe_upgrade_database) ein fehlerhaftes "ALTER TABLE … ADD COLUMN )".
+		// Geprüft von tests/run-tests.php (statisch) und scripts/liw-selftest.php [0] (live).
 		dbDelta( "CREATE TABLE {$table} (
 			id               BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			code             VARCHAR(64)  NOT NULL,
@@ -48,6 +53,6 @@ final class InterfaceCatalogSchema {
 			PRIMARY KEY (id),
 			UNIQUE KEY uniq_code (code),
 			KEY idx_status (lifecycle_status)
-		) {$charset} COMMENT='Liebherr Interface World – Schnittstellenkatalog (Pflichtenheft §17 liw_interface)';" );
+		) {$charset} COMMENT='Liebherr Interface World – Schnittstellenkatalog, Pflichtenheft §17 liw_interface';" );
 	}
 }

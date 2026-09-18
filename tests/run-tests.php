@@ -60,6 +60,26 @@ liw_assert(
 	$failures
 );
 
+// 2b. Tabellen-COMMENTs ohne runde Klammern (dbDelta-Regel, s. InterfaceCatalogSchema; Befund alpha.16).
+echo "-- dbDelta-Kompatibilität --\n";
+$iterator_schema = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $root . '/src', FilesystemIterator::SKIP_DOTS ) );
+foreach ( $iterator_schema as $file ) {
+	if ( 'php' !== $file->getExtension() ) {
+		continue;
+	}
+	$content = (string) file_get_contents( (string) $file );
+	if ( ! preg_match_all( "/COMMENT='([^']*)'/", $content, $m ) ) {
+		continue;
+	}
+	$has_paren = false;
+	foreach ( $m[1] as $comment ) {
+		if ( str_contains( $comment, '(' ) || str_contains( $comment, ')' ) ) {
+			$has_paren = true;
+		}
+	}
+	liw_assert( 'Tabellen-COMMENT ohne Klammern: ' . str_replace( $root . '/', '', (string) $file ), ! $has_paren, $checks, $failures );
+}
+
 // 3. strict_types=1 in jeder src/-Datei (Coding Standard, CLAUDE.md Abschnitt 5).
 echo "-- Coding Standard --\n";
 $iterator2 = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $root . '/src', FilesystemIterator::SKIP_DOTS ) );

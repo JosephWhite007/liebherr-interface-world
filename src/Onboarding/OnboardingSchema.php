@@ -44,6 +44,6 @@ final class OnboardingSchema {
 			PRIMARY KEY (id),
 			UNIQUE KEY unique_partner (partner_id),
 			KEY idx_status (onboarding_status)
-		) {$charset} COMMENT='Liebherr Interface World – Onboarding-Zusatzfelder zu ary_partners (§22)';" );
+		) {$charset} COMMENT='Liebherr Interface World – Onboarding-Zusatzfelder zu ary_partners, §22';" );
 	}
 }

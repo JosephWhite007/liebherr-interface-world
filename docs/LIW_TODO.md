@@ -6,7 +6,7 @@ oder als offene Rückfrage an Joseph White dokumentiert wurden (Quelle jeweils a
 Sichtbar im Backend unter „Interface World → 📋 To-Dos". Wird bei jeder Aufgabe, die einen
 Punkt hier abschließt oder ergänzt, gepflegt.
 
-Stand: 18.09.2026 (0.1.0-alpha.15).
+Stand: 18.09.2026 (0.1.0-alpha.16).
 
 ---
 
@@ -57,6 +57,14 @@ Stand: 18.09.2026 (0.1.0-alpha.15).
   *Quelle: CHANGELOG.md alpha.1, ADR-LIW-001.*
 
 ## Betrieb / Qualitätssicherung
+
+- **Hinweis an den Core: Klammern in Tabellen-COMMENTs.** `dbDelta()` erzeugt bei jedem
+  Versionswechsel fehlerhafte `ALTER TABLE … ADD COLUMN )`-Queries, wenn der Tabellen-COMMENT
+  runde Klammern enthält (Befund alpha.16, in diesem Plugin behoben). Gleiches Muster in
+  mindestens fünf Core-Tabellen (`src/Core/VersionManager.php` ×3,
+  `src/Language/TranslationRepository.php`, `src/Modules/Notification/NotificationSchema.php`).
+  Nicht angefasst – Entscheidung/Freigabe Joseph White für den Core steht aus.
+  *Quelle: docs/LOGBUCH_TECHNIK.md 18.09.2026 (alpha.16).*
 
 - **Mehrsprachigkeits-Audit (DoD Punkt 9).** Für `liebherr-interface-world` als
   eigenständiges Plugin bislang nicht gegen das Core-Übersetzungssystem geprüft

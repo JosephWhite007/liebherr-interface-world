@@ -8,6 +8,43 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · dbDelta und Klammern im Tabellen-COMMENT (0.1.0-alpha.16)
+
+**Frage/Kontext.** Der Docker-Selbsttest für alpha.15 lief 67/67 grün, zeigte aber am
+Anfang sechs WordPress-DB-Fehler: `ALTER TABLE ary_liw_* ADD COLUMN ) DEFAULT CHARACTER SET
+utf8mb4 … COMMENT='Liebherr …` – Stacktrace über `maybe_upgrade_database → create_tables →
+*Schema::create_table → dbDelta`. Beim alpha.14-Lauf fehlten die Fehler, weil der
+Versionswechsel dort bereits durch einen vorherigen Admin-Request verarbeitet war.
+
+**Befund.** `dbDelta()` (wp-admin/includes/upgrade.php) ermittelt den Spaltenblock einer
+`CREATE TABLE`-Anweisung mit `preg_match("|\((.*)\)|ms", …)` – gierig bis zur **letzten**
+schließenden Klammer. Alle sechs Plugin-Tabellen hatten Klammern im Tabellen-`COMMENT`
+(`… (Pflichtenheft §17 liw_interface)`), also endete der „Spaltenblock" erst im Kommentar.
+dbDelta zerlegt den Block zeilenweise und hält die Zeile `) DEFAULT CHARACTER SET …` für
+eine neue Spalte mit dem Namen `)` → genau der beobachtete `ADD COLUMN )`-Query, der an
+MySQL scheitert. Folgen: Tabellen korrekt (die fehlerhafte Query tut nichts), aber bei jedem
+Versionswechsel sechs Fehler im Log; bei Erstanlage kein Fehler, weil dbDelta dann das
+`CREATE TABLE` unverändert ausführt. Beim Suchen der Ursache wurde dasselbe Muster in
+mindestens fünf Core-Tabellen gefunden (`VersionManager.php` Zeilen ~1061/1217/1602,
+`TranslationRepository.php`, `NotificationSchema.php`).
+
+**Optionen.** (a) Klammern aus den Plugin-COMMENTs entfernen, Inhalt sonst gleich; (b)
+Tabellen-COMMENTs ganz streichen (Dokumentationsverlust in der DB); (c) eigene
+dbDelta-Umgehung (Architekturbruch, WP-API bevorzugen); (d) zusätzlich den Core anfassen.
+
+**Entscheidung/Umsetzung.** (a) für dieses Plugin – kleinster Eingriff, kein Datenmodell-
+Effekt. Regel als Kommentar in `InterfaceCatalogSchema` verankert und doppelt abgesichert:
+statisch in `tests/run-tests.php` (kein Klammerzeichen in `COMMENT='…'`) und live in
+`scripts/liw-selftest.php` [0] (zweiter `create_tables()`-Lauf ohne `$wpdb->last_error`).
+(d) bewusst **nicht** umgesetzt: Core-Refactoring nur auf Freigabe (Globale Anweisung
+„Kontinuierliche Qualitätsverbesserung – dokumentieren, nicht automatisch umsetzen").
+Empfehlung an den Core: gleiche Ersetzung in den genannten fünf Stellen; Aufwand gering,
+Risiko null (dbDelta ändert bestehende Tabellen-Kommentare nicht), Nutzen: saubere Logs bei
+jedem Core-Versionswechsel.
+
+**Quelle/Version.** Docker-Selbsttest-Ausführung Joseph White 18.09.2026 (Lauf
+`SELFTEST-LAZTQ9OX`); Core-Fundstellen per device_bash grep verifiziert; 0.1.0-alpha.16.
+
 ### 2026-09-18 · LP-07/LP-08: Shortcode mit Whitelist statt Bild-URL oder Block (0.1.0-alpha.15)
 
 **Frage/Kontext.** Nach dem grünen Docker-Praxistest wählte Joseph als nächste Scheibe, die

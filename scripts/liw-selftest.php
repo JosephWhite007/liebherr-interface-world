@@ -98,6 +98,14 @@ try {
 		liw_st_check( "Tabelle vorhanden: {$label}", $exists );
 	}
 
+	// Erneuter Schema-Abgleich muss fehlerfrei sein (Befund alpha.16: Klammern im Tabellen-COMMENT
+	// erzeugten bei jedem maybe_upgrade_database() ein fehlerhaftes "ALTER TABLE … ADD COLUMN )").
+	$wpdb->last_error = '';
+	$suppress_before  = $wpdb->suppress_errors( true );
+	\Liebherr\InterfaceWorld\create_tables();
+	$wpdb->suppress_errors( $suppress_before );
+	liw_st_check( 'dbDelta-Wiederholung (create_tables) ohne DB-Fehler', '' === $wpdb->last_error, $wpdb->last_error );
+
 	// ── [1] Capabilities ──────────────────────────────────────────────────────
 	echo "\n[1] Rollen/Capabilities\n";
 	$admin_role = get_role( 'administrator' );

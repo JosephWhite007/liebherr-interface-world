@@ -47,6 +47,6 @@ final class ConsentLogSchema {
 			PRIMARY KEY (id),
 			KEY idx_request (request_id),
 			KEY idx_type (consent_type)
-		) {$charset} COMMENT='Liebherr Interface World – Einwilligungsprotokoll (§22/§24, getrennt von Core Guest-Consent)';" );
+		) {$charset} COMMENT='Liebherr Interface World – Einwilligungsprotokoll, §22/§24, getrennt von Core Guest-Consent';" );
 	}
 }
