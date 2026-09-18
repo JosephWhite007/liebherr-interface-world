@@ -12,6 +12,19 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.36 – Content-Board-Restpunkte: Sichtbarkeits-Zeitfenster (§19)
+
+**Neu:** `src/Content/SectionSchedule.php` (Meta `_liw_valid_from`/`_liw_valid_until`, reine
+`is_within_window()`, `is_visible_now()`, `has_window()`), `src/Admin/SectionScheduleMetabox.php`
+(Editor-Felder „Sichtbar ab/bis", Nonce + `edit_post`, Website-TZ → UTC).
+**Geändert:** `src/Frontend/LandingpageView.php` (`get_published_sections()` filtert nach
+`is_visible_now()`), `src/Admin/Pages/ContentBoardPage.php` (🕒-Kennzeichnung + Import),
+`src/Bootstrap.php` (Metabox-Registrierung im is_admin-Block), `tests/run-tests.php` (+7),
+`scripts/liw-selftest.php` ([8] +5), `CHANGELOG.md`, `docs/LIW_TODO.md`, `docs/LOGBUCH_TECHNIK.md`,
+`src/Admin/Pages/HandbookPage.php`, `liebherr-interface-world.php` (Version).
+**Prüfung:** `php -l`; `tests/run-tests.php` 185/185, `scripts/liw-selftest.php` 190/190
+(Landingpage blendet abgelaufenen Abschnitt aus). TZ-Umrechnung über `wp_timezone()`.
+
 ## 0.1.0-alpha.35 – Content-Board-Restpunkte: Drag-&-Drop-Reihenfolge & Sprachvorschau (§19)
 
 **Neu:** `assets/js/liw-admin-content.js` (jQuery-UI-Sortable + AJAX-Speichern).

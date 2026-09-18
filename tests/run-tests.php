@@ -201,6 +201,19 @@ echo "-- Rate-Limit-Bridge (alpha.33) --\n";
 require_once $root . '/src/CoreBridge/RateLimitBridge.php';
 liw_assert( 'allow() ohne Core → true (Graceful Degradation)', true === \Liebherr\InterfaceWorld\CoreBridge\RateLimitBridge::allow( 'contact' ), $checks, $failures );
 
+// 2k. Sichtbarkeits-Zeitfenster (Etappe 9, §19) – reine Fensterlogik.
+echo "-- Sichtbarkeits-Zeitfenster (alpha.36) --\n";
+require_once $root . '/src/Content/SectionSchedule.php';
+$sw = [ 'Liebherr\\InterfaceWorld\\Content\\SectionSchedule', 'is_within_window' ];
+$now = 1_000_000_000; // fixer UTC-Referenzpunkt
+liw_assert( 'ohne Grenzen → sichtbar', true === $sw( '', '', $now ), $checks, $failures );
+liw_assert( 'from in der Zukunft → unsichtbar', false === $sw( gmdate( 'Y-m-d H:i:s', $now + 3600 ), '', $now ), $checks, $failures );
+liw_assert( 'from in der Vergangenheit → sichtbar', true === $sw( gmdate( 'Y-m-d H:i:s', $now - 3600 ), '', $now ), $checks, $failures );
+liw_assert( 'until in der Vergangenheit → unsichtbar', false === $sw( '', gmdate( 'Y-m-d H:i:s', $now - 3600 ), $now ), $checks, $failures );
+liw_assert( 'until in der Zukunft → sichtbar', true === $sw( '', gmdate( 'Y-m-d H:i:s', $now + 3600 ), $now ), $checks, $failures );
+liw_assert( 'im Fenster (from<now<until) → sichtbar', true === $sw( gmdate( 'Y-m-d H:i:s', $now - 60 ), gmdate( 'Y-m-d H:i:s', $now + 60 ), $now ), $checks, $failures );
+liw_assert( 'ungültiger Wert wird als offen behandelt', true === $sw( 'kein-datum', '', $now ), $checks, $failures );
+
 // 3. strict_types=1 in jeder src/-Datei (Coding Standard, CLAUDE.md Abschnitt 5).
 echo "-- Coding Standard --\n";
 $iterator2 = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $root . '/src', FilesystemIterator::SKIP_DOTS ) );

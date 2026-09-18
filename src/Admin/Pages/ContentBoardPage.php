@@ -41,6 +41,7 @@ use Liebherr\InterfaceWorld\Content\SectionSeeder;
 use Liebherr\InterfaceWorld\CoreBridge\AuditBridge;
 use Liebherr\InterfaceWorld\CoreBridge\LanguageBridge;
 use Liebherr\InterfaceWorld\CoreBridge\RoleBridge;
+use Liebherr\InterfaceWorld\Content\SectionSchedule;
 use Liebherr\InterfaceWorld\CPT\LiwSectionCpt;
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
@@ -302,7 +303,14 @@ final class ContentBoardPage {
 			echo '<td><span class="liw-drag-handle" title="' . esc_attr__( 'Ziehen zum Sortieren', 'liebherr-interface-world' ) . '" aria-hidden="true">↕</span> <span class="liw-order-num">' . esc_html( (string) $post->menu_order ) . '</span></td>';
 			echo '<td>' . esc_html( (string) get_post_meta( $post->ID, SectionBlueprint::META_CODE, true ) ?: '–' ) . '</td>';
 			echo '<td>' . esc_html( get_the_title( $post ) ?: __( '(ohne Titel)', 'liebherr-interface-world' ) ) . '</td>';
-			echo '<td>' . esc_html( self::STATUS_LABELS[ $status ] ?? $status ) . '</td>';
+			$status_cell = esc_html( self::STATUS_LABELS[ $status ] ?? $status );
+			if ( SectionSchedule::has_window( $post->ID ) ) {
+				$window_note = SectionSchedule::is_visible_now( $post->ID )
+					? __( 'im Zeitfenster', 'liebherr-interface-world' )
+					: __( 'außerhalb Zeitfenster', 'liebherr-interface-world' );
+				$status_cell .= ' <span class="description" title="' . esc_attr__( 'Sichtbarkeits-Zeitfenster gesetzt', 'liebherr-interface-world' ) . '">🕒 ' . esc_html( $window_note ) . '</span>';
+			}
+			echo '<td>' . $status_cell . '</td>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Teile oben escaped.
 
 			echo '<td class="liw-row-form--inline">';
 			printf( '<a href="%s">%s</a>', esc_url( (string) get_edit_post_link( $post ) ), esc_html__( 'Bearbeiten', 'liebherr-interface-world' ) );

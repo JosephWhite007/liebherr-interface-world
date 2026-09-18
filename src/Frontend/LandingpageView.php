@@ -73,7 +73,13 @@ final class LandingpageView {
 			'orderby'        => [ 'menu_order' => 'ASC', 'title' => 'ASC' ],
 		] );
 
-		return array_values( array_filter( $posts, static fn( $p ): bool => $p instanceof \WP_Post ) );
+		// Sichtbarkeits-Zeitfenster (§19, alpha.36): veröffentlichte Abschnitte außerhalb ihres
+		// valid_from/valid_until-Fensters ausblenden (zusätzlich zum Veröffentlichungsstatus).
+		return array_values( array_filter(
+			$posts,
+			static fn( $p ): bool => $p instanceof \WP_Post
+				&& \Liebherr\InterfaceWorld\Content\SectionSchedule::is_visible_now( $p->ID )
+		) );
 	}
 
 	/** Anker eines Abschnitts: Bauplan-Code (lp-07) oder Post-Slug, immer sanitize_html_class(). */

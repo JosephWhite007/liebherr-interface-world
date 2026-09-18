@@ -27,9 +27,8 @@ Stand: 18.09.2026 (0.1.0-alpha.26).
   Editor-/Revisions-Anbindung für `liw_section`. Bewusst noch nicht Teil der Auslieferung
   (Entscheidung Joseph White 18.09.2026: „Grundgerüst zuerst"):
   - ~~Drag-and-Drop-Reihenfolge~~ – alpha.35: Zeilen im Content Board sortierbar (AJAX, menu_order)
-  - Zeitsteuerte Veröffentlichung über den nativen `future`-Status hinaus (eigenes Sichtbarkeits-
-    Zeitfenster valid_from/valid_until) – bleibt offen (Schema-/Frontend-Änderung); native
-    Terminveröffentlichung (`future`) deckt den Basisfall bereits ab
+  - ~~Zeitsteuerte Veröffentlichung über `future` hinaus~~ – alpha.36: Sichtbarkeits-Zeitfenster
+    (valid_from/valid_until) per Metabox; Landingpage blendet Abschnitte außerhalb des Fensters aus
   - ~~Vorschau je Sprache~~ – alpha.35 (Links je aktiver Sprache); Vorschau je Gerät = responsive
     Ansicht im Browser; Vorschau je Veröffentlichungsstatus über den vorhandenen Vorschau-Link
   - ~~CTA-Ziele intern auswählen~~ – alpha.30: CTA-Zielfelder schlagen Abschnitts-Anker per `<datalist>` vor

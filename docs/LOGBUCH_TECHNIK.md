@@ -8,6 +8,23 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · Content-Board-Restpunkte: Sichtbarkeits-Zeitfenster (0.1.0-alpha.36)
+
+**Frage/Kontext.** Letzter §19-Restpunkt: Veröffentlichung „über den nativen future-Status hinaus".
+
+**Entscheidungen (Claude, Kategorie B).**
+- Eigenes Zeitfenster valid_from/valid_until als **Post-Meta + Metabox** (nicht als neuer Status), damit
+  es orthogonal zum Freigabe-Workflow wirkt und additiv bleibt (kein Schema-Bruch). Eingabe in
+  Website-Zeitzone, Speicherung UTC (`wp_timezone()`), Vergleich in UTC.
+- **Fail-open:** leere/ungültige Grenzen gelten als „offen" – ein Tippfehler blendet nie unbeabsichtigt
+  Inhalte aus. Reine `is_within_window()` unit-getestet; Frontend-Filter in
+  `LandingpageView::get_published_sections()` (Docker-Test: abgelaufener Abschnitt verschwindet).
+- Ausblenden gilt für alle Besucher (wie unveröffentlichte Abschnitte); Content Board kennzeichnet
+  gesetzte Fenster mit 🕒. Damit sind die §19-Restpunkte abgeschlossen (nur Medien-Picker-Restriktion
+  bleibt bewusst vertagt).
+
+**Quelle/Version.** JW „weiter"; Pflichtenheft §19; 0.1.0-alpha.36.
+
 ### 2026-09-18 · Content-Board-Restpunkte: Drag-&-Drop + Sprachvorschau (0.1.0-alpha.35)
 
 **Frage/Kontext.** Nach Abschluss der Stufe 1 (JW „weiter" → Content-Board-Restpunkte, §19): welche

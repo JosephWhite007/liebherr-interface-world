@@ -62,6 +62,7 @@ final class Bootstrap {
 			AdminMenu::register();
 			AdminAssets::register();
 			Admin\Pages\ContentBoardPage::register(); // AJAX-Reorder (§19).
+			Admin\SectionScheduleMetabox::register();  // Sichtbarkeits-Zeitfenster (§19).
 		}
 
 		add_action( 'admin_notices', [ self::class, 'maybe_show_permalink_notice' ] );

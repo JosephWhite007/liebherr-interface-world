@@ -1,5 +1,23 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.36] – 2026-09-18 – Content-Board-Restpunkte: Sichtbarkeits-Zeitfenster (§19)
+
+### Hinzugefügt
+- **Sichtbarkeits-Zeitfenster je Abschnitt** (§19, über den nativen `future`-Status hinaus):
+  optionale Felder „Sichtbar ab/bis" (Metabox `SectionScheduleMetabox` im `liw_section`-Editor),
+  Eingabe in Website-Zeitzone, Speicherung als UTC. Abschnitte außerhalb ihres Fensters werden
+  auf der Landingpage ausgeblendet (`LandingpageView::get_published_sections()` filtert zusätzlich
+  zum Veröffentlichungsstatus). Content Board kennzeichnet gesetzte Fenster (🕒 im/außerhalb Fenster).
+  - Neu: `Content\SectionSchedule` mit reiner, testbarer `is_within_window()` (leere/ungültige Grenzen
+    = offen, damit ein Tippfehler nie unbeabsichtigt ausblendet).
+
+### Abschluss
+- Damit sind die Content-Board-Restpunkte §19 vollständig: Reihenfolge (alpha.35), Pflichtfeld-/
+  Alt-Text-Prüfung + CTA-Picker (alpha.30), Sprachvorschau (alpha.35), Zeitfenster (alpha.36).
+  Medien-Picker-Beschränkung bleibt bewusst zurückgestellt (WP-`ajax_query_attachments` unzuverlässig).
+- Verifikation: `php -l`; `tests/run-tests.php` 185/185, `scripts/liw-selftest.php` 190/190 im
+  Docker-Container (inkl. „Landingpage blendet abgelaufenen Abschnitt aus").
+
 ## [0.1.0-alpha.35] – 2026-09-18 – Content-Board-Restpunkte: Drag-&-Drop-Reihenfolge & Sprachvorschau (§19)
 
 ### Hinzugefügt

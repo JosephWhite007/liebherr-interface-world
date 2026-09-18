@@ -516,6 +516,17 @@ try {
 	liw_st_check( 'apply_order(): ignoriert Fremd-Post-Typen', 0 === \Liebherr\InterfaceWorld\Admin\Pages\ContentBoardPage::apply_order( [ 1 ] ) );
 	wp_delete_post( (int) $__a, true );
 	wp_delete_post( (int) $__b, true );
+	// Etappe 9b: Sichtbarkeits-Zeitfenster (alpha.36).
+	liw_st_check( 'SectionSchedule-Metabox vorhanden', class_exists( \Liebherr\InterfaceWorld\Admin\SectionScheduleMetabox::class ) );
+	liw_st_check( 'Metabox + save_post quellbasiert verdrahtet', str_contains( (string) file_get_contents( LIW_PATH . 'src/Admin/SectionScheduleMetabox.php' ), 'add_meta_boxes' ) && str_contains( (string) file_get_contents( LIW_PATH . 'src/Bootstrap.php' ), 'SectionScheduleMetabox::register' ) );
+	$__pub = wp_insert_post( [ 'post_type' => 'liw_section', 'post_title' => 'SELFTEST Window', 'post_status' => 'publish' ] );
+	update_post_meta( (int) $__pub, \Liebherr\InterfaceWorld\Content\SectionSchedule::META_UNTIL, gmdate( 'Y-m-d H:i:s', time() - 3600 ) );
+	liw_st_check( 'is_visible_now: abgelaufenes Fenster → unsichtbar', false === \Liebherr\InterfaceWorld\Content\SectionSchedule::is_visible_now( (int) $__pub ) );
+	$__lp_ids = array_map( static fn( WP_Post $p ): int => $p->ID, \Liebherr\InterfaceWorld\Frontend\LandingpageView::get_published_sections() );
+	liw_st_check( 'Landingpage blendet abgelaufenen Abschnitt aus (§19)', ! in_array( (int) $__pub, $__lp_ids, true ) );
+	update_post_meta( (int) $__pub, \Liebherr\InterfaceWorld\Content\SectionSchedule::META_UNTIL, gmdate( 'Y-m-d H:i:s', time() + 3600 ) );
+	liw_st_check( 'is_visible_now: laufendes Fenster → sichtbar', true === \Liebherr\InterfaceWorld\Content\SectionSchedule::is_visible_now( (int) $__pub ) );
+	wp_delete_post( (int) $__pub, true );
 	liw_st_check( 'Language Board Seite verfügbar', class_exists( \Liebherr\InterfaceWorld\Admin\Pages\LanguageBoardPage::class ) );
 	liw_st_check( 'TranslationBridge::public_scope_post_ids() liefert Array', is_array( \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::public_scope_post_ids() ) );
 	liw_st_check( 'TranslationBridge::readiness_report() liefert je Sprache Kennzahlen', ( function (): bool { $r = \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::readiness_report( [ 'en' ] ); return ! \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::is_available() || ( isset( $r['en'] ) && array_key_exists( 'ready', $r['en'] ) && array_key_exists( 'min_rate', $r['en'] ) ); } )() );
