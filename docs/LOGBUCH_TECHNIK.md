@@ -8,6 +8,37 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · LP-07/LP-08: Shortcode mit Whitelist statt Bild-URL oder Block (0.1.0-alpha.15)
+
+**Frage/Kontext.** Nach dem grünen Docker-Praxistest wählte Joseph als nächste Scheibe, die
+beiden anonymisierten Grafiken (alpha.12) in `liw_section`-Abschnitten platzierbar zu machen.
+
+**Befund.** Es gab dafür noch keinen Weg. Die Konzept-Doku verlangt Inline-Einbettung, damit
+die `var(--ary-*)`-Tokens greifen – ein `<img src>` auf die SVG-Datei würde die Farben nicht
+aus der Seiten-CSS beziehen. Im Plugin existieren bereits zwei öffentliche Shortcodes
+(`OnboardingForm`, `ConnectionMapView`) mit etabliertem Muster (Klasse pro Shortcode,
+`register()`/`render_shortcode()`, `liw-*`-Klassen, CSS nur bei Verwendung).
+
+**Optionen.** (a) Shortcode `[liw_graphic name=…]` mit fester Whitelist; (b) eigener
+Gutenberg-Block (JS-Build, Block-Registrierung, neue Abhängigkeiten – Kategorie A);
+(c) Grafik als Medienbibliothek-Upload und `<img>` (Farb-Tokens gehen verloren, außerdem
+würden die SVGs zu Nutzer-Uploads mit eigenem Sanitizing-Bedarf); (d) Shortcode mit freiem
+`src`/Pfad-Attribut (flexibel, aber ein Angriffsvektor für beliebiges Datei-Lesen).
+
+**Entscheidung (Claude, im Rahmen der Freigabe „LP-07/LP-08 einbetten").** (a). Passt
+1:1 zum bestehenden Muster, kein neuer Build-Schritt, kein neues Datenmodell. (d) wurde
+wegen Josephs Sicherheitsanforderung („absolut sicher gegen Angriffe von außen") explizit
+verworfen: `name` wird nur gegen `SectionGraphicView::GRAPHICS` aufgelöst, zusätzlich
+`realpath()`-Guard auf `assets/img/`. Die SVGs sind versioniertes Plugin-Markup, kein
+Upload – darum direkte Ausgabe (wp_kses kennt SVG nicht), `caption` aber escaped.
+
+**Umsetzung.** `Frontend\SectionGraphicView`, CSS-Klassen, `FrontendAssets`-Auslöser,
+Handbuch-Anleitung, Selftest-Erweiterung (Positiv- und Negativfälle inkl. Traversal).
+**ANNAHME-LIW-7:** eine Grafik je Seite nur einmal (feste `id`s in title/desc).
+
+**Quelle/Version.** AskUserQuestion-Antwort Joseph White 18.09.2026 „LP-07/LP-08 in
+Abschnitte einbetten"; docs/LIW_LANDINGPAGE_KONZEPT.md „Offene Punkte"; 0.1.0-alpha.15.
+
 ### 2026-09-18 · Docker-Praxistest: zwei Befunde behoben (0.1.0-alpha.14)
 
 **Frage/Kontext.** Joseph hat nach dem Commit von alpha.13 erstmals `scripts/liw-selftest.php`

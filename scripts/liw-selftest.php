@@ -38,6 +38,7 @@ use Liebherr\InterfaceWorld\CoreBridge\MediaBridge;
 use Liebherr\InterfaceWorld\CoreBridge\PartnerBridge;
 use Liebherr\InterfaceWorld\CoreBridge\RoleBridge;
 use Liebherr\InterfaceWorld\CPT\LiwSectionCpt;
+use Liebherr\InterfaceWorld\Frontend\SectionGraphicView;
 use Liebherr\InterfaceWorld\Interfaces\InterfaceCatalogSchema;
 use Liebherr\InterfaceWorld\Interfaces\InterfaceCatalogService;
 use Liebherr\InterfaceWorld\Onboarding\OnboardingSchema;
@@ -262,10 +263,21 @@ try {
 	}
 
 	// ── [10] Landingpage-Konzept (Grafiken) ────────────────────────────────────
-	echo "\n[10] Landingpage-Konzept – LP-07/LP-08-Grafiken\n";
+	echo "\n[10] Landingpage-Konzept – LP-07/LP-08-Grafiken + Shortcode [liw_graphic]\n";
 	liw_st_check( 'docs/LIW_LANDINGPAGE_KONZEPT.md vorhanden', is_readable( LIW_PATH . 'docs/LIW_LANDINGPAGE_KONZEPT.md' ) );
 	liw_st_check( 'assets/img/liw-data-model.svg vorhanden', is_readable( LIW_PATH . 'assets/img/liw-data-model.svg' ) );
 	liw_st_check( 'assets/img/liw-process-worlds.svg vorhanden', is_readable( LIW_PATH . 'assets/img/liw-process-worlds.svg' ) );
+
+	// Shortcode [liw_graphic] (alpha.15): Inline-Einbettung der beiden Grafiken in liw_section-Inhalte.
+	liw_st_check( 'Shortcode [liw_graphic] registriert', shortcode_exists( SectionGraphicView::SHORTCODE ) );
+	$dm_html = do_shortcode( '[liw_graphic name="data-model" caption="Testunterschrift"]' );
+	liw_st_check( '[liw_graphic name=data-model] rendert Inline-SVG', false !== strpos( $dm_html, '<svg' ) && false !== strpos( $dm_html, 'liw-graphic--data-model' ) );
+	liw_st_check( '[liw_graphic] gibt figcaption escaped aus', false !== strpos( $dm_html, '<figcaption class="liw-graphic-figure__caption">Testunterschrift</figcaption>' ) );
+	liw_st_check( '[liw_graphic name=process-worlds] rendert Inline-SVG', false !== strpos( do_shortcode( '[liw_graphic name="process-worlds"]' ), 'liw-graphic--process-worlds' ) );
+	liw_st_check( '[liw_graphic] unbekannter Name → leere Ausgabe', '' === do_shortcode( '[liw_graphic name="gibt-es-nicht"]' ) );
+	liw_st_check( '[liw_graphic] Path-Traversal-Versuch → leere Ausgabe', '' === do_shortcode( '[liw_graphic name="../../wp-config"]' ) );
+	liw_st_check( '[liw_graphic] ohne name → leere Ausgabe', '' === do_shortcode( '[liw_graphic]' ) );
+	liw_st_check( 'FrontendAssets kennt liw_graphic als CSS-Auslöser', str_contains( (string) file_get_contents( LIW_PATH . 'src/Frontend/FrontendAssets.php' ), 'SectionGraphicView::SHORTCODE' ) );
 
 	// ── [11] Permalink-Hinweis (Info, kein Fehlschlag) ────────────────────────
 	echo "\n[11] Hinweis\n";

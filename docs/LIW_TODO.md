@@ -6,7 +6,7 @@ oder als offene Rückfrage an Joseph White dokumentiert wurden (Quelle jeweils a
 Sichtbar im Backend unter „Interface World → 📋 To-Dos". Wird bei jeder Aufgabe, die einen
 Punkt hier abschließt oder ergänzt, gepflegt.
 
-Stand: 18.09.2026 (0.1.0-alpha.14).
+Stand: 18.09.2026 (0.1.0-alpha.15).
 
 ---
 
@@ -24,11 +24,11 @@ Stand: 18.09.2026 (0.1.0-alpha.14).
     festgestellt, dass WPs `ajax_query_attachments_args`/`post_id`-Kontext dafür nicht
     zuverlässig genug ist, um es ungeprüft auszuliefern; braucht eigene Prüfung in Docker
   - Pflichtfeldprüfung und Warnung bei fehlenden Übersetzungen/Alt-Texten
-  Für LP-07/LP-08 liegen bereits fertige, anonymisierte Grafiken bereit
-  (`assets/img/liw-data-model.svg`, `assets/img/liw-process-worlds.svg`) – warten auf ihre
-  Platzierung in den jetzt anlegbaren `liw_section`-Beiträgen. Details/Gesamtkonzept:
+  Die LP-07/LP-08-Grafiken sind seit alpha.15 per `[liw_graphic name="data-model"]` /
+  `[liw_graphic name="process-worlds"]` in Abschnitten einbettbar – die 14
+  `liw_section`-Beiträge selbst sind redaktionell noch anzulegen. Details/Gesamtkonzept:
   `docs/LIW_LANDINGPAGE_KONZEPT.md`.
-  *Quelle: CHANGELOG.md alpha.1, alpha.12, alpha.13.*
+  *Quelle: CHANGELOG.md alpha.1, alpha.12, alpha.13, alpha.15.*
 
 - **Visuelles Gesamt-Layout/Wireframe der Landingpage.** Der inhaltliche Bauplan
   (LP-01…LP-14) steht im Pflichtenheft und ist seit alpha.12 in
@@ -75,5 +75,6 @@ Stand: 18.09.2026 (0.1.0-alpha.14).
   Audit-Fehler mehr.
 - Content Board Grundgerüst (Übersicht, Freigabeworkflow, native Editor-/Revisions-
   Anbindung) mit alpha.13 umgesetzt – Restpunkte s. oben.
+- Einbettung der LP-07/LP-08-Grafiken (Shortcode `[liw_graphic]`) mit alpha.15 umgesetzt.
 
 S. `LIW_PROGRAMMIERLOGBUCH.md` für Details.

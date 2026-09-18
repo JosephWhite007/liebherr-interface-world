@@ -18,8 +18,8 @@ Stand: 18.09.2026 (0.1.0-alpha.12).
 | LP-04 | Magic Cube | Sandbox, Schnittstellentests, Verifizierung, Validierung | **Datenpflege gebaut** (Simulation Board, alpha.4) – Frontend-Darstellung offen |
 | LP-05 | Interface LogiQ | Produktive Vermittlungs-/Prüf-/Übersetzungsschicht | Offen |
 | LP-06 | World Connections | Netzwerkdarstellung Regionen/Händler, keine realen Standorte ohne Freigabe | **Gebaut** (Datenpflege alpha.5, Frontend-Shortcode `[liw_world_connections_map]` alpha.8) |
-| LP-07 | Data Model | Objektgruppen Kunde, Kontakt, Händler, Maschine, Konfiguration, Angebot, Auftrag, Bedarfsfall, Lieferung, Rechnung, Zahlung | **Grafik geliefert** (`assets/img/liw-data-model.svg`, alpha.12) – Platzierung wartet auf Content Board |
-| LP-08 | Process Worlds | Karten Sales, Configuration, Order, Goods, Finance, Service, Warranty | **Grafik geliefert** (`assets/img/liw-process-worlds.svg`, alpha.12) – Platzierung wartet auf Content Board |
+| LP-07 | Data Model | Objektgruppen Kunde, Kontakt, Händler, Maschine, Konfiguration, Angebot, Auftrag, Bedarfsfall, Lieferung, Rechnung, Zahlung | **Grafik geliefert** (`assets/img/liw-data-model.svg`, alpha.12), **einbettbar** per `[liw_graphic name="data-model"]` (alpha.15) – Abschnitt im Content Board anlegen |
+| LP-08 | Process Worlds | Karten Sales, Configuration, Order, Goods, Finance, Service, Warranty | **Grafik geliefert** (`assets/img/liw-process-worlds.svg`, alpha.12), **einbettbar** per `[liw_graphic name="process-worlds"]` (alpha.15) – Abschnitt im Content Board anlegen |
 | LP-09 | Goods and Finance | Waren-/Finanzströme, messbarer Nutzen | Offen |
 | LP-10 | Security | Zero-Trust-Darstellung, rollenbasierter Zugriff, Audit, Versionierung, Freigaben | Offen |
 | LP-11 | Onboarding | 9-stufiger Händleranschluss, Bestandsaufnahme → überwachter Produktivbetrieb | **Formular gebaut** (`[liw_onboarding_form]`, alpha.6) – deckt Anfrage/Erfassung ab, nicht die vollen 9 Stufen als Darstellung |
@@ -57,11 +57,13 @@ bestehenden Konvention der beiden Frontend-Shortcodes.
 
 - **Visuelles Gesamt-Layout/Wireframe** für alle 14 Abschnitte (Reihenfolge auf der Seite,
   Bildsprache für LP-01/02/03/09/10/12, Übergänge) – noch nicht erstellt.
-- **Content Board (§19)** – Admin-Funktion, um `liw_section`-Posts für LP-01…LP-14
-  tatsächlich anzulegen und die beiden neuen Grafiken sowie die bestehenden Boards/
-  Shortcodes an ihrer vorgesehenen Stelle einzubetten. S. `docs/LIW_TODO.md`.
-- Die beiden neuen SVGs sind als **inline einzubettendes Markup** konzipiert (nicht als
-  `<img src="...">`), damit die `var(--ary-*)`-Farbwerte aus der echten Seiten-CSS
-  übernommen werden; die eingebetteten Hex-Werte sind nur der Fallback für den
-  Stand 18.09.2026 (ARY-DP-1.0.0) und müssen bei einer Token-Änderung nicht zwingend
-  angepasst werden, sollten aber gegengeprüft werden.
+- **Content Board (§19)** – Grundgerüst seit alpha.13 (Übersicht, Freigabeworkflow);
+  Restpunkte s. `docs/LIW_TODO.md`. Die 14 `liw_section`-Beiträge selbst sind redaktionell
+  noch anzulegen.
+- **Einbettung der Grafiken – eingelöst (alpha.15):** Shortcode `[liw_graphic name="data-model"]`
+  bzw. `[liw_graphic name="process-worlds"]` (`Frontend\SectionGraphicView`, optional
+  `caption="…"`) bettet die SVGs **inline** ein (nicht als `<img src="...">`), damit die
+  `var(--ary-*)`-Farbwerte aus der echten Seiten-CSS übernommen werden. Feste Whitelist,
+  keine Dateipfade per Attribut (Sicherheitsanforderung Joseph 18.09.2026). Die eingebetteten
+  Hex-Werte in den SVGs sind nur der Fallback für den Stand 18.09.2026 (ARY-DP-1.0.0) und
+  sollten bei einer Token-Änderung gegengeprüft werden.

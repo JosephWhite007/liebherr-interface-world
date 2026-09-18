@@ -1,5 +1,39 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.15] – 2026-09-18 – LP-07/LP-08-Grafiken einbettbar (Shortcode `[liw_graphic]`)
+
+### Hinzugefügt
+- Dritter öffentlicher Shortcode **`[liw_graphic name="data-model"]`** (LP-07 Data Model)
+  bzw. **`name="process-worlds"`** (LP-08 Process Worlds), optional `caption="…"`
+  (`Frontend\SectionGraphicView`). Bettet die mit alpha.12 gelieferten, anonymisierten SVGs
+  **inline** in `liw_section`-Inhalte ein – bewusst kein `<img src>`, weil nur Inline-Markup
+  die `var(--ary-*)`-Design-Tokens der Seiten-CSS übernimmt (Konzept-Doku „Offene Punkte",
+  jetzt eingelöst). Erster sichtbarer Landingpage-Baustein, der über das Content Board
+  (alpha.13) in einen Abschnitt gesetzt werden kann.
+- Sicherheit (Anforderung Joseph 18.09.2026, „absolut sicher gegen Angriffe von außen"):
+  `name` wird ausschließlich gegen eine feste Whitelist (`SectionGraphicView::GRAPHICS`)
+  aufgelöst, kein Dateipfad-Parameter; zusätzlicher `realpath()`-Guard auf `assets/img/`.
+  Unbekannte Namen, Traversal-Versuche und fehlendes `name` liefern eine leere Ausgabe.
+  `caption` wird sanitisiert und escaped.
+- `assets/css/liebherr-frontend.css`: Klassen `.liw-graphic-figure`, `.liw-graphic-figure__caption`
+  (responsive, Design-Tokens, kein Inline-CSS). `FrontendAssets` lädt das Stylesheet jetzt
+  auch auf Seiten mit `[liw_graphic]`.
+- Handbuch: Anleitung zum Einbetten im Abschnitt „Content Board", Shortcode-Liste ergänzt.
+- `docs/LIW_LANDINGPAGE_KONZEPT.md`: LP-07/LP-08 auf „einbettbar" gesetzt, Einbettungs-Punkt
+  als eingelöst markiert.
+
+### Geprüft
+- `tests/run-tests.php`: 72/72 grün (neue Klasse in Syntax-/strict_types-Prüfung).
+- Shortcode-Logik zusätzlich ohne WP mit Stubs geprüft (8/8: Rendering beider Grafiken,
+  Caption-Escaping, leere Ausgabe bei unbekanntem Namen/Traversal/fehlendem Attribut).
+- `scripts/liw-selftest.php` Abschnitt [10] um acht Prüfungen erweitert (Registrierung,
+  Rendering, Escaping, Negativfälle, CSS-Auslöser) – Docker-Lauf durch Joseph steht aus.
+
+### Annahme
+- **ANNAHME-LIW-7:** Jede Grafik erscheint pro Seite höchstens einmal (LP-07/LP-08 sind je
+  ein Abschnitt). Die SVGs tragen feste `id`s für `<title>/<desc>`; bei doppelter Einbettung
+  wären diese ids mehrfach vorhanden. Additiv lösbar (id-Suffix), falls je nötig.
+
 ## [0.1.0-alpha.14] – 2026-09-18 – Bugfixes aus dem Docker-Praxistest
 
 ### Behoben

@@ -1,7 +1,7 @@
 /**
  * Liebherr Interface Solutions — Frontend-Stylesheet
  *
- * Scope: .liw-onboarding-form / .liw-connections-map (namespaced Selektoren, analog
+ * Scope: .liw-onboarding-form / .liw-connections-map / .liw-graphic-figure (namespaced Selektoren, analog
  * ARALIYA-Konvention .ary-apt-*/.ary-ev-* in araliya-platform-core/assets/css/*.css).
  * Alle Farb-/Schriftwerte referenzieren ausschließlich die zentralen Design-Tokens aus
  * araliya-platform-core (ARY-DP-1.0.0, s. src/Frontend/DesignSystem.php::generate_css()
@@ -171,6 +171,29 @@
 .liw-connections-entry--inactive {
 	border-left: 3px solid #999999;
 	opacity: 0.6;
+}
+
+/* ── Abschnitts-Grafiken LP-07/LP-08 ([liw_graphic], seit alpha.15) ─────────── */
+.liw-graphic-figure {
+	margin: 0 0 1.5em;
+	padding: 0;
+	max-width: 100%;
+}
+
+.liw-graphic-figure .liw-graphic {
+	display: block;
+	width: 100%;
+	height: auto;
+	border-radius: 6px;
+}
+
+.liw-graphic-figure__caption {
+	margin-top: 0.6em;
+	font-family: var(--ar-font-body, var(--font-main, "Cormorant", serif));
+	font-size: 0.9em;
+	color: var(--ary-text, #24302a);
+	opacity: 0.75;
+	text-align: center;
 }
 
 @media (max-width: 600px) {

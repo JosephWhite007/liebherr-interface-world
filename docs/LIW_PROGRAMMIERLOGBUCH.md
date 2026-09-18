@@ -12,6 +12,22 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.15 – LP-07/LP-08-Grafiken einbettbar (Shortcode `[liw_graphic]`)
+
+**Neu:**
+- `src/Frontend/SectionGraphicView.php` – Shortcode `[liw_graphic name=… caption=…]`, feste
+  Whitelist `GRAPHICS` (data-model, process-worlds), `realpath()`-Guard, Request-Cache.
+
+**Geändert:**
+- `src/Bootstrap.php` – `SectionGraphicView::register()` ergänzt.
+- `src/Frontend/FrontendAssets.php` – `liw_graphic` als dritter CSS-Auslöser.
+- `assets/css/liebherr-frontend.css` – `.liw-graphic-figure`, `.liw-graphic-figure__caption`.
+- `src/Admin/Pages/HandbookPage.php` – Einbettungs-Anleitung im Content-Board-Abschnitt,
+  „beide" → „alle drei" Shortcodes in Abschnitt 7.
+- `scripts/liw-selftest.php` – Abschnitt [10] um acht `[liw_graphic]`-Prüfungen erweitert.
+- `docs/LIW_LANDINGPAGE_KONZEPT.md` – LP-07/LP-08-Status, Einbettungs-Punkt eingelöst.
+- `liebherr-interface-world.php` – Version auf `0.1.0-alpha.15`.
+
 ## 0.1.0-alpha.14 – Bugfixes aus dem Docker-Praxistest
 
 **Geändert:**
