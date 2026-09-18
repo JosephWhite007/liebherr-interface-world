@@ -8,6 +8,24 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · Etappe 4: §24-Export als admin-post-CSV, Medien-Restriktion vertagt (0.1.0-alpha.30)
+
+**Frage/Kontext.** §24 verlangt einen Exportprozess für personenbezogene Anfragen; §19 Pflichtfeld-/
+Alt-Text-/Übersetzungswarnungen, CTA-Ziel-Picker und Medien-Picker-Beschränkung.
+
+**Entscheidungen (Claude, Kategorie B).**
+- **Export:** eigener `admin_post`-Handler (`ContactExporter`) statt Ausgabe in der Board-Render-Methode –
+  sauberer Download (Header + exit), Capability `liw_view_onboarding`, Nonce, Audit `export`. CSV mit
+  UTF-8-BOM + Semikolon (Excel-DE); Einwilligungen mit Version/Zeit getrennt ausgewiesen (§24-Zweckbindung).
+- **Redaktions-Prüfung:** konkret und ohne externe API – Titel-Pflicht + Bilder ohne Alt-Text
+  (reine `count_images_without_alt()`). Übersetzungs-Vollständigkeit gehört ins Sprach-Release-Gate
+  (Etappe 6/LANG-006), nicht in diese Prüfung (keine Doppellogik).
+- **CTA-Ziele:** leichter `<datalist>` der Abschnitts-Anker statt schwerem JS-Picker („intern auswählen").
+- **Medien-Picker-Beschränkung:** weiter vertagt – WP-`ajax_query_attachments`-Kontext unzuverlässig
+  (bestehender To-Do); die LIW-eigenen Auswahllisten kennzeichnen den Freigabestatus bereits.
+
+**Quelle/Version.** Release-Plan Etappe 4; Pflichtenheft §19/§22/§24/§26; 0.1.0-alpha.30.
+
 ### 2026-09-18 · Etappe 3: Kern-Komponenten datengetrieben, übrige Abschnitte kuratiert (0.1.0-alpha.29)
 
 **Frage/Kontext.** §16 markiert mehrere LP-Komponenten als „administrierbar". Welche werden in Stufe 1

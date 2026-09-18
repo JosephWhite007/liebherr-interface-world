@@ -1,5 +1,28 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.30] – 2026-09-18 – Etappe 4: §24-Export & Redaktions-Prüfung (§19)
+
+### Hinzugefügt
+- **§24 CSV-Export der Kontaktanfragen** ([ContactExporter](src/Contact/ContactExporter.php)):
+  Knopf „Als CSV exportieren (§24)" im Contact Board (admin-post, Capability `liw_view_onboarding`,
+  Nonce, Audit-Eintrag `export`). Format UTF-8 mit BOM + Semikolon (Excel-DE); Spalten = §22-Felder
+  (Region/Rolle/Interessen als Labels) + Status + Datenschutz-/Marketing-Einwilligung mit Textversion
+  und Zeitstempel (getrennt, §24). Datenschutzhinweis am Knopf.
+  - Neu: `ContactService::get_all_for_export()`, `ConsentLogService::list_for_request()`.
+- **Redaktions-Prüfung** im Content Board (§19/§26): warnt bei veröffentlichten Abschnitten ohne
+  Titel oder mit Bildern ohne Alt-Text (mit Direktlink zum Bearbeiten). Reine, testbare
+  `ContentBoardPage::count_images_without_alt()`.
+- **CTA-Ziel-Vorschläge** im Header Board (§19 „intern auswählen"): `<datalist>` der veröffentlichten
+  Abschnitts-Anker an den CTA-Zielfeldern.
+
+### Hinweise
+- Übersetzungs-Vollständigkeit ist Teil des Sprach-Release-Gates (Etappe 6, LANG-006), nicht der
+  Redaktions-Prüfung. Medien-Picker-Beschränkung auf freigegebene Bibliothek bleibt zurückgestellt
+  (WP-`ajax_query_attachments`-Kontext unzuverlässig, s. To-Dos); die LIW-Auswahllisten
+  (Logo/Hero-Bild) kennzeichnen bereits den Freigabestatus.
+- Verifikation: `php -l`; `tests/run-tests.php` 165/165, `scripts/liw-selftest.php` 154/154 im
+  Docker-Container.
+
 ## [0.1.0-alpha.29] – 2026-09-18 – Etappe 3: Datengetriebene Kern-Komponenten (LP-08/11/12)
 
 ### Hinzugefügt

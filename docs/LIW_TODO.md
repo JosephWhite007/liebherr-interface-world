@@ -29,25 +29,26 @@ Stand: 18.09.2026 (0.1.0-alpha.26).
   - Drag-and-Drop-Reihenfolge (aktuell: numerisches „Reihenfolge"-Feld im Editor, ANNAHME-LIW-6)
   - Zeitsteuerte Veröffentlichung über den nativen `future`-Status hinaus
   - Vorschau je Sprache, Gerät und Veröffentlichungsstatus
-  - CTA-Ziele intern auswählen statt URLs manuell einzutragen
+  - ~~CTA-Ziele intern auswählen~~ – alpha.30: CTA-Zielfelder schlagen Abschnitts-Anker per `<datalist>` vor
   - Medien-Picker auf freigegebene Bibliothek beschränken (CI-005) – bei Recherche
     festgestellt, dass WPs `ajax_query_attachments_args`/`post_id`-Kontext dafür nicht
     zuverlässig genug ist, um es ungeprüft auszuliefern; braucht eigene Prüfung in Docker
-  - Pflichtfeldprüfung und Warnung bei fehlenden Übersetzungen/Alt-Texten
+    (LIW-eigene Logo-/Hero-Auswahllisten kennzeichnen den Freigabestatus bereits)
+  - ~~Pflichtfeldprüfung/Alt-Text-Warnung~~ – alpha.30: Redaktions-Prüfung im Content Board
+    (Titel + Bilder ohne Alt-Text). Fehlende Übersetzungen → Sprach-Release-Gate (Etappe 6/LANG-006)
   Die 14 `liw_section`-Entwürfe sind seit alpha.17 per Knopf im Content Board anlegbar (mit
   Pflichtenheft-Vorgabe und eingebetteten Bausteinen); offen bleibt die **redaktionelle
   Ausformulierung** der Texte und Bildsprache durch die Redaktion. Details/Gesamtkonzept:
   `docs/LIW_LANDINGPAGE_KONZEPT.md`.
   *Quelle: CHANGELOG.md alpha.1, alpha.12, alpha.13, alpha.15.*
 
-- **Kontaktanfragen – Folgepunkte (§22/§24).** Seit alpha.19 gebaut; offen bleiben:
+- **Kontaktanfragen – Folgepunkte (§22/§24).** Seit alpha.19 gebaut; Löschen (alpha.19) und
+  **CSV-Export (alpha.30)** umgesetzt (§24 Export-/Löschprozesse). Offen bleiben:
   CRM-/Empfängerdefinition durch die Projektleitung (Pflichtenheft §31 – bis dahin Mail an
-  WP-Admin-Adresse, Filter `liw_contact_recipients`), Export personenbezogener Anfragen (§24
-  „Export- und Löschprozesse vorbereiten" – Löschen ist umgesetzt, Export nicht), fachliche
-  Wertelisten für Land/Region und Projektinteresse (ANNAHME-LIW-8/-9, aktuell Filter
-  `liw_contact_regions`/`liw_contact_interests`), sprachabhängige Datenschutztext-Versionierung
-  (§24) – seit alpha.24 mit Sprachsuffix umgesetzt.
-  *Quelle: CHANGELOG.md alpha.19; Pflichtenheft §22/§24/§31.*
+  WP-Admin-Adresse, Filter `liw_contact_recipients`), fachliche Wertelisten für Land/Region und
+  Projektinteresse (ANNAHME-LIW-8/-9, Filter `liw_contact_regions`/`liw_contact_interests`),
+  sprachabhängige Datenschutztext-Versionierung (§24) – seit alpha.24 mit Sprachsuffix umgesetzt.
+  *Quelle: CHANGELOG.md alpha.19/alpha.30; Pflichtenheft §22/§24/§31.*
 
 - **Landingpage-Feinheiten nach dem ersten Gerüst (alpha.18).** Ankernavigation: alpha.23; aktive
   Hervorhebung: alpha.26; Header/Navigation (§7) + Hero LP-01 (§8): alpha.28 (`[liw_header]`,

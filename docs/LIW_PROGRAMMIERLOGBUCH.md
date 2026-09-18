@@ -12,6 +12,19 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.30 – Etappe 4: §24-Export & Redaktions-Prüfung (§19)
+
+**Neu:** `src/Contact/ContactExporter.php` (`admin_post_liw_contact_export`, Capability/Nonce/Audit,
+CSV mit BOM+Semikolon, Consent-Version/Zeit je Anfrage).
+**Geändert:** `src/Contact/ContactService.php` (`get_all_for_export()`), `src/Consent/ConsentLogService.php`
+(`list_for_request()`), `src/Admin/Pages/ContactBoardPage.php` (`render_export()` + DSGVO-Hinweis),
+`src/Admin/Pages/ContentBoardPage.php` (`render_qa()` + reine `count_images_without_alt()`),
+`src/Admin/Pages/HeaderBoardPage.php` (`render_target_datalist()`, `list="liw-targets"` an CTA-Zielen),
+`src/Bootstrap.php` (ContactExporter registriert), `tests/run-tests.php` (+5, `esc_attr`-Stub),
+`scripts/liw-selftest.php` ([8] +5), `CHANGELOG.md`, `docs/LIW_TODO.md`, `docs/LOGBUCH_TECHNIK.md`,
+`src/Admin/Pages/HandbookPage.php`, `liebherr-interface-world.php` (Version).
+**Prüfung:** `php -l`; `tests/run-tests.php` 165/165, `scripts/liw-selftest.php` 154/154.
+
 ## 0.1.0-alpha.29 – Etappe 3: Datengetriebene Kern-Komponenten (LP-08/11/12)
 
 **Neu:** `src/Settings/ComponentContent.php` (Option `liw_components`; drei Listen process/roadmap/

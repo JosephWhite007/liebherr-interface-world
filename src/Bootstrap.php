@@ -17,6 +17,7 @@ namespace Liebherr\InterfaceWorld;
 use Liebherr\InterfaceWorld\Admin\AdminAssets;
 use Liebherr\InterfaceWorld\Admin\AdminMenu;
 use Liebherr\InterfaceWorld\Connection\ConnectionMapView;
+use Liebherr\InterfaceWorld\Contact\ContactExporter;
 use Liebherr\InterfaceWorld\Contact\ContactForm;
 use Liebherr\InterfaceWorld\CoreBridge\LanguageBridge;
 use Liebherr\InterfaceWorld\CoreBridge\MediaBridge;
@@ -45,6 +46,7 @@ final class Bootstrap {
 		MediaBridge::register();
 		OnboardingForm::register();
 		ContactForm::register();
+		ContactExporter::register();
 		ConnectionMapView::register();
 		SectionGraphicView::register();
 		HeaderView::register();

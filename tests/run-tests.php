@@ -184,6 +184,18 @@ liw_assert( 'jeder Listeneintrag hat einen Titel', $cc_all_titled, $checks, $fai
 $cc_first = $cc['process'][0]['title'];
 liw_assert( 'Process erste Karte = Sales', 'Sales' === $cc_first, $checks, $failures );
 
+// 2i. Redaktions-Prüfung: Alt-Text-Zählung (Etappe 4, §19/§26) – reine Logik.
+echo "-- Redaktions-Prüfung (alpha.30) --\n";
+if ( ! function_exists( 'esc_attr' ) ) { function esc_attr( $s ) { return htmlspecialchars( (string) $s, ENT_QUOTES ); } }
+require_once $root . '/src/CPT/LiwSectionCpt.php';
+require_once $root . '/src/Admin/Pages/ContentBoardPage.php';
+$cia = [ 'Liebherr\\InterfaceWorld\\Admin\\Pages\\ContentBoardPage', 'count_images_without_alt' ];
+liw_assert( 'Bild ohne alt zählt', 1 === $cia( '<p>x</p><img src="a.jpg">' ), $checks, $failures );
+liw_assert( 'Bild mit alt zählt nicht', 0 === $cia( '<img src="a.jpg" alt="Beschreibung">' ), $checks, $failures );
+liw_assert( 'leeres alt="" zählt als fehlend', 1 === $cia( '<img src="a.jpg" alt="">' ), $checks, $failures );
+liw_assert( 'gemischt: 2 ohne, 1 mit → 2', 2 === $cia( '<img src="1.jpg"><img alt="ok" src="2.jpg"><img src="3.jpg" alt="">' ), $checks, $failures );
+liw_assert( 'kein Bild → 0', 0 === $cia( '<p>nur Text</p>' ), $checks, $failures );
+
 // 3. strict_types=1 in jeder src/-Datei (Coding Standard, CLAUDE.md Abschnitt 5).
 echo "-- Coding Standard --\n";
 $iterator2 = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $root . '/src', FilesystemIterator::SKIP_DOTS ) );

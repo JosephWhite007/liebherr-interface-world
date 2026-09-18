@@ -198,6 +198,19 @@ final class ContactService {
 		return (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table}" );
 	}
 
+	/**
+	 * Alle Anfragen (ohne Paginierung) für den §24-Export. Nur für berechtigte Aufrufer verwenden.
+	 *
+	 * @return array<int,array<string,mixed>>
+	 */
+	public static function get_all_for_export(): array {
+		global $wpdb;
+		$table = ContactSchema::table_name();
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$rows = $wpdb->get_results( "SELECT * FROM {$table} ORDER BY created_at DESC, id DESC", ARRAY_A );
+		return is_array( $rows ) ? $rows : [];
+	}
+
 	public static function delete( int $id, int $actor_id ): bool|\WP_Error {
 		$before = self::get( $id );
 		if ( null === $before ) {

@@ -86,6 +86,7 @@ final class ContentBoardPage {
 		);
 
 		self::render_seed_form();
+		self::render_qa();
 		self::render_table();
 		echo '</div>';
 	}
@@ -160,6 +161,68 @@ final class ContentBoardPage {
 
 		AuditBridge::log( 'status_change', 'section', $post_id, [ 'post_status' => $before ], [ 'post_status' => $status ], get_current_user_id() );
 		return [ 'class' => 'notice-success', 'message' => __( 'Status aktualisiert.', 'liebherr-interface-world' ) ];
+	}
+
+	/**
+	 * Redaktions-Prüfung (§19): warnt bei veröffentlichten Abschnitten ohne Titel oder mit Bildern
+	 * ohne Alt-Text. Reine Leseansicht; Übersetzungs-Vollständigkeit prüft das Sprach-Release-Gate.
+	 */
+	private static function render_qa(): void {
+		$published = get_posts( [
+			'post_type'      => LiwSectionCpt::POST_TYPE,
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'orderby'        => [ 'menu_order' => 'ASC', 'title' => 'ASC' ],
+		] );
+
+		$warnings = [];
+		foreach ( $published as $post ) {
+			if ( ! $post instanceof \WP_Post ) {
+				continue;
+			}
+			$issues = [];
+			if ( '' === trim( (string) get_the_title( $post ) ) ) {
+				$issues[] = __( 'kein Titel', 'liebherr-interface-world' );
+			}
+			$imgs_without_alt = self::count_images_without_alt( (string) $post->post_content );
+			if ( $imgs_without_alt > 0 ) {
+				/* translators: %d: Anzahl Bilder ohne Alt-Text. */
+				$issues[] = sprintf( _n( '%d Bild ohne Alt-Text', '%d Bilder ohne Alt-Text', $imgs_without_alt, 'liebherr-interface-world' ), $imgs_without_alt );
+			}
+			if ( [] !== $issues ) {
+				$warnings[] = [ 'post' => $post, 'issues' => $issues ];
+			}
+		}
+
+		echo '<h2>' . esc_html__( 'Redaktions-Prüfung (veröffentlichte Abschnitte)', 'liebherr-interface-world' ) . '</h2>';
+		if ( [] === $warnings ) {
+			echo '<div class="notice notice-success inline"><p>' . esc_html__( 'Keine Beanstandungen: alle veröffentlichten Abschnitte haben einen Titel und Bilder mit Alt-Text.', 'liebherr-interface-world' ) . '</p></div>';
+			return;
+		}
+		echo '<div class="notice notice-warning inline"><p>' . esc_html__( 'Bitte vor dem Launch beheben (Pflichtfelder/Alt-Texte, §19/§26):', 'liebherr-interface-world' ) . '</p><ul style="list-style:disc;margin-left:20px">';
+		foreach ( $warnings as $w ) {
+			printf(
+				'<li><a href="%1$s">%2$s</a> – %3$s</li>',
+				esc_url( (string) get_edit_post_link( $w['post'] ) ),
+				esc_html( get_the_title( $w['post'] ) !== '' ? get_the_title( $w['post'] ) : ( '#' . $w['post']->ID ) ),
+				esc_html( implode( ', ', $w['issues'] ) )
+			);
+		}
+		echo '</ul></div>';
+	}
+
+	/** Zählt <img>-Tags ohne nicht-leeres alt-Attribut (rein, testbar). */
+	public static function count_images_without_alt( string $html ): int {
+		if ( ! preg_match_all( '/<img\b[^>]*>/i', $html, $m ) ) {
+			return 0;
+		}
+		$count = 0;
+		foreach ( $m[0] as $tag ) {
+			if ( ! preg_match( '/\balt\s*=\s*("[^"]+"|\'[^\']+\')/i', $tag ) ) {
+				$count++;
+			}
+		}
+		return $count;
 	}
 
 	private static function render_table(): void {

@@ -68,6 +68,7 @@ final class HeaderBoardPage {
 		self::hero_row( (int) $cfg['hero_image_id'] );
 
 		echo '</tbody></table>';
+		self::render_target_datalist();
 		submit_button( __( 'Header speichern', 'liebherr-interface-world' ) );
 		echo '</form></div>';
 	}
@@ -76,7 +77,7 @@ final class HeaderBoardPage {
 	private static function cta_rows( string $key, string $label, array $cta ): void {
 		echo '<tr><th scope="row">' . esc_html( $label ) . '</th><td>';
 		printf( '<input type="text" name="liw_header_%1$s_label" value="%2$s" class="regular-text" aria-label="%3$s" /> ', esc_attr( $key ), esc_attr( $cta['label'] ), esc_attr__( 'Label', 'liebherr-interface-world' ) );
-		printf( '<input type="text" name="liw_header_%1$s_target" value="%2$s" class="regular-text" aria-label="%3$s" />', esc_attr( $key ), esc_attr( $cta['target'] ), esc_attr__( 'Ziel', 'liebherr-interface-world' ) );
+		printf( '<input type="text" name="liw_header_%1$s_target" value="%2$s" class="regular-text" list="liw-targets" aria-label="%3$s" />', esc_attr( $key ), esc_attr( $cta['target'] ), esc_attr__( 'Ziel', 'liebherr-interface-world' ) );
 		echo '</td></tr>';
 	}
 
@@ -101,6 +102,30 @@ final class HeaderBoardPage {
 		echo '</select>';
 		echo '<p class="description">' . esc_html__( 'Nur freigegebene Bilder werden im Frontend angezeigt (CI-005); ein nicht freigegebenes Bild führt zum neutralen Verlauf.', 'liebherr-interface-world' ) . '</p>';
 		echo '</td></tr>';
+	}
+
+	/** Interne Ziele als Vorschlagsliste (CTA-/Nav-Ziele „intern auswählen", §19): Abschnitts-Anker. */
+	private static function render_target_datalist(): void {
+		$sections = get_posts( [
+			'post_type'      => \Liebherr\InterfaceWorld\CPT\LiwSectionCpt::POST_TYPE,
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'orderby'        => [ 'menu_order' => 'ASC', 'title' => 'ASC' ],
+		] );
+
+		echo '<datalist id="liw-targets">';
+		foreach ( $sections as $section ) {
+			if ( ! $section instanceof \WP_Post ) {
+				continue;
+			}
+			$anchor = \Liebherr\InterfaceWorld\Frontend\LandingpageView::anchor_for( $section );
+			if ( '' === $anchor ) {
+				continue;
+			}
+			printf( '<option value="#%1$s">%2$s</option>', esc_attr( $anchor ), esc_attr( get_the_title( $section ) ) );
+		}
+		echo '</datalist>';
+		echo '<p class="description">' . esc_html__( 'Tipp: Für Menü-/CTA-Ziele die Abschnitts-Anker (#code) verwenden – die CTA-Felder schlagen veröffentlichte Abschnitte vor.', 'liebherr-interface-world' ) . '</p>';
 	}
 
 	/** @return array{class:string,message:string}|null */

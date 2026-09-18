@@ -49,6 +49,7 @@ final class ContactBoardPage {
 			printf( '<div class="notice %s"><p>%s</p></div>', esc_attr( $notice['class'] ), esc_html( $notice['message'] ) );
 		}
 
+		self::render_export();
 		self::render_table();
 		echo '</div>';
 	}
@@ -75,6 +76,16 @@ final class ContactBoardPage {
 		return is_wp_error( $result )
 			? [ 'class' => 'notice-error', 'message' => $result->get_error_message() ]
 			: [ 'class' => 'notice-success', 'message' => __( 'Status aktualisiert.', 'liebherr-interface-world' ) ];
+	}
+
+	/** §24 Export: CSV-Download aller Anfragen (Auskunfts-/Exportprozess), mit Datenschutzhinweis. */
+	private static function render_export(): void {
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin:12px 0">';
+		echo '<input type="hidden" name="action" value="' . esc_attr( \Liebherr\InterfaceWorld\Contact\ContactExporter::ACTION ) . '" />';
+		wp_nonce_field( \Liebherr\InterfaceWorld\Contact\ContactExporter::ACTION, \Liebherr\InterfaceWorld\Contact\ContactExporter::NONCE_NAME );
+		submit_button( __( 'Als CSV exportieren (§24)', 'liebherr-interface-world' ), 'secondary', 'submit', false );
+		echo ' <span class="description">' . esc_html__( 'Enthält personenbezogene Daten inkl. Einwilligungen (Version/Zeit). Nur zweckgebunden verarbeiten, sicher ablegen und nach Gebrauch löschen (DSGVO).', 'liebherr-interface-world' ) . '</span>';
+		echo '</form>';
 	}
 
 	private static function render_table(): void {

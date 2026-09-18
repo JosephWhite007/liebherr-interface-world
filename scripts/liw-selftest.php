@@ -460,6 +460,12 @@ try {
 	$ob = do_shortcode( '[liw_onboarding_steps]' );
 	liw_st_check( '[liw_onboarding_steps] rendert 9 Schritte', substr_count( $ob, 'liw-steps__item' ) === 9 );
 	liw_st_check( 'CSS enthält Komponenten-Klassen (pcard/roadmap/steps)', str_contains( $liw_front_css, '.liw-pcard {' ) && str_contains( $liw_front_css, '.liw-roadmap {' ) && str_contains( $liw_front_css, '.liw-steps {' ) );
+	// §24-Export + Redaktions-Prüfung (alpha.30, Etappe 4).
+	liw_st_check( 'Kontakt-Export: admin_post-Handler registriert', has_action( 'admin_post_' . \Liebherr\InterfaceWorld\Contact\ContactExporter::ACTION ) !== false );
+	liw_st_check( 'ContactService::get_all_for_export() liefert Array', is_array( \Liebherr\InterfaceWorld\Contact\ContactService::get_all_for_export() ) );
+	liw_st_check( 'ConsentLogService::list_for_request() liefert Array', is_array( \Liebherr\InterfaceWorld\Consent\ConsentLogService::list_for_request( 999999, \Liebherr\InterfaceWorld\Consent\ConsentLogService::KIND_CONTACT ) ) );
+	liw_st_check( 'Contact Board zeigt CSV-Export-Knopf + DSGVO-Hinweis', str_contains( (string) file_get_contents( LIW_PATH . 'src/Admin/Pages/ContactBoardPage.php' ), 'ContactExporter::ACTION' ) && str_contains( (string) file_get_contents( LIW_PATH . 'src/Admin/Pages/ContactBoardPage.php' ), 'DSGVO' ) );
+	liw_st_check( 'Redaktions-Prüfung: count_images_without_alt zählt korrekt', 1 === \Liebherr\InterfaceWorld\Admin\Pages\ContentBoardPage::count_images_without_alt( '<img src="x">' ) && 0 === \Liebherr\InterfaceWorld\Admin\Pages\ContentBoardPage::count_images_without_alt( '<img src="x" alt="ok">' ) );
 
 	// ── [9] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
 	echo "\n[9] Programmierlogbuch / To-Dos\n";

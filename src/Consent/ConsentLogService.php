@@ -53,6 +53,31 @@ final class ConsentLogService {
 		return (int) $count > 0;
 	}
 
+	/**
+	 * Einwilligungen einer Anfrage (für Auskunft/Export §24): Typ, Textversion, Zeitstempel.
+	 *
+	 * @return array<string,array{text_version:string,granted_at:string}> je consent_type
+	 */
+	public static function list_for_request( int $request_id, string $request_kind = self::KIND_ONBOARDING ): array {
+		if ( ! in_array( $request_kind, self::KINDS, true ) ) {
+			return [];
+		}
+		global $wpdb;
+		$table = ConsentLogSchema::table_name();
+		$rows  = $wpdb->get_results(
+			$wpdb->prepare( "SELECT consent_type, text_version, granted_at FROM {$table} WHERE request_id = %d AND request_kind = %s ORDER BY granted_at ASC", $request_id, $request_kind ),
+			ARRAY_A
+		);
+		$out = [];
+		foreach ( (array) $rows as $row ) {
+			$out[ (string) $row['consent_type'] ] = [
+				'text_version' => (string) $row['text_version'],
+				'granted_at'   => (string) $row['granted_at'],
+			];
+		}
+		return $out;
+	}
+
 	/** §24 Löschprozess: alle Einwilligungen einer Anfrage entfernen. */
 	public static function delete_for_request( int $request_id, string $request_kind ): bool {
 		if ( ! in_array( $request_kind, self::KINDS, true ) ) {
