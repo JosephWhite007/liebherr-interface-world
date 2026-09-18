@@ -1,5 +1,27 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.53] – 2026-09-19 – Simulation-World-Startbildschirm + what3words-Ortsdienst
+
+### Hinzugefügt
+- **Startbildschirm** `[liw_simulator]` (`Frontend\SimulatorView`): vollflächiges Cockpit-Startbild mit
+  „Start your journey"-CTA (Ziel konfigurierbar, Standard Intelligence World). Startbild bevorzugt aus
+  freigegebenem Media-Board-Bild (`liw_simulator_image_id`) oder Datei `assets/img/liw-simulator-start.*`
+  (Filter `liw_simulator_image`); ohne Bild dunkler Platzhalter mit Admin-Hinweis.
+- **what3words als echter Ortsdienst** (`Adventures\Location\What3WordsProvider`) hinter dem vorhandenen
+  Provider-Vertrag: Koordinaten ↔ drei **englische** Wörter, `language=en` fix (keine Umschaltung).
+  API-Key **nicht im Repo** (Konstante `LIW_W3W_API_KEY` in wp-config oder Option `liw_w3w_api_key`, Filter
+  `liw_w3w_api_key`). Ist ein Key gesetzt, nutzt `LocationService` automatisch what3words; sonst weiter den
+  Mock. Bei Netzwerk-/API-Fehler robuster Fallback auf den Mock (Erfassung blockiert nie). Die bereits
+  eingeführte Drei-Wörter-Logik bleibt unverändert bestehen.
+
+### Verifikation
+- `tests/run-tests.php` 311/311, `scripts/liw-selftest.php` **285/285** (Startbildschirm + CTA; w3w ohne Key →
+  Mock; encode liefert drei Wörter). Startbild und produktiver what3words-Betrieb: Datei/Key durch Auftraggeber.
+
+### Freigabe/Manuell (Auftraggeber)
+- Startbild-Datei ablegen (`assets/img/liw-simulator-start.jpg`) oder im Media Board setzen.
+- what3words-Lizenz + API-Key (§4.3): Key in `wp-config.php` als `define('LIW_W3W_API_KEY','…')` oder Option.
+
 ## [0.1.0-alpha.52] – 2026-09-19 – Cross-Navigation der vier Plattformen (World-Switcher)
 
 ### Hinzugefügt

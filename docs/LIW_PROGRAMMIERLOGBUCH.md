@@ -12,6 +12,22 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.53 – Simulation-World-Startbildschirm + what3words-Provider
+
+**Neu:** `src/Frontend/SimulatorView.php` (Shortcode `[liw_simulator]`: Cockpit-Startbild + „Start your
+journey"-CTA; Bild droppable/Media-Board, Ziel via Option/Filter). `src/Adventures/Location/What3WordsProvider.php`
+(echter w3w-Provider hinter ProviderInterface: convert-to-3wa/convert-to-coordinates, `language=en` fix,
+API-Key aus Konstante LIW_W3W_API_KEY/Option `liw_w3w_api_key`, kein Key im Repo).
+**Geändert:** `src/Adventures/Location/LocationService.php` (Provider = what3words wenn konfiguriert, sonst
+Mock; encode/decode mit try/catch-Fallback auf Mock), `src/Bootstrap.php` (SimulatorView register),
+`src/Frontend/FrontendAssets.php` (+`liw_simulator`/`liw_world_switcher` → CSS-Enqueue),
+`src/Frontend/RocketCompat.php` (`.liw-sim`), `assets/css/liebherr-frontend.css` (`.liw-sim*`),
+`scripts/liw-selftest.php` (+SIM/W3W), `CHANGELOG.md`, `docs/ADVENTURES_NOTES.md`, Version alpha.53.
+**Grund:** Nutzervorgabe – Cockpit als Startbild „Start your journey"; Ortsdienst = what3words (Englisch,
+keine Umschaltung), bestehende Drei-Wörter-Logik beibehalten.
+**Sicherheit:** kein API-Key im Repo (§22.15); ohne Key/bei Fehler Mock-Fallback (Erfassung blockiert nie).
+**Prüfung:** `php -l`; run-tests 311/311, liw-selftest 285/285.
+
 ## 0.1.0-alpha.52 – Cross-Navigation der vier Plattformen (World-Switcher)
 
 **Neu:** `src/Frontend/WorldSwitcher.php` – Shortcode `[liw_world_switcher]` + `the_content`-Auto-Einfügung

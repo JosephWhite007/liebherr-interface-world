@@ -19,8 +19,10 @@ Insel `[liw_adventures]` (Hero/Filter/Create/Stream), Seite `/liebherr-adventure
 `docs/ADVENTURES_NOTES.md`.
 
 **Offen / nächste Etappen:** World Map + Detailseite, Medien-Upload/Transcoding (§14; MVP: externe Bild-URL),
-Moderations-UI/Audit (§17/§12.3), Get-Help-Assistent (Phase 3), Suche/Filter Maschine/Bauteil (§18), echter
-Drei-Wörter-Anbieter (§24.1), Mehrsprachigkeit der Nutzerinhalte (§15).
+Moderations-UI/Audit (§17/§12.3), Get-Help-Assistent (Phase 3), Suche/Filter Maschine/Bauteil (§18),
+Mehrsprachigkeit der Nutzerinhalte (§15). **alpha.53:** what3words als echter Ortsdienst angebunden
+(englisch, Key-gesteuert, Mock-Fallback) – offen nur noch Lizenz/Vertrag + Produktiv-Key (§4.3/§24.1).
+Simulation-World-Startbildschirm `[liw_simulator]` („Start your journey") – Startbild-Datei/Key durch Auftraggeber.
 
 ## Intelligence World (Pflichtenheft-2, ab alpha.47)
 

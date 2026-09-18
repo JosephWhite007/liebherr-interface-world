@@ -724,6 +724,17 @@
 .liw-switcher__link:hover, .liw-switcher__link:focus-visible { color: #fff; border-bottom-color: var(--brand-primary, #ffd000); }
 .liw-switcher__link.is-current { color: var(--brand-primary, #ffd000); border-bottom-color: var(--brand-primary, #ffd000); font-weight: 700; }
 
+/* ── Liebherr Simulation World – Startbildschirm [liw_simulator] (alpha.53) ── */
+.liw-sim { position: relative; min-height: 70vh; display: flex; align-items: flex-end; justify-content: center; overflow: hidden; background: #05070b; color: #fff; }
+.liw-sim__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+.liw-sim__overlay { position: relative; z-index: 1; width: 100%; max-width: var(--content-max, 1440px); text-align: center; padding: 2rem 4vw 3rem; background: linear-gradient(to top, rgba(5,7,11,.82) 0%, rgba(5,7,11,.35) 55%, transparent 100%); }
+.liw-sim__eyebrow { letter-spacing: .22em; text-transform: uppercase; font-size: .78rem; color: var(--brand-primary, #ffd000); margin: 0 0 .6rem; }
+.liw-sim__headline { font-family: var(--font-heading, Arial, sans-serif); font-weight: 900; font-size: clamp(1.8rem, 5vw, 3.4rem); line-height: 1.05; margin: 0 0 .6rem; text-shadow: 0 2px 18px rgba(0,0,0,.6); }
+.liw-sim__subline { max-width: 52ch; margin: 0 auto 1.4rem; color: rgba(247,249,251,.9); }
+.liw-sim__cta { font-size: 1.05rem; padding: .8rem 2.2rem; }
+.liw-sim__note { margin: 1rem auto 0; max-width: 60ch; font-size: .8rem; color: #ffd000; }
+.liw-sim--plain { background: radial-gradient(120% 120% at 70% 20%, #061c33 0%, #05070b 70%); align-items: center; }
+
 /* ══════════════════════════════════════════════════════════════════════════
    Liebherr Local Intelligence – Hauptseite (LI-Pflichtenheft §8, alpha.41)
    Mobile-first. Ausschließlich --brand-*/--font-*-Tokens. prefers-reduced-motion

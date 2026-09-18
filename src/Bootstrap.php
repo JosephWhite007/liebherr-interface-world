@@ -74,6 +74,7 @@ final class Bootstrap {
 		FrontendAssets::register();
 		Frontend\FaviconService::register(); // Website-Icon „goldener Planet" im Browser-Tab (site-weit).
 		Frontend\WorldSwitcher::register();  // Plattform-Umschalter der vier Inseln (Cross-Navigation).
+		Frontend\SimulatorView::register();  // Liebherr Simulation World – Startbildschirm [liw_simulator].
 		Frontend\RocketCompat::register(); // WP-Rocket-RUCSS-Safelist für .liw-Selektoren.
 		Frontend\PageTemplate::register(); // Vollbild-Seitenvorlage (ohne Theme-Kopf/-Fuß).
 

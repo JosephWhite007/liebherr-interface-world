@@ -34,7 +34,13 @@ World Map folgen), Partner-Attribution administrierbar (9), Demo-Kennzeichnung (
 - Moderations-UI im Backoffice (§17), Audit-Events (§12.3), My Adventures, Get-Help-Assistent (Phase 3).
 - Verbindliche Filter (Maschine/Bauteil/Fehlercode) + Suche (§18.1); Mehrsprachigkeit des Nutzerinhalts (§15).
 
+## Ortsdienst (aktualisiert alpha.53)
+- Anbieter = **what3words** (`What3WordsProvider`, `language=en` fix, keine Umschaltung). Aktiv, sobald ein
+  API-Key gesetzt ist (`LIW_W3W_API_KEY` in wp-config **oder** Option `liw_w3w_api_key`) – **kein Key im Repo**.
+  Ohne Key/bei API-Fehler automatischer Fallback auf den invertierbaren Mock (Erfassung blockiert nie).
+  Die bereits eingeführte Drei-Wörter-Logik/Anzeige („/// wort.wort.wort") bleibt.
+
 ## Offene Entscheidungen (§24)
-- Drei-Wörter-Partner (Name/Lizenz) → Provider bleibt bis dahin Mock.
+- what3words-**Lizenz/Vertrag** + produktiver API-Key (§4.3) – technisch angebunden, Freigabe offen.
 - Max. Videodauer/Dateigröße, führende Systeme (Maschinen/Teile/Bestand), Helpdesk-Schnittstelle,
   Reaktionszeiten Critical, Aufbewahrungsfristen je Typ, Markenfreigabe.

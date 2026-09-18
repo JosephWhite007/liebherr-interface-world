@@ -19,14 +19,26 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 final class LocationService {
 
 	public static function provider(): ProviderInterface {
-		$provider = apply_filters( 'liw_adv_three_word_provider', new MockProvider() );
-		return $provider instanceof ProviderInterface ? $provider : new MockProvider();
+		// Standard: what3words, sobald ein API-Key konfiguriert ist (§4.3); sonst der Prototyp-Mock.
+		$default  = What3WordsProvider::configured() ? new What3WordsProvider() : new MockProvider();
+		$provider = apply_filters( 'liw_adv_three_word_provider', $default );
+		return $provider instanceof ProviderInterface ? $provider : $default;
 	}
 
-	/** @return array{words:string,lat:float,lng:float,accuracy:string,provider:string,provider_version:string,resolved_at:string} */
+	/**
+	 * Koordinaten → Ortscode. Robust: fällt bei Provider-Fehler (z. B. what3words nicht erreichbar) auf den
+	 * Mock zurück, damit die Erfassung nie blockiert.
+	 *
+	 * @return array{words:string,lat:float,lng:float,accuracy:string,provider:string,provider_version:string,resolved_at:string}
+	 */
 	public static function encode( float $lat, float $lng ): array {
-		$p   = self::provider();
-		$loc = $p->encode( $lat, $lng );
+		$p = self::provider();
+		try {
+			$loc = $p->encode( $lat, $lng );
+		} catch ( \Throwable $e ) {
+			$p   = new MockProvider();
+			$loc = $p->encode( $lat, $lng );
+		}
 		return array_merge( $loc, [
 			'provider'         => $p->name(),
 			'provider_version' => $p->version(),
@@ -36,7 +48,11 @@ final class LocationService {
 
 	/** @return array{lat:float,lng:float}|null */
 	public static function decode( string $words ): ?array {
-		return self::provider()->decode( $words );
+		try {
+			return self::provider()->decode( $words );
+		} catch ( \Throwable $e ) {
+			return ( new MockProvider() )->decode( $words );
+		}
 	}
 
 	/** Normalisierte Ortswörter (klein, Punkt-getrennt) oder '' bei ungültig. */

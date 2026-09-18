@@ -684,6 +684,19 @@ try {
 	$__sw = \Liebherr\InterfaceWorld\Frontend\WorldSwitcher::render( 'adventures' );
 	liw_st_check( 'Cross-Nav: World-Switcher verlinkt die vier Inseln', str_contains( $__sw, 'liw-switcher' ) && str_contains( $__sw, 'Intelligence World' ) && str_contains( $__sw, 'Local Intelligence' ) && str_contains( $__sw, 'Interface Solutions' ) && str_contains( $__sw, 'Adventures' ) );
 	liw_st_check( 'Cross-Nav: aktuelle Insel hervorgehoben', str_contains( $__sw, 'is-current' ) && str_contains( $__sw, 'aria-current="page"' ) );
+
+	// Simulation-World-Startbildschirm (alpha.53).
+	liw_st_check( 'SIM: Shortcode [liw_simulator] registriert', shortcode_exists( 'liw_simulator' ) );
+	$__sim2 = do_shortcode( '[liw_simulator]' );
+	liw_st_check( 'SIM: Startbildschirm + „Start your journey"-CTA', str_contains( $__sim2, 'liw-sim' ) && str_contains( $__sim2, 'Start your journey' ) && str_contains( $__sim2, 'liw-sim__cta' ) );
+	liw_st_check( 'SIM: ohne Bild dunkler Platzhalter (liw-sim--plain)', str_contains( $__sim2, 'liw-sim--plain' ) );
+
+	// what3words-Provider (alpha.53): austauschbar; ohne Key Mock, Erfassung bleibt robust.
+	liw_st_check( 'W3W: Provider-Klasse vorhanden', class_exists( \Liebherr\InterfaceWorld\Adventures\Location\What3WordsProvider::class ) );
+	delete_option( 'liw_w3w_api_key' );
+	liw_st_check( 'W3W: ohne Key nicht konfiguriert → Provider = Mock', ! \Liebherr\InterfaceWorld\Adventures\Location\What3WordsProvider::configured() && \Liebherr\InterfaceWorld\Adventures\Location\LocationService::provider() instanceof \Liebherr\InterfaceWorld\Adventures\Location\MockProvider );
+	$__loc = \Liebherr\InterfaceWorld\Adventures\Location\LocationService::encode( 48.0, 10.0 );
+	liw_st_check( 'W3W/Mock: encode liefert 3 Wörter + Provider-Kennung', 3 === count( explode( '.', $__loc['words'] ) ) && '' !== $__loc['provider'] );
 	liw_st_check( 'IW: Demo-Code Standard (WorldContent)', 'LIEBHERR-DEMO' === \Liebherr\InterfaceWorld\IntelligenceWorld\WorldContent::access_code() );
 	liw_st_check( 'IW: REST-Route liw-iw/v1 registriert', in_array( '/' . \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::NAMESPACE, array_keys( rest_get_server()->get_routes() ), true ) || array_key_exists( '/' . \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::NAMESPACE . '/session/start', rest_get_server()->get_routes() ) );
 	// Access-Gate serverseitig (Code-Prüfung, alpha.49-Fix: öffentliche Endpunkte).
