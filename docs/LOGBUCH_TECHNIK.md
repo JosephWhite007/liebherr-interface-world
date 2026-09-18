@@ -8,6 +8,23 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · Etappe 5: Audit Board als Lese-Ansicht, Release Board über Core-Deploy (0.1.0-alpha.31)
+
+**Frage/Kontext.** §18 nennt Audit Board und Release Board. Eigene Datenmodelle/Boards oder Core nutzen?
+
+**Entscheidungen (Claude, Kategorie B).**
+- **Audit:** kein eigenes Audit-System (bestätigt Variante A). AuditBridge um reine Lese-Methoden
+  erweitert (`recent_liw_events()`/`count_liw_events()`), Filter `entity_type LIKE 'liw\_%'` (die
+  Bridge präfixiert beim Schreiben mit `liw_`). Audit Board zeigt read-only; Capability
+  `liw_manage_interfaces` (System-/Interface-Admin), keine Änderung/Löschung (Log ist unveränderlich).
+- **Release Board:** NICHT eigenständig gebaut – Staging/Prod/Freigabe/Rollback laufen über den
+  ARALIYA-Deployment-Manager des Core (Ein-Plugin-/CoreBridge-Linie, keine Doppelung). Das
+  fachliche Sprach-Release-Gate (LANG-006) kommt in Etappe 6.
+- **Interface-Lifecycle-UI:** `set_lifecycle_status()` existierte ohne UI (YAGNI-Altstand); jetzt
+  Statuswechsel je Zeile im Interface Board (auditiert). Simulations-Status bleibt vertagt bis Engine.
+
+**Quelle/Version.** Release-Plan Etappe 5; Pflichtenheft §18; 0.1.0-alpha.31.
+
 ### 2026-09-18 · Etappe 4: §24-Export als admin-post-CSV, Medien-Restriktion vertagt (0.1.0-alpha.30)
 
 **Frage/Kontext.** §24 verlangt einen Exportprozess für personenbezogene Anfragen; §19 Pflichtfeld-/

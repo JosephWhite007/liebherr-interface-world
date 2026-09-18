@@ -12,6 +12,19 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.31 – Etappe 5: Audit Board & Interface-Lifecycle-Status (§18)
+
+**Neu:** `src/Admin/Pages/AuditBoardPage.php` (Lese-Ansicht, paginiert, Capability
+`liw_manage_interfaces`).
+**Geändert:** `src/CoreBridge/AuditBridge.php` (`recent_liw_events()`, `count_liw_events()`,
+`table()`; Filter `entity_type LIKE 'liw\_%'`), `src/Admin/Pages/InterfaceBoardPage.php`
+(Statuswechsel-UI: Aktion `set_lifecycle`, `STATUS_LABELS`, `render_status_form()`,
+maybe_handle_submit erweitert), `src/Admin/AdminMenu.php` (Untermenü „🛡 Audit Board", use-Import),
+`scripts/liw-selftest.php` ([8] +6), `CHANGELOG.md`, `docs/LIW_TODO.md`, `docs/LOGBUCH_TECHNIK.md`,
+`src/Admin/Pages/HandbookPage.php`, `liebherr-interface-world.php` (Version).
+**Entscheidung:** Release Board nicht eigenständig – Core-Deployment-Manager (Variante A).
+**Prüfung:** `php -l`; `tests/run-tests.php` 167/167, `scripts/liw-selftest.php` 160/160.
+
 ## 0.1.0-alpha.30 – Etappe 4: §24-Export & Redaktions-Prüfung (§19)
 
 **Neu:** `src/Contact/ContactExporter.php` (`admin_post_liw_contact_export`, Capability/Nonce/Audit,

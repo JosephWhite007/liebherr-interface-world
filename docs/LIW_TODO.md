@@ -66,9 +66,9 @@ Stand: 18.09.2026 (0.1.0-alpha.26).
 
 - **Simulation Board – Status-Übergänge.** Welt validieren/verwerfen, Szenario als
   bestanden/fehlgeschlagen markieren. Bewusst zurückgestellt, bis eine echte
-  Simulations-Engine angebunden ist (YAGNI) – dieselbe Begründung gilt für
-  `InterfaceCatalogService::set_lifecycle_status()`, das ebenfalls noch keine UI hat.
-  *Quelle: CHANGELOG.md alpha.4.*
+  Simulations-Engine angebunden ist (YAGNI). Die Interface-Lifecycle-UI
+  (`set_lifecycle_status()`) ist dagegen seit **alpha.31** im Interface Board umgesetzt.
+  *Quelle: CHANGELOG.md alpha.4/alpha.31.*
 
 - **World Connections Map – echte geografische Karte.** Aktuell Regionen-Grid (Liste
   gruppiert nach Freitext-Region), keine Koordinaten. Eine echte Karte erfordert eine
@@ -126,6 +126,8 @@ Stand: 18.09.2026 (0.1.0-alpha.26).
   (alpha.29): Shortcodes `[liw_process_worlds]`/`[liw_roadmap]`/`[liw_onboarding_steps]` + Components
   Board. **Bewusst kuratiert (redaktionell, keine Extra-Komponente):** LP-02/03/04/05/07/09/10 –
   interaktive Vertiefung ist Feature-Flag/Folgeetappe (AC-002).
+- Audit Board (Lese-Ansicht Core-Audit, gefiltert auf liw_) + Interface-Lifecycle-Status-UI (alpha.31).
+  Release Board bewusst nicht eigenständig → Core-Deployment-Manager (Variante A).
 - Ankernavigation/Sprungleiste der Landingpage (alpha.23).
 - Aktive Hervorhebung des sichtbaren Abschnitts in der Sprungleiste (alpha.26): enqueuetes
   Skript `assets/js/liebherr-frontend.js` (IntersectionObserver, `aria-current`/`is-current`),

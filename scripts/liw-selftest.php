@@ -466,6 +466,13 @@ try {
 	liw_st_check( 'ConsentLogService::list_for_request() liefert Array', is_array( \Liebherr\InterfaceWorld\Consent\ConsentLogService::list_for_request( 999999, \Liebherr\InterfaceWorld\Consent\ConsentLogService::KIND_CONTACT ) ) );
 	liw_st_check( 'Contact Board zeigt CSV-Export-Knopf + DSGVO-Hinweis', str_contains( (string) file_get_contents( LIW_PATH . 'src/Admin/Pages/ContactBoardPage.php' ), 'ContactExporter::ACTION' ) && str_contains( (string) file_get_contents( LIW_PATH . 'src/Admin/Pages/ContactBoardPage.php' ), 'DSGVO' ) );
 	liw_st_check( 'Redaktions-Prüfung: count_images_without_alt zählt korrekt', 1 === \Liebherr\InterfaceWorld\Admin\Pages\ContentBoardPage::count_images_without_alt( '<img src="x">' ) && 0 === \Liebherr\InterfaceWorld\Admin\Pages\ContentBoardPage::count_images_without_alt( '<img src="x" alt="ok">' ) );
+	// Etappe 5: Audit Board (Lesen) + Interface-Lifecycle-Status-UI (alpha.31).
+	liw_st_check( 'Audit Board Seite verfügbar', class_exists( \Liebherr\InterfaceWorld\Admin\Pages\AuditBoardPage::class ) );
+	liw_st_check( 'AuditBridge::recent_liw_events() liefert Array', is_array( \Liebherr\InterfaceWorld\CoreBridge\AuditBridge::recent_liw_events( 5 ) ) );
+	liw_st_check( 'AuditBridge::count_liw_events() liefert int >= 0', \Liebherr\InterfaceWorld\CoreBridge\AuditBridge::count_liw_events() >= 0 );
+	liw_st_check( 'Audit-Lesen filtert auf liw_-Eintraege', str_contains( (string) file_get_contents( LIW_PATH . 'src/CoreBridge/AuditBridge.php' ), "entity_type LIKE 'liw" ) );
+	liw_st_check( 'Interface-Lifecycle: ungueltiger Status → WP_Error', is_wp_error( \Liebherr\InterfaceWorld\Interfaces\InterfaceCatalogService::set_lifecycle_status( 0, 'bogus_status', 0 ) ) );
+	liw_st_check( 'Interface Board: Statuswechsel-Formular (set_lifecycle)', str_contains( (string) file_get_contents( LIW_PATH . 'src/Admin/Pages/InterfaceBoardPage.php' ), "value=\"set_lifecycle\"" ) && str_contains( (string) file_get_contents( LIW_PATH . 'src/Admin/Pages/InterfaceBoardPage.php' ), 'lifecycle_status' ) );
 
 	// ── [9] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
 	echo "\n[9] Programmierlogbuch / To-Dos\n";

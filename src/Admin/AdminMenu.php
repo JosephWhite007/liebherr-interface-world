@@ -13,6 +13,7 @@ declare( strict_types = 1 );
 
 namespace Liebherr\InterfaceWorld\Admin;
 
+use Liebherr\InterfaceWorld\Admin\Pages\AuditBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\BrandBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\ComponentsBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\ConnectionBoardPage;
@@ -118,6 +119,15 @@ final class AdminMenu {
 			RoleBridge::CAP_MANAGE_CONTENT,
 			MediaBoardPage::MENU_SLUG,
 			[ MediaBoardPage::class, 'render' ]
+		);
+
+		add_submenu_page(
+			'liw-interface-board',
+			__( 'Audit Board', 'liebherr-interface-world' ),
+			__( '🛡 Audit Board', 'liebherr-interface-world' ),
+			RoleBridge::CAP_MANAGE_INTERFACES,
+			AuditBoardPage::MENU_SLUG,
+			[ AuditBoardPage::class, 'render' ]
 		);
 
 		add_submenu_page(

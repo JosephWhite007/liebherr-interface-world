@@ -1,5 +1,24 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.31] – 2026-09-18 – Etappe 5: Audit Board & Interface-Lifecycle-Status (§18)
+
+### Hinzugefügt
+- **Audit Board** ([AuditBoardPage](src/Admin/Pages/AuditBoardPage.php), „🛡 Audit Board"):
+  unveränderliche Lese-Ansicht der administrativen LIW-Ereignisse (Zeitpunkt, Aktion, Objekt,
+  Objekt-ID, Akteur, Akteurstyp), paginiert. Quelle = zentrales Core-Audit-Log, gefiltert auf
+  `entity_type LIKE 'liw_%'`. Capability `liw_manage_interfaces`. Kein eigenes Audit-Datenmodell.
+  - Neu: `AuditBridge::recent_liw_events()` und `AuditBridge::count_liw_events()` (nur Lesen).
+- **Interface-Lifecycle-Status-UI** im Interface Board: Statuswechsel je Schnittstelle
+  (Entwurf → In Simulation → Verifiziert → Freigegeben → Stillgelegt) über
+  `InterfaceCatalogService::set_lifecycle_status()`; jede Änderung wird auditiert.
+
+### Hinweise
+- **Release Board (§18):** bewusst nicht als eigenes Board gebaut – Staging/Produktion, Freigaben und
+  Rollback laufen über den ARALIYA-Deployment-Manager des Core (Variante A). Das Sprach-Release-Gate
+  folgt in Etappe 6 (LANG-006).
+- Verifikation: `php -l`; `tests/run-tests.php` 167/167, `scripts/liw-selftest.php` 160/160 im
+  Docker-Container.
+
 ## [0.1.0-alpha.30] – 2026-09-18 – Etappe 4: §24-Export & Redaktions-Prüfung (§19)
 
 ### Hinzugefügt

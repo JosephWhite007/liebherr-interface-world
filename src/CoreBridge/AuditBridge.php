@@ -66,4 +66,33 @@ final class AuditBridge {
 		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 		error_log( sprintf( '[liebherr-interface-world][audit-fallback] %s liw_%s#%d', $action, $entity_type, $entity_id ) );
 	}
+
+	/** Tabellenname des Core-Audit-Logs. */
+	private static function table(): string {
+		global $wpdb;
+		return $wpdb->prefix . 'ary_audit_log';
+	}
+
+	/** Anzahl der LIW-Audit-Ereignisse (entity_type mit Präfix `liw_`). */
+	public static function count_liw_events(): int {
+		global $wpdb;
+		$table = self::table();
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		return (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table} WHERE entity_type LIKE 'liw\\_%'" );
+	}
+
+	/**
+	 * Jüngste LIW-Audit-Ereignisse (Lese-Ansicht Audit Board). Nur eigene (`liw_`) Einträge.
+	 *
+	 * @return array<int,array<string,mixed>> Spalten: created_at, actor_id, actor_type, action, entity_type, entity_id
+	 */
+	public static function recent_liw_events( int $limit = 100, int $offset = 0 ): array {
+		global $wpdb;
+		$table = self::table();
+		$limit  = max( 1, min( 500, $limit ) );
+		$offset = max( 0, $offset );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$rows = $wpdb->get_results( $wpdb->prepare( "SELECT created_at, actor_id, actor_type, action, entity_type, entity_id FROM {$table} WHERE entity_type LIKE 'liw\\_%' ORDER BY created_at DESC, id DESC LIMIT %d OFFSET %d", $limit, $offset ), ARRAY_A );
+		return is_array( $rows ) ? $rows : [];
+	}
 }
