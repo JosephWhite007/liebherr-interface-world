@@ -654,6 +654,7 @@ try {
 	liw_st_check( 'IW: Pflichtfeld-Legende + 3 markierte Pflichtfelder (Sternchen erklärt)', str_contains( $__world, 'Pflichtfelder' ) && 3 === substr_count( $__world, 'class="liw-iw__req"' ) );
 	liw_st_check( 'IW: Nutzungsbedingungen (5.1–5.8) in der Schleuse eingebunden', str_contains( $__world, '5.1 Prototypstatus' ) && str_contains( $__world, '5.8 Rechtlicher Freigabevorbehalt' ) );
 	liw_st_check( 'IW: Sitzungs-/Kostenleiste + Beenden', str_contains( $__world, 'data-liw-iw-time' ) && str_contains( $__world, 'data-liw-iw-budgetfill' ) && str_contains( $__world, 'data-liw-iw-end' ) );
+	liw_st_check( 'IW: Funktions-Hub verlinkt gebaute Bereiche (Local Intelligence + Interface Solutions)', str_contains( $__world, 'liw-iw__hub' ) && str_contains( $__world, 'Local Intelligence' ) && str_contains( $__world, 'Interface Solutions' ) && substr_count( $__world, 'liw-iw__tile--live' ) >= 2 );
 	liw_st_check( 'IW: Demo-Code Standard (WorldContent)', 'LIEBHERR-DEMO' === \Liebherr\InterfaceWorld\IntelligenceWorld\WorldContent::access_code() );
 	liw_st_check( 'IW: REST-Route liw-iw/v1 registriert', in_array( '/' . \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::NAMESPACE, array_keys( rest_get_server()->get_routes() ), true ) || array_key_exists( '/' . \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::NAMESPACE . '/session/start', rest_get_server()->get_routes() ) );
 	// Access-Gate serverseitig (Code-Prüfung, alpha.49-Fix: öffentliche Endpunkte).

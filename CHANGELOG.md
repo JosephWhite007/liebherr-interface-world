@@ -1,5 +1,23 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.50] – 2026-09-19 – Intelligence World: Funktions-Hub nach dem Eintritt
+
+### Hinzugefügt
+- **Funktions-Hub nach dem Eintreten:** Nach dem Access Gate erscheint in der Welt ein Kachel-Hub, der auf
+  die bereits gebauten Bereiche **umschaltet** – **Local Intelligence** und **Interface Solutions** als
+  Live-Kacheln (URLs über die Seiten-Registry `SitePages`, nicht hart codiert). **Produktsegmente & Lösungswelt**,
+  **Hotelwelt** und **Simulation Builder** werden als „in Vorbereitung" gezeigt (nächste Etappen). Erweiterbar
+  über Filter `liw_iw_hub_tiles`. Die Sitzungs-/Kostenleiste läuft dabei weiter.
+
+### Behoben
+- **IW-CSS/JS wurde ohne Version ausgeliefert** (Umgebung strippt `?ver`) → geänderte Styles kamen im Browser
+  nicht an (Hub-Kacheln erschienen als Aufzählung). filemtime-Cache-Buster (`?v=`) für `liw-intelligence-world.css/js`
+  ergänzt (Muster wie beim Haupt-Stylesheet).
+
+### Verifikation
+- `tests/run-tests.php` **276/276**, `scripts/liw-selftest.php` **269/269** (Hub verlinkt Local Intelligence +
+  Interface Solutions). Browser: nach Eintritt Hub-Kacheln korrekt gestylt, Live-Links auf die gebauten Seiten.
+
 ## [0.1.0-alpha.49] – 2026-09-19 – IW-Fixes: Code-Prüfung, Pflichtfeld-Sternchen, Favicon „goldener Planet"
 
 ### Behoben

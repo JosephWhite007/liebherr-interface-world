@@ -25,6 +25,9 @@ Consent + Preis + Storage-Budget), Sitzungs-/Kostenleiste (§7) via REST `liw-iw
 Standard-Demo-Code „LIEBHERR-DEMO"), Pflichtfeld-Sternchen mit Legende, Website-Icon „goldener Planet"
 (SVG site-weit; offizielle PNG via Customizer → Website-Icon nachrüstbar). Härtung (frisches Token) vor Produktiv.
 
+**Geliefert (alpha.50):** Funktions-Hub nach dem Eintritt (Kacheln zu Local Intelligence + Interface Solutions
+über SitePages; kommende Bereiche „in Vorbereitung"; Filter `liw_iw_hub_tiles`). Cache-Buster für IW-Assets.
+
 **Offen / nächste Etappen:**
 - Navigation & Hotels: administrierbare 14-Punkte-Taxonomie inkl. Untermenüs + Master-Linkmodell (§19.1),
   Hotels-Welt (6 Knoten, §6.3).

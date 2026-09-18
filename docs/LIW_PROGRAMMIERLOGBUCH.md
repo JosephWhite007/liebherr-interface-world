@@ -12,6 +12,19 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.50 – Intelligence World: Funktions-Hub nach dem Eintritt
+
+**Geändert:** `src/IntelligenceWorld/WorldView.php` – World-Body zeigt nach dem Eintritt einen Kachel-Hub
+(neue `hub_tiles()`: Live-Kacheln Local Intelligence + Interface Solutions über `SitePages`, „in Vorbereitung"
+für Produktsegmente/Hotels/Simulation Builder; Filter `liw_iw_hub_tiles`); zusätzlich filemtime-Cache-Buster
+`bust()` für die eigenen IW-Assets (Umgebung strippt `?ver`). `assets/css/liw-intelligence-world.css` –
+`.liw-iw__hub`/`.liw-iw__tile*`-Regeln. `scripts/liw-selftest.php` (+Hub-Prüfung), `CHANGELOG.md`,
+`docs/LOGBUCH_TECHNIK.md`, `docs/LIW_TODO.md`, `src/Admin/Pages/HandbookPage.php`, Version alpha.50.
+**Grund:** Nutzerwunsch – nach dem Eintritt in die Intelligence World auf die bereits gebauten
+Funktionalitäten „umschalten".
+**Falle:** IW-CSS ohne `?ver` → Hub-Kacheln erschienen als Aufzählung; Cache-Buster behob es (wie Haupt-CSS).
+**Prüfung:** `php -l`; run-tests 276/276, liw-selftest 269/269; Browser: Hub gestylt, Live-Links ok.
+
 ## 0.1.0-alpha.49 – IW-Fixes: Code-Prüfung, Pflichtfeld-Sternchen, Favicon
 
 **Geändert:** `src/IntelligenceWorld/Rest.php` – `routes()` nutzt `__return_true` statt Nonce-Zwang

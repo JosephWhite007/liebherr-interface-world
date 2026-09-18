@@ -8,6 +8,19 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-19 · Intelligence World – Funktions-Hub nach dem Eintritt (0.1.0-alpha.50)
+
+**Frage/Kontext.** Nutzerwunsch: Nach dem Eintritt in die Intelligence World auf die bereits gebauten
+Funktionalitäten „umschalten".
+
+**Entscheidung (Kategorie B).** Kachel-Hub in der eingetretenen Welt, der die vorhandenen Bereiche über die
+Seiten-Registry (`SitePages`) verlinkt (Local Intelligence, Interface Solutions), kommende als „in Vorbereitung".
+Kein Iframe/Embed, keine harten URLs; per Filter `liw_iw_hub_tiles` erweiterbar (spätere 14-Punkte-Taxonomie).
+Session läuft weiter. **Falle:** IW-CSS wurde ohne `?ver` ausgeliefert (Umgebung strippt Query-Strings) →
+Hub erschien ungestylt; filemtime-`?v=`-Cache-Buster ergänzt (wie beim Haupt-Stylesheet).
+
+**Quelle/Version.** Nutzerwunsch 19.09.2026; 0.1.0-alpha.50. Prüfung: run-tests 276/276, liw-selftest 269/269.
+
 ### 2026-09-19 · IW-Fixes: Code-Prüfung (Cache/Nonce), Pflichtfeld-Sternchen, Favicon (0.1.0-alpha.49)
 
 **Frage/Kontext.** Nutzerbefund: Eintritts-Code wird trotz korrekter Eingabe abgewiesen; Sternchen ohne

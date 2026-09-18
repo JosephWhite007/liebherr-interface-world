@@ -67,8 +67,21 @@
 .liw-iw[data-liw-level="high"] .liw-iw__budget-fill { background: #ffab2e; }
 .liw-iw[data-liw-level="limit"] .liw-iw__budget-fill { background: #ff5b5b; }
 .liw-iw__end { margin-left: auto; }
-.liw-iw__world-body { padding: 2.5rem 4vw; }
-.liw-iw__demo-note { max-width: 60ch; color: var(--iw-ice); }
+.liw-iw__world-body { padding: 2.5rem 4vw; max-width: var(--content-max, 1440px); margin: 0 auto; }
+.liw-iw__hub-title { font-family: var(--font-heading, Arial, sans-serif); font-weight: 900; font-size: clamp(1.4rem, 3vw, 2rem); margin: 0 0 .5rem; }
+.liw-iw__demo-note { max-width: 70ch; color: var(--iw-ice); margin: 0 0 1.6rem; }
+.liw-iw__hub { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; grid-template-columns: 1fr; }
+.liw-iw__tile { border: 1px solid rgba(142,216,255,.2); border-radius: 8px; background: rgba(6,28,51,.4); padding: 1.2rem; display: flex; flex-direction: column; gap: .4rem; }
+.liw-iw__tile--live { transition: border-color .2s ease, transform .2s ease; }
+.liw-iw__tile--live:hover, .liw-iw__tile--live:focus-within { border-color: var(--iw-yellow); transform: translateY(-2px); }
+.liw-iw__tile-link { display: flex; flex-direction: column; gap: .4rem; text-decoration: none; color: inherit; }
+.liw-iw__tile-title { font-weight: 700; font-size: 1.15rem; color: var(--iw-white); }
+.liw-iw__tile-desc { color: rgba(247,249,251,.75); font-size: .95rem; line-height: 1.45; }
+.liw-iw__tile-cta { margin-top: .3rem; color: var(--iw-yellow); font-weight: 700; }
+.liw-iw__tile--soon { opacity: .6; }
+.liw-iw__tile-badge { align-self: flex-start; margin-top: .3rem; font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; border: 1px solid var(--iw-gray); color: var(--iw-gray); border-radius: 999px; padding: .1rem .55rem; }
+@media (min-width: 720px) { .liw-iw__hub { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1080px) { .liw-iw__hub { grid-template-columns: repeat(3, 1fr); } }
 .liw-iw__protocol { margin-top: 1.5rem; padding: 1rem 1.2rem; border: 1px solid rgba(142,216,255,.2); border-radius: 6px; background: rgba(6,28,51,.4); font-variant-numeric: tabular-nums; }
 .liw-iw__protocol[hidden] { display: none; }
 

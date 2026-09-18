@@ -30,6 +30,25 @@ final class WorldView {
 	public static function register(): void {
 		add_shortcode( self::SHORTCODE, [ self::class, 'render' ] );
 		add_action( 'wp_enqueue_scripts', [ self::class, 'maybe_enqueue' ] );
+		// Cache-Busting: manche Umgebungen strippen `?ver` von statischen Assets (bekannte Falle). Wir hängen
+		// spät eine filemtime-`?v=` an die eigenen Dateien an (überlebt das Stripping), damit CSS/JS-Änderungen
+		// im Browser ankommen. Muster wie Frontend\FrontendAssets::bust_src.
+		add_filter( 'style_loader_src', [ self::class, 'bust' ], 9999, 2 );
+		add_filter( 'script_loader_src', [ self::class, 'bust' ], 9999, 2 );
+	}
+
+	/** Hängt für die eigenen IW-Assets eine filemtime-`?v=` an, falls sie fehlt. */
+	public static function bust( $src, $handle ) {
+		if ( self::HANDLE !== $handle || ! is_string( $src ) || false !== strpos( $src, 'v=' ) ) {
+			return $src;
+		}
+		if ( false !== strpos( $src, 'assets/css/liw-intelligence-world.css' ) ) {
+			return add_query_arg( 'v', self::ver( 'assets/css/liw-intelligence-world.css' ), $src );
+		}
+		if ( false !== strpos( $src, 'assets/js/liw-intelligence-world.js' ) ) {
+			return add_query_arg( 'v', self::ver( 'assets/js/liw-intelligence-world.js' ), $src );
+		}
+		return $src;
 	}
 
 	public static function maybe_enqueue(): void {
@@ -135,13 +154,82 @@ final class WorldView {
 					<button type="button" class="liw-cta liw-cta--secondary liw-iw__end" data-liw-iw-end><?php echo esc_html__( 'Sitzung beenden', 'liebherr-interface-world' ); ?></button>
 				</div>
 				<div class="liw-iw__world-body">
-					<p class="liw-iw__demo-note"><?php echo esc_html__( 'Sie sind in der Intelligence World (Prototyp). Der Globus mit Produktsegmenten, Lösungswelt und Hotels sowie der Simulation Builder folgen in der nächsten Etappe. Alle Zahlen sind Beispieldaten.', 'liebherr-interface-world' ); ?></p>
+					<h2 class="liw-iw__hub-title"><?php echo esc_html__( 'Funktionsbereiche', 'liebherr-interface-world' ); ?></h2>
+					<p class="liw-iw__demo-note"><?php echo esc_html__( 'Sie sind in der Intelligence World (Prototyp, Beispieldaten). Wählen Sie einen Bereich. Produktsegmente, Lösungswelt, Hotels und der Simulation Builder folgen in weiteren Etappen.', 'liebherr-interface-world' ); ?></p>
+					<ul class="liw-iw__hub" role="list">
+						<?php foreach ( self::hub_tiles() as $tile ) : ?>
+							<?php if ( $tile['enabled'] && '' !== $tile['url'] ) : ?>
+								<li class="liw-iw__tile liw-iw__tile--live">
+									<a class="liw-iw__tile-link" href="<?php echo esc_url( $tile['url'] ); ?>">
+										<span class="liw-iw__tile-title"><?php echo esc_html( $tile['label'] ); ?></span>
+										<span class="liw-iw__tile-desc"><?php echo esc_html( $tile['desc'] ); ?></span>
+										<span class="liw-iw__tile-cta"><?php echo esc_html__( 'Öffnen →', 'liebherr-interface-world' ); ?></span>
+									</a>
+								</li>
+							<?php else : ?>
+								<li class="liw-iw__tile liw-iw__tile--soon" aria-disabled="true">
+									<span class="liw-iw__tile-title"><?php echo esc_html( $tile['label'] ); ?></span>
+									<span class="liw-iw__tile-desc"><?php echo esc_html( $tile['desc'] ); ?></span>
+									<span class="liw-iw__tile-badge"><?php echo esc_html__( 'in Vorbereitung', 'liebherr-interface-world' ); ?></span>
+								</li>
+							<?php endif; ?>
+						<?php endforeach; ?>
+					</ul>
 					<div class="liw-iw__protocol" data-liw-iw-protocol hidden></div>
 				</div>
 			</section>
 		</div>
 		<?php
 		return (string) ob_get_clean();
+	}
+
+	/**
+	 * Funktions-Hub nach dem Eintritt: verlinkt die bereits gebauten Bereiche (über die Seiten-Registry,
+	 * nicht hart codiert) und zeigt die kommenden als „in Vorbereitung". Erweiterbar via Filter
+	 * `liw_iw_hub_tiles` (spätere Etappe: administrierbare 14-Punkte-Taxonomie/Hotels, §3/§19).
+	 *
+	 * @return array<int,array{label:string,desc:string,url:string,enabled:bool}>
+	 */
+	private static function hub_tiles(): array {
+		$li = \Liebherr\InterfaceWorld\Content\SitePages::li_url();
+		$if = \Liebherr\InterfaceWorld\Content\SitePages::interface_url();
+
+		$tiles = [
+			[
+				'label'   => __( 'Local Intelligence', 'liebherr-interface-world' ),
+				'desc'    => __( 'Geschützte lokale Entscheidungsräume: Simulieren, Verstehen, Entscheiden.', 'liebherr-interface-world' ),
+				'url'     => $li,
+				'enabled' => '' !== $li,
+			],
+			[
+				'label'   => __( 'Interface Solutions', 'liebherr-interface-world' ),
+				'desc'    => __( 'Technisches Herzstück: Schnittstellen, Konverter, Datenflüsse.', 'liebherr-interface-world' ),
+				'url'     => $if,
+				'enabled' => '' !== $if,
+			],
+			[
+				'label'   => __( 'Produktsegmente & Lösungswelt', 'liebherr-interface-world' ),
+				'desc'    => __( '13 Produktsegmente + übergreifende Lösungswelt als Globus-Navigation.', 'liebherr-interface-world' ),
+				'url'     => '',
+				'enabled' => false,
+			],
+			[
+				'label'   => __( 'Hotelwelt', 'liebherr-interface-world' ),
+				'desc'    => __( 'Sechs Liebherr-Hotels als eigene Erlebnis- und Simulationsknoten.', 'liebherr-interface-world' ),
+				'url'     => '',
+				'enabled' => false,
+			],
+			[
+				'label'   => __( 'Simulation Builder', 'liebherr-interface-world' ),
+				'desc'    => __( 'Geführte Szenarien, Forecasts und Auswertungen (Beispieldaten).', 'liebherr-interface-world' ),
+				'url'     => '',
+				'enabled' => false,
+			],
+		];
+
+		/** @var array<int,array{label:string,desc:string,url:string,enabled:bool}> $tiles */
+		$tiles = apply_filters( 'liw_iw_hub_tiles', $tiles );
+		return is_array( $tiles ) ? $tiles : [];
 	}
 
 	/** Dekoratives Blue-Planet-SVG (Erde + Orbit + Lichtpunkte), rein statisch. */
