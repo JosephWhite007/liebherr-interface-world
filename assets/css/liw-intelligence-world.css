@@ -1,0 +1,87 @@
+/**
+ * Liebherr Intelligence World – Blue-Planet-Landing, Eintrittsschleuse & Sitzungsleiste (§4/§7/§17).
+ * Eigenes, klein-scopiges Stylesheet (nur auf Seiten mit [liw_intelligence_world]). Gestaltungssystem §17;
+ * Gelb (--brand-primary/CI) für Aktion/Warnung, Blau für Welt. prefers-reduced-motion respektiert.
+ */
+.liw-iw {
+	--iw-space: #05070B;
+	--iw-ocean: #061C33;
+	--iw-planet: #0C5EA8;
+	--iw-ice: #8ED8FF;
+	--iw-yellow: var(--brand-primary, #FFDD00);
+	--iw-white: #F7F9FB;
+	--iw-gray: #65717D;
+	font-family: var(--font-body, Arial, Helvetica, sans-serif);
+	color: var(--iw-white);
+	background: var(--iw-space);
+}
+
+/* Hero „Blue Planet" */
+.liw-iw__hero { position: relative; overflow: hidden; min-height: 78vh; display: flex; align-items: center; background: radial-gradient(120% 120% at 70% 20%, var(--iw-ocean) 0%, var(--iw-space) 70%); }
+.liw-iw__planet { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+.liw-iw__planet-svg { width: min(120vh, 100%); height: 100%; opacity: .9; }
+.liw-iw__orbit { fill: none; stroke: rgba(142,216,255,.18); stroke-width: 1; transform-origin: 300px 300px; }
+.liw-iw__orbit--2 { stroke: rgba(142,216,255,.10); }
+.liw-iw__globe-ring { fill: none; stroke: rgba(142,216,255,.35); stroke-width: 1.5; }
+.liw-iw__node { fill: var(--iw-yellow); }
+.liw-iw__hero-inner { position: relative; z-index: 1; max-width: var(--content-max, 1440px); margin: 0 auto; padding: 3rem 4vw; }
+.liw-iw__eyebrow { letter-spacing: .18em; text-transform: uppercase; font-size: .8rem; color: var(--iw-yellow); margin: 0 0 1rem; }
+.liw-iw__headline { font-family: var(--font-heading, Arial, sans-serif); font-weight: 900; font-size: clamp(2rem, 6vw, 4rem); line-height: 1.05; margin: 0 0 1rem; }
+.liw-iw__subline { max-width: 46ch; font-size: 1.2rem; line-height: 1.5; color: rgba(247,249,251,.9); margin: 0 0 1.6rem; }
+.liw-iw__enter { display: inline-block; }
+.liw-iw__provider { margin: 1.4rem 0 0; font-size: .78rem; color: var(--iw-gray); }
+
+/* Eintrittsschleuse */
+.liw-iw__gate { padding: 3rem 4vw; background: var(--iw-space); border-top: 1px solid rgba(142,216,255,.12); }
+.liw-iw__gate[hidden] { display: none; }
+.liw-iw__gate-card { max-width: 640px; margin: 0 auto; background: rgba(6,28,51,.55); border: 1px solid rgba(142,216,255,.18); border-radius: 10px; padding: 1.6rem; }
+.liw-iw__gate-heading { font-family: var(--font-heading, Arial, sans-serif); font-weight: 900; margin: 0 0 .6rem; font-size: 1.4rem; }
+.liw-iw__note { color: var(--iw-ice); font-size: .92rem; margin: 0 0 1.2rem; }
+.liw-iw__field { display: block; margin: 0 0 1rem; }
+.liw-iw__field-label { display: block; font-weight: 700; margin-bottom: .3rem; }
+.liw-iw__code { width: 100%; max-width: 20rem; font: inherit; padding: .55rem .7rem; border: 1px solid rgba(142,216,255,.4); border-radius: 4px; background: rgba(255,255,255,.95); color: #111; }
+.liw-iw__terms-toggle { font: inherit; cursor: pointer; background: transparent; border: 1px solid rgba(142,216,255,.4); color: var(--iw-white); border-radius: 4px; padding: .45rem .8rem; margin: 0 0 1rem; }
+.liw-iw__terms-toggle:hover, .liw-iw__terms-toggle:focus-visible { border-color: var(--iw-yellow); color: var(--iw-yellow); }
+.liw-iw__terms { max-height: 40vh; overflow: auto; background: rgba(5,7,11,.5); border: 1px solid rgba(142,216,255,.14); border-radius: 4px; padding: .9rem 1rem; margin: 0 0 1rem; font-size: .9rem; color: rgba(247,249,251,.85); line-height: 1.5; }
+.liw-iw__terms[hidden] { display: none; }
+.liw-iw__terms .liw-intro__terms-section { color: var(--iw-yellow); }
+.liw-iw__price { font-size: .92rem; margin: 0 0 .5rem; }
+.liw-iw__price-info { font-size: .85rem; color: var(--iw-ice); margin: 0 0 1.2rem; }
+.liw-iw__consent { display: flex; gap: .6rem; align-items: flex-start; margin: 0 0 .8rem; font-size: .92rem; line-height: 1.4; }
+.liw-iw__consent input { margin-top: .2rem; }
+.liw-iw__confirm { margin-top: .6rem; }
+.liw-iw__confirm[disabled] { opacity: .5; cursor: not-allowed; }
+.liw-iw__gate-msg { min-height: 1.2em; margin: .6rem 0 0; color: var(--iw-yellow); font-size: .9rem; }
+
+/* Welt + Sitzungs-/Kostenleiste */
+.liw-iw__world[hidden] { display: none; }
+.liw-iw__statusbar { position: sticky; top: 0; z-index: 30; display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; padding: .7rem 4vw; background: rgba(5,7,11,.92); border-bottom: 1px solid rgba(142,216,255,.2); }
+.liw-iw__stat { display: inline-flex; align-items: center; gap: .5rem; font-variant-numeric: tabular-nums; }
+.liw-iw__stat-k { color: var(--iw-gray); font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; }
+.liw-iw__stat--budget { min-width: 220px; }
+.liw-iw__budget { display: inline-block; width: 120px; height: 8px; border-radius: 999px; background: rgba(142,216,255,.18); overflow: hidden; }
+.liw-iw__budget-fill { display: block; height: 100%; width: 0; background: var(--iw-ice); transition: width .5s ease; }
+.liw-iw[data-liw-level="mid"]  .liw-iw__budget-fill { background: var(--iw-yellow); }
+.liw-iw[data-liw-level="high"] .liw-iw__budget-fill { background: #ffab2e; }
+.liw-iw[data-liw-level="limit"] .liw-iw__budget-fill { background: #ff5b5b; }
+.liw-iw__end { margin-left: auto; }
+.liw-iw__world-body { padding: 2.5rem 4vw; }
+.liw-iw__demo-note { max-width: 60ch; color: var(--iw-ice); }
+.liw-iw__protocol { margin-top: 1.5rem; padding: 1rem 1.2rem; border: 1px solid rgba(142,216,255,.2); border-radius: 6px; background: rgba(6,28,51,.4); font-variant-numeric: tabular-nums; }
+.liw-iw__protocol[hidden] { display: none; }
+
+/* Bewegung: langsame Erdrotation + dezent pulsierende Knoten (§17). */
+@media (prefers-reduced-motion: no-preference) {
+	.liw-iw__orbit { animation: liw-iw-spin 90s linear infinite; }
+	.liw-iw__orbit--2 { animation-duration: 140s; animation-direction: reverse; }
+	.liw-iw__node { animation: liw-iw-pulse 3.2s ease-in-out infinite; }
+	.liw-iw__node:nth-child(2n) { animation-delay: 1.1s; }
+	.liw-iw__node:nth-child(3n) { animation-delay: 2s; }
+}
+@keyframes liw-iw-spin { to { transform: rotate(360deg); } }
+@keyframes liw-iw-pulse { 0%, 100% { opacity: .4; } 50% { opacity: 1; } }
+
+@media (max-width: 700px) {
+	.liw-iw__statusbar { gap: .5rem 1rem; }
+	.liw-iw__end { margin-left: 0; }
+}

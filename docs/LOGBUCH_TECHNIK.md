@@ -8,6 +8,23 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-19 · Intelligence World – Eintritt & Welt (0.1.0-alpha.48)
+
+**Frage/Kontext.** Phase 2 nach dem Fundament: Blue-Planet-Landing, Eintrittsschleuse und Sitzungs-/Kostenleiste.
+
+**Entscheidungen (Kategorie B).**
+- **REST statt AJAX** (`liw-iw/v1`) für Start/Heartbeat/Ende/Status; Nonce `X-LIW-Nonce` (CSRF). Client zeigt
+  nur an, Timing/Kosten kommen serverseitig (§9). Ticker extrapoliert zwischen 15-s-Heartbeats für flüssige Anzeige.
+- **Prototyp-Defaults** (JW-Ermessen, alle administrierbar über `liw_iw_world`): Demo-Code `LIEBHERR-DEMO`
+  (kein echtes Login, §21), 2,50 €/min, 50 € Sitzungsbudget, 5 MB Speicher. Kein echtes Payment.
+- **Wiederverwendung** der Nutzungsbedingungen (5.1–5.8) und des Terms-Renderers aus dem Intro (keine Redundanz).
+- Eigene Assets (`liw-intelligence-world.css/js`) statt Aufblähen des Haupt-Bundles (nur auf der IW-Seite geladen).
+- Blue-Planet als **dekoratives Inline-SVG** (Orbits/Knoten), `prefers-reduced-motion` schaltet Rotation/Puls ab;
+  Listen-/Kartenalternative für den Globus folgt mit der Navigation (§17/§20.10-11).
+
+**Quelle/Version.** Pflichtenheft-2 §4/§7/§9/§17; 0.1.0-alpha.48. Prüfung: run-tests 273/273, liw-selftest 264/264,
+Browser end-to-end. Nächste Etappen in `docs/IMPLEMENTATION_NOTES.md`.
+
 ### 2026-09-19 · Intelligence World – Fundament (0.1.0-alpha.47)
 
 **Frage/Kontext.** Zweites Pflichtenheft „Liebherr Intelligence World" (globale Simulations-/Nutzungs-/

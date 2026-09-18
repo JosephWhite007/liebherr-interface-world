@@ -44,10 +44,26 @@ Dieses Dokument wird je Etappe fortgeschrieben (neueste zuerst).
 Docker (`scripts/liw-selftest.php` Block [8c]) für DB-Lebenszyklus, aktive-Sekunden-Berechnung,
 Hash-Ketten-Prüfung, Idempotenz und Manipulationserkennung.
 
+## Etappe „Eintritt & Welt" (0.1.0-alpha.48)
+
+**Umgesetzt:** Blue-Planet-Landing (§4.1, dekoratives Planet-SVG + Orbits/Knoten, reduced-motion-fest),
+Eintrittsschleuse/Access Gate (§4.2: Code + Prototyp-/Preishinweis + Nutzungsbedingungen 5.1–5.8 + zwei
+Pflicht-Einwilligungen + Bestätigung erst bei Code & beiden Zustimmungen), Sitzungs-/Kostenleiste (§7:
+Zeit, Basiskosten, Budget-Balken mit Warnstufen 50/80/100 %, „Sitzung beenden"). Serverseitig über REST
+`liw-iw/v1` (start/heartbeat/end/status), Nonce-geschützt; Abrechnung/Timing serverseitig, Client nur Anzeige.
+
+**Entschieden (Prototyp-Defaults, administrierbar über Option `liw_iw_world`):**
+- Access-Code = **Demo-Code `LIEBHERR-DEMO`** (kein echtes Login/keine echte Authentifizierung, §21).
+- Demo-Tarife: **2,50 €/min** Basiszeit, **50 €** Sitzungsbudget (nur Warnschwellen), **5 MB** Speicher-Grundbudget.
+- Terms: Wiederverwendung der vollständigen 5.1–5.8 aus `LocalIntelligenceContent::default_terms()`.
+
+**Noch nicht in dieser Etappe:** Modul-/Compute-Metering-Kosten in der Leiste (nur Basiszeit), Storage-
+Manager-Interaktion, echte Warn-Dialoge mit Hard-/Soft-Limit-Stop (aktuell Anzeige/Warntext).
+
 ## Offen / nächste Etappen (Vorschlag)
 
-1. **Eintritt & Welt:** Blue-Planet-Landing (§4.1), Eintrittsschleuse/Access Gate (§4.2, Code + Consent +
-   Preis + Storage-Budget), Sitzungsticker/Kostenanzeige (§7). Consent-Wiederverwendung aus Local Intelligence.
+1. ~~**Eintritt & Welt:** Blue-Planet-Landing (§4.1), Access Gate (§4.2), Sitzungsticker/Kostenanzeige (§7)~~
+   — **erledigt in alpha.48.**
 2. **Navigation & Hotels:** administrierbare 14-Punkte-Taxonomie inkl. Untermenüs + Master-Linkmodell (§19.1),
    Hotels-Welt (6 Knoten, §3/§6.3).
 3. **Simulation & Protokoll:** Simulation Builder (§6.4), Compute-Metering (Mock), Usage Ledger →
@@ -59,6 +75,7 @@ Hash-Ketten-Prüfung, Idempotenz und Manipulationserkennung.
 
 - Blue-Planet-Visual: eigenständige 3D-/SVG-Umsetzung vs. Wiederverwendung/Erweiterung des vorhandenen
   Hero-Visuals; Umfang der Animation.
-- Access-Gate-Code: fester Demo-Code, per-Nutzer-Code oder Anbindung an bestehende Rollen/Logins?
-- Tarifmodell für den Prototyp: konkrete Demo-Preise/Kontingente (nur Beispieldaten).
+- ~~Access-Gate-Code~~ (alpha.48: fester Demo-Code `LIEBHERR-DEMO`; per-Nutzer-Code/Login-Anbindung offen für Produktiv).
+- ~~Tarifmodell Prototyp~~ (alpha.48: Demo 2,50 €/min + 50 € Budget + 5 MB; Pricing Engine mit Kontingenten später).
+- Modul-/Compute-Gebühren in der Sitzungsleiste (aktuell nur Basiszeit) — nächste Etappen.
 - Mehrsprachigkeit der neuen Inhalte: gleicher Workflow wie Local Intelligence (offen, s. LIW_TODO).

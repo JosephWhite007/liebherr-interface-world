@@ -645,6 +645,17 @@ try {
 	$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . \Liebherr\InterfaceWorld\IntelligenceWorld\Schema::session_table() . ' WHERE session_code = %s', $__code ) ); // phpcs:ignore WordPress.DB
 	liw_st_check( 'IW: Testdaten entfernt', null === $IWS::get( $__code ) );
 
+	// ── [8d] Intelligence World – Phase 2 (Eintritt/Welt, alpha.48) ──
+	echo "\n[8d] Intelligence World – Eintritt/Welt\n";
+	liw_st_check( 'IW: Shortcode [liw_intelligence_world] registriert', shortcode_exists( 'liw_intelligence_world' ) );
+	$__world = do_shortcode( '[liw_intelligence_world]' );
+	liw_st_check( 'IW: Blue-Planet-Hero + Planet-SVG', str_contains( $__world, 'liw-iw__hero' ) && str_contains( $__world, 'liw-iw__planet-svg' ) );
+	liw_st_check( 'IW: Eintrittsschleuse (Code + 2 Einwilligungen + Bestätigung)', str_contains( $__world, 'data-liw-iw-code' ) && 2 === substr_count( $__world, 'data-liw-iw-consent=' ) && str_contains( $__world, 'data-liw-iw-confirm' ) );
+	liw_st_check( 'IW: Nutzungsbedingungen (5.1–5.8) in der Schleuse eingebunden', str_contains( $__world, '5.1 Prototypstatus' ) && str_contains( $__world, '5.8 Rechtlicher Freigabevorbehalt' ) );
+	liw_st_check( 'IW: Sitzungs-/Kostenleiste + Beenden', str_contains( $__world, 'data-liw-iw-time' ) && str_contains( $__world, 'data-liw-iw-budgetfill' ) && str_contains( $__world, 'data-liw-iw-end' ) );
+	liw_st_check( 'IW: Demo-Code Standard (WorldContent)', 'LIEBHERR-DEMO' === \Liebherr\InterfaceWorld\IntelligenceWorld\WorldContent::access_code() );
+	liw_st_check( 'IW: REST-Route liw-iw/v1 registriert', in_array( '/' . \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::NAMESPACE, array_keys( rest_get_server()->get_routes() ), true ) || array_key_exists( '/' . \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::NAMESPACE . '/session/start', rest_get_server()->get_routes() ) );
+
 	// ── [9] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
 	echo "\n[9] Programmierlogbuch / To-Dos\n";
 	liw_st_check( 'docs/LIW_PROGRAMMIERLOGBUCH.md vorhanden', is_readable( LIW_PATH . 'docs/LIW_PROGRAMMIERLOGBUCH.md' ) );

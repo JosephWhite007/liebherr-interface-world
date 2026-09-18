@@ -64,6 +64,8 @@ final class Bootstrap {
 		LandingpageView::register();
 		IntroOverlay::register();          // Intro-Overlay (Sternenregen + Eintritts-Fenster).
 		LocalIntelligenceView::register(); // Hauptseite Local Intelligence (11 Module, LI-Pflichtenheft §8).
+		IntelligenceWorld\Rest::register();      // Intelligence World REST (Eintritt/Sitzung, Pflichtenheft-2 §4.2/§7).
+		IntelligenceWorld\WorldView::register(); // Intelligence World Frontend (Blue Planet + Eintrittsschleuse).
 		LegacyRedirect::register();        // 301 Altroute /interface-world/ → Unterseite (LI §3.2).
 		PartnerDocumentsView::register();
 		FrontendAssets::register();

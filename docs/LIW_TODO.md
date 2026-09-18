@@ -17,9 +17,11 @@ Stand: 18.09.2026 (0.1.0-alpha.41).
 `SessionMeter` (aktive Zeit §13.1), `EventLog` (Hash-Kette + Idempotenz §16), `SessionService`
 (Start/Heartbeat/Pause/Resume/Ende + Timeout). Details/Entscheidungen: `docs/IMPLEMENTATION_NOTES.md`.
 
+**Geliefert (alpha.48) – Eintritt & Welt:** Blue-Planet-Landing (§4.1), Access Gate (§4.2: Demo-Code +
+Consent + Preis + Storage-Budget), Sitzungs-/Kostenleiste (§7) via REST `liw-iw/v1`; Seite
+`/liebherr-intelligence-world/` + Menüpunkt „🪐 Intelligence World". Demo-Defaults in `liw_iw_world`.
+
 **Offen / nächste Etappen:**
-- Eintritt & Welt: Blue-Planet-Landing (§4.1), Access Gate (§4.2: Code + Consent + Preis + Storage-Budget),
-  Sitzungsticker/Kostenanzeige (§7).
 - Navigation & Hotels: administrierbare 14-Punkte-Taxonomie inkl. Untermenüs + Master-Linkmodell (§19.1),
   Hotels-Welt (6 Knoten, §6.3).
 - Simulation & Protokoll: Simulation Builder (§6.4), Compute-Metering (Mock), Nutzungs-/Kostenprotokoll

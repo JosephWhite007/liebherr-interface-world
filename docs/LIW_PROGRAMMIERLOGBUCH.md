@@ -12,6 +12,24 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.48 – Intelligence World: Eintritt & Welt (Blue Planet, Access Gate, Sitzungsleiste)
+
+**Neu (`src/IntelligenceWorld/`):** `WorldContent.php` (Option liw_iw_world: Landing/Gate-Texte + Prototyp-
+Tarife/Budgets + Demo-Code; defaults/sanitize/get/save rein), `Rest.php` (REST liw-iw/v1 start/heartbeat/
+end/status, Nonce X-LIW-Nonce; reine billing_status()/format_duration()), `WorldView.php` (Shortcode
+[liw_intelligence_world]: Planet-SVG-Hero + Eintrittsschleuse + Sitzungsleiste; Terms via Wiederverwendung
+IntroOverlay::terms_html(LocalIntelligenceContent::default_terms())).
+`assets/css/liw-intelligence-world.css`, `assets/js/liw-intelligence-world.js` (Gate→REST-Start→Ticker/
+Heartbeat→Ende, Budget-Warnungen 50/80/100 %). `scripts/liw-seed-intelligence-world.php`.
+**Geändert:** `src/Bootstrap.php` (Rest+WorldView register), `src/Frontend/RocketCompat.php` (.liw-iw),
+`src/Admin/AdminMenu.php` (Frontpage-Link „🪐 Intelligence World" + iw_url()), `tests/run-tests.php` (+Phase-2),
+`scripts/liw-selftest.php` (+Block [8d]), `docs/IMPLEMENTATION_NOTES.md`, `CHANGELOG.md`,
+`docs/LOGBUCH_TECHNIK.md`, `docs/LIW_TODO.md`, `src/Admin/Pages/HandbookPage.php`, Version alpha.48.
+**Entscheidungen (Prototyp-Defaults, administrierbar):** Access-Code = Demo-Code `LIEBHERR-DEMO` (kein echtes
+Login, §21); Demo-Tarife 2,50 €/min, Sitzungsbudget 50 €, Speicher 5 MB.
+**Bug beim Bau:** Seeder-Echo mit ASCII-`"` in dt. Anführungszeichen (Parse-Fehler) → auf „…“ korrigiert.
+**Prüfung:** `php -l`; run-tests 273/273, liw-selftest 264/264; Browser end-to-end (Start/Ticker/Ende) ok.
+
 ## 0.1.0-alpha.47 – Intelligence World: Fundament (Datenmodell, Ereignis-Ledger, Session-Meter)
 
 **Neu (`src/IntelligenceWorld/`):** `Schema.php` (Tabellen liw_iw_session + liw_iw_event, dbDelta,

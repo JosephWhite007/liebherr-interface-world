@@ -307,6 +307,19 @@ liw_assert( 'EventLog: Kette verknüpft (prev_hash geht ein)', $h2 !== EventLog:
 $core1_tampered = $core1; $core1_tampered['occurred_at'] = '2026-09-19 09:00:00';
 liw_assert( 'EventLog: Manipulation ändert Hash', EventLog::hash( '', $core1 ) !== EventLog::hash( '', $core1_tampered ), $checks, $failures );
 
+// 2o. Intelligence World – Phase 2 (Eintritt/Billing-Anzeige, alpha.48) – reine Logik ohne WP.
+echo "-- Intelligence World Phase 2 (alpha.48) --\n";
+require_once $root . '/src/IntelligenceWorld/WorldContent.php';
+require_once $root . '/src/IntelligenceWorld/Rest.php';
+$iw_def = \Liebherr\InterfaceWorld\IntelligenceWorld\WorldContent::defaults();
+liw_assert( 'WorldContent: landing/gate/pricing + Demo-Code', isset( $iw_def['landing'], $iw_def['gate'], $iw_def['pricing'] ) && 'LIEBHERR-DEMO' === $iw_def['pricing']['access_code'], $checks, $failures );
+liw_assert( 'WorldContent: sanitize([]) == defaults()', \Liebherr\InterfaceWorld\IntelligenceWorld\WorldContent::sanitize( [] ) === $iw_def, $checks, $failures );
+$bs = \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::billing_status( 120, 250, 5000 );
+liw_assert( 'Rest::billing_status: 120s×2,50/min = 5,00 (500 Cent), 10 %', 500 === $bs['base_cost_minor'] && 10 === $bs['budget_pct'] && 'ok' === $bs['level'], $checks, $failures );
+$bs2 = \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::billing_status( 1000, 250, 5000 );
+liw_assert( 'Rest::billing_status: Warnstufe high ab 80 %', 'high' === $bs2['level'] && $bs2['budget_pct'] >= 80, $checks, $failures );
+liw_assert( 'Rest::format_duration: §8-Beispiel 02:14:38', '02:14:38' === \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::format_duration( 8078 ) && '00:00:00' === \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::format_duration( 0 ), $checks, $failures );
+
 // 3. strict_types=1 in jeder src/-Datei (Coding Standard, CLAUDE.md Abschnitt 5).
 echo "-- Coding Standard --\n";
 $iterator2 = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $root . '/src', FilesystemIterator::SKIP_DOTS ) );

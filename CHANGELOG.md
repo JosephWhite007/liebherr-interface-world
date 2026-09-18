@@ -1,5 +1,31 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.48] – 2026-09-19 – Intelligence World: Eintritt & Welt (Blue Planet, Access Gate, Sitzungsleiste)
+
+Phase 2 des Pflichtenhefts-2 (Prototyp §21, kein echtes Payment). Baut auf dem Fundament (alpha.47) auf.
+
+### Hinzugefügt (`src/IntelligenceWorld/`)
+- **WorldContent** – administrierbare Texte/Prototyp-Tarife (Option `liw_iw_world`): Landing, Eintrittsschleuse,
+  Demo-Preis (2,50 €/min), Sitzungsbudget (50 €), Speicher-Grundbudget (5 MB), Demo-Code `LIEBHERR-DEMO`.
+- **Rest** – REST `liw-iw/v1` (session/start · heartbeat · end · status), Nonce-geschützt; serverseitige
+  Abrechnungswahrheit; reine `billing_status()`/`format_duration()` (§7/§8).
+- **WorldView** – Shortcode `[liw_intelligence_world]`: Blue-Planet-Hero (dekoratives Planet-SVG mit Orbits/
+  Knoten, reduced-motion-fest), Eintrittsschleuse (Code + Prototyp-/Preishinweis + Nutzungsbedingungen 5.1–5.8
+  wiederverwendet + zwei Pflicht-Einwilligungen + Bestätigung erst bei Code & beiden Zustimmungen), sticky
+  Sitzungs-/Kostenleiste (Zeit, Basiskosten, Budget-Balken mit Warnstufen 50/80/100 %, „Sitzung beenden").
+- Eigene Assets `assets/css|js/liw-intelligence-world.*`; Seeder `scripts/liw-seed-intelligence-world.php`
+  (Seite `/liebherr-intelligence-world/`, Vollbild-Vorlage, eigener Menülink „🪐 Intelligence World").
+
+### Verifikation
+- `tests/run-tests.php` **273/273** (WorldContent, billing_status, format_duration §8-Beispiel),
+  `scripts/liw-selftest.php` **264/264** (Shortcode-Render, Schleuse, REST-Route, Demo-Code).
+- Real end-to-end im Browser: Code + Einwilligungen → Sitzung startet (REST), Ticker läuft, Basiskosten
+  korrekt (z. B. 25 s = 1,04 €), „Sitzung beenden" erzeugt Abschlussprotokoll; keine JS-Fehler.
+
+### Prototyp-Hinweis (§21)
+- Demo-Code (kein echtes Login), Beispieltarife, keine echte Abrechnung/kein Payment. Serverseitiges
+  Ereignis-Ledger + Hash-Kette aus alpha.47 protokolliert Eintritt/Sitzung revisionsfähig.
+
 ## [0.1.0-alpha.47] – 2026-09-19 – Intelligence World: Fundament (Datenmodell, Ereignis-Ledger, Session-Meter)
 
 Start des zweiten Pflichtenhefts „Liebherr Intelligence World" (globale Simulations-/Nutzungs-/

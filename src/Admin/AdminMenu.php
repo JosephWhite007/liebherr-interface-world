@@ -56,6 +56,16 @@ final class AdminMenu {
 		// Hauptseite = Local Intelligence, darunter die technische Unterseite Interface Solutions.
 		$li_url        = SitePages::li_url();
 		$interface_url = SitePages::interface_url();
+		$iw_url        = self::iw_url();
+		if ( '' !== $iw_url ) {
+			add_submenu_page(
+				'liw-interface-board',
+				__( 'Intelligence World (Landingpage)', 'liebherr-interface-world' ),
+				__( '🪐 Intelligence World', 'liebherr-interface-world' ),
+				RoleBridge::CAP_MANAGE_CONTENT,
+				$iw_url
+			);
+		}
 		if ( '' !== $li_url ) {
 			add_submenu_page(
 				'liw-interface-board',
@@ -229,13 +239,26 @@ final class AdminMenu {
 			[ HandbookPage::class, 'render' ]
 		);
 
-		// Reihenfolge: erst Interface Solutions nach vorn, dann Local Intelligence davor → LI ganz oben.
+		// Reihenfolge: Interface Solutions, dann Local Intelligence, dann Intelligence World ganz oben.
 		if ( '' !== $interface_url ) {
 			self::move_first( 'liw-interface-board', $interface_url );
 		}
 		if ( '' !== $li_url ) {
 			self::move_first( 'liw-interface-board', $li_url );
 		}
+		if ( '' !== $iw_url ) {
+			self::move_first( 'liw-interface-board', $iw_url );
+		}
+	}
+
+	/** URL der eigenständigen Intelligence-World-Landingpage (Option/Slug); leer, wenn nicht vorhanden. */
+	private static function iw_url(): string {
+		$id = (int) get_option( 'liw_iw_page_id', 0 );
+		if ( $id > 0 && 'publish' === get_post_status( $id ) ) {
+			return (string) get_permalink( $id );
+		}
+		$page = get_page_by_path( 'liebherr-intelligence-world' );
+		return $page instanceof \WP_Post ? (string) get_permalink( $page ) : '';
 	}
 
 	/** Verschiebt den Untermenü-Eintrag mit gegebenem Slug an die erste Position. */
