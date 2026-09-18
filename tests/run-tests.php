@@ -80,6 +80,47 @@ foreach ( $iterator_schema as $file ) {
 	liw_assert( 'Tabellen-COMMENT ohne Klammern: ' . str_replace( $root . '/', '', (string) $file ), ! $has_paren, $checks, $failures );
 }
 
+// 2c. Bauplan LP-01…LP-14 (Content\SectionBlueprint) – reine Datenklasse, ohne WP ladbar.
+echo "-- Landingpage-Bauplan (Pflichtenheft §8) --\n";
+if ( ! defined( 'ABSPATH' ) ) { define( 'ABSPATH', $root . '/' ); }
+if ( ! function_exists( 'esc_html' ) ) { function esc_html( $s ) { return htmlspecialchars( (string) $s, ENT_QUOTES ); } }
+require_once $root . '/src/Content/SectionBlueprint.php';
+$blueprint = \Liebherr\InterfaceWorld\Content\SectionBlueprint::all();
+$codes     = array_keys( $blueprint );
+liw_assert( 'Bauplan hat genau 14 Abschnitte', 14 === count( $codes ), $checks, $failures );
+liw_assert( 'Codes lückenlos LP-01…LP-14 in Reihenfolge', $codes === array_map( static fn( int $i ): string => sprintf( 'LP-%02d', $i ), range( 1, 14 ) ), $checks, $failures );
+liw_assert( 'Jeder Abschnitt hat Titel und Redaktionsvorgabe', [] === array_filter( $blueprint, static fn( array $s ): bool => '' === trim( $s['title'] ) || '' === trim( $s['brief'] ) ), $checks, $failures );
+$known_shortcodes = [ 'liw_graphic', 'liw_world_connections_map', 'liw_onboarding_form', 'liw_contact_form' ];
+$embeds_ok = true;
+foreach ( $blueprint as $s ) {
+	if ( isset( $s['embed'] ) && ! preg_match( '/^\[(' . implode( '|', $known_shortcodes ) . ')\b/', $s['embed'] ) ) {
+		$embeds_ok = false;
+	}
+}
+liw_assert( 'Eingebettete Bausteine verweisen nur auf existierende Shortcodes', $embeds_ok, $checks, $failures );
+// 2d. Jede [liw_graphic]-Einbettung im Bauplan zeigt auf eine Whitelist-Grafik, deren SVG-Datei existiert und XML-wohlgeformt ist.
+require_once $root . '/src/Frontend/SectionGraphicView.php';
+$graphics_ok = true;
+foreach ( \Liebherr\InterfaceWorld\Frontend\SectionGraphicView::GRAPHICS as $g_name => $g_file ) {
+	$g_path = $root . '/assets/img/' . $g_file;
+	$g_xml  = is_readable( $g_path ) ? @simplexml_load_file( $g_path ) : false;
+	if ( false === $g_xml || ! str_contains( (string) $g_xml['class'], 'liw-graphic--' . $g_name ) ) {
+		$graphics_ok = false;
+	}
+}
+liw_assert( 'Alle Whitelist-Grafiken vorhanden, wohlgeformt, mit passender Klasse (' . count( \Liebherr\InterfaceWorld\Frontend\SectionGraphicView::GRAPHICS ) . ')', $graphics_ok, $checks, $failures );
+$embed_names_ok = true;
+foreach ( $blueprint as $s ) {
+	if ( isset( $s['embed'] ) && preg_match( '/^\[liw_graphic name="([a-z-]+)"\]$/', $s['embed'], $mm ) && ! isset( \Liebherr\InterfaceWorld\Frontend\SectionGraphicView::GRAPHICS[ $mm[1] ] ) ) {
+		$embed_names_ok = false;
+	}
+}
+liw_assert( 'Bauplan-Grafiknamen sind alle in der Whitelist', $embed_names_ok, $checks, $failures );
+liw_assert( 'menu_order: LP-01 = 10, LP-14 = 140, unbekannt = 0', 10 === \Liebherr\InterfaceWorld\Content\SectionBlueprint::menu_order_for( 'LP-01' ) && 140 === \Liebherr\InterfaceWorld\Content\SectionBlueprint::menu_order_for( 'LP-14' ) && 0 === \Liebherr\InterfaceWorld\Content\SectionBlueprint::menu_order_for( 'LP-99' ), $checks, $failures );
+$lp07 = \Liebherr\InterfaceWorld\Content\SectionBlueprint::draft_content( 'LP-07' );
+liw_assert( 'draft_content(LP-07): Absatz + Shortcode-Block, Vorgabe escaped', str_contains( $lp07, '<!-- wp:paragraph -->' ) && str_contains( $lp07, '<!-- wp:shortcode -->[liw_graphic name="data-model"]<!-- /wp:shortcode -->' ) && ! str_contains( $lp07, '<script' ), $checks, $failures );
+liw_assert( 'draft_content(unbekannt) = leer', '' === \Liebherr\InterfaceWorld\Content\SectionBlueprint::draft_content( 'LP-99' ), $checks, $failures );
+
 // 3. strict_types=1 in jeder src/-Datei (Coding Standard, CLAUDE.md Abschnitt 5).
 echo "-- Coding Standard --\n";
 $iterator2 = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $root . '/src', FilesystemIterator::SKIP_DOTS ) );

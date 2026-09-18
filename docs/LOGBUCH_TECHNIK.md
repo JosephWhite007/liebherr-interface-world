@@ -8,6 +8,121 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · Interne Prozess-PDF: nicht veröffentlichen, Grafiken aus dem Pflichtenheft (0.1.0-alpha.20)
+
+**Frage/Kontext.** Joseph fragte, ob die interne Prozess-PDF (Integrationsplan mit realen
+API-Endpunkt- und Systemnamen, s. Eintrag alpha.12) in Bildausschnitten auf die Landingpage und
+zusätzlich als Download angeboten werden kann.
+
+**Befund.** Jeder Ausschnitt trägt reale Endpunkt-/Systemnamen – für Angreifer die wertvollste
+Aufklärungsinformation (welche Systeme, welche Schnittstellen, welche Reihenfolge). Das widerspricht
+Pflichtenheft §17 (strikte Trennung öffentlicher Inhalte von technischen Schnittstellendaten) und
+Josephs eigener Anforderung vom 18.09.2026. Die PDF lag Claude in dieser Sitzung zudem nicht mehr vor.
+
+**Optionen (Claude, AskUserQuestion).** (1) weitere anonymisierte Grafiken; (2) Analyse eines
+geschützten Downloads nur für angemeldete, freigegebene Partner (Pflichtenheft kennt „freigegebene
+Dokumente" für Partner); (3) öffentlich veröffentlichen – abgeraten; (4) zurückstellen.
+
+**Entscheidung (Joseph White).** „Beides: Grafiken jetzt, Download-Analyse danach."
+
+**Umsetzung.** Drei Grafiken ausschließlich aus dem Pflichtenheft-Wortlaut §8 (LP-03 Zielbild, LP-04
+Magic Cube, LP-12 Roadmap) – keine PDF-Details, nichts aus dem Gedächtnis rekonstruiert („nicht
+erfinden"). Technik/Sicherheit wie alpha.15 (Whitelist, Design-Tokens, Inline-SVG). Der geschützte
+Download ist als Analysepunkt in `docs/LIW_TODO.md` festgehalten (Kategorie-A-nahe Entscheidung:
+Partner-Login/Rolle, Media Board CI-005, ggf. Core-Dokumentenmodul).
+
+**Quelle/Version.** Rückfrage + AskUserQuestion-Antwort Joseph White 18.09.2026; Pflichtenheft §8/§17;
+0.1.0-alpha.20.
+
+### 2026-09-18 · LP-13 Kontaktformular: eigene Tabelle, geteiltes Einwilligungsprotokoll (0.1.0-alpha.19)
+
+**Frage/Kontext.** Nach der ersten sichtbaren Landingpage (alpha.18) wählte Joseph LP-13 – den
+letzten Pflichtenheft-Baustein ohne Umsetzung. §22 liefert die Feldliste, §24 die
+Datenschutzpflichten (Einwilligung mit Version/Zeitstempel, Zweckbindung Kontakt ≠ Marketing,
+Export/Löschung vorbereiten), §8 die Trennung vom Onboarding.
+
+**Befund.** Das Onboarding-Formular (alpha.6) legt bewusst einen Core-Partner (`ary_partners`,
+pending) an und hängt Zusatzfelder in `liw_partner_extra`. Für Kontaktanfragen passt das nicht:
+Rollen wie „Zentrale" oder „Sonstiger Projektkontakt" sind keine Partner, und ein
+Partner-Datensatz je Anfrage wäre eine Datenkopie mit falscher Semantik. Das
+Einwilligungsprotokoll `liw_consent_log` referenziert bisher nur `request_id` ohne Herkunft –
+Partner-IDs und Kontakt-IDs würden kollidieren.
+
+**Optionen.** (a) Kontaktanfrage als Partner (Wiederverwendung, aber semantisch falsch, Core-Daten
+verschmutzt); (b) eigene Tabelle `liw_contact_request` + eigenes Consent-Log (Doppelentwicklung);
+(c) eigene Tabelle + bestehendes Consent-Log mit neuer Spalte `request_kind` (additiv, Default
+`onboarding`); (d) Kontaktanfragen als CPT (WP-Bordmittel, aber personenbezogene Daten in
+`wp_posts`/Revisionen/Suche – schwer §24-konform zu löschen).
+
+**Entscheidung (Claude, im Rahmen der Freigabe „LP-13").** (c). Kleinste saubere Änderung:
+eine schlanke Fachtabelle (Kategorie B, keine Kopie von Partnerdaten) und eine additive Spalte
+im bestehenden Protokoll, sodass §24 weiterhin eine einzige Quelle für Einwilligungen hat.
+Alle bestehenden Aufrufe bleiben durch den Default unverändert gültig; Altdaten sind korrekt
+als `onboarding` klassifiziert. Formular- und Board-Mechanik 1:1 vom Onboarding übernommen
+(Nonce, Honeypot, admin-post, AdminPagination, Capability `liw_view_onboarding` – gleiche
+Zielgruppe, keine neue Capability). Audit protokolliert nur Klassifizierung, keine Freitexte
+(Datensparsamkeit). Löschen im Board entfernt Anfrage und Einwilligungen gemeinsam.
+
+**Annahmen (dokumentiert, per Filter änderbar).** ANNAHME-LIW-8 Regionenliste, ANNAHME-LIW-9
+Projektinteressen, ANNAHME-LIW-10 Empfänger = WP-Admin-Mail bis zur CRM-/Empfängerdefinition
+(Pflichtenheft §31, Projektleitung). Bewusst offen: Export (§24), CRM-Übergabe,
+sprachabhängige Datenschutztext-Version.
+
+**Quelle/Version.** Pflichtenheft §8 LP-13, §22, §24, §31 (per device_bash gelesen);
+AskUserQuestion-Antwort Joseph White 18.09.2026; 0.1.0-alpha.19.
+
+### 2026-09-18 · Zusammengesetzte Landingpage: Shortcode auf normaler WP-Seite statt eigenem Template (0.1.0-alpha.18)
+
+**Frage/Kontext.** Joseph: „Wo sehen wir die Seite?" – nach alpha.17 existierten die Abschnitte
+nur als Einzelbeiträge mit eigener URL, eine Gesamtseite fehlte.
+
+**Optionen.** (a) Shortcode `[liw_landingpage]` auf einer normalen WP-Seite; (b) eigenes
+Page-Template/Frontcontroller mit fester Route `/interface-world`; (c) CPT-Archivseite
+(`has_archive`) als Landingpage; (d) Block-Theme-Template-Part.
+
+**Entscheidung (Claude, im Rahmen der Freigabe „ja").** (a). Gleiche Mechanik wie die drei
+bestehenden Shortcodes, keine Route/Rewrite-Änderung, kein Theme-Eingriff; Redaktion behält
+Titel, Slug, SEO und Sprache der Trägerseite in WP-Bordmitteln. (b)/(d) wären Kategorie-A-nahe
+Eingriffe ohne Mehrwert für das Gerüst; (c) würde Archiv-Semantik (Pagination, Reihenfolge nach
+Datum) gegen den Strich bürsten. Sichtbarkeit strikt an `publish` gebunden, damit der
+§19-Freigabeworkflow die einzige Steuerung bleibt. Inhalte über `the_content`-Filter, um
+Blöcke/Shortcodes/Core-Übersetzung nicht nachzubauen.
+
+**Bewusst offen.** Ankernavigation, Sprache/SEO der Trägerseite (I18nSeo-Frage), Hero-Motiv.
+
+**Quelle/Version.** Rückfrage Joseph White 18.09.2026 („wo sehen wir die Seite", „was kommt
+noch zuvor", „ja"); 0.1.0-alpha.18.
+
+### 2026-09-18 · Die 14 Abschnitte: Bauplan im Code, Anlage per Knopf, Texte bei der Redaktion (0.1.0-alpha.17)
+
+**Frage/Kontext.** Nach `[liw_graphic]` (alpha.15) wählte Joseph, die 14 Abschnitte LP-01…LP-14
+anzulegen, damit die Landingpage erstmals als Ganzes im Content Board sichtbar wird.
+
+**Befund.** Das Pflichtenheft §8 liefert Code, Titel und einen Kurzinhalt je Abschnitt – aber
+keine fertigen Marketingtexte. Vier Abschnitte haben bereits gebaute Bausteine (LP-06 Map,
+LP-07/08 Grafiken, LP-11 Onboarding-Formular); LP-13 verlangt ein eigenes Kontaktformular, das
+noch nicht existiert.
+
+**Optionen.** (a) CLI-Seed-Skript unter `scripts/` (Terminal-Regel: Joseph müsste `docker exec`
+ausführen – für eine redaktionelle Aufgabe unpassend); (b) Knopf im Content Board mit
+idempotentem Seeder; (c) Abschnitte automatisch bei Aktivierung/Upgrade anlegen (ungefragte
+Inhaltsanlage in fremden Installationen, Kategorie-B-Grenze); (d) zusätzlich ausformulierte
+Texte generieren (verstößt gegen „nicht erfinden" und die §17-Vorsicht bei öffentlichen
+Inhalten).
+
+**Entscheidung (Claude im Rahmen der Freigabe „Die 14 Abschnitte anlegen").** (b) mit
+strikter Trennung Daten/Verhalten: `SectionBlueprint` (Pflichtenheft-Inhalte 1:1, wörtlich) und
+`SectionSeeder` (idempotent über Post-Meta `_liw_lp_code`, nicht über den Titel – Redaktion darf
+umbenennen; Papierkorb zählt als vorhanden). Inhalt der Entwürfe: Vorgabe als erster Absatz plus
+Baustein als Shortcode-Block – die Ausformulierung bleibt Redaktionsaufgabe. (d) verworfen.
+Der Seeder läuft im Selbsttest bewusst nicht (würde echte Inhalte anlegen); geprüft werden
+Bauplan und Idempotenz-Sicht, die Anlage selbst prüft Joseph per Knopf.
+
+**Folge.** Neuer offener Punkt LP-13 Kontaktformular in `docs/LIW_TODO.md`.
+
+**Quelle/Version.** Pflichtenheft §8 Tabelle LP-01…LP-14 (per device_bash gelesen, nicht aus
+dem Gedächtnis); AskUserQuestion-Antwort Joseph White 18.09.2026; 0.1.0-alpha.17.
+
 ### 2026-09-18 · dbDelta und Klammern im Tabellen-COMMENT (0.1.0-alpha.16)
 
 **Frage/Kontext.** Der Docker-Selbsttest für alpha.15 lief 67/67 grün, zeigte aber am

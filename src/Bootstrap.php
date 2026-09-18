@@ -17,11 +17,13 @@ namespace Liebherr\InterfaceWorld;
 use Liebherr\InterfaceWorld\Admin\AdminAssets;
 use Liebherr\InterfaceWorld\Admin\AdminMenu;
 use Liebherr\InterfaceWorld\Connection\ConnectionMapView;
+use Liebherr\InterfaceWorld\Contact\ContactForm;
 use Liebherr\InterfaceWorld\CoreBridge\MediaBridge;
 use Liebherr\InterfaceWorld\CoreBridge\SeoBridge;
 use Liebherr\InterfaceWorld\CoreBridge\TranslationBridge;
 use Liebherr\InterfaceWorld\CPT\LiwSectionCpt;
 use Liebherr\InterfaceWorld\Frontend\FrontendAssets;
+use Liebherr\InterfaceWorld\Frontend\LandingpageView;
 use Liebherr\InterfaceWorld\Frontend\SectionGraphicView;
 use Liebherr\InterfaceWorld\Onboarding\OnboardingForm;
 
@@ -36,8 +38,10 @@ final class Bootstrap {
 		SeoBridge::register();
 		MediaBridge::register();
 		OnboardingForm::register();
+		ContactForm::register();
 		ConnectionMapView::register();
 		SectionGraphicView::register();
+		LandingpageView::register();
 		FrontendAssets::register();
 
 		if ( is_admin() ) {

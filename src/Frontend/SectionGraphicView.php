@@ -2,9 +2,10 @@
 /**
  * Liebherr Interface Solutions – Section Graphic View (Inline-SVG-Shortcode)
  *
- * Öffentlicher Shortcode `[liw_graphic name="data-model"]` bzw. `name="process-worlds"`
- * (Liebherr-Pflichtenheft §8, LP-07 Data Model / LP-08 Process Worlds). Bettet die mit
- * alpha.12 gelieferten, anonymisierten SVG-Grafiken **inline** in den Inhalt eines
+ * Öffentlicher Shortcode `[liw_graphic name="…"]` für die anonymisierten Abschnittsgrafiken
+ * (Liebherr-Pflichtenheft §8: LP-03 Zielbild, LP-04 Magic Cube, LP-07 Data Model, LP-08 Process
+ * Worlds, LP-12 Roadmap – Whitelist `GRAPHICS`). Bettet die
+ * anonymisierten SVG-Grafiken (alpha.12/alpha.20) **inline** in den Inhalt eines
  * `liw_section`-Beitrags ein – bewusst nicht als `<img src>`, weil nur Inline-Markup die
  * `var(--ary-*)`-Design-Tokens der Seiten-CSS übernimmt (s. docs/LIW_LANDINGPAGE_KONZEPT.md,
  * „Offene Punkte" → jetzt eingelöst).
@@ -47,8 +48,11 @@ final class SectionGraphicView {
 	 * erlaubte Grafiken – neue Grafiken werden hier ergänzt, nie per Attribut übergeben.
 	 */
 	public const GRAPHICS = [
+		'target-model'   => 'liw-target-model.svg',   // LP-03 (alpha.20)
+		'magic-cube'     => 'liw-magic-cube.svg',     // LP-04 (alpha.20)
 		'data-model'     => 'liw-data-model.svg',     // LP-07
 		'process-worlds' => 'liw-process-worlds.svg', // LP-08
+		'roadmap'        => 'liw-roadmap.svg',        // LP-12 (alpha.20)
 	];
 
 	/** @var array<string, string> Pro Request gelesene SVG-Inhalte (name → markup). */

@@ -12,6 +12,71 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.20 – Anonymisierte Grafiken LP-03/LP-04/LP-12
+
+**Neu:** `assets/img/liw-target-model.svg`, `assets/img/liw-magic-cube.svg`, `assets/img/liw-roadmap.svg`.
+**Geändert:** `src/Frontend/SectionGraphicView.php` (Whitelist +3, Doc), `src/Content/SectionBlueprint.php`
+(LP-03/04/12 `embed`), `src/Admin/Pages/HandbookPage.php`, `tests/run-tests.php` (Grafik-Prüfungen),
+`scripts/liw-selftest.php` ([10] +3), `docs/LIW_LANDINGPAGE_KONZEPT.md`, `docs/LIW_TODO.md`,
+`liebherr-interface-world.php` (Version).
+
+## 0.1.0-alpha.19 – LP-13 Kontaktformular + Kontaktanfragen-Board
+
+**Neu:**
+- `src/Contact/ContactSchema.php` – Tabelle `liw_contact_request`.
+- `src/Contact/ContactService.php` – `submit_request()`, `set_status()`, `get()`, `get_all()`,
+  `count_all()`, `delete()`, `recipients()`, Konstanten ROLES/REGIONS/INTERESTS/STATUSES.
+- `src/Contact/ContactForm.php` – Shortcode `[liw_contact_form]`, admin-post-Handler, Honeypot.
+- `src/Admin/Pages/ContactBoardPage.php` – achtes Board (Liste, Status, Löschen).
+
+**Geändert:**
+- `src/Consent/ConsentLogSchema.php` – Spalte `request_kind` + Index `idx_kind_request` (additiv).
+- `src/Consent/ConsentLogService.php` – `KIND_*`-Konstanten, 4. Parameter in `record()`/
+  `has_consent()` (Default `onboarding`), neu `delete_for_request()`.
+- `src/Admin/AdminMenu.php` – Submenü „Kontaktanfragen" vor Media Board.
+- `src/Bootstrap.php` – `ContactForm::register()`.
+- `liebherr-interface-world.php` – `create_tables()` ruft `ContactSchema::create_table()`; Version.
+- `src/Frontend/FrontendAssets.php` – `liw_contact_form` als Auslöser.
+- `assets/css/liebherr-frontend.css` – Formularregeln auf `.liw-contact-form` erweitert,
+  `.liw-contact-form__interests`/`__interest`.
+- `src/Content/SectionBlueprint.php` – LP-13 mit `embed` `[liw_contact_form]`, Vorgabe ohne
+  „noch nicht gebaut".
+- `src/Admin/Pages/HandbookPage.php` – Abschnitt 6 neu, 7/8 nachnummeriert, „acht Bereiche".
+- `tests/run-tests.php` – `liw_contact_form` in bekannten Shortcodes.
+- `scripts/liw-selftest.php` – [0] Tabelle/Spalte, neuer Abschnitt [5b], Cleanup.
+- `docs/LIW_LANDINGPAGE_KONZEPT.md`, `docs/LIW_TODO.md`.
+
+## 0.1.0-alpha.18 – Zusammengesetzte Landingpage (`[liw_landingpage]`)
+
+**Neu:**
+- `src/Frontend/LandingpageView.php` – Shortcode, `get_published_sections()`, Rendering mit
+  `the_content`-Filter, Code-Anker, Leerzustand, Rekursionsschutz.
+
+**Geändert:**
+- `src/Bootstrap.php` – `LandingpageView::register()`.
+- `src/Frontend/FrontendAssets.php` – `liw_landingpage` als vierter CSS-Auslöser.
+- `assets/css/liebherr-frontend.css` – `.liw-landingpage`, `__section`, `__title`, `__content`, `--empty`.
+- `src/Admin/Pages/HandbookPage.php` – Abschnitt 7 umbenannt/erweitert, „drei" → „vier" Shortcodes.
+- `scripts/liw-selftest.php` – Abschnitt [6] um sechs `[liw_landingpage]`-Prüfungen erweitert.
+- `docs/LIW_LANDINGPAGE_KONZEPT.md`, `docs/LIW_TODO.md`, `liebherr-interface-world.php` (Version).
+
+## 0.1.0-alpha.17 – Bauplan LP-01…LP-14 + Standard-Abschnitte per Knopf
+
+**Neu:**
+- `src/Content/SectionBlueprint.php` – Datenklasse: 14 Codes/Titel/Vorgaben/Einbettungen,
+  `menu_order_for()`, `draft_content()` (Block-Markup).
+- `src/Content/SectionSeeder.php` – `existing_codes()`, `missing_codes()`, `seed_missing()`,
+  `create()`; idempotent über Post-Meta `_liw_lp_code`.
+
+**Geändert:**
+- `src/Admin/Pages/ContentBoardPage.php` – Seed-Formular (`render_seed_form()`, Aktion
+  `seed_sections` mit eigenem Nonce), Spalte „Code", `maybe_handle_submit()` verzweigt jetzt
+  nach Aktion.
+- `src/Admin/Pages/HandbookPage.php` – Absatz „Standard-Abschnitte anlegen".
+- `tests/run-tests.php` – Prüfgruppe „Landingpage-Bauplan" (7 Prüfungen, mit esc_html-Stub).
+- `scripts/liw-selftest.php` – Abschnitt [6] um Bauplan-/Seeder-Prüfungen erweitert.
+- `docs/LIW_LANDINGPAGE_KONZEPT.md`, `docs/LIW_TODO.md`, `liebherr-interface-world.php` (Version).
+
 ## 0.1.0-alpha.16 – Bugfix: dbDelta-Fehler beim Schema-Abgleich
 
 **Geändert:**

@@ -6,7 +6,9 @@
  * Shortcodes tatsächlich verwendet wird (Performance – kein unnötiges CSS auf jeder
  * Seite, CLAUDE.md Abschnitt „Performance"). Namensgebung/Ort analog zu Core's eigenem
  * `Araliya\Platform\Core\Frontend\DesignSystem` (dort: Tokens/Typografie global; hier:
- * ein einzelnes, klein-scopiges Stylesheet für die drei öffentlichen Shortcodes).
+ * ein einzelnes, klein-scopiges Stylesheet für die fünf öffentlichen Shortcodes).
+ * `[liw_landingpage]` als Auslöser deckt auch die in Abschnitten eingebetteten Shortcodes ab,
+ * die auf der Trägerseite selbst nicht vorkommen (has_shortcode prüft nur deren Inhalt).
  *
  * @package Liebherr\InterfaceWorld\Frontend
  * @since   0.1.0-alpha.9
@@ -21,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 final class FrontendAssets {
 
 	private const HANDLE     = 'liw-frontend';
-	private const SHORTCODES = [ 'liw_onboarding_form', 'liw_world_connections_map', SectionGraphicView::SHORTCODE ];
+	private const SHORTCODES = [ 'liw_onboarding_form', 'liw_contact_form', 'liw_world_connections_map', SectionGraphicView::SHORTCODE, LandingpageView::SHORTCODE ];
 
 	public static function register(): void {
 		add_action( 'wp_enqueue_scripts', [ self::class, 'maybe_enqueue' ] );

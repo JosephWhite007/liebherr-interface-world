@@ -33,11 +33,17 @@ use Liebherr\InterfaceWorld\Connection\ConnectionSchema;
 use Liebherr\InterfaceWorld\Connection\ConnectionService;
 use Liebherr\InterfaceWorld\Consent\ConsentLogSchema;
 use Liebherr\InterfaceWorld\Consent\ConsentLogService;
+use Liebherr\InterfaceWorld\Contact\ContactForm;
+use Liebherr\InterfaceWorld\Contact\ContactSchema;
+use Liebherr\InterfaceWorld\Contact\ContactService;
+use Liebherr\InterfaceWorld\Content\SectionBlueprint;
+use Liebherr\InterfaceWorld\Content\SectionSeeder;
 use Liebherr\InterfaceWorld\CoreBridge\MarkdownBridge;
 use Liebherr\InterfaceWorld\CoreBridge\MediaBridge;
 use Liebherr\InterfaceWorld\CoreBridge\PartnerBridge;
 use Liebherr\InterfaceWorld\CoreBridge\RoleBridge;
 use Liebherr\InterfaceWorld\CPT\LiwSectionCpt;
+use Liebherr\InterfaceWorld\Frontend\LandingpageView;
 use Liebherr\InterfaceWorld\Frontend\SectionGraphicView;
 use Liebherr\InterfaceWorld\Interfaces\InterfaceCatalogSchema;
 use Liebherr\InterfaceWorld\Interfaces\InterfaceCatalogService;
@@ -72,6 +78,7 @@ $cleanup_scenario_ids   = [];
 $cleanup_connection_ids = [];
 $cleanup_partner_ids    = [];
 $cleanup_section_ids    = [];
+$cleanup_contact_ids    = [];
 
 try {
 	global $wpdb;
@@ -92,6 +99,7 @@ try {
 			'liw_connection'       => ConnectionSchema::table_name(),
 			'liw_consent_log'      => ConsentLogSchema::table_name(),
 			'liw_partner_extra'    => OnboardingSchema::table_name(),
+			'liw_contact_request'  => ContactSchema::table_name(),
 		] as $label => $table
 	) {
 		$exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) ) === $table;
@@ -105,6 +113,8 @@ try {
 	\Liebherr\InterfaceWorld\create_tables();
 	$wpdb->suppress_errors( $suppress_before );
 	liw_st_check( 'dbDelta-Wiederholung (create_tables) ohne DB-Fehler', '' === $wpdb->last_error, $wpdb->last_error );
+	$consent_cols = $wpdb->get_col( 'DESCRIBE ' . ConsentLogSchema::table_name() ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Tabellenname aus Schema-Klasse.
+	liw_st_check( 'liw_consent_log hat Spalte request_kind (alpha.19, additiv per dbDelta)', in_array( 'request_kind', $consent_cols, true ) );
 
 	// ── [1] Capabilities ──────────────────────────────────────────────────────
 	echo "\n[1] Rollen/Capabilities\n";
@@ -208,6 +218,48 @@ try {
 		liw_st_check( 'Honeypot in .liw-visually-hidden verpackt', false !== strpos( $shortcode_html, 'liw-visually-hidden' ) );
 	}
 
+	// ── [5b] Kontaktformular LP-13 (§22) ─────────────────────────────────────
+	echo "\n[5b] Kontaktformular LP-13 (§22, getrennt vom Onboarding)\n";
+	$ct_base = [
+		'organisation' => "{$run} GmbH", 'contact_name' => "{$run} Person", 'contact_email' => strtolower( $run ) . '@example.com',
+		'region' => 'europe', 'role' => 'technology_partner', 'interests' => [ 'interfaces', 'simulation' ],
+		'message' => 'Testanfrage.', 'privacy_consent' => true,
+	];
+	$rejected = ContactService::submit_request( array_merge( $ct_base, [ 'privacy_consent' => false ] ) );
+	liw_st_check( 'Anfrage ohne Datenschutz-Einwilligung wird abgelehnt', is_wp_error( $rejected ) && 'liw_consent_required' === $rejected->get_error_code() );
+	$rejected = ContactService::submit_request( array_merge( $ct_base, [ 'role' => 'hacker' ] ) );
+	liw_st_check( 'Unbekannte Rolle wird abgelehnt', is_wp_error( $rejected ) && 'liw_invalid_role' === $rejected->get_error_code() );
+	$rejected = ContactService::submit_request( array_merge( $ct_base, [ 'interests' => [ 'nicht-vorhanden' ] ] ) );
+	liw_st_check( 'Unbekanntes Projektinteresse → Pflichtfeld verletzt', is_wp_error( $rejected ) && 'liw_invalid_interest' === $rejected->get_error_code() );
+
+	$mail_filter = static fn( $args ) => array_merge( (array) $args, [ 'to' => 'selftest-blackhole@example.invalid' ] ); // Testlauf: keine echte Admin-Mail.
+	add_filter( 'wp_mail', $mail_filter );
+	$before_partners = (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . $wpdb->prefix . 'ary_partners' ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+	$contact_id      = ContactService::submit_request( $ct_base );
+	remove_filter( 'wp_mail', $mail_filter );
+	liw_st_check( 'Kontaktanfrage angelegt', ! is_wp_error( $contact_id ), is_wp_error( $contact_id ) ? $contact_id->get_error_message() : '' );
+	if ( ! is_wp_error( $contact_id ) ) {
+		$cleanup_contact_ids[] = $contact_id;
+		$after_partners = (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . $wpdb->prefix . 'ary_partners' ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		liw_st_check( 'Kontaktanfrage legt KEINEN Partner an (getrennt vom Onboarding)', $before_partners === $after_partners );
+		$saved = ContactService::get( $contact_id );
+		liw_st_check( 'Interessen als Schlüsselliste gespeichert', 'interfaces,simulation' === ( $saved['interests'] ?? '' ) );
+		liw_st_check( 'Datenschutz-Einwilligung mit request_kind=contact protokolliert', ConsentLogService::has_consent( $contact_id, ConsentLogService::TYPE_PRIVACY, ConsentLogService::KIND_CONTACT ) );
+		liw_st_check( 'Marketing-Einwilligung NICHT protokolliert', ! ConsentLogService::has_consent( $contact_id, ConsentLogService::TYPE_MARKETING, ConsentLogService::KIND_CONTACT ) );
+		$kind_rows = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM ' . ConsentLogSchema::table_name() . ' WHERE request_id = %d AND request_kind = %s', $contact_id, 'contact' ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		liw_st_check( 'Genau eine Einwilligungszeile mit request_kind=contact (ID-Räume getrennt)', 1 === $kind_rows );
+		ContactService::set_status( $contact_id, 'in_progress', 1 );
+		liw_st_check( 'Statuswechsel new → in_progress', 'in_progress' === ( ContactService::get( $contact_id )['request_status'] ?? '' ) );
+		liw_st_check( 'get_all() Seite 1 enthält Anfrage', in_array( $contact_id, array_map( 'intval', array_column( ContactService::get_all( 1 ), 'id' ) ), true ) );
+		liw_st_check( 'count_all() >= 1', ContactService::count_all() >= 1 );
+		$ct_html = do_shortcode( '[liw_contact_form]' );
+		liw_st_check( 'Shortcode [liw_contact_form] rendert Formular mit Rollen/Regionen/Interessen', str_contains( $ct_html, 'liw-contact-form' ) && str_contains( $ct_html, 'value="technology_partner"' ) && str_contains( $ct_html, 'value="asia_pacific"' ) && str_contains( $ct_html, 'name="interests[]"' ) );
+		liw_st_check( 'Honeypot-Feld liw_hp_company_url vorhanden und versteckt', str_contains( $ct_html, 'liw_hp_company_url' ) && str_contains( $ct_html, 'liw-visually-hidden' ) );
+		$del = ContactService::delete( $contact_id, 1 );
+		liw_st_check( 'delete() entfernt Anfrage und Einwilligungen (§24)', true === $del && null === ContactService::get( $contact_id ) && ! ConsentLogService::has_consent( $contact_id, ConsentLogService::TYPE_PRIVACY, ConsentLogService::KIND_CONTACT ) );
+		$cleanup_contact_ids = [];
+	}
+
 	// ── [6] Content Board (§19) ───────────────────────────────────────────────
 	echo "\n[6] Content Board – Freigabeworkflow (§19)\n";
 	$section_id = wp_insert_post( [
@@ -234,6 +286,31 @@ try {
 
 		$all_section_ids = get_posts( [ 'post_type' => LiwSectionCpt::POST_TYPE, 'post_status' => 'any', 'posts_per_page' => -1, 'fields' => 'ids' ] );
 		liw_st_check( 'Abschnitt in beliebigem Status auffindbar (post_status=any)', in_array( $section_id, $all_section_ids, true ) );
+
+		// Bauplan LP-01…LP-14 + Seeder (alpha.17). Der Seeder wird hier NICHT ausgeführt (würde echte
+		// Abschnitte anlegen); geprüft werden Bauplan, Zuordnung per Post-Meta und die Idempotenz-Sicht.
+		$codes = array_keys( SectionBlueprint::all() );
+		liw_st_check( 'Bauplan enthält 14 Codes LP-01…LP-14 in Reihenfolge', 14 === count( $codes ) && 'LP-01' === $codes[0] && 'LP-14' === $codes[13] );
+		liw_st_check( 'draft_content(LP-07) enthält [liw_graphic name="data-model"] als Shortcode-Block', str_contains( SectionBlueprint::draft_content( 'LP-07' ), '<!-- wp:shortcode -->[liw_graphic name="data-model"]<!-- /wp:shortcode -->' ) );
+		liw_st_check( 'menu_order_for(LP-07) = 70', 70 === SectionBlueprint::menu_order_for( 'LP-07' ) );
+		update_post_meta( $section_id, SectionBlueprint::META_CODE, "{$run}-CODE" );
+		liw_st_check( 'existing_codes() erkennt Zuordnung über Post-Meta', ( SectionSeeder::existing_codes()[ "{$run}-CODE" ] ?? 0 ) === $section_id );
+		$missing  = SectionSeeder::missing_codes();
+		$existing = array_intersect( $codes, array_keys( SectionSeeder::existing_codes() ) );
+		liw_st_check( 'missing_codes() + vorhandene Bauplan-Codes = 14 (Idempotenz-Sicht konsistent)', 14 === count( $missing ) + count( $existing ), 'fehlend: ' . count( $missing ) . ', vorhanden: ' . count( $existing ) );
+		echo '  ℹ Standard-Abschnitte laut Bauplan: ' . count( $existing ) . ' vorhanden, ' . count( $missing ) . " fehlend (Anlage per Knopf im Content Board)\n";
+
+		// [liw_landingpage] (alpha.18): zeigt nur veröffentlichte Abschnitte, löst eingebettete Shortcodes auf.
+		wp_update_post( [ 'ID' => $section_id, 'post_content' => SectionBlueprint::draft_content( 'LP-07' ) ] ); // Abschnitt ist zu diesem Zeitpunkt 'publish'.
+		$draft_id = wp_insert_post( [ 'post_type' => LiwSectionCpt::POST_TYPE, 'post_title' => "{$run} Entwurf-Abschnitt", 'post_content' => 'unsichtbar', 'post_status' => 'draft' ], true );
+		if ( ! is_wp_error( $draft_id ) ) { $cleanup_section_ids[] = $draft_id; }
+		$lp_html = do_shortcode( '[liw_landingpage]' );
+		liw_st_check( 'Shortcode [liw_landingpage] registriert', shortcode_exists( LandingpageView::SHORTCODE ) );
+		liw_st_check( '[liw_landingpage] enthält veröffentlichten Abschnitt (Titel + Anker aus Code)', str_contains( $lp_html, "{$run} Testabschnitt" ) && str_contains( $lp_html, 'id="' . strtolower( $run ) . '-code"' ) );
+		liw_st_check( '[liw_landingpage] löst eingebetteten [liw_graphic] auf (Inline-SVG)', str_contains( $lp_html, 'liw-graphic--data-model' ) );
+		liw_st_check( '[liw_landingpage] zeigt Entwurf NICHT', ! str_contains( $lp_html, "{$run} Entwurf-Abschnitt" ) && ! str_contains( $lp_html, 'unsichtbar' ) );
+		liw_st_check( '[liw_landingpage] Wrapper-Klasse liw-landingpage vorhanden', str_contains( $lp_html, 'class="liw-landingpage"' ) );
+		liw_st_check( 'get_published_sections() liefert nur publish', [] === array_filter( LandingpageView::get_published_sections(), static fn( WP_Post $p ): bool => 'publish' !== $p->post_status ) );
 	}
 
 	// ── [7] Media Board (§18) ─────────────────────────────────────────────────
@@ -282,6 +359,10 @@ try {
 	liw_st_check( '[liw_graphic name=data-model] rendert Inline-SVG', false !== strpos( $dm_html, '<svg' ) && false !== strpos( $dm_html, 'liw-graphic--data-model' ) );
 	liw_st_check( '[liw_graphic] gibt figcaption escaped aus', false !== strpos( $dm_html, '<figcaption class="liw-graphic-figure__caption">Testunterschrift</figcaption>' ) );
 	liw_st_check( '[liw_graphic name=process-worlds] rendert Inline-SVG', false !== strpos( do_shortcode( '[liw_graphic name="process-worlds"]' ), 'liw-graphic--process-worlds' ) );
+	foreach ( [ 'target-model' => 'LP-03', 'magic-cube' => 'LP-04', 'roadmap' => 'LP-12' ] as $g_name => $g_lp ) { // alpha.20
+		$g_html = do_shortcode( '[liw_graphic name="' . $g_name . '"]' );
+		liw_st_check( "[liw_graphic name={$g_name}] ({$g_lp}) rendert Inline-SVG mit title/desc", str_contains( $g_html, "liw-graphic--{$g_name}" ) && str_contains( $g_html, '<title' ) && str_contains( $g_html, '<desc' ) );
+	}
 	liw_st_check( '[liw_graphic] unbekannter Name → leere Ausgabe', '' === do_shortcode( '[liw_graphic name="gibt-es-nicht"]' ) );
 	liw_st_check( '[liw_graphic] Path-Traversal-Versuch → leere Ausgabe', '' === do_shortcode( '[liw_graphic name="../../wp-config"]' ) );
 	liw_st_check( '[liw_graphic] ohne name → leere Ausgabe', '' === do_shortcode( '[liw_graphic]' ) );
@@ -315,6 +396,10 @@ try {
 	}
 	foreach ( $cleanup_section_ids as $id ) {
 		wp_delete_post( $id, true );
+	}
+	foreach ( $cleanup_contact_ids as $id ) {
+		$wpdb->delete( ContactSchema::table_name(), [ 'id' => $id ] );
+		$wpdb->delete( ConsentLogSchema::table_name(), [ 'request_id' => $id, 'request_kind' => 'contact' ] );
 	}
 	echo "  Testdaten entfernt (Präfix {$run}).\n";
 }

@@ -1,5 +1,152 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.20] – 2026-09-18 – Drei weitere anonymisierte Grafiken (LP-03, LP-04, LP-12)
+
+### Hinzugefügt
+- `assets/img/liw-target-model.svg` (**LP-03 Zielbild**: Zentral-System → Interface LogiQ →
+  lokale Händler-/Lieferanten-/Kundensysteme, Rollen Vermittlung/Prüfung/Übersetzung, Hinweis
+  „nie direkt mit dem Zentral-System"), `assets/img/liw-magic-cube.svg` (**LP-04**: isometrischer
+  Würfel mit den sieben Pflichtenheft-Bausteinen Sandbox, synthetische Daten, Schnittstellentests,
+  Fehlerfälle, Lasttests, Verifizierung, Validierung), `assets/img/liw-roadmap.svg` (**LP-12**:
+  sechs Phasen Contract Model → … → Global Rollout als Zeitstrahl ohne Termine). Alle Inhalte
+  wörtlich aus Pflichtenheft §8; Farben ausschließlich über `var(--ary-*, Fallback)`;
+  `role="img"` mit `<title>/<desc>`; visuell per Rendering geprüft.
+- `SectionGraphicView::GRAPHICS`: Whitelist um `target-model`, `magic-cube`, `roadmap` erweitert.
+  Bauplan: LP-03/LP-04/LP-12 betten die Grafiken ein (neu angelegte Abschnitte); Handbuch nennt
+  alle fünf Grafiknamen und den Handgriff für bereits angelegte Abschnitte.
+
+### Entscheidung (Joseph White, 18.09.2026 – Nutzung der internen Prozess-PDF)
+- Öffentlich **nicht** (reale API-Endpunkt-/Systemnamen; §17; Sicherheitsziel „absolut sicher gegen
+  Angriffe von außen"). Stattdessen „beides": anonymisierte Grafiken jetzt (diese Auslieferung),
+  Analyse eines geschützten Partner-Downloads als nächste Scheibe (`docs/LIW_TODO.md`).
+  Hinweis: Die PDF lag Claude in dieser Sitzung nicht mehr vor – die Grafiken beruhen daher auf
+  dem Pflichtenheft-Wortlaut, nicht auf PDF-Details.
+
+### Geprüft
+- `tests/run-tests.php`: 101/101 – neu: alle Whitelist-Grafiken vorhanden, XML-wohlgeformt, mit
+  passender Klasse; Bauplan-Grafiknamen alle in der Whitelist.
+- `scripts/liw-selftest.php` [10]: drei Prüfungen (Rendering mit `<title>/<desc>`). Docker-Lauf steht aus.
+
+## [0.1.0-alpha.19] – 2026-09-18 – LP-13 Kontaktformular + Kontaktanfragen-Board (§22/§24)
+
+### Hinzugefügt
+- **`[liw_contact_form]`** (`Contact\ContactForm`, LP-13): qualifiziertes Anfrageformular exakt nach
+  Pflichtenheft §22 Feldliste – Organisation*, Kontaktperson*, geschäftliche E-Mail*, Telefon,
+  Land/Region* (Auswahl), Rolle* (Zentrale/Händler/Lieferant/Technologiepartner/Sonstige), lokales
+  ERP/CRM, Projektinteresse* (Mehrfachauswahl), Nachricht*, Datenschutzeinwilligung*, **separate**
+  Marketingeinwilligung (§22: „Marketing- und Kontaktzweck dürfen nicht gekoppelt werden"). Gleiche
+  Schutzmechanik wie das Onboarding-Formular (Nonce, Honeypot mit stillem Erfolg, admin-post für
+  eingeloggte und anonyme Besucher), gleiche `liw-*`-Klassen, kein Inline-CSS/JS.
+- **`Contact\ContactService`**: serverseitige Validierung (AC-008) mit klaren Fehlercodes,
+  Speicherung, Einwilligungsprotokoll mit Textversion/Zeitstempel (§24), Benachrichtigung der
+  Empfänger per `wp_mail()` (Klartext), Audit nur mit Klassifizierung (Rolle/Region/Interessen,
+  keine personenbezogenen Freitexte – Datensparsamkeit), Statuspflege, `delete()` inkl.
+  Einwilligungen (§24 Löschprozess).
+- **`Contact\ContactSchema`**: neue Tabelle `liw_contact_request` (Kategorie B). Datenmodell-Prüfung:
+  Eine Kontaktanfrage ist kein Partner – Rollen „Zentrale"/„Sonstige" dürfen keinen
+  `ary_partners`-Datensatz erzeugen; `liw_partner_extra` passt daher nicht. Kein eigenes
+  Einwilligungsmodell, sondern Wiederverwendung von `liw_consent_log`.
+- **`liw_consent_log`: neue Spalte `request_kind`** (`onboarding` | `contact`, Default `onboarding`,
+  additiv per dbDelta, Index `idx_kind_request`). Trennt die ID-Räume von `ary_partners.id` und
+  `liw_contact_request.id` im selben Protokoll. `ConsentLogService::record()`/`has_consent()` mit
+  optionalem 4. Parameter – alle bestehenden Aufrufe und Altdaten bleiben unverändert gültig;
+  neu `delete_for_request()`.
+- **Achtes Admin-Board „Kontaktanfragen"** (`Admin\Pages\ContactBoardPage`, Capability
+  `liw_view_onboarding` – gleiche Zielgruppe wie Onboarding, keine neue Capability): seitenweise
+  Liste (AdminPagination), Status Neu → In Bearbeitung → Abgeschlossen, Löschen.
+- Bauplan: LP-13 bettet `[liw_contact_form]` ein. CSS: Formular-Regeln auf `.liw-contact-form`
+  erweitert (Selektorlisten statt Kopie), Fieldset für die Mehrfachauswahl. `FrontendAssets`:
+  fünfter Auslöser. Handbuch: neuer Abschnitt 6, Abschnitte 7/8 nachnummeriert, Hinweis für
+  bereits vor alpha.19 angelegte LP-13-Entwürfe (Shortcode einmalig von Hand ergänzen – der
+  Knopf überschreibt nie).
+
+### Annahmen (Pflichtenheft nennt keine Wertelisten/Empfänger)
+- **ANNAHME-LIW-8** Land/Region: Weltregionen-Liste, Filter `liw_contact_regions`.
+- **ANNAHME-LIW-9** Projektinteresse: Optionen entlang der Landingpage-Bausteine, Filter
+  `liw_contact_interests`.
+- **ANNAHME-LIW-10** Empfänger: WP-Admin-E-Mail bis zur CRM-/Empfängerdefinition (Pflichtenheft
+  §31 offener Punkt der Projektleitung), Filter `liw_contact_recipients`; keine CRM-Übergabe.
+
+### Geprüft
+- `tests/run-tests.php`: 99/99 grün (neue Klassen in Syntax-/strict_types-/COMMENT-Prüfung,
+  `liw_contact_form` als bekannter Shortcode im Bauplan-Test).
+- Fachlogik ohne WP mit Stubs geprüft (15/15): gültige Anfrage, Interessen-Whitelist, genau eine
+  Consent-Zeile `kind=contact`, Marketing nur bei separater Zustimmung, Mail an Admin mit
+  Rollen-Label und ohne HTML, alle sieben Ablehnungspfade mit korrektem Fehlercode,
+  XSS-Tags aus Feldern entfernt.
+- `scripts/liw-selftest.php`: Tabelle `liw_contact_request` und Spalte `request_kind` in [0];
+  neuer Abschnitt [5b] mit 15 Prüfungen (Ablehnungen, Anlage ohne Partner-Datensatz,
+  Consent-Trennung, Status, Liste, Shortcode/Honeypot, Löschprozess); Mail im Testlauf per
+  `wp_mail`-Filter umgeleitet. Docker-Lauf durch Joseph steht aus.
+
+### Bewusst nicht Teil dieser Auslieferung
+- Export personenbezogener Anfragen (§24), CRM-Übergabe, sprachabhängige
+  Datenschutztext-Versionierung, fachliche Wertelisten – s. `docs/LIW_TODO.md`.
+
+## [0.1.0-alpha.18] – 2026-09-18 – Zusammengesetzte Landingpage (Shortcode `[liw_landingpage]`)
+
+### Hinzugefügt
+- Vierter öffentlicher Shortcode **`[liw_landingpage]`** (`Frontend\LandingpageView`): rendert alle
+  Abschnitte mit Status `publish` in Reihenfolge (`menu_order`, dann Titel) als `<section>`-Blöcke
+  mit `<h2>`-Titel und Inhalt. Der Inhalt läuft durch den regulären `the_content`-Filter – Blöcke,
+  eingebettete Shortcodes (`[liw_graphic]`, `[liw_world_connections_map]`, `[liw_onboarding_form]`)
+  und die Core-Übersetzung werden wie in Einzelansichten aufgelöst. Damit steuert der
+  Freigabeworkflow des Content Boards direkt, was öffentlich sichtbar ist: nur „Veröffentlicht".
+- Anker je Abschnitt aus dem Bauplan-Code (`#lp-07`), Fallback Post-Slug; `sanitize_html_class()`.
+- Leerzustand: Besucher sehen nichts; angemeldete Redakteure (`liw_manage_content`) einen Hinweis.
+- Rekursionsschutz, falls ein Abschnitt selbst `[liw_landingpage]` enthält; globaler `$post` wird
+  nach dem Rendern wiederhergestellt.
+- Kein eigenes Template/Page-Builder: Redaktion legt eine normale WP-Seite an und setzt den
+  Shortcode hinein (WP-Bordmittel, CLAUDE.md Abschnitt 5). `FrontendAssets` lädt das Stylesheet
+  auch auf der Trägerseite (deckt die nur in Abschnitten eingebetteten Shortcodes mit ab).
+- `assets/css/liebherr-frontend.css`: `.liw-landingpage*` (Abschnittsabstände, Trennlinie,
+  Titel in Akzentfarbe, `scroll-margin-top` für Anker, Leerzustand) – Design-Tokens, kein Inline-CSS.
+- Handbuch: Abschnitt 7 umbenannt in „Landingpage im Frontend – Shortcodes & Design System",
+  Anleitung zur Trägerseite. `docs/LIW_LANDINGPAGE_KONZEPT.md`, `docs/LIW_TODO.md` (neuer Punkt
+  „Landingpage-Feinheiten": Ankernavigation, Sprache/SEO, Hero-Motiv).
+
+### Geprüft
+- `tests/run-tests.php`: 90/90 grün (neue Klasse in Syntax-/strict_types-Prüfung).
+- `scripts/liw-selftest.php` [6] um sechs Prüfungen erweitert: Registrierung, veröffentlichter
+  Abschnitt mit Titel und Code-Anker sichtbar, eingebetteter `[liw_graphic]` als Inline-SVG
+  aufgelöst, Entwurf unsichtbar, Wrapper-Klasse, `get_published_sections()` nur `publish`.
+  Docker-Lauf durch Joseph steht aus.
+
+### Bewusst nicht Teil dieser Auslieferung
+- Ankernavigation/Sprungleiste, Sprachumschaltung und SEO-Metadaten der Trägerseite (offene
+  I18nSeo-Frage), Hero-Bildmotiv, Marketingtexte (Redaktion). S. `docs/LIW_TODO.md`.
+
+## [0.1.0-alpha.17] – 2026-09-18 – Bauplan LP-01…LP-14 + Standard-Abschnitte per Knopf anlegen
+
+### Hinzugefügt
+- **`Content\SectionBlueprint`** – einzige Quelle der 14 Landingpage-Abschnitte laut Pflichtenheft §8:
+  Code, Titel, Reihenfolge (10…140) und Redaktionsvorgabe (Kurzinhalt wörtlich aus der
+  Pflichtenheft-Tabelle) sowie der bereits gebaute Baustein, wo vorhanden (LP-06
+  `[liw_world_connections_map]`, LP-07/LP-08 `[liw_graphic]`, LP-11 `[liw_onboarding_form]`).
+  Erzeugt Block-Editor-Markup (Absatz + Shortcode-Block), kein Classic-Block. Bewusst KEINE
+  erfundenen Marketingtexte („nicht erfinden"): das Plugin liefert die Vorgabe als Hinweis, die
+  Redaktion formuliert aus. Keine realen System-/API-/Standortnamen (§17).
+- **`Content\SectionSeeder`** – legt fehlende Abschnitte als Entwürfe an. Idempotent über
+  Post-Meta `_liw_lp_code` (Zuordnung per Code, nicht per Titel: Titel frei änderbar, nie
+  Dubletten; auch Papierkorb zählt als vorhanden – bewusst Gelöschtes wird nicht wiederbelebt).
+  Nutzt `wp_insert_post()`/Post-Meta/`menu_order`, kein eigenes Datenmodell; jede Anlage über
+  `AuditBridge` protokolliert.
+- **Content Board:** Knopf „N fehlende Standard-Abschnitte anlegen" (nur sichtbar, solange Codes
+  fehlen; eigener Nonce), Erfolgs-/Fehlermeldung, neue Spalte „Code".
+- Handbuch: Abschnitt zur Anlage der Standard-Abschnitte.
+- `docs/LIW_LANDINGPAGE_KONZEPT.md`: Hinweis auf Bauplan/Seeder. `docs/LIW_TODO.md`: neuer
+  offener Punkt **LP-13 Kontaktformular** (Pflichtenheft verlangt eigenes Formular, getrennt
+  vom Onboarding – noch nicht gebaut); Core-Hinweis als erledigt verschoben (alpha.716/717).
+
+### Geprüft
+- `tests/run-tests.php`: 88/88 grün – sieben neue Bauplan-Prüfungen ohne WP (14 Codes lückenlos
+  in Reihenfolge, Titel/Vorgabe vorhanden, Einbettungen nur auf existierende Shortcodes,
+  `menu_order`, Block-Markup mit Escaping, unbekannter Code leer).
+- `scripts/liw-selftest.php` [6] um sechs Prüfungen erweitert (Bauplan, Meta-Zuordnung,
+  Idempotenz-Sicht `missing + vorhanden = 14`) plus Info-Zeile zum Bestand. Der Seeder selbst
+  wird im Selbsttest bewusst nicht ausgeführt (würde echte Abschnitte anlegen) – Live-Prüfung
+  durch Joseph per Knopf im Content Board.
+
 ## [0.1.0-alpha.16] – 2026-09-18 – Bugfix: dbDelta-Fehler beim Schema-Abgleich
 
 ### Behoben
@@ -19,7 +166,8 @@
 - `tests/run-tests.php`: 77/77 grün – neue statische Prüfung „Tabellen-COMMENT ohne
   Klammern" je Schema-Datei (Regressionsschutz ohne WP).
 - `scripts/liw-selftest.php` [0]: neue Live-Prüfung „dbDelta-Wiederholung (create_tables)
-  ohne DB-Fehler" – wäre vor dem Fix rot gewesen. Docker-Lauf durch Joseph steht aus.
+  ohne DB-Fehler" – wäre vor dem Fix rot gewesen. Docker-Lauf durch Joseph (`SELFTEST-J8NV1B6A`):
+  68/68, keine `ALTER TABLE`-Fehler mehr – bestätigt.
 
 ### Hinweis an den Core (nicht umgesetzt, außerhalb dieses Plugins)
 - Dasselbe Muster (Klammern im Tabellen-`COMMENT`) findet sich in mindestens fünf

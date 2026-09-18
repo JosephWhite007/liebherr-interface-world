@@ -4,7 +4,7 @@
  * Plugin URI:   https://araliya.info
  * Description:  Administrierbare, mehrsprachige Landingpage "Interface World Connections" für Liebherr-Händler-,
  *               Lieferanten- und Kundenanbindung (Magic Cube, Interface LogiQ). Solution Provider: GoHeal.
- * Version:      0.1.0-alpha.16
+ * Version:      0.1.0-alpha.20
  * Author:       GoHeal
  * Author URI:   https://araliya.info
  * Requires at least: 6.0
@@ -29,7 +29,7 @@ namespace Liebherr\InterfaceWorld;
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 // ── Konstanten ────────────────────────────────────────────────────────────────
-define( 'LIW_VERSION', '0.1.0-alpha.16' );
+define( 'LIW_VERSION', '0.1.0-alpha.20' );
 define( 'LIW_PATH', plugin_dir_path( __FILE__ ) );
 define( 'LIW_URL', plugin_dir_url( __FILE__ ) );
 define( 'LIW_BASENAME', plugin_basename( __FILE__ ) );
@@ -102,6 +102,7 @@ function create_tables(): void {
 	Connection\ConnectionSchema::create_table();
 	Consent\ConsentLogSchema::create_table();
 	Onboarding\OnboardingSchema::create_table();
+	Contact\ContactSchema::create_table();
 }
 
 /**

@@ -36,6 +36,8 @@ declare( strict_types = 1 );
 
 namespace Liebherr\InterfaceWorld\Admin\Pages;
 
+use Liebherr\InterfaceWorld\Content\SectionBlueprint;
+use Liebherr\InterfaceWorld\Content\SectionSeeder;
 use Liebherr\InterfaceWorld\CoreBridge\AuditBridge;
 use Liebherr\InterfaceWorld\CoreBridge\RoleBridge;
 use Liebherr\InterfaceWorld\CPT\LiwSectionCpt;
@@ -48,6 +50,10 @@ final class ContentBoardPage {
 
 	private const NONCE_ACTION = 'liw_content_board_set_status';
 	private const NONCE_NAME   = 'liw_content_board_nonce';
+
+	/** Seit alpha.17: fehlende Standard-Abschnitte LP-01…LP-14 per Knopf anlegen (SectionSeeder). */
+	private const SEED_NONCE_ACTION = 'liw_content_board_seed';
+	private const SEED_NONCE_NAME   = 'liw_content_board_seed_nonce';
 
 	/** Freigabeworkflow §19: Entwurf → Prüfung → freigegeben → veröffentlicht. */
 	private const WORKFLOW_STATUSES = [ 'draft', 'pending', LiwSectionCpt::STATUS_APPROVED, 'publish' ];
@@ -79,13 +85,57 @@ final class ContentBoardPage {
 			esc_html__( 'Neuen Abschnitt anlegen', 'liebherr-interface-world' )
 		);
 
+		self::render_seed_form();
 		self::render_table();
 		echo '</div>';
 	}
 
+	/** Knopf „fehlende Standard-Abschnitte anlegen" – nur sichtbar, solange Codes aus dem Bauplan fehlen. */
+	private static function render_seed_form(): void {
+		$missing = SectionSeeder::missing_codes();
+		if ( [] === $missing ) {
+			return;
+		}
+
+		echo '<form method="post" class="liw-row-form--inline">';
+		wp_nonce_field( self::SEED_NONCE_ACTION, self::SEED_NONCE_NAME );
+		echo '<input type="hidden" name="liw_action" value="seed_sections" />';
+		submit_button(
+			sprintf(
+				/* translators: %d: Anzahl fehlender Abschnitte */
+				_n( '%d fehlenden Standard-Abschnitt anlegen', '%d fehlende Standard-Abschnitte anlegen', count( $missing ), 'liebherr-interface-world' ),
+				count( $missing )
+			),
+			'secondary',
+			'',
+			false
+		);
+		echo ' <span class="description">' . esc_html( implode( ', ', $missing ) ) . ' – ' . esc_html__( 'als Entwürfe mit Redaktionsvorgabe aus dem Pflichtenheft §8', 'liebherr-interface-world' ) . '</span>';
+		echo '</form>';
+	}
+
 	/** @return array{class:string,message:string}|null */
 	private static function maybe_handle_submit(): ?array {
-		if ( ! isset( $_POST['liw_action'] ) || 'set_status' !== $_POST['liw_action'] ) {
+		$action = isset( $_POST['liw_action'] ) ? sanitize_key( wp_unslash( $_POST['liw_action'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce wird je Aktion unten geprüft.
+
+		if ( 'seed_sections' === $action ) {
+			check_admin_referer( self::SEED_NONCE_ACTION, self::SEED_NONCE_NAME );
+			$result = SectionSeeder::seed_missing( get_current_user_id() );
+			if ( [] !== $result['errors'] ) {
+				return [ 'class' => 'notice-error', 'message' => sprintf( __( 'Fehler beim Anlegen: %s', 'liebherr-interface-world' ), implode( '; ', array_map( static fn( string $c, string $m ): string => "{$c}: {$m}", array_keys( $result['errors'] ), $result['errors'] ) ) ) ];
+			}
+			return [
+				'class'   => 'notice-success',
+				'message' => sprintf(
+					/* translators: 1: Anzahl angelegter, 2: Anzahl übersprungener Abschnitte */
+					__( '%1$d Abschnitt(e) angelegt, %2$d bereits vorhanden.', 'liebherr-interface-world' ),
+					count( $result['created'] ),
+					count( $result['skipped'] )
+				),
+			];
+		}
+
+		if ( 'set_status' !== $action ) {
 			return null;
 		}
 		check_admin_referer( self::NONCE_ACTION, self::NONCE_NAME );
@@ -121,19 +171,20 @@ final class ContentBoardPage {
 		] );
 
 		echo '<table class="widefat striped"><thead><tr>';
-		foreach ( [ 'Reihenfolge', 'Titel', 'Status', 'Aktionen' ] as $column ) {
+		foreach ( [ 'Reihenfolge', 'Code', 'Titel', 'Status', 'Aktionen' ] as $column ) {
 			echo '<th>' . esc_html( $column ) . '</th>';
 		}
 		echo '</tr></thead><tbody>';
 
 		if ( [] === $posts ) {
-			echo '<tr><td colspan="4">' . esc_html__( 'Noch keine Abschnitte angelegt.', 'liebherr-interface-world' ) . '</td></tr>';
+			echo '<tr><td colspan="5">' . esc_html__( 'Noch keine Abschnitte angelegt.', 'liebherr-interface-world' ) . '</td></tr>';
 		}
 
 		foreach ( $posts as $post ) {
 			$status = $post->post_status;
 			echo '<tr>';
 			echo '<td>' . esc_html( (string) $post->menu_order ) . '</td>';
+			echo '<td>' . esc_html( (string) get_post_meta( $post->ID, SectionBlueprint::META_CODE, true ) ?: '–' ) . '</td>';
 			echo '<td>' . esc_html( get_the_title( $post ) ?: __( '(ohne Titel)', 'liebherr-interface-world' ) ) . '</td>';
 			echo '<td>' . esc_html( self::STATUS_LABELS[ $status ] ?? $status ) . '</td>';
 

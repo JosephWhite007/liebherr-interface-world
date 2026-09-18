@@ -39,13 +39,15 @@ final class ConsentLogSchema {
 
 		dbDelta( "CREATE TABLE {$table} (
 			id             BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-			request_id     BIGINT UNSIGNED NOT NULL COMMENT 'FK auf ary_partners.id (Core-Partnermodul, wiederverwendet) oder liw_partner_extra.id',
+			request_id     BIGINT UNSIGNED NOT NULL COMMENT 'FK je request_kind: onboarding = ary_partners.id, contact = liw_contact_request.id',
+			request_kind   VARCHAR(20)  NOT NULL DEFAULT 'onboarding' COMMENT 'onboarding | contact, seit alpha.19, trennt die ID-Raeume',
 			consent_type   VARCHAR(20)  NOT NULL COMMENT 'privacy | marketing (§22/§24, nie gekoppelt)',
 			text_version   VARCHAR(32)  NOT NULL,
 			granted_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			ip_address     VARCHAR(45)  NULL,
 			PRIMARY KEY (id),
 			KEY idx_request (request_id),
+			KEY idx_kind_request (request_kind, request_id),
 			KEY idx_type (consent_type)
 		) {$charset} COMMENT='Liebherr Interface World – Einwilligungsprotokoll, §22/§24, getrennt von Core Guest-Consent';" );
 	}

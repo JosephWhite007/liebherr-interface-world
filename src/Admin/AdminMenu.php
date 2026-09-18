@@ -14,6 +14,7 @@ declare( strict_types = 1 );
 namespace Liebherr\InterfaceWorld\Admin;
 
 use Liebherr\InterfaceWorld\Admin\Pages\ConnectionBoardPage;
+use Liebherr\InterfaceWorld\Admin\Pages\ContactBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\ContentBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\HandbookPage;
 use Liebherr\InterfaceWorld\Admin\Pages\InterfaceBoardPage;
@@ -86,6 +87,15 @@ final class AdminMenu {
 			RoleBridge::CAP_VIEW_ONBOARDING,
 			OnboardingBoardPage::MENU_SLUG,
 			[ OnboardingBoardPage::class, 'render' ]
+		);
+
+		add_submenu_page(
+			'liw-interface-board',
+			__( 'Kontaktanfragen (LP-13)', 'liebherr-interface-world' ),
+			__( 'Kontaktanfragen', 'liebherr-interface-world' ),
+			RoleBridge::CAP_VIEW_ONBOARDING,
+			ContactBoardPage::MENU_SLUG,
+			[ ContactBoardPage::class, 'render' ]
 		);
 
 		add_submenu_page(
