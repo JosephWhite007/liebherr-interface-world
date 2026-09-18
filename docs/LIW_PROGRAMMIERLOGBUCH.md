@@ -12,6 +12,19 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.52 – Cross-Navigation der vier Plattformen (World-Switcher)
+
+**Neu:** `src/Frontend/WorldSwitcher.php` – Shortcode `[liw_world_switcher]` + `the_content`-Auto-Einfügung
+(nur Hauptabfrage der vier Insel-Seiten); `worlds()` löst Ziele über SitePages + Optionen (liw_iw_page_id/
+liw_adventures_page_id) auf, `current_key()` markiert die aktuelle. `assets/css/liebherr-frontend.css` –
+`.liw-switcher*`-Leiste.
+**Geändert:** `src/Bootstrap.php` (register), `src/Frontend/RocketCompat.php` (`.liw-switcher`),
+`src/IntelligenceWorld/WorldView.php` (Hub: Adventures als Live-Kachel), `src/Admin/AdminMenu.php`
+(Frontpage-Link „📸 Adventures" + `adv_url()` + Reihenfolge), `scripts/liw-selftest.php` (+2 Cross-Nav),
+`CHANGELOG.md`, Version alpha.52.
+**Grund:** Nutzerwunsch – die vier Logik-Plattformen im Menü gegenseitig verlinken.
+**Prüfung:** `php -l`; run-tests 307/307, liw-selftest 279/279; Browser: Switcher-Leiste + Markierung ok.
+
 ## 0.1.0-alpha.51 – Liebherr Adventures (vierte Insel): Visible-Adventures-MVP
 
 **Neu (`src/Adventures/`):** `Taxonomy.php` (13 Inhaltstypen + 4 Dringlichkeiten, rein), `Location/ProviderInterface.php`,

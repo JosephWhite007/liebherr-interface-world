@@ -705,6 +705,25 @@
 }
 @media (max-width: 700px) { .liw-footer__legal { margin-left: 0; } .liw-footer__meta { flex-direction: column; } }
 
+/* ── Liebherr World – Plattform-Umschalter (Cross-Navigation der vier Inseln, alpha.52) ── */
+.liw-switcher {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: .5rem 1.25rem;
+	max-width: var(--content-max, 1440px);
+	margin: 0 auto;
+	padding: .5rem 4vw;
+	background: var(--brand-text, #202326);
+	color: #fff;
+	font-family: var(--font-body, Arial, Helvetica, sans-serif);
+}
+.liw-switcher__brand { font-weight: 900; letter-spacing: .04em; text-transform: uppercase; font-size: .8rem; color: var(--brand-primary, #ffd000); }
+.liw-switcher__list { list-style: none; display: flex; flex-wrap: wrap; gap: .3rem 1.1rem; margin: 0; padding: 0; }
+.liw-switcher__link { color: rgba(255,255,255,.82); text-decoration: none; font-size: .85rem; padding: .15rem 0; border-bottom: 2px solid transparent; }
+.liw-switcher__link:hover, .liw-switcher__link:focus-visible { color: #fff; border-bottom-color: var(--brand-primary, #ffd000); }
+.liw-switcher__link.is-current { color: var(--brand-primary, #ffd000); border-bottom-color: var(--brand-primary, #ffd000); font-weight: 700; }
+
 /* ══════════════════════════════════════════════════════════════════════════
    Liebherr Local Intelligence – Hauptseite (LI-Pflichtenheft §8, alpha.41)
    Mobile-first. Ausschließlich --brand-*/--font-*-Tokens. prefers-reduced-motion

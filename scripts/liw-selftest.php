@@ -679,6 +679,11 @@ try {
 	// Aufräumen (Testdaten).
 	foreach ( [ $__a1['id'], $__a2['id'] ] as $__id ) { if ( $__id > 0 ) { wp_delete_post( (int) $__id, true ); } }
 	liw_st_check( 'ADV: Testdaten entfernt', null === get_post( $__a1['id'] ) );
+
+	// Cross-Navigation: gemeinsamer Plattform-Umschalter (alpha.52).
+	$__sw = \Liebherr\InterfaceWorld\Frontend\WorldSwitcher::render( 'adventures' );
+	liw_st_check( 'Cross-Nav: World-Switcher verlinkt die vier Inseln', str_contains( $__sw, 'liw-switcher' ) && str_contains( $__sw, 'Intelligence World' ) && str_contains( $__sw, 'Local Intelligence' ) && str_contains( $__sw, 'Interface Solutions' ) && str_contains( $__sw, 'Adventures' ) );
+	liw_st_check( 'Cross-Nav: aktuelle Insel hervorgehoben', str_contains( $__sw, 'is-current' ) && str_contains( $__sw, 'aria-current="page"' ) );
 	liw_st_check( 'IW: Demo-Code Standard (WorldContent)', 'LIEBHERR-DEMO' === \Liebherr\InterfaceWorld\IntelligenceWorld\WorldContent::access_code() );
 	liw_st_check( 'IW: REST-Route liw-iw/v1 registriert', in_array( '/' . \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::NAMESPACE, array_keys( rest_get_server()->get_routes() ), true ) || array_key_exists( '/' . \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::NAMESPACE . '/session/start', rest_get_server()->get_routes() ) );
 	// Access-Gate serverseitig (Code-Prüfung, alpha.49-Fix: öffentliche Endpunkte).

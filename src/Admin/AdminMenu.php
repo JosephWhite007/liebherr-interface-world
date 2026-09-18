@@ -84,6 +84,16 @@ final class AdminMenu {
 				$interface_url
 			);
 		}
+		$adv_url = self::adv_url();
+		if ( '' !== $adv_url ) {
+			add_submenu_page(
+				'liw-interface-board',
+				__( 'Adventures (Insel)', 'liebherr-interface-world' ),
+				__( '📸 Adventures', 'liebherr-interface-world' ),
+				RoleBridge::CAP_MANAGE_CONTENT,
+				$adv_url
+			);
+		}
 
 		add_submenu_page(
 			'liw-interface-board',
@@ -239,7 +249,11 @@ final class AdminMenu {
 			[ HandbookPage::class, 'render' ]
 		);
 
-		// Reihenfolge: Interface Solutions, dann Local Intelligence, dann Intelligence World ganz oben.
+		// Reihenfolge oben: Intelligence World · Local Intelligence · Interface Solutions · Adventures.
+		// move_first schiebt an Index 0 → in umgekehrter Zielreihenfolge aufrufen.
+		if ( '' !== $adv_url ) {
+			self::move_first( 'liw-interface-board', $adv_url );
+		}
 		if ( '' !== $interface_url ) {
 			self::move_first( 'liw-interface-board', $interface_url );
 		}
@@ -249,6 +263,16 @@ final class AdminMenu {
 		if ( '' !== $iw_url ) {
 			self::move_first( 'liw-interface-board', $iw_url );
 		}
+	}
+
+	/** URL der Adventures-Insel (Option/Slug); leer, wenn nicht vorhanden. */
+	private static function adv_url(): string {
+		$id = (int) get_option( 'liw_adventures_page_id', 0 );
+		if ( $id > 0 && 'publish' === get_post_status( $id ) ) {
+			return (string) get_permalink( $id );
+		}
+		$page = get_page_by_path( 'liebherr-adventures' );
+		return $page instanceof \WP_Post ? (string) get_permalink( $page ) : '';
 	}
 
 	/** URL der eigenständigen Intelligence-World-Landingpage (Option/Slug); leer, wenn nicht vorhanden. */

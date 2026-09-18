@@ -191,8 +191,10 @@ final class WorldView {
 	 * @return array<int,array{label:string,desc:string,url:string,enabled:bool}>
 	 */
 	private static function hub_tiles(): array {
-		$li = \Liebherr\InterfaceWorld\Content\SitePages::li_url();
-		$if = \Liebherr\InterfaceWorld\Content\SitePages::interface_url();
+		$li     = \Liebherr\InterfaceWorld\Content\SitePages::li_url();
+		$if     = \Liebherr\InterfaceWorld\Content\SitePages::interface_url();
+		$adv_id = (int) get_option( 'liw_adventures_page_id', 0 );
+		$adv    = $adv_id > 0 && 'publish' === get_post_status( $adv_id ) ? (string) get_permalink( $adv_id ) : '';
 
 		$tiles = [
 			[
@@ -206,6 +208,12 @@ final class WorldView {
 				'desc'    => __( 'Technisches Herzstück: Schnittstellen, Konverter, Datenflüsse.', 'liebherr-interface-world' ),
 				'url'     => $if,
 				'enabled' => '' !== $if,
+			],
+			[
+				'label'   => __( 'Adventures', 'liebherr-interface-world' ),
+				'desc'    => __( 'Vierte Insel: ortsbezogene Erlebnisse, Wissen und Hilfe (Drei-Wörter-Ort).', 'liebherr-interface-world' ),
+				'url'     => $adv,
+				'enabled' => '' !== $adv,
 			],
 			[
 				'label'   => __( 'Produktsegmente & Lösungswelt', 'liebherr-interface-world' ),

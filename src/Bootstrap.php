@@ -73,6 +73,7 @@ final class Bootstrap {
 		PartnerDocumentsView::register();
 		FrontendAssets::register();
 		Frontend\FaviconService::register(); // Website-Icon „goldener Planet" im Browser-Tab (site-weit).
+		Frontend\WorldSwitcher::register();  // Plattform-Umschalter der vier Inseln (Cross-Navigation).
 		Frontend\RocketCompat::register(); // WP-Rocket-RUCSS-Safelist für .liw-Selektoren.
 		Frontend\PageTemplate::register(); // Vollbild-Seitenvorlage (ohne Theme-Kopf/-Fuß).
 

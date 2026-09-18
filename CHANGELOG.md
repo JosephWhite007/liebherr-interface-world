@@ -1,5 +1,20 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.52] – 2026-09-19 – Cross-Navigation der vier Plattformen (World-Switcher)
+
+### Hinzugefügt
+- **Plattform-Umschalter** `Frontend\WorldSwitcher` (Shortcode `[liw_world_switcher]` + automatische Leiste
+  oben auf allen vier Insel-Seiten): verlinkt **Intelligence World · Local Intelligence · Interface Solutions ·
+  Adventures** untereinander; aktuelle Insel hervorgehoben (`aria-current`). Ziele über Seiten-Registry/Optionen
+  aufgelöst (nicht hart codiert); nur vorhandene, veröffentlichte Seiten werden verlinkt.
+- **Intelligence-World-Hub:** Adventures ist nun eine Live-Kachel (statt „in Vorbereitung").
+- **Backoffice-Menü:** zusätzlicher Frontpage-Direktlink „📸 Adventures"; Reihenfolge oben:
+  Intelligence World · Local Intelligence · Interface Solutions · Adventures.
+
+### Verifikation
+- `tests/run-tests.php` 307/307, `scripts/liw-selftest.php` **279/279** (Switcher verlinkt alle vier, aktuelle
+  hervorgehoben). Browser: Leiste erscheint oben auf den Inseln, korrekte Markierung.
+
 ## [0.1.0-alpha.51] – 2026-09-19 – Liebherr Adventures (vierte Insel): Visible-Adventures-MVP
 
 Neues Modul `src/Adventures/` (Grundlagenkonzept „Liebherr Adventures"), im bestehenden Plugin. Prototyp

@@ -37,7 +37,7 @@ final class RocketCompat {
 		$keep = [
 			'.liw-header', '.liw-hero', '.liw-footer', '.liw-cta', '.liw-worldmap', '.liw-pworlds', '.liw-pcard',
 			'.liw-roadmap', '.liw-steps', '.liw-landingpage', '.liw-connections', '.liw-graphic',
-			'.liw-onboarding', '.liw-contact', '.liw-partner-docs', '.liw-visually-hidden', '.liw-li', '.liw-intro', '.liw-iw', '.liw-adv', '.liw-worldmap',
+			'.liw-onboarding', '.liw-contact', '.liw-partner-docs', '.liw-visually-hidden', '.liw-li', '.liw-intro', '.liw-iw', '.liw-adv', '.liw-worldmap', '.liw-switcher',
 		];
 		return array_values( array_unique( array_merge( $safelist, $keep ) ) );
 	}
