@@ -638,6 +638,10 @@
 	color: #fff;
 }
 .liw-worldmap__svg { width: 100%; height: auto; display: block; overflow: visible; }
+.liw-worldmap--image { padding: 0; overflow: hidden; }
+.liw-worldmap__figure { margin: 0; }
+.liw-worldmap__image { width: 100%; height: auto; display: block; }
+.liw-worldmap--image .liw-worldmap__list { padding: 1rem clamp(1rem, 3vw, 2rem) 1.25rem; }
 .liw-worldmap__land { fill: rgba(255,255,255,.06); }
 .liw-worldmap__link { stroke: var(--brand-primary, #ffd000); stroke-width: 1.5; opacity: .45; }
 .liw-worldmap__link--planned { stroke-dasharray: 5 5; opacity: .3; }

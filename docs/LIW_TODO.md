@@ -10,6 +10,18 @@ Stand: 18.09.2026 (0.1.0-alpha.41).
 
 ---
 
+## Liebherr Adventures (vierte Insel, ab alpha.51)
+
+**Geliefert (alpha.51) – Visible-Adventures-MVP:** Klassifikation (13 Typen + 4 Dringlichkeiten getrennt),
+Drei-Wörter-Ort (austauschbarer Mock-Provider + Partner-Attribution), CPT `liw_adventure` + Meta, serverseitige
+Policy (Intelligence-Zugang, Critical nie auto-öffentlich, 7 Sichtbarkeiten, Ortsschutz), REST `liw-adv/v1`,
+Insel `[liw_adventures]` (Hero/Filter/Create/Stream), Seite `/liebherr-adventures/` + Demo-Seeder. Details:
+`docs/ADVENTURES_NOTES.md`.
+
+**Offen / nächste Etappen:** World Map + Detailseite, Medien-Upload/Transcoding (§14; MVP: externe Bild-URL),
+Moderations-UI/Audit (§17/§12.3), Get-Help-Assistent (Phase 3), Suche/Filter Maschine/Bauteil (§18), echter
+Drei-Wörter-Anbieter (§24.1), Mehrsprachigkeit der Nutzerinhalte (§15).
+
 ## Intelligence World (Pflichtenheft-2, ab alpha.47)
 
 **Geliefert (alpha.47) – Fundament, serverseitig, ohne UI:** Datenmodell (`liw_iw_session`/`liw_iw_event`),

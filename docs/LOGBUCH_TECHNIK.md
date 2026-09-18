@@ -8,6 +8,26 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-19 · Liebherr Adventures – vierte Insel, Visible-Adventures-MVP (0.1.0-alpha.51)
+
+**Frage/Kontext.** Grundlagenkonzept „Liebherr Adventures": ortsbezogene Medien-/Wissens-/Hilfe-Insel.
+JW-Entscheide: Modul im bestehenden Plugin, sichtbares MVP zuerst.
+
+**Entscheidungen (Kategorie B).**
+- **CPT `liw_adventure`** statt eigener Tabellen für den sichtbaren MVP (nutzt WP-Status/Autor/Beitragsbild;
+  Fachfelder in Meta). UUID zusätzlich (§10.2). Custom-Tabellen/erweiterte Entitäten später bei Bedarf.
+- **Drei-Wörter-Ort strikt über Interface + Mock** (kein Anbietername/Endpoint im Code, §4.1); Resolver via
+  Filter austauschbar. Mock invertierbar (round-trip) für Tests.
+- **Serverseitige Policy** als Wahrheit (§8): Critical nie ungeprüft öffentlich (§22.5), Sichtbarkeit beim
+  Lesen erzwungen, Ortspräzision je Schutzstufe reduziert (§4.4). Reine Kernregeln unit-getestet.
+- **Medien-Upload/Transcoding (§14) bewusst noch nicht**: MVP nutzt externe Bild-URL als Fallback
+  (`M_MEDIA_URL`) – klar als Übergang dokumentiert (ADVENTURES_NOTES).
+- Nebenanfrage: `[liw_world_map]` zeigt ein hinterlegtes Foto (Datei/Media-Bild), sonst weiter die SVG-Karte
+  (ich kann Chat-Bilder nicht als Datei speichern → Ablage durch den Auftraggeber).
+
+**Quelle/Version.** Grundlagenkonzept Adventures; JW 19.09.2026; 0.1.0-alpha.51. Prüfung: run-tests 305/305,
+liw-selftest 277/277. Nächste Etappen/offene Entscheidungen: `docs/ADVENTURES_NOTES.md`.
+
 ### 2026-09-19 · Intelligence World – Funktions-Hub nach dem Eintritt (0.1.0-alpha.50)
 
 **Frage/Kontext.** Nutzerwunsch: Nach dem Eintritt in die Intelligence World auf die bereits gebauten

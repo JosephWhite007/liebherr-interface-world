@@ -1,5 +1,32 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.51] – 2026-09-19 – Liebherr Adventures (vierte Insel): Visible-Adventures-MVP
+
+Neues Modul `src/Adventures/` (Grundlagenkonzept „Liebherr Adventures"), im bestehenden Plugin. Prototyp
+(§23.3): keine echten Diagnosen/Freigaben/Bestellungen; Demo-Daten gekennzeichnet.
+
+### Hinzugefügt
+- **Klassifikation** (13 Inhaltstypen + 4 Dringlichkeitsstufen als getrennte Achsen, §3).
+- **Drei-Wörter-Ort** über austauschbare Provider-Abstraktion + invertierbaren **Mock** (kein hart
+  verdrahteter Anbieter, §4.1) + Partner-Attribution „Location powered by …".
+- **Datenmodell** CPT `liw_adventure` (+ Meta: Typ, Dringlichkeit, Sichtbarkeit, Drei-Wörter-Ort, UUID,
+  Schutzstufe, Lösungsstatus, Medium).
+- **Policy** serverseitig: Intelligence-Zugang zum Erstellen, **Critical nie ungeprüft öffentlich** (§22.5),
+  7 Sichtbarkeitsstufen erzwungen (§9), Ortspräzision je Schutzstufe (§4.4).
+- **REST** `liw-adv/v1` (stream/locate/create) + **Insel-Frontend** `[liw_adventures]`: Hero
+  („One place. Three words. One shared experience."), Filter (Typ/Dringlichkeit), Create-Panel (Geolocation
+  → Drei-Wörter-Ort), Stream mit Karten. Seite `/liebherr-adventures/` + Demo-Seeder.
+
+### Verifikation
+- `tests/run-tests.php` **305/305** (Taxonomie, Mock-Provider Round-Trip, Policy), `scripts/liw-selftest.php`
+  **277/277** (CPT, create/Critical/Sichtbarkeit, Render, REST). Browser: Insel mit 6 Demo-Adventures, Drei-
+  Wörter-Orte, kritischer Beitrag korrekt ausgeblendet.
+
+### Nebenfix
+- `[liw_world_map]` (World Connections) zeigt nun ein hinterlegtes Foto-Visual, falls vorhanden
+  (`assets/img/liw-world-connections.*` ODER freigegebenes Media-Board-Bild, Filter `liw_world_connections_image`);
+  sonst unverändert die abstrakte SVG-Karte.
+
 ## [0.1.0-alpha.50] – 2026-09-19 – Intelligence World: Funktions-Hub nach dem Eintritt
 
 ### Hinzugefügt

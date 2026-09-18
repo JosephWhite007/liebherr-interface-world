@@ -655,6 +655,30 @@ try {
 	liw_st_check( 'IW: Nutzungsbedingungen (5.1–5.8) in der Schleuse eingebunden', str_contains( $__world, '5.1 Prototypstatus' ) && str_contains( $__world, '5.8 Rechtlicher Freigabevorbehalt' ) );
 	liw_st_check( 'IW: Sitzungs-/Kostenleiste + Beenden', str_contains( $__world, 'data-liw-iw-time' ) && str_contains( $__world, 'data-liw-iw-budgetfill' ) && str_contains( $__world, 'data-liw-iw-end' ) );
 	liw_st_check( 'IW: Funktions-Hub verlinkt gebaute Bereiche (Local Intelligence + Interface Solutions)', str_contains( $__world, 'liw-iw__hub' ) && str_contains( $__world, 'Local Intelligence' ) && str_contains( $__world, 'Interface Solutions' ) && substr_count( $__world, 'liw-iw__tile--live' ) >= 2 );
+
+	// ── [8e] Liebherr Adventures – vierte Insel (§3/§4/§9, alpha.51) ──
+	echo "\n[8e] Liebherr Adventures\n";
+	$ADV = '\Liebherr\InterfaceWorld\Adventures\AdventureService';
+	liw_st_check( 'ADV: CPT liw_adventure registriert', post_type_exists( \Liebherr\InterfaceWorld\Adventures\AdventureCpt::POST_TYPE ) );
+	liw_st_check( 'ADV: Shortcode [liw_adventures] registriert', shortcode_exists( 'liw_adventures' ) );
+	// Nicht-kritisch → nach Publish im Gäste-Stream sichtbar.
+	$__a1 = $ADV::create( [ 'title' => 'SELFTEST-ADV-OK', 'story' => 's', 'type' => 'field_experience', 'urgency' => 'funny', 'visibility' => 'public_approved', 'intent' => 'submit', 'lat' => 48.0, 'lng' => 10.0, 'author_id' => 1 ] );
+	liw_st_check( 'ADV: create liefert Drei-Wörter-Ort + pending (eingereicht)', $__a1['id'] > 0 && 'pending' === $__a1['status'] && 3 === count( explode( '.', $__a1['words'] ) ) );
+	update_post_meta( $__a1['id'], '_liw_adv_selftest', 1 );
+	wp_update_post( [ 'ID' => $__a1['id'], 'post_status' => 'publish' ] );
+	// Kritisch → bleibt pending, nie öffentlich.
+	$__a2 = $ADV::create( [ 'title' => 'SELFTEST-ADV-CRIT', 'story' => 's', 'type' => 'service_help', 'urgency' => 'critical', 'visibility' => 'public_approved', 'intent' => 'submit', 'lat' => 45.0, 'lng' => 7.5, 'author_id' => 1 ] );
+	update_post_meta( $__a2['id'], '_liw_adv_selftest', 1 );
+	liw_st_check( 'ADV: kritischer Beitrag bleibt pending (nicht auto-öffentlich, §22.5)', 'pending' === (string) get_post_status( $__a2['id'] ) );
+	$__stream = $ADV::query( [ 'limit' => 50 ] );
+	$__titles = array_map( static fn( $x ) => (string) $x['title'], $__stream );
+	liw_st_check( 'ADV: Stream zeigt veröffentlichtes public_approved, nicht das kritische', in_array( 'SELFTEST-ADV-OK', $__titles, true ) && ! in_array( 'SELFTEST-ADV-CRIT', $__titles, true ) );
+	$__advhtml = do_shortcode( '[liw_adventures]' );
+	liw_st_check( 'ADV: Insel rendert Hero + Filter + Stream + Partner-Attribution', str_contains( $__advhtml, 'liw-adv__hero' ) && str_contains( $__advhtml, 'data-liw-adv-stream' ) && str_contains( $__advhtml, 'Location powered by' ) );
+	liw_st_check( 'ADV: REST-Route liw-adv/v1 registriert', array_key_exists( '/' . \Liebherr\InterfaceWorld\Adventures\Rest::NAMESPACE . '/create', rest_get_server()->get_routes() ) );
+	// Aufräumen (Testdaten).
+	foreach ( [ $__a1['id'], $__a2['id'] ] as $__id ) { if ( $__id > 0 ) { wp_delete_post( (int) $__id, true ); } }
+	liw_st_check( 'ADV: Testdaten entfernt', null === get_post( $__a1['id'] ) );
 	liw_st_check( 'IW: Demo-Code Standard (WorldContent)', 'LIEBHERR-DEMO' === \Liebherr\InterfaceWorld\IntelligenceWorld\WorldContent::access_code() );
 	liw_st_check( 'IW: REST-Route liw-iw/v1 registriert', in_array( '/' . \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::NAMESPACE, array_keys( rest_get_server()->get_routes() ), true ) || array_key_exists( '/' . \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::NAMESPACE . '/session/start', rest_get_server()->get_routes() ) );
 	// Access-Gate serverseitig (Code-Prüfung, alpha.49-Fix: öffentliche Endpunkte).

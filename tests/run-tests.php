@@ -321,6 +321,33 @@ liw_assert( 'Rest::billing_status: Warnstufe high ab 80 %', 'high' === $bs2['lev
 liw_assert( 'Rest::format_duration: §8-Beispiel 02:14:38', '02:14:38' === \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::format_duration( 8078 ) && '00:00:00' === \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::format_duration( 0 ), $checks, $failures );
 liw_assert( 'Favicon: goldenes Planet-SVG vorhanden + XML-wohlgeformt', is_readable( $root . '/assets/img/liw-planet-icon.svg' ) && false !== @simplexml_load_file( $root . '/assets/img/liw-planet-icon.svg' ), $checks, $failures );
 
+// 2p. Liebherr Adventures – Fundament (vierte Insel, §3/§4/§9, alpha.51) – reine Logik ohne WP.
+echo "-- Liebherr Adventures (alpha.51) --\n";
+require_once $root . '/src/Adventures/Taxonomy.php';
+require_once $root . '/src/Adventures/Location/ProviderInterface.php';
+require_once $root . '/src/Adventures/Location/MockProvider.php';
+require_once $root . '/src/Adventures/Policy.php';
+use Liebherr\InterfaceWorld\Adventures\Taxonomy;
+use Liebherr\InterfaceWorld\Adventures\Policy;
+use Liebherr\InterfaceWorld\Adventures\Location\MockProvider;
+
+liw_assert( 'Adventures: 13 Inhaltstypen + 4 Dringlichkeitsstufen (getrennt, §3)', 13 === count( Taxonomy::content_types() ) && 4 === count( Taxonomy::urgency_levels() ), $checks, $failures );
+liw_assert( 'Adventures: is_critical nur bei critical', Taxonomy::is_critical( 'critical' ) && ! Taxonomy::is_critical( 'funny' ) && Taxonomy::is_valid_type( 'work_advice' ) && ! Taxonomy::is_valid_type( 'x' ), $checks, $failures );
+
+$mp = new MockProvider();
+$enc = $mp->encode( 48.10, 9.79 );
+liw_assert( 'MockProvider: 3 Wörter (word.word.word)', 3 === count( explode( '.', $enc['words'] ) ) && '' !== $enc['words'], $checks, $failures );
+$dec = $mp->decode( $enc['words'] );
+liw_assert( 'MockProvider: decode(encode) = Rasterzentrum (round-trip)', null !== $dec && abs( $dec['lat'] - $enc['lat'] ) < 0.0001 && abs( $dec['lng'] - $enc['lng'] ) < 0.0001, $checks, $failures );
+liw_assert( 'MockProvider: deterministisch', $mp->encode( 48.10, 9.79 )['words'] === $enc['words'], $checks, $failures );
+liw_assert( 'MockProvider: ungültiger Code → null', null === $mp->decode( 'nope.nope.nope' ) && null === $mp->decode( 'apple.anchor' ), $checks, $failures );
+
+liw_assert( 'Policy: 7 Sichtbarkeitsstufen (§9.1)', 7 === count( Policy::visibilities() ), $checks, $failures );
+liw_assert( 'Policy: Entwurf bleibt Entwurf, Einreichen → pending (Critical auch)', 'draft' === Policy::effective_status( 'draft', 'funny' ) && 'pending' === Policy::effective_status( 'submit', 'critical' ) && 'pending' === Policy::effective_status( 'submit', 'informative' ), $checks, $failures );
+liw_assert( 'Policy: public_approved+publish öffentlich sichtbar', Policy::can_view( 'publish', 'public_approved', false, false, false ), $checks, $failures );
+liw_assert( 'Policy: interne Sichtbarkeit nur für Angemeldete', ! Policy::can_view( 'publish', 'organization', false, false, false ) && Policy::can_view( 'publish', 'organization', false, true, false ), $checks, $failures );
+liw_assert( 'Policy: nicht-publish (Critical/pending) nicht öffentlich (§22.5)', ! Policy::can_view( 'pending', 'public_approved', false, true, false ) && Policy::can_view( 'pending', 'public_approved', true, false, false ), $checks, $failures );
+
 // 3. strict_types=1 in jeder src/-Datei (Coding Standard, CLAUDE.md Abschnitt 5).
 echo "-- Coding Standard --\n";
 $iterator2 = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $root . '/src', FilesystemIterator::SKIP_DOTS ) );

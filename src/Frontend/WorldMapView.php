@@ -44,13 +44,45 @@ final class WorldMapView {
 
 	public static function render(): string {
 		$agg = self::aggregate( ConnectionService::get_public() );
+		$img = self::connections_image_url();
 
 		ob_start();
-		echo '<div class="liw-worldmap" data-liw-worldmap>';
-		echo self::svg( $agg ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- in svg() escaped.
+		echo '<div class="liw-worldmap' . ( '' !== $img ? ' liw-worldmap--image' : '' ) . '" data-liw-worldmap>';
+		if ( '' !== $img ) {
+			// Bevorzugtes Foto-Visual (z. B. goldener Liebherr-Globus) statt der abstrakten SVG-Karte.
+			printf(
+				'<figure class="liw-worldmap__figure"><img class="liw-worldmap__image" src="%s" alt="%s" loading="lazy" decoding="async" /></figure>',
+				esc_url( $img ),
+				esc_attr__( 'Liebherr World Connections – weltweit vernetzte Standorte', 'liebherr-interface-world' )
+			);
+		} else {
+			echo self::svg( $agg ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- in svg() escaped.
+		}
 		echo self::text_alternative( $agg ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- in text_alternative() escaped.
 		echo '</div>';
 		return (string) ob_get_clean();
+	}
+
+	/**
+	 * URL des World-Connections-Bildes, falls hinterlegt: freigegebenes Media-Board-Bild
+	 * (Option `liw_world_connections_image_id`, CI-005) ODER Datei `assets/img/liw-world-connections.(jpg|png|webp)`.
+	 * Über Filter `liw_world_connections_image` überschreibbar. Leer → abstrakte SVG-Karte (bisheriges Verhalten).
+	 */
+	public static function connections_image_url(): string {
+		$id = (int) get_option( 'liw_world_connections_image_id', 0 );
+		if ( $id > 0 && \Liebherr\InterfaceWorld\CoreBridge\MediaBridge::is_approved( $id ) ) {
+			$url = wp_get_attachment_image_url( $id, 'full' );
+			if ( is_string( $url ) && '' !== $url ) {
+				return (string) apply_filters( 'liw_world_connections_image', $url );
+			}
+		}
+		foreach ( [ 'jpg', 'jpeg', 'png', 'webp' ] as $ext ) {
+			$rel = 'assets/img/liw-world-connections.' . $ext;
+			if ( is_readable( LIW_PATH . $rel ) ) {
+				return (string) apply_filters( 'liw_world_connections_image', LIW_URL . $rel );
+			}
+		}
+		return (string) apply_filters( 'liw_world_connections_image', '' );
 	}
 
 	/**

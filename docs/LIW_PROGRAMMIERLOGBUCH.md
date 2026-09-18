@@ -12,6 +12,24 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.51 – Liebherr Adventures (vierte Insel): Visible-Adventures-MVP
+
+**Neu (`src/Adventures/`):** `Taxonomy.php` (13 Inhaltstypen + 4 Dringlichkeiten, rein), `Location/ProviderInterface.php`,
+`Location/MockProvider.php` (invertierbar, 64 Wörter, 0,5°-Raster), `Location/LocationService.php` (Resolver +
+Partner-Attribution), `AdventureCpt.php` (CPT `liw_adventure` + Meta), `Policy.php` (can_create/effective_status/
+can_view/can_moderate; Critical nie auto-öffentlich §22.5), `AdventureService.php` (create/query/to_view,
+Ortspräzision je Schutzstufe), `Rest.php` (`liw-adv/v1` stream/locate/create), `AdventuresView.php` (Shortcode
+`[liw_adventures]`, eigener Cache-Buster). `assets/css/liw-adventures.css`, `assets/js/liw-adventures.js`,
+`scripts/liw-seed-adventures.php`, `docs/ADVENTURES_NOTES.md`.
+**Geändert:** `src/Bootstrap.php` (CPT-init + Rest/View register), `src/Frontend/RocketCompat.php` (`.liw-adv`),
+`src/Frontend/WorldMapView.php` + `assets/css/liebherr-frontend.css` (World-Connections-Foto-Visual, falls
+Datei/Media-Bild vorhanden – Nebenfix zur Nutzeranfrage), `tests/run-tests.php` (+Adventures-Unit-Tests),
+`scripts/liw-selftest.php` (+Block [8e]), `CHANGELOG.md`, Version alpha.51.
+**Entscheidungen:** Modul-in-Plugin (keine Redundanz), sichtbares MVP zuerst; Drei-Wörter-Anbieter = Mock
+(austauschbar, kein hart verdrahteter Name, §4.1). Prototyp §23.3.
+**Prüfung:** `php -l`; run-tests 305/305, liw-selftest 277/277; Browser: Insel + 6 Demo-Adventures, kritischer
+Beitrag ausgeblendet.
+
 ## 0.1.0-alpha.50 – Intelligence World: Funktions-Hub nach dem Eintritt
 
 **Geändert:** `src/IntelligenceWorld/WorldView.php` – World-Body zeigt nach dem Eintritt einen Kachel-Hub

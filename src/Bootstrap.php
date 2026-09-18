@@ -45,6 +45,7 @@ final class Bootstrap {
 
 	public static function init(): void {
 		add_action( 'init', [ LiwSectionCpt::class, 'register' ] );
+		add_action( 'init', [ Adventures\AdventureCpt::class, 'register' ] ); // Liebherr Adventures – vierte Insel (CPT).
 		add_action( 'init', [ TranslationBridge::class, 'register' ], 21 ); // nach Translation-Modul (Core-Bootstrap-Reihenfolge).
 
 		SeoBridge::register();
@@ -66,6 +67,8 @@ final class Bootstrap {
 		LocalIntelligenceView::register(); // Hauptseite Local Intelligence (11 Module, LI-Pflichtenheft §8).
 		IntelligenceWorld\Rest::register();      // Intelligence World REST (Eintritt/Sitzung, Pflichtenheft-2 §4.2/§7).
 		IntelligenceWorld\WorldView::register(); // Intelligence World Frontend (Blue Planet + Eintrittsschleuse).
+		Adventures\Rest::register();             // Liebherr Adventures REST (Stream/Locate/Create).
+		Adventures\AdventuresView::register();   // Liebherr Adventures Insel-Frontend.
 		LegacyRedirect::register();        // 301 Altroute /interface-world/ → Unterseite (LI §3.2).
 		PartnerDocumentsView::register();
 		FrontendAssets::register();
