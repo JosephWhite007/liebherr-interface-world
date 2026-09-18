@@ -76,13 +76,14 @@ final class HeaderView {
 
 	/** Logo (nur freigegeben, CI-005) oder neutrale Text-Wortmarke (kein erfundenes Logo, CI-002). */
 	private static function brand_markup(): string {
+		$brand   = BrandTokens::brand_text();
 		$logo_id = BrandTokens::logo_id();
 		if ( $logo_id > 0 && MediaBridge::is_approved( $logo_id ) ) {
-			$img = wp_get_attachment_image( $logo_id, 'medium', false, [ 'class' => 'liw-header__logo', 'alt' => get_bloginfo( 'name' ) ] );
+			$img = wp_get_attachment_image( $logo_id, 'medium', false, [ 'class' => 'liw-header__logo', 'alt' => $brand ] );
 			if ( '' !== $img ) {
 				return $img;
 			}
 		}
-		return '<span class="liw-header__wordmark">' . esc_html( get_bloginfo( 'name' ) ) . '</span>';
+		return '<span class="liw-header__wordmark">' . esc_html( $brand ) . '</span>';
 	}
 }

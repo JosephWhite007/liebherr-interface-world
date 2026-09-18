@@ -27,7 +27,7 @@ final class FooterView {
 	}
 
 	public static function render(): string {
-		$brand = get_bloginfo( 'name' );
+		$brand = \Liebherr\InterfaceWorld\Branding\BrandTokens::brand_text();
 
 		ob_start();
 		?>

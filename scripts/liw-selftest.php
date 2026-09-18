@@ -546,6 +546,12 @@ try {
 	liw_st_check( '[liw_footer] rendert Legal-Nav + GoHeal-Hinweis (CI-003)', str_contains( $__ft, 'liw-footer__legal' ) && str_contains( $__ft, 'Impressum' ) && str_contains( $__ft, 'Datenschutzhinweis' ) && str_contains( $__ft, 'GoHeal' ) );
 	liw_st_check( 'FrontendAssets: filemtime-Cache-Buster (bust_src)', str_contains( (string) file_get_contents( LIW_PATH . 'src/Frontend/FrontendAssets.php' ), 'bust_src' ) && str_contains( (string) file_get_contents( LIW_PATH . 'src/Frontend/FrontendAssets.php' ), 'style_loader_src' ) );
 	liw_st_check( 'RocketCompat RUCSS-Safelist enthaelt .liw-worldmap/.liw-footer', str_contains( implode( ',', \Liebherr\InterfaceWorld\Frontend\RocketCompat::safelist( [] ) ), '.liw-worldmap' ) && str_contains( implode( ',', \Liebherr\InterfaceWorld\Frontend\RocketCompat::safelist( [] ) ), '.liw-footer' ) );
+	// Wortmarke + Vollbild-Vorlage (alpha.39).
+	liw_st_check( 'BrandTokens::brand_text() = Liebherr Interface Solutions (CI angewendet)', 'Liebherr Interface Solutions' === \Liebherr\InterfaceWorld\Branding\BrandTokens::brand_text() );
+	liw_st_check( '[liw_footer] zeigt die Wortmarke', str_contains( do_shortcode( '[liw_footer]' ), 'Liebherr Interface Solutions' ) );
+	liw_st_check( 'Vollbild-Seitenvorlage registriert + Datei vorhanden', array_key_exists( \Liebherr\InterfaceWorld\Frontend\PageTemplate::TEMPLATE, \Liebherr\InterfaceWorld\Frontend\PageTemplate::add_choice( [] ) ) && is_readable( LIW_PATH . 'templates/full-width.php' ) );
+	$__cw = get_page_by_path( 'interface-world' );
+	liw_st_check( 'Traegerseite nutzt Vollbild-Vorlage', $__cw instanceof WP_Post && \Liebherr\InterfaceWorld\Frontend\PageTemplate::TEMPLATE === get_page_template_slug( $__cw->ID ) );
 	liw_st_check( 'Language Board Seite verfügbar', class_exists( \Liebherr\InterfaceWorld\Admin\Pages\LanguageBoardPage::class ) );
 	liw_st_check( 'TranslationBridge::public_scope_post_ids() liefert Array', is_array( \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::public_scope_post_ids() ) );
 	liw_st_check( 'TranslationBridge::readiness_report() liefert je Sprache Kennzahlen', ( function (): bool { $r = \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::readiness_report( [ 'en' ] ); return ! \Liebherr\InterfaceWorld\CoreBridge\TranslationBridge::is_available() || ( isset( $r['en'] ) && array_key_exists( 'ready', $r['en'] ) && array_key_exists( 'min_rate', $r['en'] ) ); } )() );

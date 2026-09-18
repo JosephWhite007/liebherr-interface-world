@@ -46,6 +46,7 @@ final class BrandTokens {
 		'radius'       => '2px',
 		'content_max'  => '1440px',
 		'logo_id'      => 0,
+		'brand_text'   => '', // Wortmarke (Text) für Header-Fallback/Footer; leer = WP-Seitentitel.
 	];
 
 	/** CSS-Variablenname je Token-Schlüssel (Pflichtenheft §11). */
@@ -123,6 +124,10 @@ final class BrandTokens {
 			$out['logo_id'] = max( 0, (int) $raw['logo_id'] );
 		}
 
+		if ( isset( $raw['brand_text'] ) && is_string( $raw['brand_text'] ) ) {
+			$out['brand_text'] = mb_substr( sanitize_text_field( $raw['brand_text'] ), 0, 80 );
+		}
+
 		return $out;
 	}
 
@@ -150,5 +155,11 @@ final class BrandTokens {
 	/** Gewählte Logo-Attachment-ID (0 = keine). */
 	public static function logo_id(): int {
 		return (int) self::get()['logo_id'];
+	}
+
+	/** Wortmarke (Text) oder WP-Seitentitel als Fallback. */
+	public static function brand_text(): string {
+		$text = trim( (string) ( self::get()['brand_text'] ?? '' ) );
+		return '' !== $text ? $text : (string) get_bloginfo( 'name' );
 	}
 }

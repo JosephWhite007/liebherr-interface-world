@@ -82,6 +82,7 @@ $tokens = BrandTokens::save( [
 	'radius'       => '2px',
 	'content_max'  => '1440px',
 	'logo_id'      => $logo_id,
+	'brand_text'   => 'Liebherr Interface Solutions',
 ] );
 echo "  [2] Brand-Tokens gesetzt (Primaer {$tokens['primary']}, Logo #{$tokens['logo_id']}).\n";
 

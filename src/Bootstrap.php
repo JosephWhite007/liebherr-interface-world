@@ -62,6 +62,7 @@ final class Bootstrap {
 		PartnerDocumentsView::register();
 		FrontendAssets::register();
 		Frontend\RocketCompat::register(); // WP-Rocket-RUCSS-Safelist für .liw-Selektoren.
+		Frontend\PageTemplate::register(); // Vollbild-Seitenvorlage (ohne Theme-Kopf/-Fuß).
 
 		if ( is_admin() ) {
 			AdminMenu::register();

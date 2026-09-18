@@ -85,6 +85,7 @@ echo "-- Landingpage-Bauplan (Pflichtenheft §8) --\n";
 if ( ! defined( 'ABSPATH' ) ) { define( 'ABSPATH', $root . '/' ); }
 if ( ! function_exists( 'esc_html' ) ) { function esc_html( $s ) { return htmlspecialchars( (string) $s, ENT_QUOTES ); } }
 if ( ! function_exists( '__' ) ) { function __( $s, $d = '' ) { return $s; } }
+if ( ! function_exists( 'sanitize_text_field' ) ) { function sanitize_text_field( $s ) { return trim( preg_replace( '/[\r\n\t ]+/', ' ', (string) $s ) ); } }
 require_once $root . '/src/Content/SectionBlueprint.php';
 $blueprint = \Liebherr\InterfaceWorld\Content\SectionBlueprint::all();
 $codes     = array_keys( $blueprint );
@@ -227,6 +228,8 @@ $bt2 = \Liebherr\InterfaceWorld\Branding\BrandTokens::css_from( \Liebherr\Interf
 liw_assert( 'BrandTokens: --brand-on-primary im CSS', str_contains( $bt2, '--brand-on-primary:' ), $checks, $failures );
 $bt3 = \Liebherr\InterfaceWorld\Branding\BrandTokens::sanitize( [ 'on_primary' => '#202326' ] );
 liw_assert( 'BrandTokens: on_primary sanitisiert Hex', '#202326' === $bt3['on_primary'], $checks, $failures );
+$bt4 = \Liebherr\InterfaceWorld\Branding\BrandTokens::sanitize( [ 'brand_text' => '  Liebherr Interface Solutions  ' ] );
+liw_assert( 'BrandTokens: brand_text sanitisiert', 'Liebherr Interface Solutions' === $bt4['brand_text'], $checks, $failures );
 
 // 3. strict_types=1 in jeder src/-Datei (Coding Standard, CLAUDE.md Abschnitt 5).
 echo "-- Coding Standard --\n";

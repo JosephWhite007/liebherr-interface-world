@@ -1,5 +1,21 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.39] – 2026-09-18 – Wortmarke „Liebherr Interface Solutions" + Vollbild-Seitenvorlage
+
+### Hinzugefügt
+- **Wortmarke als Token** `brand_text` (Brand Board): Text für Header-Fallback und Footer; leer =
+  WP-Seitentitel. Über die CI-Anwendung auf „Liebherr Interface Solutions" gesetzt – Footer/Header
+  zeigen damit die Marke statt des Dev-Seitentitels (kein Logo-Eingriff, CI-002).
+- **Vollbild-Seitenvorlage** „Interface World – Vollbild" (`Frontend\PageTemplate` + `templates/full-width.php`):
+  rendert nur den Seiteninhalt (unsere Shortcodes) + `wp_head`/`wp_footer`, **ohne Theme-Kopf/-Fuß** –
+  behebt die doppelte Theme-Navigation/-Fußzeile auf der Trägerseite. Der Demo-Seeder weist sie der
+  Seite `/interface-world/` automatisch zu.
+
+### Verifikation
+- Reale Seite `/interface-world/` per DOM-Prüfung: Header mit Liebherr-Logo, Footer-Wortmarke
+  „Liebherr Interface Solutions" (schwarz), Legal-Nav + GoHeal-Hinweis, **kein Theme-Header/-Footer** mehr.
+- `php -l`; `tests/run-tests.php` 203/203, `scripts/liw-selftest.php` 204/204.
+
 ## [0.1.0-alpha.38] – 2026-09-18 – Demo-Landingpage zusammengestellt + LP-14 Footer + Cache-Buster
 
 ### Hinzugefügt

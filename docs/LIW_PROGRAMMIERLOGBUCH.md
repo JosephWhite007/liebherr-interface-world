@@ -12,6 +12,22 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.39 – Wortmarke-Token + Vollbild-Seitenvorlage
+
+**Neu:** `src/Frontend/PageTemplate.php` + `templates/full-width.php` (Vorlage „Interface World –
+Vollbild": nur Inhalt + wp_head/wp_footer, kein Theme-Kopf/-Fuß; via `theme_page_templates` +
+`template_include`).
+**Geändert:** `src/Branding/BrandTokens.php` (`brand_text`-Token + `brand_text()`),
+`src/Frontend/HeaderView.php` (Wortmarke/Alt via brand_text), `src/Frontend/FooterView.php` (Wortmarke
+via brand_text), `src/Admin/Pages/BrandBoardPage.php` (Feld Wortmarke), `src/Bootstrap.php`
+(PageTemplate registriert), `scripts/liw-apply-liebherr-ci.php` (brand_text = „Liebherr Interface
+Solutions"), `scripts/liw-seed-demo-landing.php` (Vollbild-Vorlage der Trägerseite zugewiesen),
+`tests/run-tests.php` (+1, sanitize_text_field-Stub), `scripts/liw-selftest.php` (+4), `CHANGELOG.md`,
+`docs/LIW_TODO.md`, `docs/LOGBUCH_TECHNIK.md`, `src/Admin/Pages/HandbookPage.php`,
+`liebherr-interface-world.php` (Version alpha.39).
+**Prüfung:** `php -l`; `tests/run-tests.php` 203/203, `scripts/liw-selftest.php` 204/204; echte Seite
+`/interface-world/` bestätigt (kein Theme-Chrome mehr, Wortmarke „Liebherr Interface Solutions").
+
 ## 0.1.0-alpha.38 – Demo-Landingpage + LP-14 Footer + Cache-Buster
 
 **Neu:** `src/Frontend/FooterView.php` (`[liw_footer]`, schwarze Legal-Leiste, Filter

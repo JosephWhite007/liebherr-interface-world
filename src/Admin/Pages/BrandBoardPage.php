@@ -78,6 +78,7 @@ final class BrandBoardPage {
 		self::text_row( 'body_font', __( 'Text-Schrift (--font-body)', 'liebherr-interface-world' ), (string) $t['body_font'] );
 		self::text_row( 'radius', __( 'Radius (--radius-control, z. B. 2px)', 'liebherr-interface-world' ), (string) $t['radius'] );
 		self::text_row( 'content_max', __( 'Inhaltsbreite (--content-max, z. B. 1440px)', 'liebherr-interface-world' ), (string) $t['content_max'] );
+		self::text_row( 'brand_text', __( 'Wortmarke (Text; leer = WP-Seitentitel)', 'liebherr-interface-world' ), (string) ( $t['brand_text'] ?? '' ) );
 
 		self::render_logo_row( (int) $t['logo_id'] );
 

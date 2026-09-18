@@ -126,5 +126,11 @@ if ( $existing instanceof WP_Post ) {
 	echo "  [3] Trägerseite angelegt (#{$page_id}).\n";
 }
 
+// Vollbild-Vorlage (ohne Theme-Kopf/-Fuß) zuweisen.
+if ( $page_id > 0 ) {
+	update_post_meta( $page_id, '_wp_page_template', \Liebherr\InterfaceWorld\Frontend\PageTemplate::TEMPLATE );
+	echo "  [3b] Vollbild-Vorlage zugewiesen.\n";
+}
+
 echo "\n" . 'Fertig. ' . $published . ' Abschnitte veröffentlicht. Seite: ' . get_permalink( $page_id ) . "\n";
 echo 'Hinweis: ggf. Einstellungen → Permalinks → Speichern (CPT-Rewrite).' . "\n";

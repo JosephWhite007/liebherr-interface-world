@@ -142,8 +142,9 @@ Stand: 18.09.2026 (0.1.0-alpha.26).
 - Optik/Demo (alpha.37/38): Liebherr-CI vorläufig angewendet, „Connected World"-Weltkarte
   `[liw_world_map]`, LP-14 Footer `[liw_footer]` nach Liebherr-Vorbild, zusammengestellte
   Demo-Landingpage `/interface-world/` (`scripts/liw-seed-demo-landing.php`). Cache-Buster für
-  Frontend-Assets + WP-Rocket-RUCSS-Safelist. **Offen:** Footer-Wortmarke = WP-Seitentitel
-  (für „LIEBHERR" Seitentitel/Filter setzen); separater Theme-Footer der Trägerseite (Template-Frage).
+  Frontend-Assets + WP-Rocket-RUCSS-Safelist. alpha.39: Wortmarke-Token `brand_text` = „Liebherr
+  Interface Solutions" (Header/Footer), Vollbild-Seitenvorlage (kein Theme-Kopf/-Fuß mehr).
+  **Offen (optional):** echte Geo-Karte (Kategorie A); Feinschliff einzelner Abschnittstexte/-bilder.
 - Ankernavigation/Sprungleiste der Landingpage (alpha.23).
 - Aktive Hervorhebung des sichtbaren Abschnitts in der Sprungleiste (alpha.26): enqueuetes
   Skript `assets/js/liebherr-frontend.js` (IntersectionObserver, `aria-current`/`is-current`),

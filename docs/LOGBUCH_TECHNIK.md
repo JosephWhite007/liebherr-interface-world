@@ -8,6 +8,21 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-18 · Wortmarke-Token + Vollbild-Seitenvorlage (0.1.0-alpha.39)
+
+**Frage/Kontext.** Zwei Demo-Feinheiten: (1) Footer/Header zeigten den Dev-Seitentitel statt „Liebherr";
+(2) die Trägerseite hatte zusätzlich Theme-Kopf/-Fuß (doppelt).
+
+**Entscheidungen (Kategorie B).**
+- **Wortmarke:** neues `brand_text`-Token (Brand Board), leer = WP-Seitentitel. Per CI-Anwendung auf
+  „Liebherr Interface Solutions" gesetzt. Bewusst **Text**, kein invertiertes/verändertes Logo
+  (CI-002: keine Logo-Veränderung); der Header nutzt weiterhin das freigegebene Logo-Bild.
+- **Vollbild-Vorlage:** plugin-eigene Seitenvorlage statt Theme-Eingriff (`theme_page_templates` +
+  `template_include` → `templates/full-width.php`, nur Inhalt + wp_head/wp_footer). Kein Kategorie-A-
+  Eingriff ins Theme; per Seite wählbar, vom Demo-Seeder gesetzt.
+
+**Quelle/Version.** JW „weiter" (kosmetische Punkte); Pflichtenheft §6/§7/§10–12; 0.1.0-alpha.39.
+
 ### 2026-09-18 · Demo-Landingpage + LP-14 Footer; Cache-Buster gegen Query-String-Stripping (0.1.0-alpha.38)
 
 **Frage/Kontext.** JW: Demo-Landingpage vorzeigbar machen + „LP-14 von der Liebherr-Startseite übernehmen".
