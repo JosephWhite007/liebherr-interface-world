@@ -21,6 +21,17 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.99 – Backoffice-Menü: Aufteilung Frontend / Backoffice (+ Administration Plattform)
+
+**Geändert:** `src/Admin/AdminMenu.php` – `add_menu()` komplett neu (Variante A, ADR-LIW-ADMIN-001, JW „a"):
+zwei Top-Level-Menüs **„Liebherr Frontend"** (Übersicht + die vier Welten als Direktlinks, neue Landeseite
+`render_frontend()`) und **„Liebherr Backoffice"** (alle Pflege-Boards). Innerhalb des Backoffice ein
+abgesetzter Bereich **„⚙ Administration Plattform"** (Landeseite `render_admin_platform()`) mit Customer View
+Flow, CVF Board, Audit Board, Programmierlogbuch, To-Dos, Handbuch. Seiten-Klassen, `MENU_SLUG`s, Capabilities
+und Funktionen unverändert (nur Navigation/Reihenfolge) → bestehende `admin.php?page=…`-Links bleiben gültig.
+`scripts/liw-selftest.php` (+1: zwei Top-Level + Landeseiten). Headless verifiziert (Frontend 5 / Backoffice 22
+Submenus). Tests WP-frei 511 / Docker 391. Bump alpha.98 -> alpha.99.
+
 ## 0.1.0-alpha.98 – Doku-Überarbeitung: Handbuch neu aufgestellt + Menü-Analyse
 
 **Geändert:** `src/Admin/Pages/HandbookPage.php` – Handbuch-Kopf komplett neu: das Werkzeug beschreibt sich

@@ -1179,6 +1179,14 @@ try {
 	delete_option( 'liw_cvf_board_enabled' );
 	delete_option( 'liw_cvf_enabled' );
 
+	// Menü-Struktur (alpha.99): zwei Top-Level (Frontend/Backoffice); Submenu-Globals sind im CLI-Harness
+	// nicht verlässlich befüllt, daher die stabilen Top-Level + Landing-Methoden prüfen.
+	require_once ABSPATH . 'wp-admin/includes/plugin.php';
+	$GLOBALS['menu'] = []; $GLOBALS['submenu'] = []; $GLOBALS['admin_page_hooks'] = [];
+	\Liebherr\InterfaceWorld\Admin\AdminMenu::add_menu();
+	$__tops = array_map( static fn( $m ) => $m[2], (array) ( $GLOBALS['menu'] ?? [] ) );
+	liw_st_check( 'Menü: zwei Top-Level (Liebherr Frontend + Backoffice) registriert + Landeseiten vorhanden', in_array( 'liw-frontend', $__tops, true ) && in_array( 'liw-interface-board', $__tops, true ) && method_exists( '\Liebherr\InterfaceWorld\Admin\AdminMenu', 'render_frontend' ) && method_exists( '\Liebherr\InterfaceWorld\Admin\AdminMenu', 'render_admin_platform' ) );
+
 	// ── [9] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
 	echo "\n[9] Programmierlogbuch / To-Dos\n";
 	liw_st_check( 'docs/LIW_PROGRAMMIERLOGBUCH.md vorhanden', is_readable( LIW_PATH . 'docs/LIW_PROGRAMMIERLOGBUCH.md' ) );

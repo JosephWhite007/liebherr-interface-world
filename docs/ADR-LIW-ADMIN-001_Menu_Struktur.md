@@ -3,7 +3,8 @@
 **Auftrag:** Joseph White, 19.09.2026 — „Interface World in zwei Bereiche aufteilen: **Frontend** (die vier
 Seitenstrukturen Intelligence World, Local Intelligence, Interface Solutions, Adventures) und **Backoffice**;
 im Backoffice zusätzlich ein Bereich **Administration Plattform**."
-**Status:** Analyse / Vorschlag zur Freigabe — **kein Code umgesetzt** (Menü-Umbau erst nach Freigabe).
+**Status:** Freigegeben (Joseph „a" = Variante A) und **umgesetzt in alpha.99**. Programmierlogbuch/To-Dos/
+Handbuch liegen wie empfohlen unter „Administration Plattform".
 **Betrifft:** `src/Admin/AdminMenu.php` (nur Registrierungs-/Gruppierungslogik; Seiten-Klassen, Slugs,
 Capabilities und Funktionen bleiben unverändert).
 
