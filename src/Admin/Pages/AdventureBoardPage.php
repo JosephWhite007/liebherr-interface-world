@@ -31,6 +31,22 @@ final class AdventureBoardPage {
 
 	public static function register(): void {
 		add_action( 'admin_enqueue_scripts', [ self::class, 'enqueue' ] );
+		add_action( 'admin_post_liw_adv_token_grant', [ self::class, 'handle_grant' ] );
+	}
+
+	/** Tokenkonto eines Nutzers aufladen (§5, Backlog A5). Nonce + Capability. */
+	public static function handle_grant(): void {
+		if ( ! Policy::can_moderate() ) {
+			wp_die( esc_html__( 'Keine Berechtigung.', 'liebherr-interface-world' ) );
+		}
+		check_admin_referer( 'liw_adv_token_grant' );
+		$uid    = (int) ( $_POST['grant_user'] ?? 0 ); // phpcs:ignore WordPress.Security.ValidatedSanitized
+		$amount = (int) ( $_POST['grant_amount'] ?? 0 ); // phpcs:ignore WordPress.Security.ValidatedSanitized
+		if ( $uid > 0 && $amount > 0 ) {
+			\Liebherr\InterfaceWorld\Adventures\TokenAccount::grant( $uid, $amount );
+		}
+		wp_safe_redirect( add_query_arg( [ 'page' => self::MENU_SLUG, 'granted' => '1' ], admin_url( 'admin.php' ) ) );
+		exit;
 	}
 
 	public static function enqueue( string $hook ): void {
@@ -78,6 +94,22 @@ final class AdventureBoardPage {
 
 		// Gemeinsame Eingabemaske (Backend-Kontext).
 		echo SubmissionForm::render( 'admin' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- in SubmissionForm escaped.
+
+		// Tokenkonto aufladen (§5, A5).
+		if ( isset( $_GET['granted'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Tokenkonto aufgeladen.', 'liebherr-interface-world' ) . '</p></div>';
+		}
+		if ( $can_moderate ) {
+			echo '<h2>' . esc_html__( 'Tokenkonto aufladen', 'liebherr-interface-world' ) . '</h2>';
+			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="liw-wb__grant">';
+			echo '<input type="hidden" name="action" value="liw_adv_token_grant" />';
+			wp_nonce_field( 'liw_adv_token_grant' );
+			echo '<label>' . esc_html__( 'Nutzer-ID', 'liebherr-interface-world' ) . ' <input type="number" min="1" name="grant_user" required /></label> ';
+			echo '<label>' . esc_html__( 'Tokens', 'liebherr-interface-world' ) . ' <input type="number" min="1" name="grant_amount" value="1000" required /></label> ';
+			echo '<button type="submit" class="button">' . esc_html__( 'Aufladen', 'liebherr-interface-world' ) . '</button>';
+			echo ' <span class="description">' . esc_html( sprintf( /* translators: %d default */ __( 'Start-Guthaben neuer Konten: %d Tokens.', 'liebherr-interface-world' ), \Liebherr\InterfaceWorld\Adventures\TokenAccount::default_balance() ) ) . '</span>';
+			echo '</form>';
+		}
 
 		// Board-Liste.
 		echo '<h2 class="liw-wb__board-title">' . esc_html__( 'Beiträge', 'liebherr-interface-world' ) . '</h2>';

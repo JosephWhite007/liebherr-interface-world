@@ -790,6 +790,31 @@ try {
 	liw_st_check( 'ADV-Filter: to_view trägt Maschine/Bauteil', 'R 9200' === (string) $ADV::to_view( get_post( (int) $__f1['id'] ) )['machine'] && 'Hydraulikpumpe' === (string) $ADV::to_view( get_post( (int) $__f1['id'] ) )['component'] );
 	foreach ( [ $__f1['id'], $__f2['id'] ] as $__fid ) { wp_delete_post( (int) $__fid, true ); }
 
+	// A5 – echtes Tokenbudget-Konto (§5/§6, alpha.66).
+	$TA = '\Liebherr\InterfaceWorld\Adventures\TokenAccount';
+	$__prev_bal = get_user_meta( 2, $TA::META_BALANCE, true );
+	update_user_meta( 2, $TA::META_BALANCE, 100 );
+	liw_st_check( 'ADV-Konto: balance/charge/grant/Überziehung', 100 === $TA::balance( 2 ) && 70 === $TA::charge( 2, 30 ) && null === $TA::charge( 2, 999 ) && 90 === $TA::grant( 2, 20 ) );
+	// Zugriff über REST bucht das Konto ab.
+	$__pay = $ADV::create( [ 'title' => 'SELFTEST-KONTO', 'story' => 's', 'type' => 'field_experience', 'urgency' => 'informative', 'visibility' => 'public_approved', 'intent' => 'submit', 'lat' => 48.0, 'lng' => 10.0, 'author_id' => 1 ] );
+	$__ppid = (int) $__pay['id'];
+	\Liebherr\InterfaceWorld\Adventures\RegistrationService::register( $__ppid, [ 'token_value' => 40, 'rights_confirmed' => true, 'author_ref' => 1 ] );
+	wp_update_post( [ 'ID' => $__ppid, 'post_status' => 'publish' ] );
+	update_user_meta( 2, $TA::META_BALANCE, 100 );
+	$__pu = get_current_user_id();
+	wp_set_current_user( 2 );
+	$__accReq = new WP_REST_Request( 'POST' ); $__accReq->set_param( 'post_id', $__ppid );
+	$__acc = \Liebherr\InterfaceWorld\Adventures\Rest::accept( $__accReq )->get_data();
+	liw_st_check( 'ADV-Konto: Rest::accept bucht 40 ab → Guthaben 60', ! empty( $__acc['ok'] ) && 40 === (int) $__acc['charge'] && 60 === (int) $__acc['balance'] );
+	update_user_meta( 2, $TA::META_BALANCE, 10 );
+	$__acc2 = \Liebherr\InterfaceWorld\Adventures\Rest::accept( ( function ( $p ) { $r = new WP_REST_Request( 'POST' ); $r->set_param( 'post_id', $p ); return $r; } )( $__ppid ) )->get_data();
+	liw_st_check( 'ADV-Konto: zu wenig Guthaben → abgelehnt (insufficient_budget)', empty( $__acc2['ok'] ) && 'insufficient_budget' === ( $__acc2['error'] ?? '' ) );
+	wp_set_current_user( (int) $__pu );
+	if ( '' === (string) $__prev_bal ) { delete_user_meta( 2, $TA::META_BALANCE ); } else { update_user_meta( 2, $TA::META_BALANCE, (int) $__prev_bal ); }
+	global $wpdb; $__lt2 = \Liebherr\InterfaceWorld\Adventures\TokenSchema::table();
+	$wpdb->query( $wpdb->prepare( "DELETE FROM {$__lt2} WHERE contribution_id = %d", $__ppid ) ); // phpcs:ignore WordPress.DB
+	wp_delete_post( $__ppid, true );
+
 	// Aufräumen (Testdaten inkl. Ledger).
 	global $wpdb; $__lt = \Liebherr\InterfaceWorld\Adventures\TokenSchema::table();
 	foreach ( [ $__a1['id'], $__a2['id'], $__d['id'] ] as $__id ) {

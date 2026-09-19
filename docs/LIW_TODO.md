@@ -31,8 +31,8 @@ der Reihe nach ab und befüllen sie mit Funktionalität), **B** = auf externe Fr
 4. ~~**Adventures – Suche/Filter nach Maschine/Bauteil (§18).**~~ **ERLEDIGT (alpha.65):** Freitextsuche +
    Facetten Maschine/Bauteil (Meta `_liw_adv_machine`/`_liw_adv_component`), `query()` search/machine/component,
    Filterleiste + Erfassung in der Maske + Anzeige auf der Detailseite.
-5. **Adventures – echtes Tokenbudget-Konto.** Persistiertes Budget je Nutzer/Org statt Filter-Default 1000;
-   Buchung beim Zugriff, Anzeige des Kontostands.
+5. ~~**Adventures – echtes Tokenbudget-Konto.**~~ **ERLEDIGT (alpha.66):** `TokenAccount` (User-Meta), Buchung
+   beim Zugriff (`Rest::accept`), Guthaben-Anzeige im Dialog, Backoffice-Aufladung.
 6. **Adventures – Medien-Upload/Transcoding (§14).** Bild/Kurzvideo-Upload statt externer Bild-URL.
 7. **Adventures – Get-Help-Assistent (Phase 3).** Geführte Hilfe bei kritischen Beiträgen.
 8. **Local Intelligence – Szenario-Editor im Board.** Feingranulare A/B/C-Pflege statt Seeder/Standardwerte.

@@ -1,5 +1,22 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.66] – 2026-09-19 – Adventures: echtes Tokenbudget-Konto [Job A5]
+
+### Hinzugefügt
+- **Tokenkonto je Nutzer** `Adventures\TokenAccount` (User-Meta `_liw_adv_token_balance`): persistiertes
+  Guthaben mit Start-Guthaben (Option/Filter `liw_adv_token_default`, Standard 1000), `balance()`, `charge()`
+  (bucht nur bei Deckung, keine Überziehung), `grant()` (aufladen).
+- **Belastung beim Zugriff:** `Rest::accept` prüft das Budget gegen das Kontoguthaben und **bucht den Tokenwert
+  tatsächlich ab** (nur bei echter Budgetbelastung – nicht bei Autor/kostenlos/Berechtigung); Antwort enthält
+  das neue Guthaben. Der Akzeptanz-Dialog zeigt „Ihr Tokenkonto" und aktualisiert es nach der Buchung.
+- **Backoffice:** „🗺 Adventures"-Board bekommt „Tokenkonto aufladen" (Nutzer-ID + Tokens, admin-post).
+
+### Erledigt (Backlog Gruppe A, Punkt 5)
+
+### Verifikation
+- `tests/run-tests.php` **386/386**, `scripts/liw-selftest.php` **335/335** (balance/charge/grant/Überziehung;
+  `Rest::accept` bucht 40 ab → Guthaben 60; zu wenig Guthaben → abgelehnt).
+
 ## [0.1.0-alpha.65] – 2026-09-19 – Adventures: Suche & Filter nach Maschine/Bauteil [Job A4]
 
 ### Hinzugefügt

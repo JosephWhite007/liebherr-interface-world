@@ -106,14 +106,20 @@ final class Rest {
 		return new \WP_REST_Response( [ 'ok' => true, 'preview' => $preview ], 200 );
 	}
 
-	/** Bestätigter Tokenzugriff (§5/§6): protokolliert Nutzung revisionssicher. */
+	/** Bestätigter Tokenzugriff (§5/§6): protokolliert Nutzung revisionssicher + bucht das Tokenkonto ab. */
 	public static function accept( \WP_REST_Request $req ): \WP_REST_Response {
 		$post_id = (int) $req->get_param( 'post_id' );
-		$res     = RegistrationService::record_access( $post_id, get_current_user_id(), [
-			'budget'      => self::budget_for( get_current_user_id() ),
+		$user    = get_current_user_id();
+		$res     = RegistrationService::record_access( $post_id, $user, [
+			'budget'      => self::budget_for( $user ),
 			'org_unit'    => (string) $req->get_param( 'org_unit' ),
 			'usage_scope' => (string) $req->get_param( 'usage_scope' ),
 		] );
+		// Echtes Tokenkonto abbuchen – nur bei tatsächlicher Budgetbelastung (nicht Autor/frei/Berechtigung).
+		if ( ! empty( $res['ok'] ) && (int) ( $res['charge'] ?? 0 ) > 0 && 'budget_ok' === ( $res['reason'] ?? '' ) ) {
+			TokenAccount::charge( $user, (int) $res['charge'] );
+		}
+		$res['balance'] = TokenAccount::balance( $user );
 		return new \WP_REST_Response( $res, 200 );
 	}
 
@@ -132,9 +138,9 @@ final class Rest {
 		return new \WP_REST_Response( $res, 200 );
 	}
 
-	/** Tokenbudget des Nutzers (Prototyp: großzügig/per Filter; echte Bewirtschaftung später, §21). */
+	/** Tokenbudget = aktuelles Guthaben des Nutzerkontos (§5/§6, Backlog A5). */
 	private static function budget_for( int $user_id ): int {
-		return (int) apply_filters( 'liw_adv_token_budget', 1000, $user_id );
+		return (int) apply_filters( 'liw_adv_token_budget', TokenAccount::balance( $user_id ), $user_id );
 	}
 
 	private static function owns_or_moderates( int $post_id ): bool {

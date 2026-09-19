@@ -164,6 +164,7 @@
 			'<dt>' + esc( t( 'dlgToken', 'Tokenwert' ) ) + '</dt><dd data-am-token></dd>' +
 			'<dt>' + esc( t( 'dlgUsage', 'Nutzungsumfang' ) ) + '</dt><dd data-am-usage></dd>' +
 			'<dt>' + esc( t( 'dlgVersion', 'Version' ) ) + '</dt><dd data-am-version></dd>' +
+			'<dt>' + esc( t( 'dlgBalance', 'Ihr Tokenkonto' ) ) + '</dt><dd data-am-balance></dd>' +
 			'</dl>' +
 			'<div class="liw-advmodal__terms" data-am-terms></div>' +
 			'<label class="liw-advmodal__accept"><input type="checkbox" data-am-agree> <span>' + esc( t( 'dlgAgree', 'Ich habe den Tokenwert und die Nutzungsbedingungen gesehen und akzeptiere sie.' ) ) + '</span></label>' +
@@ -208,6 +209,7 @@
 				: ( ( parseInt( p.token_value, 10 ) || 0 ) + ' ' + t( 'tokens', 'Tokens' ) );
 			m.querySelector( '[data-am-usage]' ).textContent = p.usage_label || '—';
 			m.querySelector( '[data-am-version]' ).textContent = p.version || 1;
+			m.querySelector( '[data-am-balance]' ).textContent = ( p.balance | 0 ) + ' ' + t( 'tokens', 'Tokens' );
 			if ( ! p.usable ) {
 				m.querySelector( '[data-am-status]' ).textContent = t( 'dlgNotUsable', 'Dieser Beitrag ist (noch) nicht registriert/freigegeben.' );
 				agree.disabled = true; confirmBtn.disabled = true;
@@ -223,6 +225,8 @@
 			if ( res && res.ok ) {
 				modalDone = true;
 				try { document.dispatchEvent( new CustomEvent( 'liw-adv-accepted', { detail: { postId: modalPost } } ) ); } catch ( e ) {}
+				var balEl = m.querySelector( '[data-am-balance]' );
+				if ( balEl && res.balance != null ) { balEl.textContent = ( res.balance | 0 ) + ' ' + t( 'tokens', 'Tokens' ); }
 				var charge = parseInt( res.charge, 10 ) || 0;
 				msg.textContent = t( 'dlgOk', 'Zugriff protokolliert.' ) + ' · ' +
 					( charge > 0 ? ( t( 'dlgCharged', 'belastet' ) + ': ' + charge + ' ' + t( 'tokens', 'Tokens' ) ) : t( 'dlgFree', 'ohne Belastung' ) ) +

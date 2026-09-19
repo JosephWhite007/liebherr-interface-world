@@ -80,6 +80,7 @@ final class AdventuresView {
 				'dlgToken'     => __( 'Tokenwert', 'liebherr-interface-world' ),
 				'dlgUsage'     => __( 'Nutzungsumfang', 'liebherr-interface-world' ),
 				'dlgVersion'   => __( 'Version', 'liebherr-interface-world' ),
+				'dlgBalance'   => __( 'Ihr Tokenkonto', 'liebherr-interface-world' ),
 				'dlgAgree'     => __( 'Ich habe den Tokenwert und die Nutzungsbedingungen gesehen und akzeptiere sie.', 'liebherr-interface-world' ),
 				'dlgConfirm'   => __( 'Tokenverwendung bestätigen', 'liebherr-interface-world' ),
 				'dlgLoading'   => __( 'Wird geladen …', 'liebherr-interface-world' ),

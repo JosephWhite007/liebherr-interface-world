@@ -12,6 +12,15 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.66 – Adventures: echtes Tokenbudget-Konto [Backlog A5]
+
+**Neu:** `src/Adventures/TokenAccount.php` (User-Meta `_liw_adv_token_balance`; `default_balance`/`balance`/
+`charge`/`grant`). **Geändert:** `Rest::accept` bucht das Konto ab (nur reason `budget_ok`), liefert `balance`;
+`Rest::budget_for` → `TokenAccount::balance`. `RegistrationService::record_access` gibt `reason`+`is_author`
+zurück; `access_preview` liefert `balance`. `assets/js/liw-adventures.js` – Dialog zeigt/aktualisiert Guthaben.
+`Admin\Pages\AdventureBoardPage` – „Tokenkonto aufladen" (admin_post `liw_adv_token_grant`). Tests/Selftest.
+Bump alpha.65 → alpha.66. **Nächster Bau:** A6 – Medien-Upload/Transcoding (§14).
+
 ## 0.1.0-alpha.65 – Adventures: Suche & Filter nach Maschine/Bauteil [Backlog A4]
 
 **Geändert:** `AdventureCpt` (Meta `M_MACHINE`/`M_COMPONENT`). `AdventureService::create` speichert Maschine/

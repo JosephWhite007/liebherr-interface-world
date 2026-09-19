@@ -224,6 +224,7 @@ final class RegistrationService {
 			'token_value'     => $reg['token_value'],
 			'usage_scope'     => $reg['usage_scope'],
 			'usage_label'     => self::usage_label( (string) $reg['usage_scope'] ),
+			'balance'         => max( 0, (int) $budget ),
 			'charge'          => (int) $access['charge'],
 			'allowed'         => (bool) $access['allowed'] && $reg['usable_company'],
 			'reason'          => (string) $access['reason'],
@@ -273,7 +274,7 @@ final class RegistrationService {
 			'metadata'          => [ 'reason' => $access['reason'], 'listed_token_value' => (int) $reg['token_value'] ],
 		] );
 
-		return [ 'ok' => true, 'charge' => (int) $access['charge'], 'transaction_id' => $entry['transaction_id'] ];
+		return [ 'ok' => true, 'charge' => (int) $access['charge'], 'reason' => (string) $access['reason'], 'is_author' => $author, 'transaction_id' => $entry['transaction_id'] ];
 	}
 
 	private static function is_author( int $post_id, int $viewer_id ): bool {
