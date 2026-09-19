@@ -21,6 +21,12 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.106 – Schwebender Hilfe-Koffer: ohne orangen Kreis, größer
+
+**Geändert:** `assets/css/liw-emergency.css` – `.liw-emg-dot--float` ohne orangen Kreis
+(background/box-shadow/border-radius: none), 44px, Koffer-Icon dauerhaft sichtbar (opacity 1, contain,
+drop-shadow). Analog zum Inline-Koffer am Get-Help-Titel. Funktion unverändert. Bump alpha.105 -> alpha.106.
+
 ## 0.1.0-alpha.105 – Browser-Favicon: geliefertes favicon.ico (Multi-Size)
 
 **Neu:** `assets/img/favicon.ico` (geliefert, 16/32px Multi-Size). **Geändert:** `src/Frontend/FaviconService.php`
