@@ -321,6 +321,22 @@ liw_assert( 'Rest::billing_status: Warnstufe high ab 80 %', 'high' === $bs2['lev
 liw_assert( 'Rest::format_duration: §8-Beispiel 02:14:38', '02:14:38' === \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::format_duration( 8078 ) && '00:00:00' === \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::format_duration( 0 ), $checks, $failures );
 liw_assert( 'Favicon: goldenes Planet-SVG vorhanden + XML-wohlgeformt', is_readable( $root . '/assets/img/liw-planet-icon.svg' ) && false !== @simplexml_load_file( $root . '/assets/img/liw-planet-icon.svg' ), $checks, $failures );
 
+// 2n. Intelligence World – Navigation & Hotels (13 Segmente + Lösungswelt + 6 Hotels, §3/§19, alpha.54).
+echo "-- Intelligence World – Navigation & Hotels (alpha.54) --\n";
+require_once $root . '/src/IntelligenceWorld/CatalogContent.php';
+$cat_def = \Liebherr\InterfaceWorld\IntelligenceWorld\CatalogContent::defaults();
+liw_assert( 'CatalogContent: genau 13 Produktsegmente', is_array( $cat_def['segments'] ) && 13 === count( $cat_def['segments'] ), $checks, $failures );
+liw_assert( 'CatalogContent: genau 6 Hotels', is_array( $cat_def['hotels'] ) && 6 === count( $cat_def['hotels'] ), $checks, $failures );
+liw_assert( 'CatalogContent: Lösungswelt vorhanden (segmentübergreifend)', isset( $cat_def['solution']['label'] ) && '' !== $cat_def['solution']['label'], $checks, $failures );
+liw_assert( 'CatalogContent: alle Segmente tragen einen Drei-Wörter-Ort (word.word.word)', ( static function ( array $segs ): bool { foreach ( $segs as $s ) { if ( 3 !== count( explode( '.', (string) ( $s['three_words'] ?? '' ) ) ) ) { return false; } } return true; } )( $cat_def['segments'] ), $checks, $failures );
+liw_assert( 'CatalogContent: sanitize([]) == defaults()', \Liebherr\InterfaceWorld\IntelligenceWorld\CatalogContent::sanitize( [] ) === $cat_def, $checks, $failures );
+liw_assert( 'CatalogContent: sanitize_three_words normalisiert „Filled Count Soap" → filled.count.soap', 'filled.count.soap' === \Liebherr\InterfaceWorld\IntelligenceWorld\CatalogContent::sanitize_three_words( 'Filled Count Soap' ), $checks, $failures );
+liw_assert( 'CatalogContent: sanitize_three_words lehnt Zwei-Wort-Eingabe ab (leer)', '' === \Liebherr\InterfaceWorld\IntelligenceWorld\CatalogContent::sanitize_three_words( 'only.two' ), $checks, $failures );
+$cat_custom = \Liebherr\InterfaceWorld\IntelligenceWorld\CatalogContent::sanitize( [ 'segments' => [ [ 'label' => 'Nur Eins', 'three_words' => 'a.b.c' ], [ 'nokey' => 'x' ] ] ] );
+liw_assert( 'CatalogContent: sanitize verwirft Knoten ohne Anzeigenamen', 1 === count( $cat_custom['segments'] ) && 'Nur Eins' === $cat_custom['segments'][0]['label'], $checks, $failures );
+require_once $root . '/src/IntelligenceWorld/NavigationView.php';
+liw_assert( 'NavigationView: Shortcode-Konstante + render_sections vorhanden', 'liw_iw_navigation' === \Liebherr\InterfaceWorld\IntelligenceWorld\NavigationView::SHORTCODE && method_exists( \Liebherr\InterfaceWorld\IntelligenceWorld\NavigationView::class, 'render_sections' ), $checks, $failures );
+
 // 2p. Liebherr Adventures – Fundament (vierte Insel, §3/§4/§9, alpha.51) – reine Logik ohne WP.
 echo "-- Liebherr Adventures (alpha.51) --\n";
 require_once $root . '/src/Adventures/Taxonomy.php';

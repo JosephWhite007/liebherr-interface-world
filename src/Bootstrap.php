@@ -67,6 +67,7 @@ final class Bootstrap {
 		LocalIntelligenceView::register(); // Hauptseite Local Intelligence (11 Module, LI-Pflichtenheft §8).
 		IntelligenceWorld\Rest::register();      // Intelligence World REST (Eintritt/Sitzung, Pflichtenheft-2 §4.2/§7).
 		IntelligenceWorld\WorldView::register(); // Intelligence World Frontend (Blue Planet + Eintrittsschleuse).
+		IntelligenceWorld\NavigationView::register(); // Intelligence World – Navigation & Hotels (13 Segmente + Lösungswelt + 6 Hotels).
 		Adventures\Rest::register();             // Liebherr Adventures REST (Stream/Locate/Create).
 		Adventures\AdventuresView::register();   // Liebherr Adventures Insel-Frontend.
 		LegacyRedirect::register();        // 301 Altroute /interface-world/ → Unterseite (LI §3.2).

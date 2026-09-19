@@ -42,9 +42,16 @@ Standard-Demo-Code „LIEBHERR-DEMO"), Pflichtfeld-Sternchen mit Legende, Websit
 **Geliefert (alpha.50):** Funktions-Hub nach dem Eintritt (Kacheln zu Local Intelligence + Interface Solutions
 über SitePages; kommende Bereiche „in Vorbereitung"; Filter `liw_iw_hub_tiles`). Cache-Buster für IW-Assets.
 
+**Geliefert (alpha.54) – Navigation & Hotels:** Katalog `liw_iw_catalog` (`CatalogContent`) mit 13
+Produktsegmenten + Lösungswelt + 6 Hotel-Knoten (je Drei-Wörter-Ort, englisch); begehbare Navigation
+(`NavigationView`, `<details>` ohne JS) inline im Hub + Shortcode `[liw_iw_navigation]`; die beiden Hub-Kacheln
+„Produktsegmente & Lösungswelt" / „Hotelwelt" sind live (Anker `#liw-iw-segments` / `#liw-iw-hotels`).
+
 **Offen / nächste Etappen:**
-- Navigation & Hotels: administrierbare 14-Punkte-Taxonomie inkl. Untermenüs + Master-Linkmodell (§19.1),
-  Hotels-Welt (6 Knoten, §6.3).
+- Navigation & Hotels – Ausbau: Backoffice-Pflegemodul für Segmente/Hotels/Drei-Wörter-Orte, Untermenüs +
+  Master-Linkmodell (§19.1), echte Verortung der Hotels über what3words, zwei Platzhalter-Hotels kuratieren.
+- Preismodell (alpha.55, angefragt): Sekundentakt 0,09 EUR/Sek., Monatsbudget 5.000,00 EUR, lokaler Speicher
+  1 TB (min.) – Anzeige **und** Ticker/Abrechnungslogik konsistent umstellen.
 - Simulation & Protokoll: Simulation Builder (§6.4), Compute-Metering (Mock), Nutzungs-/Kostenprotokoll
   PDF+JSON (§5.5/§8).
 - Pricing/Storage/Admin/Rollen/Audit (§14–§16, §19).

@@ -656,6 +656,16 @@ try {
 	liw_st_check( 'IW: Sitzungs-/Kostenleiste + Beenden', str_contains( $__world, 'data-liw-iw-time' ) && str_contains( $__world, 'data-liw-iw-budgetfill' ) && str_contains( $__world, 'data-liw-iw-end' ) );
 	liw_st_check( 'IW: Funktions-Hub verlinkt gebaute Bereiche (Local Intelligence + Interface Solutions)', str_contains( $__world, 'liw-iw__hub' ) && str_contains( $__world, 'Local Intelligence' ) && str_contains( $__world, 'Interface Solutions' ) && substr_count( $__world, 'liw-iw__tile--live' ) >= 2 );
 
+	// ── [8d2] Navigation & Hotels (13 Segmente + Lösungswelt + 6 Hotels, §3/§19, alpha.54) ──
+	liw_st_check( 'IW-Nav: Shortcode [liw_iw_navigation] registriert', shortcode_exists( 'liw_iw_navigation' ) );
+	liw_st_check( 'IW-Nav: Segmente- + Hotels-Abschnitt im Weltraum eingebettet', str_contains( $__world, 'id="liw-iw-segments"' ) && str_contains( $__world, 'id="liw-iw-hotels"' ) );
+	// 13 Segmente + 1 Lösungswelt + 6 Hotels = 20 begehbare Knoten.
+	liw_st_check( 'IW-Nav: 20 Knoten (13 Segmente + Lösungswelt + 6 Hotels)', 20 === substr_count( $__world, '<li class="liw-iw__node' ) );
+	liw_st_check( 'IW-Nav: Lösungswelt-Knoten + Drei-Wörter-Ort (///word.word.word)', str_contains( $__world, 'liw-iw__node--solution' ) && str_contains( $__world, 'liw-iw__three-words' ) && str_contains( $__world, '///' ) );
+	liw_st_check( 'IW-Nav: zwei Hub-Kacheln verlinken jetzt Segmente/Hotels (Anker)', str_contains( $__world, 'href="#liw-iw-segments"' ) && str_contains( $__world, 'href="#liw-iw-hotels"' ) );
+	$__nav = do_shortcode( '[liw_iw_navigation]' );
+	liw_st_check( 'IW-Nav: eigenständiger Shortcode rendert beide Abschnitte', str_contains( $__nav, 'liw-iw--nav-standalone' ) && str_contains( $__nav, 'id="liw-iw-segments"' ) && str_contains( $__nav, 'id="liw-iw-hotels"' ) );
+
 	// ── [8e] Liebherr Adventures – vierte Insel (§3/§4/§9, alpha.51) ──
 	echo "\n[8e] Liebherr Adventures\n";
 	$ADV = '\Liebherr\InterfaceWorld\Adventures\AdventureService';

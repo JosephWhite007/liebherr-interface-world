@@ -155,7 +155,7 @@ final class WorldView {
 				</div>
 				<div class="liw-iw__world-body">
 					<h2 class="liw-iw__hub-title"><?php echo esc_html__( 'Funktionsbereiche', 'liebherr-interface-world' ); ?></h2>
-					<p class="liw-iw__demo-note"><?php echo esc_html__( 'Sie sind in der Intelligence World (Prototyp, Beispieldaten). Wählen Sie einen Bereich. Produktsegmente, Lösungswelt, Hotels und der Simulation Builder folgen in weiteren Etappen.', 'liebherr-interface-world' ); ?></p>
+					<p class="liw-iw__demo-note"><?php echo esc_html__( 'Sie sind in der Intelligence World (Prototyp, Beispieldaten). Wählen Sie einen Bereich. Produktsegmente, Lösungswelt und Hotels sind unten begehbar; der Simulation Builder folgt in einer weiteren Etappe.', 'liebherr-interface-world' ); ?></p>
 					<ul class="liw-iw__hub" role="list">
 						<?php foreach ( self::hub_tiles() as $tile ) : ?>
 							<?php if ( $tile['enabled'] && '' !== $tile['url'] ) : ?>
@@ -175,6 +175,7 @@ final class WorldView {
 							<?php endif; ?>
 						<?php endforeach; ?>
 					</ul>
+					<?php echo NavigationView::render_sections(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- in NavigationView escaped. ?>
 					<div class="liw-iw__protocol" data-liw-iw-protocol hidden></div>
 				</div>
 			</section>
@@ -218,14 +219,14 @@ final class WorldView {
 			[
 				'label'   => __( 'Produktsegmente & Lösungswelt', 'liebherr-interface-world' ),
 				'desc'    => __( '13 Produktsegmente + übergreifende Lösungswelt als Globus-Navigation.', 'liebherr-interface-world' ),
-				'url'     => '',
-				'enabled' => false,
+				'url'     => '#liw-iw-segments',
+				'enabled' => true,
 			],
 			[
 				'label'   => __( 'Hotelwelt', 'liebherr-interface-world' ),
 				'desc'    => __( 'Sechs Liebherr-Hotels als eigene Erlebnis- und Simulationsknoten.', 'liebherr-interface-world' ),
-				'url'     => '',
-				'enabled' => false,
+				'url'     => '#liw-iw-hotels',
+				'enabled' => true,
 			],
 			[
 				'label'   => __( 'Simulation Builder', 'liebherr-interface-world' ),

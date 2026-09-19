@@ -12,6 +12,27 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.54 – Intelligence World: Navigation & Hotels
+
+**Neu:** `src/IntelligenceWorld/CatalogContent.php` (Option `liw_iw_catalog`; `defaults()` = 13 Produktsegmente
++ Lösungswelt + 6 Hotels, je mit Drei-Wörter-Ort; `sanitize()`/`sanitize_nodes()`/`sanitize_three_words()`;
+Zugriffshelfer `segments()/solution_world()/hotels()`). `src/IntelligenceWorld/NavigationView.php` (Shortcode
+`[liw_iw_navigation]` + `render_sections()`; Knoten als `<li><details>` – kein JS, barrierefrei; `node_li()`
+escaped alle dynamischen Werte).
+
+**Geändert:** `src/IntelligenceWorld/WorldView.php` – Hub-Kacheln „Produktsegmente & Lösungswelt" und
+„Hotelwelt" von Platzhalter (`enabled=false`) auf Anker (`#liw-iw-segments` / `#liw-iw-hotels`, `enabled=true`)
+umgestellt; nach der Hub-Liste `NavigationView::render_sections()` eingebettet; Demo-Hinweistext angepasst.
+`src/Bootstrap.php` – `IntelligenceWorld\NavigationView::register()` ergänzt. `assets/css/liw-intelligence-world.css`
+– Navigations-/Knoten-Stile ergänzt (`.liw-iw__nav*`, `.liw-iw__grid`, `.liw-iw__node*`); **Blink-Falle
+behoben:** `<summary>` bleibt `display:block` (Flex-Layout in innerem `.liw-iw__node-sum-row`), sonst kippt das
+native `<details>`-Toggle. `tests/run-tests.php` + `scripts/liw-selftest.php` – Prüfungen ergänzt.
+Versions-Bump alpha.53 → alpha.54 (`liebherr-interface-world.php`).
+
+**Falle (dokumentiert):** Ein `<summary>` mit `display:flex` verliert in Blink das Auf-/Zuklappen; die
+Substring-Zählung `class="liw-iw__node` trifft auch Kindklassen → im Test auf `<li class="liw-iw__node`
+eingegrenzt.
+
 ## 0.1.0-alpha.53 – Simulation-World-Startbildschirm + what3words-Provider
 
 **Neu:** `src/Frontend/SimulatorView.php` (Shortcode `[liw_simulator]`: Cockpit-Startbild + „Start your

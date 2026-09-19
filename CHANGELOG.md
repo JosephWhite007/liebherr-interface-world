@@ -1,5 +1,33 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.54] – 2026-09-19 – Intelligence World: Navigation & Hotels (13 Segmente + Lösungswelt + 6 Hotels)
+
+### Hinzugefügt
+- **Katalog „Navigation & Hotels"** (`IntelligenceWorld\CatalogContent`, Option `liw_iw_catalog`):
+  die **13 Liebherr-Produktsegmente**, die übergreifende **Lösungswelt** und **sechs Hotel-Knoten** als
+  administrierbare Daten (nichts fest im Frontend codiert). Jeder Knoten trägt einen **Drei-Wörter-Ort**
+  (englisch, `word.word.word`; `sanitize_three_words()` normalisiert/verwirft Ungültiges). `defaults()/get()/
+  save()/sanitize()` rein und unit-testbar.
+- **Begehbare Navigation** (`IntelligenceWorld\NavigationView`): Produktsegmente-Abschnitt
+  (`#liw-iw-segments`) + Hotelwelt-Abschnitt (`#liw-iw-hotels`) mit je einer Knotenkarte, die per
+  `<details>` ihre Kurzbeschreibung und den Drei-Wörter-Ort öffnet – **barrierefrei, tastaturbedienbar,
+  ohne JavaScript** (funktioniert auch bei aktivem Seiten-Cache). Zwei Nutzungswege: inline im Funktions-Hub
+  der Intelligence World **und** als eigenständiger Shortcode `[liw_iw_navigation]`.
+- **Funktions-Hub live geschaltet:** Die bisherigen Platzhalter-Kacheln „Produktsegmente & Lösungswelt"
+  und „Hotelwelt" verlinken jetzt (als Anker) auf die neuen begehbaren Abschnitte. Nur der Simulation
+  Builder bleibt „in Vorbereitung".
+
+### Verifikation
+- `tests/run-tests.php` **324/324** (13 Segmente, 6 Hotels, Lösungswelt, Drei-Wörter-Normalisierung,
+  sanitize([])==defaults, Knoten ohne Namen verworfen), `scripts/liw-selftest.php` **291/291**
+  (20 begehbare Knoten im Weltraum, Lösungswelt + `///`-Ort, Hub-Anker, eigenständiger Shortcode).
+  Browser end-to-end verifiziert (Eintritt → Segmente/Hotels → `<details>`-Aufklappen mit Ort).
+
+### Freigabe/Manuell (Auftraggeber)
+- Segment-/Hoteltexte und Drei-Wörter-Orte sind **Beispieldaten** und vor Produktivbetrieb redaktionell
+  zu kuratieren (zwei Hotel-Knoten sind bewusst Platzhalter). Ein Backoffice-Pflegemodul folgt in einer
+  weiteren Etappe.
+
 ## [0.1.0-alpha.53] – 2026-09-19 – Simulation-World-Startbildschirm + what3words-Ortsdienst
 
 ### Hinzugefügt
