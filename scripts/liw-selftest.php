@@ -919,9 +919,13 @@ try {
 		liw_st_check( 'IW-PDF: gültiges PDF aus Sitzungsprotokoll erzeugt', 0 === strpos( $__pdf, '%PDF-1.' ) && false !== strpos( $__pdf, '%%EOF' ) && strlen( $__pdf ) > 500 );
 	}
 	if ( isset( $__ok['session_code'] ) ) { global $wpdb; $wpdb->query( $wpdb->prepare( 'DELETE FROM ' . \Liebherr\InterfaceWorld\IntelligenceWorld\Schema::event_table() . ' WHERE session_code = %s', (string) $__ok['session_code'] ) ); $wpdb->query( $wpdb->prepare( 'DELETE FROM ' . \Liebherr\InterfaceWorld\IntelligenceWorld\Schema::session_table() . ' WHERE session_code = %s', (string) $__ok['session_code'] ) ); }
-	// Favicon (goldener Planet, alpha.49).
+	// Favicon (goldener Planet, alpha.49). Icon-<link>s liefert Core (wp_site_icon) via unserem
+	// get_site_icon_url-Filter – EINE Quelle, keine eigenen <link> mehr (alpha.77, Dubletten-Fix).
+	$__fav_core = ( function (): string { ob_start(); if ( function_exists( 'wp_site_icon' ) ) { wp_site_icon(); } return (string) ob_get_clean(); } )();
+	liw_st_check( 'Favicon: Globus-Icon-<link> im <head> (von Core, ohne gesetztes Website-Icon)', get_option( 'site_icon' ) ? true : ( str_contains( $__fav_core, 'rel="icon"' ) && ( str_contains( $__fav_core, 'liw-planet-icon.svg' ) || str_contains( $__fav_core, 'goheal-gold-planet' ) ) ) );
+	// Kein doppelter Icon-<link> aus unserem output() (nur noch Marken-CSS).
 	$__fav = ( function (): string { ob_start(); \Liebherr\InterfaceWorld\Frontend\FaviconService::output(); return (string) ob_get_clean(); } )();
-	liw_st_check( 'Favicon: Planet-SVG-Link im <head>', str_contains( $__fav, 'liw-planet-icon.svg' ) && str_contains( $__fav, 'rel="icon"' ) );
+	liw_st_check( 'Favicon: output() gibt KEINEN eigenen Icon-<link> mehr aus (keine Dublette)', ! str_contains( $__fav, 'rel="icon"' ) );
 	// Globus statt WordPress-Logo: Adminleiste + Login (alpha.75).
 	liw_st_check( 'Brand-Logo: Globus ersetzt WP-„W" in Adminleiste + Login-Logo (CSS)', str_contains( $__fav, 'wp-admin-bar-wp-logo' ) && str_contains( $__fav, 'body.login h1 a' ) && str_contains( $__fav, 'liw-planet-icon.svg' ) );
 	liw_st_check( 'Brand-Logo: Login-Link → Seite, Login-Text → Seitenname', home_url( '/' ) === apply_filters( 'login_headerurl', 'x' ) && get_bloginfo( 'name' ) === apply_filters( 'login_headertext', 'x' ) );

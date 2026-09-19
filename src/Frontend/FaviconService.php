@@ -26,14 +26,20 @@ final class FaviconService {
 		if ( ! apply_filters( 'liw_favicon_enabled', true ) ) {
 			return;
 		}
+		// Website-Icon als EINE Quelle: /favicon.ico leitet ohne gesetztes Website-Icon per Core auf
+		// das graue WP-„W" (wp-includes/images/w-logo-gray-white-bg.png) um. Über get_site_icon_url()
+		// zeigt der Browser-Tab stattdessen den goldenen Globus (echtes Customizer-Icon behält Vorrang).
+		// Weil dieser Filter has_site_icon() „wahr" macht, gibt Core die Icon-<link>s in wp_head und
+		// login_head bereits selbst aus – wir dürfen sie NICHT zusätzlich ausgeben (sonst doppelt).
+		add_filter( 'get_site_icon_url', [ self::class, 'filter_site_icon_url' ], 10, 3 );
+		// Core hängt wp_site_icon NICHT an admin_head an → dort dieselbe Core-Funktion ergänzen,
+		// damit auch der wp-admin-Tab den Globus zeigt (weiterhin eine Quelle, keine Dubletten).
+		add_action( 'admin_head', 'wp_site_icon', 99 );
+		// Marken-Logo-CSS (Globus statt WP-„W" in Toolbar + auf der Login-Seite) – von Core nicht
+		// geliefert, daher in allen drei Kontexten. Icon-<link>s kommen ausschließlich von Core.
 		add_action( 'wp_head', [ self::class, 'output' ], 99 );
 		add_action( 'admin_head', [ self::class, 'output' ], 99 );
 		add_action( 'login_head', [ self::class, 'output' ], 99 );
-		// Core-Favicon: /favicon.ico leitet ohne gesetztes Website-Icon auf das graue WP-„W"
-		// (wp-includes/images/w-logo-gray-white-bg.png) um. Über get_site_icon_url() zeigt der
-		// Browser-Tab (v. a. im wp-admin) stattdessen den goldenen Globus. Ein echtes, im
-		// Customizer gesetztes Website-Icon behält Vorrang.
-		add_filter( 'get_site_icon_url', [ self::class, 'filter_site_icon_url' ], 10, 3 );
 		// Login-Logo verlinkt auf die Seite (statt wordpress.org) + spricht die Seite an (statt „Powered by WordPress").
 		add_filter( 'login_headerurl', static function () { return home_url( '/' ); } );
 		add_filter( 'login_headertext', static function () { return get_bloginfo( 'name' ); } );
@@ -73,23 +79,12 @@ final class FaviconService {
 		return LIW_URL . 'assets/img/liw-planet-icon.svg';
 	}
 
+	/**
+	 * Gibt ausschließlich das Marken-Logo-CSS aus (Globus statt WP-„W" in Toolbar + Login).
+	 * Die Website-Icon-<link>s (Browser-Tab) stammen allein von Core (wp_site_icon), gespeist über
+	 * filter_site_icon_url() – hier bewusst KEINE eigenen <link rel="icon">, um Dubletten zu vermeiden.
+	 */
 	public static function output(): void {
-		$out = '<link rel="icon" type="image/svg+xml" href="' . esc_url( LIW_URL . 'assets/img/liw-planet-icon.svg' ) . '" />' . "\n";
-
-		// Optionale offizielle PNGs (falls hinterlegt) – decken Browser ohne SVG-Favicon + Home-Screen ab.
-		foreach ( [ '32' => '32x32', '192' => '192x192' ] as $file => $sizes ) {
-			$rel = 'assets/img/goheal-gold-planet-' . $file . '.png';
-			if ( is_readable( LIW_PATH . $rel ) ) {
-				$out .= '<link rel="icon" type="image/png" sizes="' . esc_attr( $sizes ) . '" href="' . esc_url( LIW_URL . $rel ) . '" />' . "\n";
-			}
-		}
-		$apple = 'assets/img/goheal-gold-planet-180.png';
-		if ( is_readable( LIW_PATH . $apple ) ) {
-			$out .= '<link rel="apple-touch-icon" sizes="180x180" href="' . esc_url( LIW_URL . $apple ) . '" />' . "\n";
-		}
-
-		$out .= self::brand_logo_css();
-
-		echo $out; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- URLs mit esc_url() escaped, CSS statisch.
+		echo self::brand_logo_css(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- URLs mit esc_url() escaped, CSS statisch.
 	}
 }
