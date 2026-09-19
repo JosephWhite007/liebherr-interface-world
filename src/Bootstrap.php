@@ -89,6 +89,7 @@ final class Bootstrap {
 			MyLiebherr\GalleryView::register();  // Own Gallery [liw_my_gallery] (§31).
 			MyLiebherr\SharedView::register();   // Shared with Colleagues/World [liw_shared_colleagues|liw_shared_world] (§31).
 			MyLiebherr\OwnAdventuresView::register(); // Own Adventures [liw_my_adventures] (§32, Wiederverwendung Insel).
+			MyLiebherr\ModerationView::register();    // Moderation [liw_moderation] (World-Review/Meldungen, nur Prüfer, §11/§31).
 			MyLiebherr\ContactsRest::register();  // Kontakte/Connections/Leistungen + Maschinen REST (§33/§29, R4/R5).
 			MyLiebherr\ContactsView::register();  // My Contacts [liw_my_contacts] (§33).
 			MyLiebherr\MachinesView::register();  // My Machines [liw_my_machines] (§29 Pos. 09).

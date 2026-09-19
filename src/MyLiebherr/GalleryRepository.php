@@ -88,6 +88,15 @@ final class GalleryRepository {
 		return false !== $wpdb->delete( Schema::gallery_table(), [ 'id' => $id, 'owner_id' => $owner_id ], [ '%d', '%d' ] ); // phpcs:ignore WordPress.DB
 	}
 
+	/** Prüfer-Aktion (eigentümerübergreifend): Objektstatus setzen, z. B. 'suspended' (§11 Sperren) / 'active'. */
+	public static function moderate_status( int $id, string $status ): bool {
+		if ( null === self::get_any( $id ) ) {
+			return false;
+		}
+		global $wpdb;
+		return false !== $wpdb->update( Schema::gallery_table(), [ 'status' => $status ], [ 'id' => $id ], [ '%s' ], [ '%d' ] ); // phpcs:ignore WordPress.DB
+	}
+
 	/**
 	 * @param array<string,mixed> $d
 	 * @return array<string,mixed>

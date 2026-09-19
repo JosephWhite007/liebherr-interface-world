@@ -1264,6 +1264,25 @@ try {
 		$wpdb->delete( \Liebherr\InterfaceWorld\MyLiebherr\Schema::three_word_table(), [ 'object_id' => $__tw_pid ] );
 		wp_delete_post( $__tw_pid, true );
 
+		// Moderation (§11/§31): World-Freigabe (pending) + Meldung → Queue → approve=published + suspend sperrt Objekt.
+		$__mod_g   = \Liebherr\InterfaceWorld\MyLiebherr\GalleryRepository::add( $__myl_admin_id, [ 'title' => 'SELFTEST-MOD-Bild', 'visibility' => 'world' ] );
+		$__mod_gid = (int) ( $__mod_g['id'] ?? 0 );
+		$__mod_sh  = \Liebherr\InterfaceWorld\MyLiebherr\ShareRepository::add( $__myl_admin_id, 'gallery', $__mod_gid, 'world', 0, 'view' );
+		$__mod_rp  = \Liebherr\InterfaceWorld\MyLiebherr\ReportRepository::create( $__myl_admin_id, 'gallery', $__mod_gid, 'privacy', 'SELFTEST' );
+		$__mod_q   = \Liebherr\InterfaceWorld\MyLiebherr\ModerationService::queue();
+		$__mod_rev = \Liebherr\InterfaceWorld\MyLiebherr\ModerationService::review_share( (int) ( $__mod_sh['id'] ?? 0 ), 'approve' );
+		$__mod_res = \Liebherr\InterfaceWorld\MyLiebherr\ModerationService::resolve_report( (int) ( $__mod_rp['id'] ?? 0 ), 'suspend', $__myl_admin_id );
+		$__mod_after = \Liebherr\InterfaceWorld\MyLiebherr\GalleryRepository::get_any( $__mod_gid );
+		liw_st_check(
+			'Moderation: World-Share pending in Queue → approve=published; Meldung → suspend sperrt Galerie-Objekt',
+			count( $__mod_q['world_pending'] ) >= 1 && count( $__mod_q['reports'] ) >= 1
+			&& ! empty( $__mod_rev['ok'] ) && 'published' === $__mod_rev['status']
+			&& ! empty( $__mod_res['ok'] ) && 'suspended' === (string) ( $__mod_after['status'] ?? '' )
+		);
+		$wpdb->delete( \Liebherr\InterfaceWorld\MyLiebherr\Schema::report_table(), [ 'id' => (int) ( $__mod_rp['id'] ?? 0 ) ] );
+		$wpdb->delete( \Liebherr\InterfaceWorld\MyLiebherr\Schema::share_table(), [ 'id' => (int) ( $__mod_sh['id'] ?? 0 ) ] );
+		$wpdb->delete( \Liebherr\InterfaceWorld\MyLiebherr\Schema::gallery_table(), [ 'id' => $__mod_gid ] );
+
 		// Nav: Pocket-Reiter aktiv, sobald Pocket scharf + Seite vorhanden.
 		$__prev_pocket_page = (int) get_option( 'liw_pocket_page_id', 0 );
 		update_option( 'liw_pocket_page_id', (int) get_option( 'liw_my_liebherr_page_id', 0 ) );

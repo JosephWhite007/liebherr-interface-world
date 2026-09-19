@@ -157,6 +157,7 @@ Verifikation: `tests/run-tests.php` 576/0, `scripts/liw-selftest.php` 408/0 (ech
 | MYL 022 | Pocket-Pflichtinfo: Anzeige und bewusste Quittierung getrennt | ✅ | `requires_ack` + `pocket/v1/items/{id}/ack`, `acknowledged_at` protokolliert |
 | MYL 023 | CVF-Viererflow bleibt intakt, kontrolliert auf 6 erweitert | ✅ | Board-Seed ergänzt my_liebherr/pocket_information additiv + inaktiv; Bestandsflows unverändert |
 | MYL 09 | My Machines: zugeordnete Maschinen verwalten | ✅ | `[liw_my_machines]`, Tabelle machine, CRUD |
+| MYL 009 | Meldungen sperren Inhalte + lösen Erstattung aus | ✅ (Naht) | Report→`ModerationService`: suspend setzt Galerie-Objekt `suspended`; refund via Hook `liw_myl_refund` (deferred); World-Review pending→published/blocked durch Prüfer (`liw_myl_moderate`) |
 | MYL 012 | Mobil + Tastatur bedienbar | ✅ (Durchstich) | responsive CSS, Buttons/Formfelder tastaturbedienbar, `prefers-reduced-motion` (Uhr) |
 | MYL 025 | Session-Uhr jederzeit ein-/ausblendbar, Zeit+Token | ✅ | ClockWidget unten links, Toggle, `platform-time/status` |
 | MYL 026 | Serverautoritäre Zeit (Idle/Abbruch pausiert) | ✅ | SessionClock (Gap > Timeout zählt nicht), Heartbeat; Unit+Selftest |

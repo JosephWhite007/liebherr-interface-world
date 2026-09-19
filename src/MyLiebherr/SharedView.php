@@ -89,8 +89,37 @@ final class SharedView {
 			$cards .= '<figure class="liw-myl__dream">' . $img . '<figcaption>'
 				. '<strong class="liw-myl__dream-title">' . esc_html( (string) $item['title'] ) . '</strong>'
 				. ' <span class="liw-myl__dream-tags">' . $meta . '</span>'
+				. ( $show_scope ? '' : self::report_form_html( (int) $item['id'] ) )
 				. '</figcaption></figure>';
 		}
 		return '' !== $cards ? '<div class="liw-myl__dream-grid">' . $cards . '</div>' : '<p class="liw-myl__wallet-note">' . esc_html__( 'Keine Einträge.', 'liebherr-interface-world' ) . '</p>';
+	}
+
+	/** „Melden"-Formular für ein World-Bild (§11 Meldegründe). */
+	private static function report_form_html( int $gallery_id ): string {
+		$reasons = '';
+		foreach ( ContentRules::REPORT_REASONS as $r ) {
+			$reasons .= '<option value="' . esc_attr( $r ) . '">' . esc_html( self::reason_label( $r ) ) . '</option>';
+		}
+		return '<form class="liw-myl__reportform" data-liw-post="reports">'
+			. '<input type="hidden" name="object_type" value="gallery">'
+			. '<input type="hidden" name="object_id" value="' . $gallery_id . '">'
+			. '<select name="reason" aria-label="' . esc_attr__( 'Meldegrund', 'liebherr-interface-world' ) . '">' . $reasons . '</select>'
+			. '<input type="text" name="note" maxlength="255" placeholder="' . esc_attr__( 'Hinweis (optional)', 'liebherr-interface-world' ) . '">'
+			. '<button type="submit" class="liw-myl__wbtn">' . esc_html__( 'Melden', 'liebherr-interface-world' ) . '</button>'
+			. '</form>';
+	}
+
+	private static function reason_label( string $r ): string {
+		$map = [
+			'dangerous'        => __( 'gefährlich', 'liebherr-interface-world' ),
+			'wrong'            => __( 'falsch', 'liebherr-interface-world' ),
+			'outdated'         => __( 'veraltet', 'liebherr-interface-world' ),
+			'privacy'          => __( 'Datenschutz', 'liebherr-interface-world' ),
+			'rights'           => __( 'Rechteverletzung', 'liebherr-interface-world' ),
+			'duplicate'        => __( 'Duplikat', 'liebherr-interface-world' ),
+			'misleading_price' => __( 'irreführender Preis', 'liebherr-interface-world' ),
+		];
+		return $map[ $r ] ?? $r;
 	}
 }

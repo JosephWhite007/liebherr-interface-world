@@ -1,5 +1,25 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.131] – 2026-09-19 – Moderation: World-Review, Meldungen, Sperren, Erstattung (§11/§13/§31)
+
+### Hinzugefügt
+- Prüfer-Capability `liw_myl_moderate` (Rolle „Prüfer"): Vollzugriffs-Rollen + **araliya_ops/araliya_reception**.
+- `ReportRepository` + Tabelle `ary_liw_myl_report` (§11-Meldegründe: gefährlich/falsch/veraltet/Datenschutz/
+  Rechteverletzung/Duplikat/irreführender Preis), Status open→reviewed/dismissed/actioned.
+- `ModerationService` (reine Übergänge + Orchestrierung): **World-Review** von Galerie-Freigaben (pending→published/
+  blocked), **Meldung auflösen** (verwerfen / **sperren** §11 QX / **Erstattung** anstoßen). Erstattung ist eine Naht
+  (Hook `liw_myl_refund`, echte Wallet-Buchung erst mit dem Wallet-Pflichtenheft); Sperren setzt Galerie-Objekt auf
+  `suspended` (+ Hook `liw_myl_moderation_suspend` für andere Objekttypen).
+- `ShareRepository::set_status` (Prüfer) + `GalleryRepository::moderate_status` (eigentümerübergreifend, gesperrt).
+- REST: `POST /reports` (jeder berechtigte Nutzer), `GET /moderation/queue`, `POST /moderation/shares/{id}/review`,
+  `POST /moderation/reports/{id}/resolve` (nur Prüfer).
+- Frontend: „Melden"-Formular an den World-Freigaben (`SharedView`); Prüfer-Queue `[liw_moderation]` (nur mit
+  `liw_myl_moderate`) mit Freigeben/Ablehnen + Verwerfen/Sperren/Erstattung; auf der My-Liebherr-Seite eingebettet.
+
+### Verifikation
+- `tests/run-tests.php` **650/650** (Übergangsregeln + Prüfer-Rollenmapping), `scripts/liw-selftest.php` **422/422**
+  (Report→Queue→approve=published + suspend sperrt Objekt). `LIW_VERSION` .130→.131.
+
 ## [0.1.0-alpha.130] – 2026-09-19 – Drei-Wort-Label-Vollsystem für Own Adventures (§32)
 
 ### Hinzugefügt

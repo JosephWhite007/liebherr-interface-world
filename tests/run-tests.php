@@ -609,8 +609,8 @@ $MR = '\Liebherr\InterfaceWorld\MyLiebherr\Roles';
 $ME = '\Liebherr\InterfaceWorld\MyLiebherr\EntitlementService';
 $MC = '\Liebherr\InterfaceWorld\MyLiebherr\Context';
 $__mrc = $MR::role_caps();
-liw_assert( 'MyL Roles: 2 Caps (access, administer); administrator/araliya_admin erhalten beide', 2 === count( $MR::all_caps() ) && $__mrc['administrator'] === $MR::all_caps() && $__mrc['araliya_admin'] === $MR::all_caps(), $checks, $failures );
-liw_assert( 'MyL Roles: araliya_ops erhaelt nur access (kein administer)', [ $MR::CAP_ACCESS ] === $__mrc['araliya_ops'], $checks, $failures );
+liw_assert( 'MyL Roles: 3 Caps (access, administer, moderate); administrator/araliya_admin erhalten alle', 3 === count( $MR::all_caps() ) && $__mrc['administrator'] === $MR::all_caps() && $__mrc['araliya_admin'] === $MR::all_caps(), $checks, $failures );
+liw_assert( 'MyL Roles: araliya_ops = access + moderate (Prüfer), kein administer', in_array( $MR::CAP_ACCESS, $__mrc['araliya_ops'], true ) && in_array( $MR::CAP_MODERATE, $__mrc['araliya_ops'], true ) && ! in_array( $MR::CAP_ADMINISTER, $__mrc['araliya_ops'], true ), $checks, $failures );
 liw_assert( 'MyL Context: allowed_fields = genau 5 (persona, locale, timezone, active_org_id, active_role)', 5 === count( $MC::allowed_fields() ) && in_array( 'active_org_id', $MC::allowed_fields(), true ), $checks, $failures );
 $__patch = $MC::sanitize_patch( [ 'persona' => 'employee', 'locale' => 'de_DE', 'active_org_id' => '7', 'evil' => 'x', 'active_role' => 'ops' ] );
 liw_assert( 'MyL Context: sanitize_patch behaelt erlaubte Felder, verwirft unbekannte, castet org_id', 'employee' === $__patch['persona'] && 7 === $__patch['active_org_id'] && ! array_key_exists( 'evil', $__patch ), $checks, $failures );
@@ -669,6 +669,15 @@ $__acc3 = $SCk::accrue( 10, 100, 100, 300 );
 liw_assert( 'PTime SessionClock: now <= last_seen → keine Änderung', 10 === $__acc3['active'] && false === $__acc3['idle'], $checks, $failures );
 liw_assert( 'PTime WalletBridge: ohne Core nicht verfügbar; balance_cents(0)=null (Gast-Guard)', false === $WB::available() && null === $WB::balance_cents( 0 ), $checks, $failures );
 liw_assert( 'MyL WalletBridge: source_label bekannt (booking_debit→Buchung), unbekannt→Rohwert; status_label pending→ausstehend', 'Buchung' === $WB::source_label( 'booking_debit' ) && 'nope' === $WB::source_label( 'nope' ) && 'ausstehend' === $WB::status_label( 'pending' ), $checks, $failures );
+
+// My Liebherr Moderation (ADR-LIW-MYL-001 §11/§31): reine Übergangsregeln + Prüfer-Rollenmapping.
+echo "-- My Liebherr Moderation --\n";
+require_once $root . '/src/MyLiebherr/ModerationService.php';
+$MOD = '\Liebherr\InterfaceWorld\MyLiebherr\ModerationService';
+liw_assert( 'Moderation: World-Review nur pending→published/blocked', $MOD::can_world_review( 'pending', 'published' ) && $MOD::can_world_review( 'pending', 'blocked' ) && ! $MOD::can_world_review( 'published', 'blocked' ), $checks, $failures );
+liw_assert( 'Moderation: Report-Aktion nur auf open/reviewed + gültige Aktion', $MOD::can_report_action( 'open', 'suspend' ) && $MOD::can_report_action( 'reviewed', 'refund' ) && ! $MOD::can_report_action( 'dismissed', 'suspend' ) && ! $MOD::can_report_action( 'open', 'quatsch' ), $checks, $failures );
+$__mrc2 = $MR::role_caps();
+liw_assert( 'MyL Roles: araliya_ops/reception erhalten CAP_MODERATE (Prüfer); araliya_marketing nicht', in_array( $MR::CAP_MODERATE, $__mrc2['araliya_ops'], true ) && in_array( $MR::CAP_MODERATE, $__mrc2['araliya_reception'], true ) && ! in_array( $MR::CAP_MODERATE, $__mrc2['araliya_marketing'] ?? [], true ), $checks, $failures );
 
 // My Liebherr Drei-Wort-Label (ADR-LIW-MYL-001 §32): reine Normalisierung/Validierung/Vorschlag/Tokens.
 echo "-- My Liebherr Drei-Wort-Label --\n";

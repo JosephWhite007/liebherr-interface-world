@@ -96,6 +96,15 @@ final class ShareRepository {
 		return false !== $wpdb->delete( Schema::share_table(), [ 'id' => $id ], [ '%d' ] ); // phpcs:ignore WordPress.DB
 	}
 
+	/** Prüfer-Aktion: setzt den Status einer Freigabe (z. B. World-Review pending → published/blocked). */
+	public static function set_status( int $id, string $to ): bool {
+		if ( null === self::get( $id ) ) {
+			return false;
+		}
+		global $wpdb;
+		return false !== $wpdb->update( Schema::share_table(), [ 'status' => $to ], [ 'id' => $id ], [ '%s' ], [ '%d' ] ); // phpcs:ignore WordPress.DB
+	}
+
 	/** Entfernt alle Freigaben eines Objekts (beim Löschen des Objekts). */
 	public static function delete_for_item( string $item_type, int $item_id ): void {
 		global $wpdb;

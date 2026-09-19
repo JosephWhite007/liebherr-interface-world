@@ -26,9 +26,13 @@ final class Roles {
 
 	public const CAP_ACCESS     = 'liw_myl_access';      // Persönlichen Bereich betreten.
 	public const CAP_ADMINISTER = 'liw_myl_administer';  // My-Liebherr-Administration / fremde Objekte.
+	public const CAP_MODERATE   = 'liw_myl_moderate';    // Prüfer: World-Review, Meldungen, Sperren, Erstattung (§11/§31).
 
 	/** Vollzugriffs-Rollen erhalten alle My-Liebherr-Caps. */
 	private const FULL_ACCESS_ROLES = [ 'administrator', 'araliya_admin' ];
+
+	/** Prüfer-Rollen (§3 „Prüfer"): erhalten zusätzlich CAP_MODERATE. */
+	private const MODERATE_ROLES = [ 'araliya_ops', 'araliya_reception' ];
 
 	/**
 	 * Rollen, die den persönlichen Bereich betreten dürfen (jede angemeldete Person, §1). Bewusst großzügig
@@ -43,7 +47,7 @@ final class Roles {
 
 	/** @return array<int,string> Alle My-Liebherr-Capabilities. */
 	public static function all_caps(): array {
-		return [ self::CAP_ACCESS, self::CAP_ADMINISTER ];
+		return [ self::CAP_ACCESS, self::CAP_ADMINISTER, self::CAP_MODERATE ];
 	}
 
 	/**
@@ -56,6 +60,9 @@ final class Roles {
 		$out = [];
 		foreach ( self::ACCESS_ROLES as $slug ) {
 			$out[ $slug ] = [ self::CAP_ACCESS ];
+		}
+		foreach ( self::MODERATE_ROLES as $slug ) {
+			$out[ $slug ] = array_values( array_unique( array_merge( $out[ $slug ] ?? [], [ self::CAP_ACCESS, self::CAP_MODERATE ] ) ) );
 		}
 		foreach ( self::FULL_ACCESS_ROLES as $slug ) {
 			$out[ $slug ] = self::all_caps();

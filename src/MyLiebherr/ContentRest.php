@@ -60,6 +60,16 @@ final class ContentRest {
 			[ 'methods' => 'PUT', 'callback' => [ self::class, 'label_put' ] ] + $perm,
 		] );
 		register_rest_route( self::NAMESPACE, '/adventures/labels/search', [ [ 'methods' => 'GET', 'callback' => [ self::class, 'label_search' ] ] + $perm ] );
+		// Melden (jeder berechtigte Nutzer) + Moderation (nur Prüfer).
+		$mod = [ 'permission_callback' => [ self::class, 'require_moderate' ] ];
+		register_rest_route( self::NAMESPACE, '/reports', [ [ 'methods' => 'POST', 'callback' => [ self::class, 'report_create' ] ] + $perm ] );
+		register_rest_route( self::NAMESPACE, '/moderation/queue', [ [ 'methods' => 'GET', 'callback' => [ self::class, 'mod_queue' ] ] + $mod ] );
+		register_rest_route( self::NAMESPACE, '/moderation/shares/' . $id . '/review', [ [ 'methods' => 'POST', 'callback' => [ self::class, 'mod_review_share' ] ] + $mod ] );
+		register_rest_route( self::NAMESPACE, '/moderation/reports/' . $id . '/resolve', [ [ 'methods' => 'POST', 'callback' => [ self::class, 'mod_resolve_report' ] ] + $mod ] );
+	}
+
+	public static function require_moderate(): bool {
+		return is_user_logged_in() && current_user_can( Roles::CAP_MODERATE );
 	}
 
 	public static function require_access(): bool {
@@ -194,5 +204,28 @@ final class ContentRest {
 	public static function label_search( \WP_REST_Request $r ): \WP_REST_Response {
 		$g = self::gate(); if ( $g ) { return $g; }
 		return new \WP_REST_Response( [ 'ok' => true, 'results' => ThreeWordLabel::search( (string) $r->get_param( 'q' ) ) ], 200 );
+	}
+
+	// ── Melden + Moderation (§11/§31) ─────────────────────────────────────────────
+	public static function report_create( \WP_REST_Request $r ): \WP_REST_Response {
+		$g = self::gate(); if ( $g ) { return $g; }
+		$rep = ReportRepository::create( self::uid(), (string) $r->get_param( 'object_type' ), (int) $r->get_param( 'object_id' ), (string) $r->get_param( 'reason' ), (string) $r->get_param( 'note' ) );
+		return new \WP_REST_Response( [ 'ok' => null !== $rep, 'report' => $rep ], 200 );
+	}
+
+	public static function mod_queue( \WP_REST_Request $r ): \WP_REST_Response {
+		unset( $r );
+		$g = self::gate(); if ( $g ) { return $g; }
+		return new \WP_REST_Response( [ 'ok' => true ] + ModerationService::queue(), 200 );
+	}
+
+	public static function mod_review_share( \WP_REST_Request $r ): \WP_REST_Response {
+		$g = self::gate(); if ( $g ) { return $g; }
+		return new \WP_REST_Response( ModerationService::review_share( (int) $r['id'], (string) $r->get_param( 'decision' ) ), 200 );
+	}
+
+	public static function mod_resolve_report( \WP_REST_Request $r ): \WP_REST_Response {
+		$g = self::gate(); if ( $g ) { return $g; }
+		return new \WP_REST_Response( ModerationService::resolve_report( (int) $r['id'], (string) $r->get_param( 'action' ), self::uid() ), 200 );
 	}
 }

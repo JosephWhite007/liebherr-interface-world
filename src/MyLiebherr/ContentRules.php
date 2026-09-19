@@ -21,6 +21,12 @@ final class ContentRules {
 	public const VISIBILITY  = [ 'private', 'colleagues', 'world' ];
 	public const SCOPE       = [ 'view', 'comment', 'download' ];
 	public const RECIPIENT   = [ 'user', 'team', 'world' ];
+	/** Meldegründe (§11): gefährlich, falsch, veraltet, Datenschutz, Rechteverletzung, Duplikat, irreführender Preis. */
+	public const REPORT_REASONS = [ 'dangerous', 'wrong', 'outdated', 'privacy', 'rights', 'duplicate', 'misleading_price' ];
+
+	public static function report_reason( string $v ): string {
+		return in_array( $v, self::REPORT_REASONS, true ) ? $v : 'wrong';
+	}
 
 	public static function wish( string $v ): string {
 		return in_array( $v, self::WISH, true ) ? $v : 'idea';

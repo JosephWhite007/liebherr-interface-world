@@ -45,6 +45,7 @@ $content = implode( "\n\n", [
 	'<!-- wp:shortcode -->[liw_shared_colleagues]<!-- /wp:shortcode -->',
 	'<!-- wp:shortcode -->[liw_shared_world]<!-- /wp:shortcode -->',
 	'<!-- wp:shortcode -->[liw_my_adventures]<!-- /wp:shortcode -->',
+	'<!-- wp:shortcode -->[liw_moderation]<!-- /wp:shortcode -->',
 ] );
 
 $existing = get_page_by_path( $slug );

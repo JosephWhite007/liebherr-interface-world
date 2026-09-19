@@ -75,6 +75,11 @@ final class Schema {
 		return $wpdb->prefix . 'liw_myl_three_word_label';
 	}
 
+	public static function report_table(): string {
+		global $wpdb;
+		return $wpdb->prefix . 'liw_myl_report';
+	}
+
 	public static function create_tables(): void {
 		global $wpdb;
 		$charset = $wpdb->get_charset_collate();
@@ -258,5 +263,22 @@ final class Schema {
 			UNIQUE KEY uniq_object_locale (object_type, object_id, locale),
 			KEY idx_terms (term_1, term_2, term_3)
 		) {$charset} COMMENT='Liebherr My Liebherr – normierte Drei-Wort-Namen Maschine Problem Handlung';" );
+
+		$rp = self::report_table();
+		dbDelta( "CREATE TABLE {$rp} (
+			id          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+			object_type VARCHAR(16)  NOT NULL DEFAULT 'gallery',
+			object_id   BIGINT UNSIGNED NOT NULL,
+			reporter_id BIGINT UNSIGNED NOT NULL,
+			reason      VARCHAR(24)  NOT NULL DEFAULT 'wrong',
+			note        VARCHAR(255) NOT NULL DEFAULT '',
+			status      VARCHAR(16)  NOT NULL DEFAULT 'open',
+			resolver_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
+			created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			resolved_at DATETIME     NULL,
+			PRIMARY KEY (id),
+			KEY idx_status (status),
+			KEY idx_object (object_type, object_id)
+		) {$charset} COMMENT='Liebherr My Liebherr – Meldungen zu Inhalten Report Moderation';" );
 	}
 }

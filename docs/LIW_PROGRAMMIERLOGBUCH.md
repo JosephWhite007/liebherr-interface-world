@@ -21,6 +21,19 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.131 – Moderation (World-Review, Meldungen, Sperren, Erstattung §11/§13/§31)
+
+- `src/MyLiebherr/Roles.php`: Cap `liw_myl_moderate` + MODERATE_ROLES (araliya_ops/reception), all_caps=3.
+- `src/MyLiebherr/ContentRules.php`: REPORT_REASONS + report_reason().
+- `src/MyLiebherr/Schema.php`: Tabelle `report`.
+- `src/MyLiebherr/ReportRepository.php` (NEU): create/get/open/set_status.
+- `src/MyLiebherr/ModerationService.php` (NEU): can_world_review/can_report_action (rein) + queue/review_share/resolve_report (Hooks liw_myl_refund, liw_myl_moderation_suspend).
+- `src/MyLiebherr/ShareRepository.php`: set_status (Prüfer). `GalleryRepository.php`: moderate_status.
+- `src/MyLiebherr/ContentRest.php`: reports (POST) + moderation/queue|shares/{id}/review|reports/{id}/resolve (require_moderate).
+- `src/MyLiebherr/ModerationView.php` (NEU): `[liw_moderation]` (nur Prüfer). `SharedView.php`: „Melden"-Formular an World-Bildern.
+- `src/Bootstrap.php`: ModerationView. Seeder: `[liw_moderation]`. CSS. LIW_VERSION .130→.131.
+- Tests angepasst (Rollen 3 Caps) + Moderation-Blöcke. WP-frei 650/0, Docker 422/0.
+
 ## 0.1.0-alpha.130 – Drei-Wort-Label-Vollsystem (§32)
 
 - `src/MyLiebherr/Schema.php`: Tabelle `three_word_label` (object_type/object_id/locale/term_1..3/synonyms/taxonomy_version, UNIQUE object+locale).
