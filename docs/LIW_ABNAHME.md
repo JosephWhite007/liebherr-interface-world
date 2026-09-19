@@ -143,6 +143,8 @@ Verifikation: `tests/run-tests.php` 576/0, `scripts/liw-selftest.php` 408/0 (ech
 | MYL 001 | Persönliche My-Liebherr-Startseite mit korrektem Kontext | ✅ (Durchstich) | `[liw_my_liebherr]` rendert für angemeldeten Nutzer mit `liw_myl_access`; Context::for_user |
 | MYL 002 | Berechtigte Widgets anordnen/aus- und einblenden, bleibt erhalten | ✅ | Dashboard S3: WidgetCatalog+DashboardService+`ary_liw_myl_dashboard_layout`, REST GET/PUT, Selftest-Round-Trip |
 | MYL 003 | Mehrfachrollen/Organisationen, Kontextwechsel | ⚠️ Teil | Kontext + Mitgliedschaften lesbar, aktive Org/Rolle im Profil setzbar (PATCH /me); Org-Pflege/Onboarding folgt R1-Breite |
+| MYL 004 | Wallet zeigt Salden aus dem Ledger | ✅ (read-only) | `[liw_my_wallet]` über `WalletBridge`→Core `get_summary`; verfügbar/reserviert/gesperrt-Buckets folgen mit Wallet-Pflichtenheft |
+| MYL 006 | Erlöse/Buchungen je Beleg nachvollziehbar | ✅ (read-only) | Buchungsliste mit Datum/Art/Betrag ±/Status aus `get_transactions` |
 | MYL 012 | Mobil + Tastatur bedienbar | ✅ (Durchstich) | responsive CSS, Buttons/Formfelder tastaturbedienbar, `prefers-reduced-motion` (Uhr) |
 | MYL 025 | Session-Uhr jederzeit ein-/ausblendbar, Zeit+Token | ✅ | ClockWidget unten links, Toggle, `platform-time/status` |
 | MYL 026 | Serverautoritäre Zeit (Idle/Abbruch pausiert) | ✅ | SessionClock (Gap > Timeout zählt nicht), Heartbeat; Unit+Selftest |

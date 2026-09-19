@@ -71,4 +71,34 @@ final class WalletBridge {
 	public static function format_cents( int $cents ): string {
 		return number_format_i18n( $cents / 100, 2 ) . ' €';
 	}
+
+	/** Lesbares Label für einen Buchungs-Quelltyp (Anzeige). Fällt auf den Rohwert zurück. */
+	public static function source_label( string $source_type ): string {
+		$map = [
+			'stripe_payment'     => __( 'Zahlung', 'liebherr-interface-world' ),
+			'voucher'            => __( 'Gutschein', 'liebherr-interface-world' ),
+			'gift_voucher'       => __( 'Gutschein', 'liebherr-interface-world' ),
+			'admin'              => __( 'Gutschrift', 'liebherr-interface-world' ),
+			'admin_credit'       => __( 'Gutschrift', 'liebherr-interface-world' ),
+			'refund'             => __( 'Rückerstattung', 'liebherr-interface-world' ),
+			'invoice_payment'    => __( 'Rechnung', 'liebherr-interface-world' ),
+			'booking_debit'      => __( 'Buchung', 'liebherr-interface-world' ),
+			'admin_debit'        => __( 'Belastung', 'liebherr-interface-world' ),
+			'slot_reservation'   => __( 'Reservierung', 'liebherr-interface-world' ),
+			'token_billing_debit'=> __( 'Plattformnutzung', 'liebherr-interface-world' ),
+		];
+		return $map[ $source_type ] ?? $source_type;
+	}
+
+	/** Lesbares Label für einen Buchungsstatus (Anzeige). */
+	public static function status_label( string $status ): string {
+		$map = [
+			'pending'   => __( 'ausstehend', 'liebherr-interface-world' ),
+			'confirmed' => __( 'bestätigt', 'liebherr-interface-world' ),
+			'settled'   => __( 'abgerechnet', 'liebherr-interface-world' ),
+			'cancelled' => __( 'storniert', 'liebherr-interface-world' ),
+			'reversed'  => __( 'rückgebucht', 'liebherr-interface-world' ),
+		];
+		return $map[ $status ] ?? $status;
+	}
 }

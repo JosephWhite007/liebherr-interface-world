@@ -1117,6 +1117,10 @@ try {
 		$__prof = do_shortcode( '[liw_my_profile]' );
 		liw_st_check( 'Profil S5: [liw_my_profile] rendert Profilblock + Formular', is_string( $__prof ) && false !== strpos( $__prof, 'liw-myl__profile' ) && false !== strpos( $__prof, 'data-liw-profile-form' ) );
 
+		// My Wallet S8: Shortcode rendert read-only Salden/Buchungen aus der Plattform-Wallet.
+		$__wal = do_shortcode( '[liw_my_wallet]' );
+		liw_st_check( 'My Wallet S8: [liw_my_wallet] rendert Wallet-Block (Karten oder Hinweis)', is_string( $__wal ) && false !== strpos( $__wal, 'liw-myl__wallet' ) && false !== strpos( $__wal, 'My Wallet' ) );
+
 		// R1-Abnahme S6: Objekt-/Rollenschutz mit echtem Subscriber (Negativtest, SEC 01).
 		require_once ABSPATH . 'wp-admin/includes/user.php';
 		$__sub_id = wp_insert_user( [ 'user_login' => 'liw_st_sub_' . wp_generate_password( 5, false ), 'user_pass' => wp_generate_password( 12 ), 'user_email' => 'liw_st_' . wp_generate_password( 6, false ) . '@example.test', 'role' => 'subscriber' ] );

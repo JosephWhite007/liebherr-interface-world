@@ -21,6 +21,17 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.117 – My Liebherr R2: My Wallet S8 (read-only)
+
+- `src/MyLiebherr/WalletView.php` (NEU): `[liw_my_wallet]` — Salden-Karten (Saldo/gutgeschrieben/belastet/Budget) + letzte 10 Buchungen; nutzt `CoreBridge\WalletBridge` (get_summary/get_transactions). Read-only.
+- `src/CoreBridge/WalletBridge.php`: `source_label()`/`status_label()` ergänzt.
+- `src/MyLiebherr/OverviewView.php`: WalletView eingebettet; „Wallet öffnen" → `#liw-my-wallet`.
+- `src/Bootstrap.php`: `MyLiebherr\WalletView::register()`.
+- `assets/css/liw-my-liebherr.css`: Wallet-Karten + Buchungstabelle (+ Dark).
+- `liebherr-interface-world.php`: `LIW_VERSION` .116→.117.
+- `tests/run-tests.php`: WalletBridge-Label-Assert. `scripts/liw-selftest.php`: `[liw_my_wallet]`-Render-Check.
+- Tests: WP-frei 579/0, Docker 409/0.
+
 ## 0.1.0-alpha.116 – My Liebherr R1-Breite: Dashboard S3, Profil S5, R1-Abnahme S6
 
 - `src/MyLiebherr/WidgetCatalog.php` (NEU, rein): Widgets je Cap (`permitted_for`).

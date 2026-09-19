@@ -74,6 +74,7 @@ final class OverviewView {
 			. self::header_html( (string) $ctx['display_name'] )
 			. self::widgets_html( $uid, $caps )
 			. self::quick_actions_html()
+			. WalletView::render( $uid )
 			. ProfileView::render( $uid )
 			. '<p class="liw-myl__clockhint">' . esc_html__( 'Ihre Plattformzeit läuft als Session-Uhr unten links mit.', 'liebherr-interface-world' ) . '</p>'
 			. '</div>';
@@ -165,9 +166,7 @@ final class OverviewView {
 
 	private static function quick_actions_html(): string {
 		$actions = [];
-		if ( current_user_can( 'read' ) ) {
-			$actions[] = [ 'label' => __( 'Wallet öffnen', 'liebherr-interface-world' ), 'url' => admin_url( 'admin.php?page=araliya-lav-wallet-planner' ), 'disabled' => ! current_user_can( 'manage_options' ) && ! current_user_can( 'araliya_view_frontoffice' ) ];
-		}
+		$actions[] = [ 'label' => __( 'Wallet öffnen', 'liebherr-interface-world' ), 'url' => '#liw-my-wallet', 'disabled' => false ];
 		$adv_id = (int) get_option( 'liw_adventures_page_id', 0 );
 		if ( $adv_id > 0 ) {
 			$actions[] = [ 'label' => __( 'Adventure einstellen', 'liebherr-interface-world' ), 'url' => (string) get_permalink( $adv_id ), 'disabled' => false ];

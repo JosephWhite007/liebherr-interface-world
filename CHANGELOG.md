@@ -1,5 +1,23 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.117] – 2026-09-19 – My Liebherr R2: My Wallet (S8), read-only über die Plattform-Wallet
+
+### Hinzugefügt
+- **`MyLiebherr\WalletView`** (`[liw_my_wallet]`, auch in die My-Overview-Seite eingebettet): read-only Wallet-Ansicht
+  auf die **Plattform Health Wallet** über `CoreBridge\WalletBridge` — Saldo, gutgeschrieben/belastet gesamt,
+  Jahresbudget + die letzten 10 Buchungen als verständliche Belege (Datum, Art, Betrag ±, Status). **Keine zweite
+  Saldenquelle** (§7); keine Schreibbuchungen (Kauf/Abrechnung laufen über die Fachprozesse).
+- `CoreBridge\WalletBridge` um `source_label()`/`status_label()` (lesbare, übersetzbare Buchungs-/Statuslabels) erweitert.
+- Schnellaktion „Wallet öffnen" verweist jetzt auf die Wallet-Sektion (`#liw-my-wallet`) statt in den Admin-Planner.
+
+### Hinweis (S7)
+- Der Wallet-Adapter (`CoreBridge\WalletBridge`) ist damit als lesende Fassade abgeschlossen. Schreibende Token-
+  Buchung / Mehrwährung bleibt Core-Kategorie A (kommendes Wallet-Pflichtenheft); Buchungsnaht weiter Flag AUS.
+
+### Verifikation
+- `tests/run-tests.php` **579/579** (Label-Helfer), `scripts/liw-selftest.php` **409/409** (`[liw_my_wallet]`-Render).
+  Abnahme `docs/LIW_ABNAHME.md §9` (MYL 004/006).
+
 ## [0.1.0-alpha.116] – 2026-09-19 – My Liebherr R1-Breite: Dashboard (S3), Profil (S5), R1-Abnahme (S6)
 
 Alles hinter `liw_myl_enabled` (Default AUS). Abnahme in `docs/LIW_ABNAHME.md §9`.

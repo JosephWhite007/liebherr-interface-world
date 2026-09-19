@@ -80,6 +80,21 @@
 .liw-myl__status { font-size: 13px; color: #2f8f4e; }
 .liw-myl__privacy { margin-top: 18px; font-size: 14px; color: #5a6172; }
 
+/* My Wallet (S8). */
+.liw-myl__wallet { margin-top: 28px; border-top: 1px solid #e2e6ee; padding-top: 18px; }
+.liw-myl__wallet-cards { display: grid; grid-template-columns: repeat( auto-fit, minmax( 160px, 1fr ) ); gap: 12px; margin: 8px 0 16px; }
+.liw-myl__wallet-card { background: #fff; border: 1px solid #e2e6ee; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; }
+.liw-myl__wallet-card.is-primary { background: linear-gradient( 180deg, #fffdf6, #fff ); border-color: #f0dcae; }
+.liw-myl__wallet-cval { font-size: 20px; font-weight: 700; color: #10121a; }
+.liw-myl__wallet-clabel { font-size: 12px; color: #8a90a0; text-transform: uppercase; letter-spacing: 0.03em; }
+.liw-myl__wallet-note { color: #8a90a0; font-size: 14px; }
+.liw-myl__wtx { width: 100%; border-collapse: collapse; font-size: 14px; }
+.liw-myl__wtx th, .liw-myl__wtx td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #eef0f4; }
+.liw-myl__wtx th { color: #8a90a0; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; }
+.liw-myl__wtx-amt { font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; }
+.liw-myl__wtx-amt.is-credit { color: #2f8f4e; }
+.liw-myl__wtx-amt.is-debit { color: #c0392b; }
+
 @media ( prefers-color-scheme: dark ) {
 	.liw-myl__wbtn { background: #1f222c; border-color: #2a2f3a; color: #cfd4de; }
 	.liw-myl__hidden-item { background: #1f222c; border-color: #2a2f3a; }
@@ -87,6 +102,11 @@
 	.liw-myl__field input, .liw-myl__field select { background: #12141b; border-color: #2a2f3a; color: #eef1f6; }
 	.liw-myl__profile { border-color: #2a2f3a; }
 	.liw-myl__id dd { color: #cfd4de; }
+	.liw-myl__wallet { border-color: #2a2f3a; }
+	.liw-myl__wallet-card { background: #171922; border-color: #2a2f3a; }
+	.liw-myl__wallet-card.is-primary { background: linear-gradient( 180deg, #211c10, #171922 ); border-color: #4a3d1c; }
+	.liw-myl__wallet-cval { color: #fff; }
+	.liw-myl__wtx th, .liw-myl__wtx td { border-color: #2a2f3a; }
 }
 
 @media ( prefers-color-scheme: dark ) {

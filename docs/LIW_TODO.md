@@ -32,9 +32,11 @@ Session-Uhr/Token-Schachuhr** erweitert. Vollständiger Arbeits-Workflow (alle M
 - **R1-Breite S3/S5/S6 ✅ umgesetzt (alpha.114–116):** S3 Dashboard (WidgetCatalog/DashboardService, Tabelle
   `ary_liw_myl_dashboard_layout`, REST GET/PUT/reset, Overview-Controls) · S5 Profil (`[liw_my_profile]` → PATCH /me,
   Datenschutz-Hinweis) · S6 R1-Abnahme (Subscriber-Negativtest, `docs/LIW_ABNAHME.md §9`). WP-frei 576 / Docker 408.
-- **Als Nächstes (R2 ff.):** S7/S8 Wallet-UI (Salden/Transaktionen/Belege) über `CoreBridge\WalletBridge`; danach
-  R3 (Adventures/Dreams/Gallery + CVF-4→6-Karten), R4, R5. Wallet-Mehrwährung/Token-Buchung + Aktivierung
-  `liw_ptime_charge_live` = Core-Kategorie A + kommendes Wallet-Pflichtenheft.
+- **R2 My Wallet S7/S8 ✅ umgesetzt (alpha.117, read-only):** `[liw_my_wallet]` + `CoreBridge\WalletBridge` → Plattform
+  Health Wallet (Saldo/gutgeschrieben/belastet/Budget + letzte Buchungen als Belege); in Overview eingebettet. WP-frei 579 / Docker 409.
+- **Als Nächstes:** R3 (Own Adventures, My Dreams, Own Gallery + CVF-4→6-Karten), dann R4/R5. Verfügbar/reserviert/
+  gesperrt-Buckets, Export/Pagination, Wallet-Mehrwährung/Token-Buchung + `liw_ptime_charge_live` = Core-Kategorie A +
+  kommendes Wallet-Pflichtenheft.
 - Reihenfolge: R0 Verträge → R1 Fundament (Kontext/Nav/Dashboard/Overview/Profile) → R2 Wallet-Adapter +
   **Plattformzeit-Schachuhr** → R3 Adventures/Dreams/Gallery + CVF-4→6-Karten → R4 Qualität/Sharing/Kontakte →
   R5 Pocket/Machines/CVF-Simulation → R6 Pilot.

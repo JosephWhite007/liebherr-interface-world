@@ -656,6 +656,7 @@ liw_assert( 'PTime SessionClock: Gap > Timeout → Idle/Pause, keine Anrechnung'
 $__acc3 = $SCk::accrue( 10, 100, 100, 300 );
 liw_assert( 'PTime SessionClock: now <= last_seen → keine Änderung', 10 === $__acc3['active'] && false === $__acc3['idle'], $checks, $failures );
 liw_assert( 'PTime WalletBridge: ohne Core nicht verfügbar; balance_cents(0)=null (Gast-Guard)', false === $WB::available() && null === $WB::balance_cents( 0 ), $checks, $failures );
+liw_assert( 'MyL WalletBridge: source_label bekannt (booking_debit→Buchung), unbekannt→Rohwert; status_label pending→ausstehend', 'Buchung' === $WB::source_label( 'booking_debit' ) && 'nope' === $WB::source_label( 'nope' ) && 'ausstehend' === $WB::status_label( 'pending' ), $checks, $failures );
 
 // 3. strict_types=1 in jeder src/-Datei (Coding Standard, CLAUDE.md Abschnitt 5).
 echo "-- Coding Standard --\n";

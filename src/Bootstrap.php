@@ -83,6 +83,7 @@ final class Bootstrap {
 			MyLiebherr\Rest::register(); // My Liebherr REST (GET/PATCH me; self-gating ueber liw_myl_enabled, ADR-LIW-MYL-001 S1).
 			MyLiebherr\OverviewView::register(); // My Overview Startseite [liw_my_liebherr] (ADR-LIW-MYL-001 S4/S3).
 			MyLiebherr\ProfileView::register();  // My Profile & Rollen [liw_my_profile] (ADR-LIW-MYL-001 S5).
+			MyLiebherr\WalletView::register();   // My Wallet (read-only Salden/Buchungen) [liw_my_wallet] (ADR-LIW-MYL-001 S8).
 			PlatformTime\Rest::register();       // Plattformzeit REST (start/heartbeat/status/stop; self-gating ueber liw_ptime_enabled, §41).
 			PlatformTime\ClockWidget::register(); // Schwebende Session-Uhr / Schachuhr (S11, §41.6).
 		Frontend\WorldSwitcher::register();  // Plattform-Umschalter der vier Inseln (Cross-Navigation).
