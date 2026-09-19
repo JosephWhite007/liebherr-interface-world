@@ -1,5 +1,18 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.75] – 2026-09-19 – Goldener Globus statt WordPress-Logo (Adminleiste + Login)
+
+### Geändert
+- Der goldene Globus ersetzt jetzt auch das **WordPress-„W" oben links in der Admin-Leiste** (Frontend-Toolbar
+  und wp-admin) und das **große WordPress-Logo auf der Login-Seite** – per CSS in `FaviconService`
+  (Selektoren greifen nur im jeweiligen Kontext, kein Markup-Eingriff). Zusätzlich verlinkt das Login-Logo
+  auf die Seite (statt wordpress.org) und trägt den Seitennamen als Text (statt „Powered by WordPress").
+- Ergänzt den bereits vorhandenen Browser-Tab-Favicon (goldener Planet, alpha.49).
+
+### Verifikation
+- `tests/run-tests.php` **408/408**, `scripts/liw-selftest.php` **349/349** (Adminleisten- + Login-Logo-CSS,
+  Login-Link/Text). Browser: Login-Seite zeigt den Globus, Link → Seite, Alt-Text = Seitenname.
+
 ## [0.1.0-alpha.74] – 2026-09-19 – Simulation Builder: austauschbare Engine-Naht
 
 ### Hinzugefügt

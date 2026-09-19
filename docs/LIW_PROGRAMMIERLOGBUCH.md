@@ -12,6 +12,13 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.75 – Goldener Globus statt WordPress-Logo (Adminleiste + Login)
+
+**Geändert:** `src/Frontend/FaviconService.php` – `brand_logo_css()` (Globus-Hintergrund für
+`#wp-admin-bar-wp-logo .ab-icon:before` und `body.login h1 a`), in `output()` (wp_head/admin_head/login_head)
+ausgegeben; Filter `login_headerurl` -> home, `login_headertext` -> Seitenname. Reuse `liw-planet-icon.svg`.
+Selftest ergänzt. Bump alpha.74 -> alpha.75.
+
 ## 0.1.0-alpha.74 – Simulation Builder: austauschbare Engine-Naht
 
 **Neu:** `src/IntelligenceWorld/SimulationEngineInterface.php` (Vertrag `forecast()`/`id()`),

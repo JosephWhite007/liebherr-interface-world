@@ -131,6 +131,8 @@ final class HandbookPage {
 
 			<p><?php esc_html_e( 'Simulations-Engine – austauschbar (seit alpha.74): Der Simulation Builder rechnet über eine klar definierte Schnittstelle. Standard ist ein deterministisches Beispielmodell; sobald eine echte Simulations-Engine bereitgestellt wird, lässt sie sich über eine technische Naht (Filter liw_iw_simulation_engine) anschließen, ohne die Oberfläche zu ändern – dann rechnet die Plattform serverseitig mit der echten Engine. Cockpit „Go" führt weiterhin direkt in den Simulation Builder.', 'liebherr-interface-world' ); ?></p>
 
+			<p><?php esc_html_e( 'Goldener Globus statt WordPress-Logo (seit alpha.75): Neben dem Browser-Tab-Symbol (Favicon) ersetzt der goldene Globus jetzt auch das WordPress-„W" oben links in der Admin-Leiste sowie das große Logo auf der Anmelde-Seite. Die Anmelde-Seite verlinkt zudem auf die Website (statt auf wordpress.org) und zeigt den Seitennamen. Abschaltbar über den Filter liw_favicon_enabled.', 'liebherr-interface-world' ); ?></p>
+
 			<h2><?php esc_html_e( 'Nachvollziehbarkeit: Programmierlogbuch und To-Dos', 'liebherr-interface-world' ); ?></h2>
 			<p><?php esc_html_e( 'Der Reiter „🧾 Programmierlogbuch" listet jede Quellcodeänderung auf Datei-/Klassenebene (was wurde wann geändert). Der Reiter „📋 To-Dos" listet offene bzw. bewusst zurückgestellte Punkte mit Quellenangabe (z. B. Content Board §19, echte Karte für die World Connections Map, Docker-Praxistest). Beide werden bei jeder Aufgabe gepflegt, in der sich etwas ändert.', 'liebherr-interface-world' ); ?></p>
 

@@ -29,6 +29,23 @@ final class FaviconService {
 		add_action( 'wp_head', [ self::class, 'output' ], 99 );
 		add_action( 'admin_head', [ self::class, 'output' ], 99 );
 		add_action( 'login_head', [ self::class, 'output' ], 99 );
+		// Login-Logo verlinkt auf die Seite (statt wordpress.org) + spricht die Seite an (statt „Powered by WordPress").
+		add_filter( 'login_headerurl', static function () { return home_url( '/' ); } );
+		add_filter( 'login_headertext', static function () { return get_bloginfo( 'name' ); } );
+	}
+
+	/**
+	 * Ersetzt das WordPress-„W" in der Admin-Leiste (oben links) und das WordPress-Logo auf der Login-Seite
+	 * durch den goldenen Globus – per CSS (die Selektoren greifen nur im jeweiligen Kontext).
+	 */
+	public static function brand_logo_css(): string {
+		$svg = esc_url( LIW_URL . 'assets/img/liw-planet-icon.svg' );
+		return '<style id="liw-brand-logo">'
+			// Admin-Leiste „W" → Globus (Frontend-Toolbar + wp-admin).
+			. '#wpadminbar #wp-admin-bar-wp-logo>.ab-item .ab-icon:before{content:"" !important;background:url(' . $svg . ') center center/16px 16px no-repeat;width:20px;height:100%;display:inline-block;}'
+			// Login-Seite: großes WordPress-Logo → Globus.
+			. 'body.login h1 a{background-image:url(' . $svg . ') !important;background-size:contain !important;width:120px;height:120px;}'
+			. '</style>' . "\n";
 	}
 
 	public static function output(): void {
@@ -46,6 +63,8 @@ final class FaviconService {
 			$out .= '<link rel="apple-touch-icon" sizes="180x180" href="' . esc_url( LIW_URL . $apple ) . '" />' . "\n";
 		}
 
-		echo $out; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- URLs mit esc_url() escaped.
+		$out .= self::brand_logo_css();
+
+		echo $out; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- URLs mit esc_url() escaped, CSS statisch.
 	}
 }

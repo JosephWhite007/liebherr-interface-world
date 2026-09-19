@@ -922,6 +922,9 @@ try {
 	// Favicon (goldener Planet, alpha.49).
 	$__fav = ( function (): string { ob_start(); \Liebherr\InterfaceWorld\Frontend\FaviconService::output(); return (string) ob_get_clean(); } )();
 	liw_st_check( 'Favicon: Planet-SVG-Link im <head>', str_contains( $__fav, 'liw-planet-icon.svg' ) && str_contains( $__fav, 'rel="icon"' ) );
+	// Globus statt WordPress-Logo: Adminleiste + Login (alpha.75).
+	liw_st_check( 'Brand-Logo: Globus ersetzt WP-„W" in Adminleiste + Login-Logo (CSS)', str_contains( $__fav, 'wp-admin-bar-wp-logo' ) && str_contains( $__fav, 'body.login h1 a' ) && str_contains( $__fav, 'liw-planet-icon.svg' ) );
+	liw_st_check( 'Brand-Logo: Login-Link → Seite, Login-Text → Seitenname', home_url( '/' ) === apply_filters( 'login_headerurl', 'x' ) && get_bloginfo( 'name' ) === apply_filters( 'login_headertext', 'x' ) );
 
 	// ── [9] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
 	echo "\n[9] Programmierlogbuch / To-Dos\n";
