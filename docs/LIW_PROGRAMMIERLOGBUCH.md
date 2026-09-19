@@ -21,6 +21,15 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.104 – Adventures: Liebherr-Startbild (Hero) oben
+
+**Geändert:** `src/Adventures/AdventuresView.php` – neue `hero_image_url()` (freigegebenes Mediathek-Bild via
+Option/Filter `liw_adventures_hero_image_id`, CI-005 über MediaBridge, Größe `full`); im Hero-Bereich oben
+(vor Eyebrow/Headline) ein Startbild-Banner. `assets/css/liw-adventures.css` – `.liw-adv__hero-img`
+(cover, `clamp(220px,42vw,460px)`, runde Ecken, Schatten). **Mediathek:** #2150 Liebherr HC-L Kran an der
+Sagrada Família (Kirchturmspitzen) – Option + `_liw_media_approved` NUR Dev-DB gesetzt; auf Staging/Live
+erneut setzen. Live verifiziert. Tests WP-frei 511 / Docker 393. Bump alpha.103 -> alpha.104.
+
 ## 0.1.0-alpha.103 – Hilfe-Koffer im Get-Help-Titel: ohne orangen Kreis, ~3x größer
 
 **Geändert:** `assets/css/liw-adventures.css` – im `.liw-adv__help-suitcase`-Kontext entfällt der orange

@@ -99,6 +99,21 @@ final class AdventuresView {
 		] );
 	}
 
+	/**
+	 * Startbild (Hero) der Adventures-Seite: freigegebenes Mediathek-Bild (CI-005) in großer Größe.
+	 * Bild-ID über Option/Filter `liw_adventures_hero_image_id`; leer, wenn keins gesetzt/freigegeben.
+	 */
+	private static function hero_image_url(): string {
+		$id = (int) apply_filters( 'liw_adventures_hero_image_id', (int) get_option( 'liw_adventures_hero_image_id', 0 ) );
+		if ( $id > 0 && \Liebherr\InterfaceWorld\CoreBridge\MediaBridge::is_approved( $id ) ) {
+			$url = wp_get_attachment_image_url( $id, 'full' );
+			if ( is_string( $url ) && '' !== $url ) {
+				return $url;
+			}
+		}
+		return '';
+	}
+
 	public static function render(): string {
 		$initial   = AdventureService::query( [ 'limit' => 24 ] );
 		$partner   = LocationService::attribution_text();
@@ -113,6 +128,10 @@ final class AdventuresView {
 				<?php echo DetailView::render( $detail_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- in DetailView escaped. ?>
 			<?php endif; ?>
 			<section class="liw-adv__hero">
+				<?php $hero_img = self::hero_image_url(); ?>
+				<?php if ( '' !== $hero_img ) : ?>
+					<div class="liw-adv__hero-img" role="img" aria-label="<?php echo esc_attr__( 'Liebherr Kran an der Sagrada Família', 'liebherr-interface-world' ); ?>" style="background-image:url(<?php echo esc_url( $hero_img ); ?>)"></div>
+				<?php endif; ?>
 				<p class="liw-adv__eyebrow"><?php echo esc_html__( 'LIEBHERR ADVENTURES · Vierte Insel', 'liebherr-interface-world' ); ?></p>
 				<h1 class="liw-adv__headline"><?php echo esc_html__( 'One place. Three words. One shared experience.', 'liebherr-interface-world' ); ?></h1>
 				<p class="liw-adv__subline"><?php echo esc_html__( 'Erfahrungen sichtbar machen, Wissen auffindbar, Hilfe ortsgenau. Foto oder Kurzvideo + Drei-Wörter-Ort + Klassifikation.', 'liebherr-interface-world' ); ?></p>

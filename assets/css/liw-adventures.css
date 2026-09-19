@@ -146,3 +146,15 @@
 .liw-adv__help-suitcase .liw-emg-dot__ico { opacity: 1; width: 100%; height: 100%; background-size: contain; }
 .liw-adv__help-suitcase .liw-emg-dot:hover,
 .liw-adv__help-suitcase .liw-emg-dot:focus-visible { transform: scale( 1.12 ); box-shadow: none; }
+
+/* Startbild (Hero) oben auf der Adventures-Seite – z. B. Liebherr-Kran an der Sagrada Família (alpha.104). */
+.liw-adv__hero-img {
+	width: 100%;
+	height: clamp( 220px, 42vw, 460px );
+	background-size: cover;
+	background-position: center 30%;
+	background-repeat: no-repeat;
+	border-radius: 16px;
+	margin: 0 0 1.5rem;
+	box-shadow: 0 10px 30px rgba( 0, 0, 0, 0.18 );
+}
