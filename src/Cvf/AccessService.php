@@ -68,6 +68,13 @@ final class AccessService {
 		update_option( self::OPT_HASH, self::hash_code( $code, self::secret() ), false );
 	}
 
+	/** Setzt einen Standard-Zugangscode, falls noch keiner konfiguriert ist (idempotent). */
+	public static function ensure_configured( string $default_code ): void {
+		if ( ! self::is_configured() && '' !== $default_code ) {
+			self::set_code( $default_code );
+		}
+	}
+
 	// ── Rate-Limit / Lockout ──────────────────────────────────────────────────
 	private static function lock_key( string $throttle_key ): string {
 		return 'liw_cvf_lock_' . md5( $throttle_key );

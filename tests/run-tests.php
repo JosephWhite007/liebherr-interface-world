@@ -523,6 +523,13 @@ $__rc = $RO::role_caps();
 liw_assert( 'Roles: 5 CVF-Caps; administrator/araliya_admin erhalten alle', 5 === count( $RO::all_caps() ) && $__rc['administrator'] === $RO::all_caps() && $__rc['araliya_admin'] === $RO::all_caps(), $checks, $failures );
 liw_assert( 'Roles: Marketing→edit_content, Ops→edit_workflow+publish, keine eigenen CVF-Rollen', in_array( $RO::CAP_EDIT_CONTENT, $__rc['araliya_marketing'], true ) && in_array( $RO::CAP_EDIT_WORKFLOW, $__rc['araliya_ops'], true ) && in_array( $RO::CAP_PUBLISH, $__rc['araliya_ops'], true ) && 5 === count( $RO::map() ), $checks, $failures );
 
+// CVF – Steps (reine Schritt-Beschreibung, alpha.86).
+require_once $root . '/src/Cvf/Steps.php';
+$STP = '\Liebherr\InterfaceWorld\Cvf\Steps';
+liw_assert( 'Steps: Zustand → Schritt-Typ (at_challenge=challenge, in_module=done, blocked=blocked)', 'challenge' === $STP::type_for( 'at_challenge' ) && 'done' === $STP::type_for( 'in_module' ) && 'blocked' === $STP::type_for( 'blocked' ) && 'entry' === $STP::type_for( 'at_entry' ), $checks, $failures );
+$__stp = $STP::describe( 'at_module_select', [ 'modules' => [ [ 'key' => 'x' ] ] ] );
+liw_assert( 'Steps: describe traegt type+state+extra', 'module_select' === $__stp['type'] && 'at_module_select' === $__stp['state'] && 1 === count( $__stp['modules'] ), $checks, $failures );
+
 // Emergency – Hilfe-Koffer (einstellige Rechenaufgabe) + kontextbezogene Emergency-Area (alpha.78).
 require_once $root . '/src/Emergency/EmergencyChallenge.php';
 require_once $root . '/src/Emergency/HelpTopicCatalog.php';

@@ -1,0 +1,45 @@
+/* Liebherr World – Customer View Flow (Durchstich). */
+.liw-cvf {
+	max-width: 520px;
+	margin: 2rem auto;
+	padding: 1.6rem 1.6rem 1.9rem;
+	background: #14161c;
+	color: #f2f4f8;
+	border: 1px solid rgba( 255, 208, 0, 0.35 );
+	border-radius: 14px;
+	font-family: Arial, Helvetica, sans-serif;
+}
+.liw-cvf--off { border-style: dashed; opacity: 0.85; }
+.liw-cvf__title { margin: 0 0 0.5rem; font-size: 1.25rem; color: var( --brand-primary, #ffd000 ); }
+.liw-cvf__loading, .liw-cvf__err { color: #aeb4bf; }
+.liw-cvf__err { color: #ff9a9a; }
+.liw-cvf__note { margin: 0.4rem 0 0.8rem; color: #ffcf9a; font-weight: 600; }
+.liw-cvf__q { margin: 0.6rem 0 1rem; font-size: 1.8rem; font-weight: 700; text-align: center; letter-spacing: 0.04em; }
+.liw-cvf__form { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: flex-end; }
+.liw-cvf__form label { flex: 0 0 100%; font-size: 0.85rem; color: #aeb4bf; }
+.liw-cvf__form input {
+	flex: 1 1 auto;
+	min-width: 0;
+	padding: 0.6rem 0.7rem;
+	font-size: 1rem;
+	border-radius: 8px;
+	border: 1px solid #3a3f4a;
+	background: #0d0f14;
+	color: #fff;
+}
+.liw-cvf__form button, .liw-cvf__enter, .liw-cvf__open, .liw-cvf__mod {
+	padding: 0.6rem 1.1rem;
+	font-size: 0.95rem;
+	font-weight: 700;
+	border: 0;
+	border-radius: 8px;
+	cursor: pointer;
+	color: #241200;
+	background: linear-gradient( #ffe08a, #ffd000 );
+	text-decoration: none;
+	display: inline-block;
+}
+.liw-cvf__form button:disabled, .liw-cvf__enter:disabled { opacity: 0.6; cursor: default; }
+.liw-cvf__modules { list-style: none; margin: 0.6rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.liw-cvf__mod { background: #232733; color: #fff; border: 1px solid #3a3f4a; }
+.liw-cvf__mod:hover, .liw-cvf__mod:focus-visible { border-color: var( --brand-primary, #ffd000 ); }

@@ -12,6 +12,19 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.86 – CVF Phase 2: begehbarer Durchstich (Frontend-Wiring)
+
+**Neu (`src/Cvf/`):** `Steps` (rein: Zustand → Schritt-Typ/Deskriptor), `Rest` (REST `liw-cvf/v1`:
+`begin/code/challenge/module/first-entry`, öffentlich + cache-sicher, **self-gating** über `Flags::enabled()`
+→ sonst reason=disabled; verbindet SessionRepository + AccessService [Lockout] + ChallengeService [einmalig]
++ Runtime; Module = die vier Inseln via WorldSwitcher, keine Redundanz), `FlowView` (Shortcode
+`[liw_cvf_flow]`; nur mit Flag aktiv, sonst leer bzw. Admin-Hinweis). `AccessService::ensure_configured()`
+seedet den Prototyp-Zugangscode. **Assets:** `assets/js/liw-cvf-flow.js` (treibt Eingang→Challenge→Modulwahl
+→First-Entry→Modul über REST; anonyme Besucher-ID in sessionStorage), `assets/css/liw-cvf-flow.css`.
+**Geändert:** `src/Bootstrap.php` (`Cvf\Rest`/`Cvf\FlowView` registriert), `tests/run-tests.php` (+2 Steps),
+`scripts/liw-selftest.php` (+2: kompletter REST-Durchstich end-to-end via rest_do_request; ohne Flag
+disabled). Default AUS → bestehender IW-Eintritt unverändert. Tests WP-frei 473 / Docker 372. Bump alpha.85 -> alpha.86.
+
 ## 0.1.0-alpha.85 – CVF Phase 2: Rollen-Mapping auf die ARALIYA-Rollen
 
 **Neu:** `src/Cvf/Roles.php` (JW-Entscheid §9.1) – KEINE eigenen CVF-Rollen: fünf feingranulare

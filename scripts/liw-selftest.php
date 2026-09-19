@@ -993,6 +993,31 @@ try {
 	// CVF Rollen-Mapping (alpha.85): CVF-Caps auf bestehende ARALIYA-Rollen (keine eigenen CVF-Rollen).
 	$__ro_admin = get_role( 'administrator' );
 	liw_st_check( 'CVF-Roles: administrator hat alle CVF-Caps (Grant lief bei Upgrade)', $__ro_admin instanceof \WP_Role && $__ro_admin->has_cap( \Liebherr\InterfaceWorld\Cvf\Roles::CAP_ADMINISTER ) && $__ro_admin->has_cap( \Liebherr\InterfaceWorld\Cvf\Roles::CAP_PUBLISH ) );
+	// CVF Frontend-Wiring (alpha.86): kompletter REST-Durchstich mit temporaer gesetztem Flag.
+	update_option( 'liw_cvf_enabled', 1 );
+	\Liebherr\InterfaceWorld\Cvf\AccessService::set_code( 'LIEBHERR-DEMO' );
+	$__cvf_vid2 = 'st-cvf-flow-' . wp_generate_password( 6, false );
+	$__cvf_req = static function ( $route, $params ) {
+		$r = new \WP_REST_Request( 'POST', '/liw-cvf/v1/' . $route );
+		foreach ( $params as $k => $v ) { $r->set_param( $k, $v ); }
+		return rest_do_request( $r )->get_data();
+	};
+	$__f_b  = $__cvf_req( 'begin', [ 'anon' => $__cvf_vid2 ] );
+	$__f_c  = $__cvf_req( 'code', [ 'anon' => $__cvf_vid2, 'code' => 'liebherr-demo' ] );
+	$__f_ch = ( isset( $__f_c['step']['challenge'] ) ) ? $__f_c['step']['challenge'] : [ 'a' => 0, 'b' => 0, 'token' => '' ];
+	$__f_v  = $__cvf_req( 'challenge', [ 'anon' => $__cvf_vid2, 'token' => $__f_ch['token'], 'answer' => (int) $__f_ch['a'] + (int) $__f_ch['b'] ] );
+	$__f_mods = ( isset( $__f_v['step']['modules'] ) && count( $__f_v['step']['modules'] ) ) ? $__f_v['step']['modules'] : [ [ 'key' => '' ] ];
+	$__f_mk = $__f_mods[0]['key'];
+	$__f_m  = $__cvf_req( 'module', [ 'anon' => $__cvf_vid2, 'module' => $__f_mk ] );
+	$__f_fe = $__cvf_req( 'first-entry', [ 'anon' => $__cvf_vid2, 'module' => $__f_mk ] );
+	liw_st_check( 'CVF-Flow: REST-Durchstich begin->code->challenge->module->done erreicht Ziel-Modul', 'entry' === $__f_b['step']['type'] && ! empty( $__f_c['ok'] ) && 'challenge' === $__f_c['step']['type'] && ! empty( $__f_v['ok'] ) && 'module_select' === $__f_v['step']['type'] && ! empty( $__f_m['ok'] ) && 'first_entry' === $__f_m['step']['type'] && ! empty( $__f_fe['ok'] ) && 'done' === $__f_fe['step']['type'] && ! empty( $__f_fe['step']['target'] ) );
+	delete_option( 'liw_cvf_enabled' );
+	$__f_off = $__cvf_req( 'begin', [ 'anon' => $__cvf_vid2 . '-off' ] );
+	liw_st_check( 'CVF-Flow: ohne Flag reason=disabled (bestehender IW-Eintritt unberuehrt)', isset( $__f_off['reason'] ) && 'disabled' === $__f_off['reason'] );
+	if ( isset( $wpdb ) && isset( $__f_b['session'] ) ) {
+		$wpdb->delete( \Liebherr\InterfaceWorld\Cvf\Schema::log_table(), [ 'session_id' => (int) $__f_b['session'] ] );
+		$wpdb->delete( \Liebherr\InterfaceWorld\Cvf\Schema::session_table(), [ 'id' => (int) $__f_b['session'] ] );
+	}
 
 	// ── [9] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
 	echo "\n[9] Programmierlogbuch / To-Dos\n";
