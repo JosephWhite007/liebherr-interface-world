@@ -59,7 +59,8 @@ der Reihe nach ab und befüllen sie mit Funktionalität), **B** = auf externe Fr
 - **I18nSeo Option B** (Core-`I18nRouter` um `page`/`liw_section`) → erst wenn Core-Router plattformweit aktiv.
 - **Simulation Board / echte Simulations-Engine** → externe Zulieferung (YAGNI). Naht steht: der Simulation
   Builder rechnet über `SimulationModel::forecast()` (Mock), das Cockpit „Go" führt seit alpha.73 direkt dorthin;
-  eine echte Engine träte an die Stelle des Mock-Modells.
+  eine echte Engine träte an die Stelle des Mock-Modells. **alpha.74:** Engine-Naht gebaut
+  (`SimulationEngineInterface` + Filter `liw_iw_simulation_engine` + REST `/simulate`) – echte Engine nur noch einhängen.
 - **World Connections – echte Geo-Karte** (Koordinaten + Kartenbibliothek) → optional, Kategorie A.
 - **Partnerbereich-Folgepunkte** (Auto-Konten, Doku-Fassung, Dokumente je Partner/Region, Core-Option-B,
   Design-System-Login) → teils Liebherr-Entscheidung.

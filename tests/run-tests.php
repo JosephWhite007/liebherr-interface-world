@@ -85,6 +85,7 @@ echo "-- Landingpage-Bauplan (Pflichtenheft §8) --\n";
 if ( ! defined( 'ABSPATH' ) ) { define( 'ABSPATH', $root . '/' ); }
 if ( ! function_exists( 'esc_html' ) ) { function esc_html( $s ) { return htmlspecialchars( (string) $s, ENT_QUOTES ); } }
 if ( ! function_exists( '__' ) ) { function __( $s, $d = '' ) { return $s; } }
+if ( ! function_exists( 'apply_filters' ) ) { function apply_filters( $tag, $value = null ) { return $value; } }
 if ( ! function_exists( 'sanitize_text_field' ) ) { function sanitize_text_field( $s ) { return trim( preg_replace( '/[\r\n\t ]+/', ' ', (string) $s ) ); } }
 require_once $root . '/src/Content/SectionBlueprint.php';
 $blueprint = \Liebherr\InterfaceWorld\Content\SectionBlueprint::all();
@@ -362,6 +363,12 @@ $bl1 = $SM::sample_baseline( 'earthmoving' );
 $bl2 = $SM::sample_baseline( 'earthmoving' );
 liw_assert( 'SimulationModel: sample_baseline deterministisch + in Grenzen (base 1000..9999, growth 10..99)', $bl1 === $bl2 && $bl1['base'] >= 1000 && $bl1['base'] <= 9999 && $bl1['growth_permille'] >= 10 && $bl1['growth_permille'] <= 99, $checks, $failures );
 liw_assert( 'SimulationView: Shortcode-Konstante + render_section/render_forecast vorhanden', 'liw_iw_simulation' === \Liebherr\InterfaceWorld\IntelligenceWorld\SimulationView::SHORTCODE && method_exists( \Liebherr\InterfaceWorld\IntelligenceWorld\SimulationView::class, 'render_section' ) && method_exists( \Liebherr\InterfaceWorld\IntelligenceWorld\SimulationView::class, 'render_forecast' ), $checks, $failures );
+// Engine-Naht (alpha.74).
+require_once $root . '/src/IntelligenceWorld/SimulationEngineInterface.php';
+require_once $root . '/src/IntelligenceWorld/SimulationMockEngine.php';
+require_once $root . '/src/IntelligenceWorld/SimulationEngine.php';
+$SE = '\Liebherr\InterfaceWorld\IntelligenceWorld\SimulationEngine';
+liw_assert( 'SimulationEngine: Standard = Mock, is_mock true, forecast == SimulationModel', $SE::is_mock() && 'mock-1' === $SE::resolve()->id() && $SE::resolve()->forecast( 1000, 100, 12, 'base' ) === $SM::forecast( 1000, 100, 12, 'base' ), $checks, $failures );
 
 // 2t. Intelligence World – Nutzungs-/Kostenprotokoll (§5.5/§8, alpha.58).
 echo "-- Intelligence World – Nutzungs-/Kostenprotokoll (alpha.58) --\n";

@@ -139,6 +139,11 @@
 		var savedEl = root.querySelector( '[data-liw-sim-saved]' );
 		var last = null;
 
+		function apply( fc, label ) {
+			outEl.innerHTML = outHtml( fc, label );
+			last = { segmentLabel: label, scenario: fc.scenario, periods: fc.periods, base: fc.base, end: fc.end, delta_permille: fc.delta_permille };
+		}
+
 		function recompute() {
 			var opt = segEl.options[ segEl.selectedIndex ];
 			var base = parseInt( opt.getAttribute( 'data-base' ), 10 ) || 0;
@@ -146,9 +151,18 @@
 			var periods = parseInt( horEl.value, 10 ) || 12;
 			var scenEl = root.querySelector( '[data-liw-sim-scenario]:checked' );
 			var scenario = scenEl ? scenEl.value : 'base';
-			var fc = forecast( base, growth, periods, scenario );
-			outEl.innerHTML = outHtml( fc, opt.textContent || '' );
-			last = { segmentLabel: opt.textContent || '', scenario: fc.scenario, periods: fc.periods, base: fc.base, end: fc.end, delta_permille: fc.delta_permille };
+			var label = opt.textContent || '';
+			// Echte Engine registriert (serverseitig)? Dann über REST rechnen; sonst lokal (Mock, keine Roundtrips).
+			if ( window.liwIwSim && liwIwSim.useServer && liwIwSim.rest ) {
+				fetch( liwIwSim.rest + 'simulate', {
+					method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
+					body: JSON.stringify( { base: base, growth_permille: growth, periods: periods, scenario: scenario } )
+				} ).then( function ( r ) { return r.json(); } )
+					.then( function ( res ) { apply( res && res.forecast ? res.forecast : forecast( base, growth, periods, scenario ), label ); } )
+					.catch( function () { apply( forecast( base, growth, periods, scenario ), label ); } );
+				return;
+			}
+			apply( forecast( base, growth, periods, scenario ), label );
 		}
 
 		segEl.addEventListener( 'change', recompute );

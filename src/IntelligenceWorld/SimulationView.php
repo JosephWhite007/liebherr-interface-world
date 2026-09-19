@@ -62,6 +62,11 @@ final class SimulationView {
 		}
 		$js = 'assets/js/liw-iw-simulation.js';
 		wp_enqueue_script( self::HANDLE, LIW_URL . $js, [], self::ver( $js ), true );
+		wp_localize_script( self::HANDLE, 'liwIwSim', [
+			'rest'      => esc_url_raw( rest_url( Rest::NAMESPACE . '/' ) ),
+			'useServer' => ! SimulationEngine::is_mock(), // echte Engine registriert → serverseitig rechnen.
+			'engine'    => SimulationEngine::resolve()->id(),
+		] );
 	}
 
 	private static function ver( string $relative ): string {
@@ -85,7 +90,7 @@ final class SimulationView {
 		}
 		$first    = $segments[0];
 		$baseline = SimulationModel::sample_baseline( (string) ( $first['key'] ?? 'default' ) );
-		$default  = SimulationModel::forecast( $baseline['base'], $baseline['growth_permille'], 12, 'base' );
+		$default  = SimulationEngine::resolve()->forecast( $baseline['base'], $baseline['growth_permille'], 12, 'base' );
 
 		ob_start();
 		?>

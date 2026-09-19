@@ -12,6 +12,15 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.74 – Simulation Builder: austauschbare Engine-Naht
+
+**Neu:** `src/IntelligenceWorld/SimulationEngineInterface.php` (Vertrag `forecast()`/`id()`),
+`SimulationMockEngine.php` (Standard, delegiert an `SimulationModel`), `SimulationEngine.php`
+(`resolve()`/`is_mock()`, Filter `liw_iw_simulation_engine`). `Rest::simulate` + Route `POST /simulate`.
+**Geändert:** `SimulationView` (Default-Render über Engine; `wp_localize_script('liwIwSim', {rest,useServer,engine})`).
+`assets/js/liw-iw-simulation.js` (recompute: bei `useServer` REST `simulate`, sonst lokaler Mock-Spiegel).
+`tests/run-tests.php` (Stub `apply_filters`). Tests/Selftest. Bump alpha.73 -> alpha.74.
+
 ## 0.1.0-alpha.73 – Cockpit -> Simulation Builder verbunden
 
 **Geändert:** `src/Frontend/SimulatorView.php` – `target()`-Default = IW-Seite + `#liw-iw-simulation`.

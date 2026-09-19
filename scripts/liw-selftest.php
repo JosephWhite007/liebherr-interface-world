@@ -690,6 +690,15 @@ try {
 	$__sim3 = do_shortcode( '[liw_iw_simulation]' );
 	liw_st_check( 'IW-Sim: eigenständiger Shortcode rendert Formular + Ausgabe', str_contains( $__sim3, 'liw-iw--sim-standalone' ) && str_contains( $__sim3, 'data-liw-sim-out' ) );
 	liw_st_check( 'IW-Sim: Speichern/Vergleichen-Steuerung vorhanden (A9)', str_contains( $__sim3, 'data-liw-sim-save' ) && str_contains( $__sim3, 'data-liw-sim-saved' ) );
+	// Engine-Naht (alpha.74): REST simulate + Filter-Override.
+	$__simReq = new WP_REST_Request( 'POST' ); $__simReq->set_param( 'base', 1000 ); $__simReq->set_param( 'growth_permille', 100 ); $__simReq->set_param( 'periods', 12 ); $__simReq->set_param( 'scenario', 'base' );
+	$__simRes = \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::simulate( $__simReq )->get_data();
+	liw_st_check( 'IW-Engine: REST simulate liefert Prognose (Mock, engine=mock-1)', ! empty( $__simRes['ok'] ) && 'mock-1' === ( $__simRes['engine'] ?? '' ) && isset( $__simRes['forecast']['end'] ) && \Liebherr\InterfaceWorld\IntelligenceWorld\SimulationEngine::is_mock() );
+	$__fake = new class implements \Liebherr\InterfaceWorld\IntelligenceWorld\SimulationEngineInterface { public function forecast( int $b, int $g, int $p, string $s ): array { return [ 'scenario' => $s, 'periods' => $p, 'base' => $b, 'values' => [ 42 ], 'end' => 42, 'total' => 42, 'delta_permille' => 0, 'effective_permille' => 0 ]; } public function id(): string { return 'real-x'; } };
+	add_filter( 'liw_iw_simulation_engine', static function () use ( $__fake ) { return $__fake; } );
+	liw_st_check( 'IW-Engine: Filter-Override greift (echte Engine, is_mock=false, id=real-x, end=42)', ! \Liebherr\InterfaceWorld\IntelligenceWorld\SimulationEngine::is_mock() && 'real-x' === \Liebherr\InterfaceWorld\IntelligenceWorld\SimulationEngine::resolve()->id() && 42 === \Liebherr\InterfaceWorld\IntelligenceWorld\SimulationEngine::resolve()->forecast( 1, 1, 1, 'base' )['end'] );
+	remove_all_filters( 'liw_iw_simulation_engine' );
+	liw_st_check( 'IW-Engine: nach Entfernen wieder Mock-Standard', \Liebherr\InterfaceWorld\IntelligenceWorld\SimulationEngine::is_mock() );
 
 	// ── [8d4] IW-Pflege-Board (Tarife + Navigation/Hotels, §19, alpha.62) ──
 	$IWB = '\Liebherr\InterfaceWorld\Admin\Pages\IntelligenceWorldBoardPage';

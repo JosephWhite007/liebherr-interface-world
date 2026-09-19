@@ -1,5 +1,23 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.74] – 2026-09-19 – Simulation Builder: austauschbare Engine-Naht
+
+### Hinzugefügt
+- **Engine-Vertrag** `SimulationEngineInterface` + Standard `SimulationMockEngine` (kapselt `SimulationModel`)
+  + Resolver `SimulationEngine::resolve()`/`is_mock()` (Filter `liw_iw_simulation_engine`). Eine echte
+  Simulations-Engine (Gruppe-B-Zulieferung) kann so ohne Umbau des Builders eingehängt werden.
+- **REST** `POST liw-iw/v1/simulate` rechnet über die aktive Engine. Der Simulation Builder rendert die
+  Default-Prognose über die Engine; ist eine echte Engine registriert, rechnet auch das Frontend serverseitig
+  (Flag `liwIwSim.useServer`), sonst weiter lokal (Mock, ohne Roundtrips).
+
+### Hintergrund
+- Schließt die Architektur der Frage „Cockpit ↔ Simulations-Engine": Cockpit → Simulation Builder (alpha.73) →
+  Engine-Naht (alpha.74). Die *echte* Engine bleibt externe Zulieferung (Gruppe B).
+
+### Verifikation
+- `tests/run-tests.php` **408/408** (Mock = Standard, forecast == SimulationModel), `scripts/liw-selftest.php`
+  **347/347** (REST simulate mock-1; Filter-Override „real-x" greift; nach Entfernen wieder Mock).
+
 ## [0.1.0-alpha.73] – 2026-09-19 – Cockpit → Simulation Builder verbunden
 
 ### Geändert

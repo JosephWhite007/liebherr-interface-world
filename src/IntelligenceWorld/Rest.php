@@ -75,6 +75,23 @@ final class Rest {
 			'callback'            => [ self::class, 'protocol_pdf' ],
 			'permission_callback' => $perm,
 		] );
+		register_rest_route( self::NAMESPACE, '/simulate', [
+			'methods'             => 'POST',
+			'callback'            => [ self::class, 'simulate' ],
+			'permission_callback' => $perm,
+		] );
+	}
+
+	/** Simulation über die aktive Engine (Mock-Standard oder echte via Filter, §6.4). */
+	public static function simulate( \WP_REST_Request $req ): \WP_REST_Response {
+		$engine = SimulationEngine::resolve();
+		$fc     = $engine->forecast(
+			(int) $req->get_param( 'base' ),
+			(int) $req->get_param( 'growth_permille' ),
+			(int) $req->get_param( 'periods' ),
+			(string) $req->get_param( 'scenario' )
+		);
+		return new \WP_REST_Response( [ 'ok' => true, 'forecast' => $fc, 'engine' => $engine->id() ], 200 );
 	}
 
 	/** Nutzungs-/Kostenprotokoll als serverseitig erzeugtes PDF (§5.5/§8, Download). */
