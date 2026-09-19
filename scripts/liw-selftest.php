@@ -1045,6 +1045,15 @@ try {
 	$__bd = \Liebherr\InterfaceWorld\Cvf\BoardRepository::ensure_draft( 1 );
 	$__bd_inst = \Liebherr\InterfaceWorld\Cvf\BoardRepository::instances( $__bd );
 	liw_st_check( 'CAPDB: Startkonfig seedet Plugin-Instanzen (Challenge auf Uebergaengen + First-Entry auf Seiten)', count( $__bd_inst ) >= 3 );
+	// Simulation (alpha.94): Schedule → Marker-Plan (open+close) über den Snapshot.
+	if ( count( $__bd_inst ) > 0 ) {
+		$__si = (int) $__bd_inst[0]['id'];
+		\Liebherr\InterfaceWorld\Cvf\BoardRepository::set_schedule( $__si, [ 'open_at_ms' => 5000, 'duration_ms' => 15000 ] );
+		$__snap94 = \Liebherr\InterfaceWorld\Cvf\BoardSnapshot::of_version( $__bd );
+		$__pl94 = \Liebherr\InterfaceWorld\Cvf\BoardRuntime::plugins_for( $__snap94, (string) $__bd_inst[0]['host_type'], (int) $__bd_inst[0]['host_id'] );
+		$__mk94 = \Liebherr\InterfaceWorld\Cvf\BoardRuntime::marker_plan( $__pl94, (array) $__snap94['schedules'] );
+		liw_st_check( 'CAPDB-Simulation: Schedule erzeugt open+close-Marker (5s/20s)', count( $__mk94 ) >= 2 && 5000 === (int) $__mk94[0]['at_ms'] );
+	}
 	$__bd_areas = \Liebherr\InterfaceWorld\Cvf\BoardRepository::areas( $__bd );
 	$__bd_edges = \Liebherr\InterfaceWorld\Cvf\BoardRepository::edges( $__bd );
 	liw_st_check( 'CAPDB: Entwurf mit Startkonfig (4 Bereiche + 3 Uebergaenge, Einstieg intelligence_world@1)', $__bd > 0 && 4 === count( $__bd_areas ) && 3 === count( $__bd_edges ) && 'intelligence_world' === (string) $__bd_areas[0]['module_id'] && 1 === (int) $__bd_areas[0]['position'] );

@@ -12,6 +12,15 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.94 – CAPDB Etappe 7: Simulation (Abspielkopf)
+
+**Geändert:** `src/Admin/Pages/CvfBoardEditorPage.php` – ajax-Op `sim` + `build_sim()` erzeugt über
+`BoardRuntime::marker_plan` den chronologischen open/close-Marker-Plan aller Plugin-Instanzen je Host (rein).
+`assets/js/liw-cvf-board.js` – Simulations-Panel: Abspielkopf (Start/Pause/Schritt/Reset, Geschwindigkeit
+×1–8), Zeitlineal mit Positionsanzeige, chronologisches Ereignisprotokoll. **Führt KEINE echten Grants/
+Nachrichten/Aktionen aus (§27.1)** – reine, clientseitige Vorschau. `assets/css/liw-cvf-board.css` (Sim-Stile).
+`scripts/liw-selftest.php` (+1: Schedule → open+close-Marker). Tests WP-frei 507 / Docker 385. Bump alpha.93 -> alpha.94.
+
 ## 0.1.0-alpha.93 – CAPDB Etappe 6: Visuelles Timeline-Board (DnD + Baukasten)
 
 **Neu:** `assets/js/liw-cvf-board.js` + `assets/css/liw-cvf-board.css` – visuelles Board: Modulbaukasten

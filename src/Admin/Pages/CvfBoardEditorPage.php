@@ -69,6 +69,12 @@ final class CvfBoardEditorPage {
 				'zoomIn'     => __( 'Vergrößern', 'liebherr-interface-world' ),
 				'zoomOut'    => __( 'Verkleinern', 'liebherr-interface-world' ),
 				'empty'      => __( 'Kein Board – zuerst Bereiche anlegen.', 'liebherr-interface-world' ),
+				'simTitle'   => __( 'Simulation (Abspielkopf)', 'liebherr-interface-world' ),
+				'play'       => __( 'Start', 'liebherr-interface-world' ),
+				'pause'      => __( 'Pause', 'liebherr-interface-world' ),
+				'step'       => __( 'Schritt', 'liebherr-interface-world' ),
+				'reset'      => __( 'Zurücksetzen', 'liebherr-interface-world' ),
+				'simNote'    => __( 'Reine Vorschau – es werden keine echten Freigaben, Nachrichten oder Aktionen ausgeführt.', 'liebherr-interface-world' ),
 			],
 		] );
 	}
@@ -101,7 +107,37 @@ final class CvfBoardEditorPage {
 			BoardRepository::delete_instance( $draft, isset( $_POST['instance_id'] ) ? (int) $_POST['instance_id'] : 0 ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			wp_send_json_success( self::board_data( $draft ) );
 		}
+		if ( 'sim' === $op ) {
+			wp_send_json_success( [ 'events' => self::build_sim( $draft ) ] );
+		}
 		wp_send_json_error( [ 'reason' => 'unknown_op' ], 400 );
+	}
+
+	/**
+	 * Baut den chronologischen Simulations-Plan (Abspielkopf): open/close-Marker aller Plugin-Instanzen je
+	 * Host, zeitsortiert. REINE Vorschau über {@see BoardRuntime} – führt KEINE echten Grants/Aktionen aus (§27.1).
+	 *
+	 * @return array<int,array<string,mixed>>
+	 */
+	private static function build_sim( int $draft ): array {
+		$snap   = BoardSnapshot::of_version( $draft );
+		$events = [];
+		$hosts  = [];
+		foreach ( (array) $snap['areas'] as $a ) {
+			$hosts[] = [ 'type' => 'page', 'id' => (int) $a['id'], 'label' => 'Seite #' . (int) $a['position'] . ' ' . (string) $a['module_id'] ];
+		}
+		foreach ( (array) $snap['edges'] as $e ) {
+			$hosts[] = [ 'type' => 'edge', 'id' => (int) $e['id'], 'label' => 'Übergang #' . (int) $e['from_area_id'] . '→#' . (int) $e['to_area_id'] ];
+		}
+		foreach ( $hosts as $h ) {
+			$plugins = \Liebherr\InterfaceWorld\Cvf\BoardRuntime::plugins_for( $snap, $h['type'], $h['id'] );
+			$markers = \Liebherr\InterfaceWorld\Cvf\BoardRuntime::marker_plan( $plugins, (array) $snap['schedules'] );
+			foreach ( $markers as $m ) {
+				$events[] = [ 'at_ms' => (int) $m['at_ms'], 'type' => (string) $m['type'], 'plugin_key' => (string) $m['plugin_key'], 'host' => (string) $h['label'] ];
+			}
+		}
+		usort( $events, static fn( $a, $b ) => ( $a['at_ms'] <=> $b['at_ms'] ) );
+		return $events;
 	}
 
 	/** @return array<string,mixed> Board-Daten des Entwurfs für das visuelle Board (inkl. Typen-Bibliothek). */

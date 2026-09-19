@@ -26,3 +26,13 @@
 .liw-board__kb { display: flex; gap: .25rem; }
 .liw-board__kb-sel { flex: 1 1 auto; font-size: 11px; max-width: 140px; }
 .liw-board__kb-add { font-size: 11px; padding: 0 .5rem; cursor: pointer; }
+
+/* Simulation. */
+.liw-board__sim { margin: 1rem 0 0; padding: .75rem; background: #fff; border: 1px solid #dcdcde; border-radius: 8px; }
+.liw-board__sim h3 { margin: 0 0 .5rem; font-size: 13px; }
+.liw-board__sim-bar { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; margin: 0 0 .6rem; }
+.liw-sim-clock { font-variant-numeric: tabular-nums; font-weight: 600; }
+.liw-sim-ruler { position: relative; height: 8px; background: #f0f0f1; border-radius: 4px; overflow: hidden; margin: 0 0 .6rem; }
+.liw-sim-head { position: absolute; top: 0; left: 0; width: 2px; height: 100%; background: #2271b1; transition: left .18s linear; }
+.liw-sim-log { list-style: none; margin: 0; padding: 0; max-height: 220px; overflow: auto; font-size: 12px; font-variant-numeric: tabular-nums; }
+.liw-sim-log li { padding: .2rem .35rem; border-bottom: 1px solid #f0f0f1; }

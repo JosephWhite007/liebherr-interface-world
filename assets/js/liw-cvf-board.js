@@ -85,8 +85,61 @@
 			'<div class="liw-board__canvas" style="zoom:' + zoom + '%">' +
 			'<div class="liw-board__timeline">' + areaCards + '</div>' +
 			'<div class="liw-board__edges">' + edgeCards + '</div>' +
-			'</div></div>';
+			'</div></div>' +
+			'<div class="liw-board__sim">' +
+			'<h3>' + esc( I.simTitle || 'Simulation' ) + '</h3>' +
+			'<div class="liw-board__sim-bar">' +
+			'<button type="button" class="button liw-sim-play">▶ ' + esc( I.play || 'Start' ) + '</button> ' +
+			'<button type="button" class="button liw-sim-pause">⏸ ' + esc( I.pause || 'Pause' ) + '</button> ' +
+			'<button type="button" class="button liw-sim-step">⏭ ' + esc( I.step || 'Schritt' ) + '</button> ' +
+			'<button type="button" class="button liw-sim-reset">⟲ ' + esc( I.reset || 'Zurücksetzen' ) + '</button> ' +
+			'<label>×<select class="liw-sim-speed"><option>1</option><option>2</option><option>4</option><option>8</option></select></label> ' +
+			'<span class="liw-sim-clock">0.0 s</span></div>' +
+			'<div class="liw-sim-ruler"><div class="liw-sim-head"></div></div>' +
+			'<ol class="liw-sim-log" role="log" aria-live="polite"></ol>' +
+			'<p class="liw-board__note">' + esc( I.simNote || 'Reine Vorschau – es werden keine echten Freigaben, Nachrichten oder Aktionen ausgeführt.' ) + '</p>' +
+			'</div>';
 		bind( data );
+		bindSim();
+	}
+
+	// ── Simulation (Abspielkopf, §27.1): rein clientseitige Vorschau, keine echten Aktionen. ──
+	var simEvents = null, simClock = 0, simTimer = null, simMax = 0;
+	function bindSim() {
+		var play = root.querySelector( '.liw-sim-play' ), pause = root.querySelector( '.liw-sim-pause' ),
+			step = root.querySelector( '.liw-sim-step' ), reset = root.querySelector( '.liw-sim-reset' ),
+			speed = root.querySelector( '.liw-sim-speed' );
+		if ( ! play ) { return; }
+		function ensure( cb ) {
+			if ( simEvents ) { cb(); return; }
+			call( 'sim', {} ).then( function ( r ) {
+				simEvents = ( r && r.success && r.data && r.data.events ) ? r.data.events : [];
+				simMax = simEvents.reduce( function ( m, e ) { return Math.max( m, e.at_ms ); }, 0 ) + 2000;
+				cb();
+			} );
+		}
+		function tick() {
+			var mult = parseInt( speed.value, 10 ) || 1;
+			simClock += 200 * mult;
+			paint();
+			if ( simClock >= simMax ) { stop(); }
+		}
+		function start() { ensure( function () { if ( simTimer ) { return; } simTimer = window.setInterval( tick, 200 ); } ); }
+		function stop() { if ( simTimer ) { window.clearInterval( simTimer ); simTimer = null; } }
+		function doStep() { ensure( function () { simClock += 1000; paint(); } ); }
+		function doReset() { stop(); simClock = 0; paint(); }
+		function paint() {
+			var clock = root.querySelector( '.liw-sim-clock' ); if ( clock ) { clock.textContent = ( simClock / 1000 ).toFixed( 1 ) + ' s'; }
+			var head = root.querySelector( '.liw-sim-head' ); if ( head && simMax ) { head.style.left = Math.min( 100, ( simClock / simMax ) * 100 ) + '%'; }
+			var log = root.querySelector( '.liw-sim-log' ); if ( ! log ) { return; }
+			log.innerHTML = ( simEvents || [] ).filter( function ( e ) { return e.at_ms <= simClock; } ).map( function ( e ) {
+				return '<li>' + ( e.at_ms / 1000 ).toFixed( 1 ) + ' s · ' + esc( e.type ) + ' · ' + esc( e.plugin_key ) + ' · ' + esc( e.host ) + '</li>';
+			} ).join( '' );
+		}
+		play.addEventListener( 'click', start );
+		pause.addEventListener( 'click', stop );
+		step.addEventListener( 'click', doStep );
+		reset.addEventListener( 'click', doReset );
 	}
 
 	function bind( data ) {
