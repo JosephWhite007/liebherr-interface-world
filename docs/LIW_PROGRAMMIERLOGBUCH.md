@@ -21,6 +21,12 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.125 – My Liebherr + Pocket im Admin-Menü „Liebherr Frontend" verankert
+
+- `src/Admin/AdminMenu.php`: in `add_menu()` zwei Direktlinks unter `liw-frontend` ergänzt (👤 My Liebherr, 🎒 Pocket Information) via neuem Helfer `page_url()` (Option→veröffentlichte Seite→Permalink); Reihenfolge hinter den vier Welten.
+- `liebherr-interface-world.php`: `LIW_VERSION` .124→.125.
+- Live verifiziert (Submenu liw-frontend enthält beide). Kein `wp_nav_menu`-Eingriff (Theme-Menü bleibt unberührt). WP-frei 625/0, Docker 418/0.
+
 ## 0.1.0-alpha.124 – My Liebherr bis Reiter 11: Contacts, Machines, Pocket Information
 
 - `src/MyLiebherr/Schema.php`: +4 Tabellen `contact_request`/`connection`/`service_exchange`/`machine`.

@@ -51,6 +51,8 @@ final class AdminMenu {
 		$interface_url = SitePages::interface_url();
 		$iw_url        = self::iw_url();
 		$adv_url       = self::adv_url();
+		$myl_url       = self::page_url( 'liw_my_liebherr_page_id' ); // My Liebherr (persönlicher Bereich).
+		$pocket_url    = self::page_url( 'liw_pocket_page_id' );      // Pocket Information (6. Reiter).
 		$cc            = RoleBridge::CAP_MANAGE_CONTENT;
 		$ci            = RoleBridge::CAP_MANAGE_INTERFACES;
 
@@ -77,7 +79,14 @@ final class AdminMenu {
 		if ( '' !== $adv_url ) {
 			add_submenu_page( 'liw-frontend', __( 'Adventures', 'liebherr-interface-world' ), __( '📸 Adventures', 'liebherr-interface-world' ), $cc, $adv_url );
 		}
-		// Reihenfolge der Welten: IW · LI · IF · ADV.
+		// Persönliche Reiter (My Liebherr §29 + Pocket Information §34) – Direktlinks zur Live-Seite, sobald angelegt.
+		if ( '' !== $myl_url ) {
+			add_submenu_page( 'liw-frontend', __( 'My Liebherr', 'liebherr-interface-world' ), __( '👤 My Liebherr', 'liebherr-interface-world' ), $cc, $myl_url );
+		}
+		if ( '' !== $pocket_url ) {
+			add_submenu_page( 'liw-frontend', __( 'Pocket Information', 'liebherr-interface-world' ), __( '🎒 Pocket Information', 'liebherr-interface-world' ), $cc, $pocket_url );
+		}
+		// Reihenfolge der Welten zuerst: IW · LI · IF · ADV (My Liebherr · Pocket folgen dahinter).
 		foreach ( [ $adv_url, $interface_url, $li_url, $iw_url ] as $__u ) {
 			if ( '' !== $__u ) { self::move_first( 'liw-frontend', $__u ); }
 		}
@@ -163,6 +172,12 @@ final class AdminMenu {
 		}
 		$page = get_page_by_path( 'liebherr-adventures' );
 		return $page instanceof \WP_Post ? (string) get_permalink( $page ) : '';
+	}
+
+	/** URL einer per Option hinterlegten, veröffentlichten Seite (My Liebherr / Pocket); sonst leer. */
+	private static function page_url( string $option ): string {
+		$id = (int) get_option( $option, 0 );
+		return ( $id > 0 && 'publish' === get_post_status( $id ) ) ? (string) get_permalink( $id ) : '';
 	}
 
 	/** URL der eigenständigen Intelligence-World-Landingpage (Option/Slug); leer, wenn nicht vorhanden. */

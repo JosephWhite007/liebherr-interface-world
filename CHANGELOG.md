@@ -1,5 +1,20 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.125] – 2026-09-19 – My Liebherr + Pocket im Menü „Liebherr Frontend" verankert
+
+### Geändert
+- `Admin\AdminMenu`: Das wp-admin-Menü **Liebherr Frontend** führt jetzt neben den vier Welten auch
+  **👤 My Liebherr** und **🎒 Pocket Information** als Direktlinks zur Live-Seite (sobald die Seiten angelegt sind,
+  Optionen `liw_my_liebherr_page_id` / `liw_pocket_page_id`). Reihenfolge: IW · LI · IF · Adventures · My Liebherr · Pocket.
+  Neuer Helfer `AdminMenu::page_url()`.
+- Hintergrund: Bis dahin waren die persönlichen Reiter nur in der frontseitigen **WorldSwitcher**-Leiste verankert
+  (gated über `liw_myl_enabled` + Seite + `liw_myl_access`), nicht im Admin-Menü. Das Theme-Frontend-Navigationsmenü
+  (`wp_nav_menu`) wird vom Plugin bewusst nicht automatisch verändert (kein `wp_nav_menu_items`-Eingriff).
+
+### Verifikation
+- Live geprüft: Untermenü `liw-frontend` listet My Liebherr (`/my-liebherr`) + Pocket (`/pocket-information`).
+  `tests/run-tests.php` **625/625**, `scripts/liw-selftest.php` **418/418**. `LIW_VERSION` .124→.125.
+
 ## [0.1.0-alpha.124] – 2026-09-19 – My Liebherr bis Reiter 11: My Contacts, My Machines, Pocket Information
 
 Damit sind alle funktionalen My-Liebherr-Reiter 01–11 umgesetzt (12 = Platzhalter). Alles hinter Flags (Default AUS).
