@@ -21,6 +21,12 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.137 – Sprachumschalter bei aktivem Intro-Gate in die „Liebherr World"-Leiste umgehängt
+
+- `assets/js/liebherr-frontend.js` (`init()`): bei Gate-Start (`liw-intro-lock`) wird der DOM-Knoten `.liw-header__lang` (Wrapper um das **Core**-Sprachwidget) in `.liw-switcher__inner` umgehängt; `cleanup()` hängt ihn an die ursprüngliche Position zurück. `.liw-switcher` wird beim Gate **nicht** mehr per `aria-hidden` versteckt (Leiste bleibt bedienbar). Grund: reines z-index scheitert – `.liw-header` ist `position:sticky; z-index:20` und deckelt den Umschalter (2147483602) unter die Leiste (2147483601).
+- `assets/css/liebherr-frontend.css`: float-Block ersetzt durch `html.liw-intro-lock .liw-switcher__inner > .liw-header__lang { margin:0 0 0 auto; display:flex; align-items:center }` → rechtsbündiges Flex-Kind in der 44px-Leiste. `liebherr-interface-world.php` LIW_VERSION .136→.137.
+- Browser verifiziert (`inBar:true`, `onTop:true`, `position:static`, rechts, Leistenhöhe 44px; Gate aktiv). `tests/run-tests.php` 657/657. FALLE: WP-Rocket-Cache leeren. Kein Eingriff ins Core-Widget.
+
 ## 0.1.0-alpha.136 – Navigationsleiste bleibt über dem Intro-Gate sichtbar (Local Intelligence)
 
 - `assets/css/liebherr-frontend.css`: `html.liw-intro-lock .liw-switcher { position:fixed; top:0; z-index:2147483601 }` → „Liebherr World"-Leiste schwebt über dem Intro-Overlay (2147483000), immer sichtbar/klickbar; nur LI-Inhalt bleibt gated. Bündig, gleiche Höhe 44px (kein Schlagschatten). `liebherr-interface-world.php` LIW_VERSION .135→.136.

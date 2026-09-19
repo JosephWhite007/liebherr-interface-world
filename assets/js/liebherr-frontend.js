@@ -364,10 +364,23 @@
 		document.documentElement.classList.add( 'liw-intro-lock' );
 		window.requestAnimationFrame( function () { window.requestAnimationFrame( function () { overlay.classList.add( 'is-active' ); } ); } );
 
+		// Bei aktivem Gate soll der Sprachumschalter rechts in der schwebenden „Liebherr World"-Leiste
+		// sitzen. Reines z-index reicht nicht: der Umschalter liegt im Header-Stacking-Kontext (z:20) und
+		// kann die Leiste (z:2147483601) nie überlagern. Darum den DOM-Knoten in die Leiste umhängen.
+		var langMove = null;
+		( function relocateLang() {
+			var bar  = document.querySelector( '.liw-switcher__inner' );
+			var lang = document.querySelector( '.liw-header__lang' );
+			if ( ! bar || ! lang || bar.contains( lang ) ) { return; }
+			langMove = { node: lang, parent: lang.parentNode, next: lang.nextSibling };
+			bar.appendChild( lang );
+		} )();
+
 		var hiddenSiblings = [];
 		if ( overlay.parentNode ) {
 			[].forEach.call( overlay.parentNode.children, function ( el ) {
-				if ( el !== overlay && 'true' !== el.getAttribute( 'aria-hidden' ) ) {
+				// Die schwebende „Liebherr World"-Leiste bleibt bewusst bedienbar (nicht vor AT verstecken).
+				if ( el !== overlay && ! el.classList.contains( 'liw-switcher' ) && 'true' !== el.getAttribute( 'aria-hidden' ) ) {
 					el.setAttribute( 'aria-hidden', 'true' );
 					hiddenSiblings.push( el );
 				}
@@ -408,6 +421,15 @@
 		function cleanup() {
 			document.documentElement.classList.remove( 'liw-intro-lock' );
 			for ( var i = 0; i < hiddenSiblings.length; i++ ) { hiddenSiblings[ i ].removeAttribute( 'aria-hidden' ); }
+			// Sprachumschalter zurück an seinen ursprünglichen Platz im Header hängen.
+			if ( langMove && langMove.parent ) {
+				if ( langMove.next && langMove.next.parentNode === langMove.parent ) {
+					langMove.parent.insertBefore( langMove.node, langMove.next );
+				} else {
+					langMove.parent.appendChild( langMove.node );
+				}
+				langMove = null;
+			}
 			if ( overlay.parentNode ) { overlay.parentNode.removeChild( overlay ); }
 		}
 

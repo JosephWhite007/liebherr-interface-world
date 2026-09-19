@@ -1,5 +1,23 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.137] – 2026-09-19 – Sprachumschalter sitzt bei aktivem Intro-Gate in der „Liebherr World"-Leiste
+
+### Geändert
+- Bei aktivem Intro-Gate (`html.liw-intro-lock`) sitzt der **Sprachumschalter (🇩🇪 DE)** jetzt rechtsbündig
+  **in** der schwebenden „Liebherr World"-Leiste, vertikal zentriert auf **44 px** – die Kopfzone ist damit exakt
+  so hoch wie auf den anderen Seiten (der Umschalter machte sie zuvor optisch höher).
+- Ursache/Fix: Der Umschalter (`.liw-header__lang`, Wrapper um das **Core**-Widget) liegt im Header-
+  Stacking-Kontext (`.liw-header` `position:sticky; z-index:20`) und konnte per z-index **nie** über die Leiste
+  (`z:2147483601`) steigen. Statt gegen den Stacking-Kontext zu kämpfen, hängt `liebherr-frontend.js` den
+  **DOM-Knoten** bei Gate-Start in `.liw-switcher__inner` um (und beim Schließen zurück). CSS richtet ihn dort
+  als rechtsbündiges Flex-Kind aus (`margin-left:auto`). Kein Eingriff ins Core-Widget.
+- Die schwebende Leiste wird beim Gate **nicht** mehr per `aria-hidden` versteckt (bleibt für AT bedienbar).
+
+### Verifikation
+- Browser (`/liebherr-local-intelligence/`): Umschalter `inBar:true`, `onTop:true`, `position:static`, rechts am
+  Leistenrand, Höhe der Leiste = 44 px; Gate weiterhin aktiv. `tests/run-tests.php` **657/657**. `LIW_VERSION`
+  .136→.137. (Nach Live-Deploy WP-Rocket-Cache leeren.)
+
 ## [0.1.0-alpha.136] – 2026-09-19 – Navigationsleiste bleibt über dem Intro-Gate sichtbar (Local Intelligence)
 
 ### Geändert

@@ -968,6 +968,15 @@ html.liw-intro-lock .liw-switcher {
 	right: 0;
 	z-index: 2147483601; /* über dem Intro-Overlay (2147483000) */
 }
+/* Sprachumschalter (unser Wrapper um das Core-Widget) wird bei aktivem Gate per JS in die
+   „Liebherr World"-Leiste (.liw-switcher__inner) umgehängt – reines z-index scheitert am
+   Header-Stacking-Kontext (z:20). Dort als rechtsbündiges Flex-Kind ausrichten, damit die
+   Kopfzone genau 44px hoch bleibt wie auf den anderen Seiten. */
+html.liw-intro-lock .liw-switcher__inner > .liw-header__lang {
+	margin: 0 0 0 auto;
+	display: flex;
+	align-items: center;
+}
 .liw-intro { top: 0; }
 
 /* Dunkle Grundebene – blendet beim Soft-In langsam aus (Plattform scheint durch). */
