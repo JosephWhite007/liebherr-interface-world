@@ -1060,6 +1060,35 @@ try {
 		foreach ( $__cleanup_versions as $__vid ) { if ( $__vid > 0 ) { \Liebherr\InterfaceWorld\Cvf\BoardRepository::clear_board( (int) $__vid ); $wpdb->delete( $__vt, [ 'id' => (int) $__vid ] ); } }
 	}
 
+	// CAPDB Runtime (alpha.92): Board veroeffentlichen -> Flow -> plugin_execution + /board-REST (mit Cleanup).
+	update_option( 'liw_cvf_enabled', 1 );
+	\Liebherr\InterfaceWorld\Cvf\PluginRegistry::sync();
+	\Liebherr\InterfaceWorld\Cvf\AccessService::set_code( 'LIEBHERR-DEMO' );
+	$__ex_bd  = \Liebherr\InterfaceWorld\Cvf\BoardRepository::create_draft( 1 );
+	$__ex_pub = \Liebherr\InterfaceWorld\Cvf\BoardRepository::publish_draft( $__ex_bd, 992001, false );
+	$__ex_req = static function ( $route, $method, $params ) {
+		$r = new \WP_REST_Request( $method, '/liw-cvf/v1/' . $route );
+		foreach ( $params as $k => $v ) { $r->set_param( $k, $v ); }
+		return rest_do_request( $r )->get_data();
+	};
+	$__ex_vid = 'st-exec-' . wp_generate_password( 6, false );
+	$__ex_b   = $__ex_req( 'begin', 'POST', [ 'anon' => $__ex_vid ] );
+	$__ex_c   = $__ex_req( 'code', 'POST', [ 'anon' => $__ex_vid, 'code' => 'liebherr-demo' ] );
+	$__ex_ch  = isset( $__ex_c['step']['challenge'] ) ? $__ex_c['step']['challenge'] : [ 'a' => 0, 'b' => 0, 'token' => '' ];
+	$__ex_v   = $__ex_req( 'challenge', 'POST', [ 'anon' => $__ex_vid, 'token' => $__ex_ch['token'], 'answer' => (int) $__ex_ch['a'] + (int) $__ex_ch['b'] ] );
+	$__ex_sid = (int) ( $__ex_b['session'] ?? 0 );
+	$__ex_cnt = \Liebherr\InterfaceWorld\Cvf\ExecutionLog::count_for_session( $__ex_sid );
+	$__ex_board = $__ex_req( 'board', 'GET', [] );
+	liw_st_check( 'CAPDB-Runtime: Challenge erfolgreich protokolliert (plugin_execution >= 2) + /board liefert Snapshot', ! empty( $__ex_pub['ok'] ) && ! empty( $__ex_v['ok'] ) && $__ex_cnt >= 2 && ! empty( $__ex_board['ok'] ) && isset( $__ex_board['board']['instances'] ) && count( $__ex_board['board']['instances'] ) >= 3 );
+	if ( isset( $wpdb ) ) {
+		$wpdb->delete( \Liebherr\InterfaceWorld\Cvf\BoardSchema::plugin_execution_table(), [ 'session_id' => $__ex_sid ] );
+		$wpdb->delete( \Liebherr\InterfaceWorld\Cvf\Schema::log_table(), [ 'session_id' => $__ex_sid ] );
+		$wpdb->delete( \Liebherr\InterfaceWorld\Cvf\Schema::session_table(), [ 'id' => $__ex_sid ] );
+		$__ex_cleanup = array_unique( array_filter( [ (int) $__ex_bd, \Liebherr\InterfaceWorld\Cvf\BoardRepository::draft_id() ] ) );
+		foreach ( $__ex_cleanup as $__vid ) { if ( $__vid > 0 ) { \Liebherr\InterfaceWorld\Cvf\BoardRepository::clear_board( (int) $__vid ); $wpdb->delete( \Liebherr\InterfaceWorld\Cvf\Schema::version_table(), [ 'id' => (int) $__vid ] ); } }
+	}
+	delete_option( 'liw_cvf_enabled' );
+
 	// ── [9] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
 	echo "\n[9] Programmierlogbuch / To-Dos\n";
 	liw_st_check( 'docs/LIW_PROGRAMMIERLOGBUCH.md vorhanden', is_readable( LIW_PATH . 'docs/LIW_PROGRAMMIERLOGBUCH.md' ) );

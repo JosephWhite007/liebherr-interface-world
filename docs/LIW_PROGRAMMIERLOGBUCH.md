@@ -12,6 +12,17 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.92 – CAPDB Etappe 5: Board-Runtime + Ausführungsprotokoll
+
+**Neu (`src/Cvf/`):** `BoardRuntime` (rein: `entry_area`, `edges_from` [Prioritätssortierung], `plugins_for`
+[disabled ausgeschlossen], `resolve_window` [closeAt aus openAt+duration], `marker_plan` [chronologisch]),
+`BoardSnapshot` (`active()/of_version()` – veröffentlichte Version als reines Array inkl. plugin_key),
+`ExecutionLog` (append-only `plugin_execution`: `record()` prüft `PluginState`, `recent()/count_for_session()`).
+**Geändert:** `src/Cvf/Rest.php` – Route `GET liw-cvf/v1/board` (Snapshot, cache-sicher, nur mit Flag) +
+`log_board_execution()`: erfolgreicher Flow-Challenge protokolliert open+completed der Board-Challenge-Instanz
+(serverseitig, auditierbar §31.1). `tests/run-tests.php` (+5 BoardRuntime), `scripts/liw-selftest.php` (+1:
+Board publish → Flow → plugin_execution ≥2 + /board). Tests WP-frei 507 / Docker 383. Bump alpha.91 -> alpha.92.
+
 ## 0.1.0-alpha.91 – CAPDB Etappe 4: Tabellenansicht/Editor (Pflicht §6)
 
 **Neu:** `src/Admin/Pages/CvfBoardEditorPage.php` – Menüpunkt „🧭 CVF Board" (Untermenü). Verpflichtende

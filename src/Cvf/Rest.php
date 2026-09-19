@@ -39,6 +39,21 @@ final class Rest {
 		register_rest_route( self::NAMESPACE, '/challenge',   $post + [ 'callback' => [ self::class, 'challenge' ] ] );
 		register_rest_route( self::NAMESPACE, '/module',      $post + [ 'callback' => [ self::class, 'module' ] ] );
 		register_rest_route( self::NAMESPACE, '/first-entry', $post + [ 'callback' => [ self::class, 'first_entry' ] ] );
+		register_rest_route( self::NAMESPACE, '/board', [
+			'methods'             => 'GET',
+			'callback'            => [ self::class, 'board' ],
+			'permission_callback' => '__return_true',
+		] );
+	}
+
+	/** GET /board – veröffentlichter Board-Snapshot (nur mit Flag). Cache-sicher, für Board/Simulation. */
+	public static function board( \WP_REST_Request $req ): \WP_REST_Response {
+		unset( $req );
+		if ( ! Flags::enabled() ) {
+			return self::disabled();
+		}
+		$snap = BoardSnapshot::active();
+		return new \WP_REST_Response( [ 'ok' => null !== $snap, 'board' => $snap ], 200 );
 	}
 
 	// ── Helfer ────────────────────────────────────────────────────────────────
@@ -154,6 +169,7 @@ final class Rest {
 		if ( '' !== $res['nonce'] ) {
 			set_transient( $used, 1, ChallengeService::DEFAULT_TTL );
 		}
+		self::log_board_execution( (int) $sess['id'], 'challenge_addition', 'passed' );
 		$adv = SessionRepository::advance( (int) $sess['id'], Runtime::EV_CHALLENGE_OK );
 		return self::respond( (int) $sess['id'], $adv['state'], [], 'ok' === $adv['reason'] );
 	}
@@ -188,6 +204,24 @@ final class Rest {
 		$adv    = SessionRepository::advance( (int) $sess['id'], Runtime::EV_FIRST_ENTRY_DONE );
 		$extra  = ( null !== $module ) ? [ 'target' => $module['url'], 'module' => $module ] : [];
 		return self::respond( (int) $sess['id'], $adv['state'], $extra, 'ok' === $adv['reason'] );
+	}
+
+	/**
+	 * Protokolliert die Ausführung des ersten Plugins eines Typs im aktiven Board (append-only, auditierbar).
+	 * Belegt, dass die Runtime gegen die veröffentlichte Board-Version läuft (§31.1). Keine Wirkung ohne Board.
+	 */
+	private static function log_board_execution( int $session_id, string $plugin_key, string $result ): void {
+		$snap = BoardSnapshot::active();
+		if ( null === $snap ) {
+			return;
+		}
+		foreach ( (array) $snap['instances'] as $ins ) {
+			if ( (string) ( $ins['plugin_key'] ?? '' ) === $plugin_key ) {
+				ExecutionLog::record( $session_id, (int) $ins['id'], PluginState::OPEN );
+				ExecutionLog::record( $session_id, (int) $ins['id'], PluginState::COMPLETED, $result );
+				return;
+			}
+		}
 	}
 
 	/** Standard-Zugangscode für den Prototyp (aus der IW-Welt-Option, sonst LIEBHERR-DEMO). */

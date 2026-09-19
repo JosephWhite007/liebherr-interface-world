@@ -550,6 +550,22 @@ liw_assert( 'PluginRegistry: 8 Typen decken alle 7 Kategorien ab', 8 === count( 
 liw_assert( 'PluginRegistry: validate_config enum/int/unknown', [] === $PR::validate_config( 'challenge_addition', [ 'difficulty' => 'double' ] ) && in_array( 'bad_enum_difficulty', $PR::validate_config( 'challenge_addition', [ 'difficulty' => 'triple' ] ), true ) && in_array( 'below_min_seconds', $PR::validate_config( 'countdown', [ 'seconds' => 0 ] ), true ) && in_array( 'not_int_seconds', $PR::validate_config( 'countdown', [ 'seconds' => 'x' ] ), true ) && [ 'unknown_type' ] === $PR::validate_config( 'gibtsnicht', [] ), $checks, $failures );
 liw_assert( 'PluginRegistry: with_defaults fuellt Schema-Defaults', 'double' === $PR::with_defaults( 'challenge_addition', [] )['difficulty'] && 5 === $PR::with_defaults( 'countdown', [] )['seconds'], $checks, $failures );
 
+// CAPDB – BoardRuntime (reine Aufloesung, alpha.92).
+require_once $root . '/src/Cvf/BoardRuntime.php';
+$BR = '\Liebherr\InterfaceWorld\Cvf\BoardRuntime';
+$__snap = [
+	'areas' => [ [ 'id' => 5, 'module_id' => 'm', 'position' => 2, 'status' => 'active' ], [ 'id' => 4, 'module_id' => 'iw', 'position' => 1, 'status' => 'active' ] ],
+	'edges' => [ [ 'id' => 9, 'from_area_id' => 4, 'to_area_id' => 5, 'trigger_type' => 't', 'priority' => 200 ], [ 'id' => 8, 'from_area_id' => 4, 'to_area_id' => 5, 'trigger_type' => 't', 'priority' => 100 ] ],
+	'instances' => [ [ 'id' => 1, 'plugin_key' => 'a', 'host_type' => 'edge', 'host_id' => 8, 'status' => 'configured', 'priority' => 50 ], [ 'id' => 2, 'plugin_key' => 'b', 'host_type' => 'edge', 'host_id' => 8, 'status' => 'disabled', 'priority' => 10 ] ],
+];
+liw_assert( 'BoardRuntime: entry_area = kleinste Position (iw@1)', 'iw' === $BR::entry_area( $__snap )['module_id'], $checks, $failures );
+liw_assert( 'BoardRuntime: edges_from nach Prioritaet (100 vor 200)', 100 === (int) $BR::edges_from( $__snap, 4 )[0]['priority'], $checks, $failures );
+liw_assert( 'BoardRuntime: plugins_for schliesst disabled aus', 1 === count( $BR::plugins_for( $__snap, 'edge', 8 ) ) && 'a' === $BR::plugins_for( $__snap, 'edge', 8 )[0]['plugin_key'], $checks, $failures );
+$__win = $BR::resolve_window( [ 'open_at_ms' => 5000, 'close_at_ms' => null, 'duration_ms' => 15000, 'timeout_ms' => null, 'resume_policy' => 'restart' ] );
+liw_assert( 'BoardRuntime: resolve_window leitet closeAt aus openAt+duration ab (20000) + resume', 20000 === $__win['close_at_ms'] && 5000 === $__win['open_at_ms'] && 'restart' === $__win['resume_policy'], $checks, $failures );
+$__mk = $BR::marker_plan( [ [ 'id' => 1, 'plugin_key' => 'a' ] ], [ 1 => [ 'open_at_ms' => 5000, 'close_at_ms' => 20000 ] ] );
+liw_assert( 'BoardRuntime: marker_plan open vor close, zeitsortiert', 2 === count( $__mk ) && 'open' === $__mk[0]['type'] && 5000 === $__mk[0]['at_ms'] && 'close' === $__mk[1]['type'], $checks, $failures );
+
 // Emergency – Hilfe-Koffer (einstellige Rechenaufgabe) + kontextbezogene Emergency-Area (alpha.78).
 require_once $root . '/src/Emergency/EmergencyChallenge.php';
 require_once $root . '/src/Emergency/HelpTopicCatalog.php';
