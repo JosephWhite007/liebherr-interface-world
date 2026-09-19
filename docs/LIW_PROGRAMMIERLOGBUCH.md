@@ -21,6 +21,26 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.107 – My Liebherr: §41 Plattformzeit integriert + Programm-Workflow ADR-LIW-MYL-001
+
+**Nur Dokumentation** (kein Quellcode geändert außer Versionskonstante).
+
+- `liebherr-interface-world.php`: `LIW_VERSION` 0.1.0-alpha.106 → 0.1.0-alpha.107.
+- `…/Pflichtenheft/Programmierpflichtenheft_My_Liebherr.md` (außerhalb dieses Repos): neuer Abschnitt **§41**
+  (Plattformzeit/Session-Uhr/Token-Schachuhr) inkl. Wallet-Buchungstyp „Plattformnutzung", Entitäten
+  `platform_time_session`/`platform_time_charge`, REST `/platform-time/status|heartbeat|stop`, Zustandsautomat,
+  CVF-Plugin-Typ „Session-Uhr" + Events `platformtime.*`, Abnahme **MYL 025–028**; §40 Fazit um Verweis ergänzt.
+- `docs/ADR-LIW-MYL-001_MyLiebherr_Programm_Workflow.md` (NEU): Modul-Landkarte, §38-Startklärungsblock,
+  Stufen S0–S24 (R0–R6), Wiederverwendung IW-Session/-Billing + CVF-Board, Querschnitt (SEC/A11y/i18n/Perf),
+  Abnahme- und DoD-Verweise, Kategorie-A-Entscheidungen.
+- **Wallet-Entscheid (nach Sichtung Admin-Seite `araliya-lav-wallet-planner`):** Saldenquelle = Plattform Health
+  Wallet (`Araliya\Platform\Core\Modules\Wallet\WalletService`, `ary_wallet_accounts`/`ary_wallet_transactions`,
+  EUR-Cent, user_id-keyed, Idempotenz + `reserve`/`confirm_reservation`, EventBus, keine Filter/Hooks) über NEUEN
+  `CoreBridge\WalletBridge`; `Adventures\TokenAccount` wird abgelöst. Token = echte Währung im selben Subsystem →
+  Mehrwährungsfähigkeit = Core-Kategorie A + Wallet-Pflichtenheft, NICHT in diesem Programm. ADR-LIW-MYL-001 §4/§9
+  + Pflichtenheft §41 entsprechend fortgeschrieben.
+- Kein Push/Deploy: wartet auf Freigabe + Umsetzungsstart.
+
 ## 0.1.0-alpha.106 – Schwebender Hilfe-Koffer: ohne orangen Kreis, größer
 
 **Geändert:** `assets/css/liw-emergency.css` – `.liw-emg-dot--float` ohne orangen Kreis

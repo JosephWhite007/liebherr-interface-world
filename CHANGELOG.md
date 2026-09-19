@@ -1,5 +1,31 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.107] – 2026-09-19 – My Liebherr: Plattformzeit integriert + kompletter Programm-Workflow
+
+### Dokumentation
+- **Pflichtenheft `Programmierpflichtenheft_My_Liebherr.md` (v2.0) um §41 erweitert:** „Plattformzeit,
+  Session-Uhr und Token-Schachuhr" – serverautoritäre Zeitmessung (Eintritt→Austritt), versionierte
+  Zeit-Tokenregel, append-only Abrechnung, Wallet-Naht (deaktivierbar bis zum kommenden Wallet-Pflichtenheft),
+  schwebendes Schachuhr-Widget. Eingewoben in Wallet-Buchungsmodell (§7), Datenmodell/REST (§37), CVF-Board
+  (§36) und Abnahme (neue **MYL 025–028**). §40 Gesamtfazit ergänzt.
+- **Neuer Arbeits-Workflow `docs/ADR-LIW-MYL-001_MyLiebherr_Programm_Workflow.md`:** überführt alle
+  Programmmodule (R0–R6, sechs Reiter inkl. Pocket Information, CVF-6-Karten, Plattformzeit) in 25 prüfbare
+  Stufen S0–S24 mit Dateien/Tabellen/REST/Tests/Abnahme-IDs, Modul-Landkarte, Wiederverwendungsplan der
+  bestehenden IW-/CVF-Bausteine und dem gebündelten §38-Startklärungsblock als Phase-0-Gate.
+
+### Startklärung freigegeben + Wallet-Bestandsaufnahme
+- Alle §38-Fragen freigegeben (Joseph, 19.09.). **Frage 1 nach Sichtung der echten Plattform-Wallet korrigiert:**
+  Saldenquelle ist die **Plattform Health Wallet** (`Modules\Wallet\WalletService`, EUR-Cent, keyed by user_id,
+  append-only Ledger + Idempotenz + Reservieren→Bestätigen, ARY-PH-HW) über einen **neuen `CoreBridge\WalletBridge`**;
+  der Satelliten-`Adventures\TokenAccount` wird abgelöst (keine zweite Saldenquelle, §7).
+- **Token = echte eigene Währung im selben Wallet-Subsystem** → Plattform-Wallet muss mehrwährungsfähig werden.
+  Das ist **Core-Kategorie A und gehört ins kommende Wallet-Pflichtenheft** — nicht Teil dieses Programms; Buchungsnaht
+  bleibt per Flag AUS, Plattformzeit (§41) protokolliert nur *ausstehende* Token-Abrechnungen. §41 entsprechend präzisiert.
+
+### Hinweis
+- Reine Dokumentation/Planung – kein Modul-Code. Umsetzung startet erst nach Freigabe (ADR-LIW-MYL-001 §4/§9).
+  Version angehoben gemäß Commit-je-Auslieferung.
+
 ## [0.1.0-alpha.75] – 2026-09-19 – Goldener Globus statt WordPress-Logo (Adminleiste + Login)
 
 ### Geändert

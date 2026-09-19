@@ -15,6 +15,20 @@ Stand: 19.09.2026 (0.1.0-alpha.78).
 
 ---
 
+## Nächstes großes Programm: My Liebherr & Pocket Information (§41 Plattformzeit inkl.)
+
+Pflichtenheft `Programmierpflichtenheft_My_Liebherr.md` (v2.0) liegt vor und ist um **§41 Plattformzeit/
+Session-Uhr/Token-Schachuhr** erweitert. Vollständiger Arbeits-Workflow (alle Module, Stufen S0–S24):
+**`docs/ADR-LIW-MYL-001_MyLiebherr_Programm_Workflow.md`**.
+
+- **Phase-0-Gate:** gebündelter §38-Startklärungsblock (ADR-LIW-MYL-001 §4) — 4 blockierende + 8 Annahme-Fragen.
+  Umsetzung (Stufe S1 ff.) startet erst nach Beantwortung/Bestätigung.
+- Reihenfolge: R0 Verträge → R1 Fundament (Kontext/Nav/Dashboard/Overview/Profile) → R2 Wallet-Adapter +
+  **Plattformzeit-Schachuhr** → R3 Adventures/Dreams/Gallery + CVF-4→6-Karten → R4 Qualität/Sharing/Kontakte →
+  R5 Pocket/Machines/CVF-Simulation → R6 Pilot.
+- Wiederverwendung statt Neubau: IW `SessionService/SessionMeter/Money/PriceRule/EventLog/ProtocolBuilder`,
+  CVF/CAPDB-Board, Roles/Flags/MediaBridge. Keine zweite Wallet-/Zeitquelle.
+
 ## Auf Zuruf erledigt (ungeplant, nach Group A)
 
 - ~~**Browser-Tab-Favicon = Globus statt WP-„W".**~~ **ERLEDIGT (alpha.76/77):** `/favicon.ico` zeigt
