@@ -1040,6 +1040,7 @@ try {
 	\Liebherr\InterfaceWorld\Cvf\PluginRegistry::sync();
 	liw_st_check( 'CAPDB-Registry: 8 Plugin-Typen registriert (idempotent), challenge_addition vorhanden', 8 === count( \Liebherr\InterfaceWorld\Cvf\PluginRegistry::all_types() ) && \Liebherr\InterfaceWorld\Cvf\PluginRegistry::type_id( 'challenge_addition' ) > 0 );
 	liw_st_check( 'CAPDB-Editor: Tabellenansicht-Board vorhanden (Klasse + Slug)', class_exists( '\Liebherr\InterfaceWorld\Admin\Pages\CvfBoardEditorPage' ) && 'liw-cvf-board-editor' === \Liebherr\InterfaceWorld\Admin\Pages\CvfBoardEditorPage::MENU_SLUG );
+	liw_st_check( 'CAPDB-Board: visuelle Board-Assets vorhanden (JS/CSS)', is_readable( LIW_PATH . 'assets/js/liw-cvf-board.js' ) && is_readable( LIW_PATH . 'assets/css/liw-cvf-board.css' ) );
 	// CAPDB Board-Datenmodell (alpha.89): Entwurf/Seed/Publish/Rollback (mit Cleanup).
 	$__bd = \Liebherr\InterfaceWorld\Cvf\BoardRepository::ensure_draft( 1 );
 	$__bd_inst = \Liebherr\InterfaceWorld\Cvf\BoardRepository::instances( $__bd );

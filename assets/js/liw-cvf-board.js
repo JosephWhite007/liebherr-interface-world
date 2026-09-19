@@ -1,0 +1,137 @@
+/**
+ * Liebherr World – CAPDB visuelles Board (Pflichtenheft §24.2/§25).
+ * Modulbaukasten + Timeline mit Plugin-Zonen. Drag-and-Drop UND gleichwertige Tastaturbedienung.
+ * Alle Mutationen laufen über admin-ajax gegen dieselben Repository-Operationen wie die Tabellenansicht.
+ */
+( function () {
+	'use strict';
+	var CFG = window.liwCvfBoard || null;
+	if ( ! CFG ) { return; }
+	var I = CFG.i18n || {};
+	var root = document.querySelector( '[data-liw-board]' );
+	if ( ! root ) { return; }
+	var zoom = 100;
+
+	function esc( s ) {
+		return String( s == null ? '' : s ).replace( /[&<>"']/g, function ( c ) {
+			return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ c ];
+		} );
+	}
+
+	function call( op, extra ) {
+		var body = new URLSearchParams();
+		body.set( 'action', CFG.action );
+		body.set( 'nonce', CFG.nonce );
+		body.set( 'op', op );
+		Object.keys( extra || {} ).forEach( function ( k ) { body.set( k, extra[ k ] ); } );
+		return fetch( CFG.ajax, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body.toString() } )
+			.then( function ( r ) { return r.json(); } );
+	}
+
+	function scopesOf( data, key ) {
+		var t = ( data.types || [] ).filter( function ( x ) { return x.key === key; } )[ 0 ];
+		return t ? String( t.scopes ).split( ',' ) : [];
+	}
+
+	function instancesFor( data, hostType, hostId ) {
+		return ( data.instances || [] ).filter( function ( i ) { return i.host_type === hostType && Number( i.host_id ) === Number( hostId ); } );
+	}
+
+	function zoneHtml( data, label, hostType, hostId ) {
+		var list = instancesFor( data, hostType, hostId ).map( function ( i ) {
+			return '<li class="liw-board__inst" data-inst="' + i.id + '">' + esc( i.plugin_key ) +
+				' <button type="button" class="liw-board__rm" data-inst="' + i.id + '" title="' + esc( I.remove ) + '">×</button></li>';
+		} ).join( '' );
+		return '<div class="liw-board__zone" data-host-type="' + hostType + '" data-host-id="' + hostId + '">' +
+			'<div class="liw-board__zone-h">' + esc( label ) + '</div>' +
+			'<ul class="liw-board__zone-list">' + ( list || '<li class="liw-board__drop">' + esc( I.dropHere ) + '</li>' ) + '</ul>' +
+			keyboardAdder( data, hostType, hostId ) +
+			'</div>';
+	}
+
+	function keyboardAdder( data, hostType, hostId ) {
+		var opts = ( data.types || [] ).filter( function ( t ) { return String( t.scopes ).split( ',' ).indexOf( hostType ) !== -1; } )
+			.map( function ( t ) { return '<option value="' + esc( t.key ) + '">' + esc( t.label ) + '</option>'; } ).join( '' );
+		if ( ! opts ) { return ''; }
+		return '<div class="liw-board__kb"><select class="liw-board__kb-sel">' + opts + '</select>' +
+			'<button type="button" class="liw-board__kb-add" data-host-type="' + hostType + '" data-host-id="' + hostId + '">' + esc( I.addKeyboard ) + '</button></div>';
+	}
+
+	function render( data ) {
+		if ( ! data || ! data.areas || ! data.areas.length ) {
+			root.innerHTML = '<p>' + esc( I.empty ) + '</p>';
+			return;
+		}
+		var areas = data.areas.slice().sort( function ( a, b ) { return a.position - b.position; } );
+		var chips = ( data.types || [] ).map( function ( t ) {
+			return '<li class="liw-board__chip" draggable="true" data-key="' + esc( t.key ) + '" data-scopes="' + esc( t.scopes ) + '">' +
+				esc( t.label ) + '<span class="liw-board__chip-cat">' + esc( t.category ) + '</span></li>';
+		} ).join( '' );
+
+		var areaCards = areas.map( function ( a ) {
+			return '<div class="liw-board__area"><div class="liw-board__area-h">#' + a.position + ' ' + esc( a.module_id ) + '</div>' +
+				zoneHtml( data, I.pageZone, 'page', a.id ) + '</div>';
+		} ).join( '<div class="liw-board__arrow">→</div>' );
+
+		var edgeCards = ( data.edges || [] ).map( function ( e ) {
+			return '<div class="liw-board__edge"><div class="liw-board__edge-h">#' + e.from_area_id + ' → #' + e.to_area_id + ' (' + esc( e.trigger_type ) + ')</div>' +
+				zoneHtml( data, I.edgeZone, 'edge', e.id ) + '</div>';
+		} ).join( '' );
+
+		root.innerHTML =
+			'<div class="liw-board__bar"><button type="button" class="button liw-board__zi">+ ' + esc( I.zoomIn ) + '</button> ' +
+			'<button type="button" class="button liw-board__zo">– ' + esc( I.zoomOut ) + '</button></div>' +
+			'<div class="liw-board__wrap"><aside class="liw-board__baukasten"><h3>' + esc( I.baukasten ) + '</h3><ul>' + chips + '</ul></aside>' +
+			'<div class="liw-board__canvas" style="zoom:' + zoom + '%">' +
+			'<div class="liw-board__timeline">' + areaCards + '</div>' +
+			'<div class="liw-board__edges">' + edgeCards + '</div>' +
+			'</div></div>';
+		bind( data );
+	}
+
+	function bind( data ) {
+		// Drag-and-Drop.
+		root.querySelectorAll( '.liw-board__chip' ).forEach( function ( chip ) {
+			chip.addEventListener( 'dragstart', function ( e ) {
+				e.dataTransfer.setData( 'text/plain', chip.getAttribute( 'data-key' ) );
+				e.dataTransfer.setData( 'liw/scopes', chip.getAttribute( 'data-scopes' ) );
+			} );
+		} );
+		root.querySelectorAll( '.liw-board__zone' ).forEach( function ( zone ) {
+			zone.addEventListener( 'dragover', function ( e ) { e.preventDefault(); zone.classList.add( 'is-over' ); } );
+			zone.addEventListener( 'dragleave', function () { zone.classList.remove( 'is-over' ); } );
+			zone.addEventListener( 'drop', function ( e ) {
+				e.preventDefault();
+				zone.classList.remove( 'is-over' );
+				var key = e.dataTransfer.getData( 'text/plain' );
+				addInstance( key, zone.getAttribute( 'data-host-type' ), zone.getAttribute( 'data-host-id' ) );
+			} );
+		} );
+		// Tastatur-Alternative.
+		root.querySelectorAll( '.liw-board__kb-add' ).forEach( function ( btn ) {
+			btn.addEventListener( 'click', function () {
+				var sel = btn.parentNode.querySelector( '.liw-board__kb-sel' );
+				addInstance( sel.value, btn.getAttribute( 'data-host-type' ), btn.getAttribute( 'data-host-id' ) );
+			} );
+		} );
+		// Entfernen.
+		root.querySelectorAll( '.liw-board__rm' ).forEach( function ( b ) {
+			b.addEventListener( 'click', function () { call( 'del_instance', { instance_id: b.getAttribute( 'data-inst' ) } ).then( okRender ); } );
+		} );
+		// Zoom.
+		var zi = root.querySelector( '.liw-board__zi' ), zo = root.querySelector( '.liw-board__zo' );
+		if ( zi ) { zi.addEventListener( 'click', function () { zoom = Math.min( 200, zoom + 10 ); render( data ); } ); }
+		if ( zo ) { zo.addEventListener( 'click', function () { zoom = Math.max( 50, zoom - 10 ); render( data ); } ); }
+	}
+
+	function addInstance( key, hostType, hostId ) {
+		call( 'add_instance', { plugin_key: key, host_type: hostType, host_id: hostId } ).then( function ( r ) {
+			if ( r && r.success ) { render( r.data ); }
+			else { window.alert( I.forbidden ); }
+		} );
+	}
+
+	function okRender( r ) { if ( r && r.success ) { render( r.data ); } }
+
+	call( 'snapshot', {} ).then( function ( r ) { if ( r && r.success ) { render( r.data ); } else { root.innerHTML = '<p>' + esc( I.empty ) + '</p>'; } } ).catch( function () {} );
+}() );

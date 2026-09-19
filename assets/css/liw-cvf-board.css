@@ -1,0 +1,28 @@
+/* Liebherr World – CAPDB visuelles Board. */
+.liw-board { margin: 0 0 1.5rem; }
+.liw-board__bar { margin: 0 0 .5rem; }
+.liw-board__wrap { display: flex; gap: 1rem; align-items: flex-start; }
+.liw-board__baukasten { flex: 0 0 200px; background: #fff; border: 1px solid #dcdcde; border-radius: 8px; padding: .6rem; }
+.liw-board__baukasten h3 { margin: 0 0 .5rem; font-size: 13px; }
+.liw-board__baukasten ul { list-style: none; margin: 0; padding: 0; }
+.liw-board__chip { display: flex; justify-content: space-between; align-items: center; gap: .4rem; padding: .4rem .5rem; margin: 0 0 .35rem; background: #f6f7f7; border: 1px solid #c3c4c7; border-radius: 6px; cursor: grab; font-size: 12px; }
+.liw-board__chip:active { cursor: grabbing; }
+.liw-board__chip-cat { color: #646970; font-size: 10px; text-transform: uppercase; }
+.liw-board__canvas { flex: 1 1 auto; overflow-x: auto; }
+.liw-board__timeline { display: flex; align-items: stretch; gap: .25rem; min-width: max-content; }
+.liw-board__area { flex: 0 0 240px; background: #fff; border: 1px solid #2271b1; border-radius: 8px; }
+.liw-board__area-h { background: #2271b1; color: #fff; padding: .4rem .6rem; border-radius: 7px 7px 0 0; font-weight: 600; font-size: 13px; }
+.liw-board__arrow { align-self: center; color: #2271b1; font-size: 20px; padding: 0 .15rem; }
+.liw-board__edges { display: flex; flex-wrap: wrap; gap: .5rem; margin: .75rem 0 0; }
+.liw-board__edge { flex: 0 0 260px; background: #fff; border: 1px dashed #8c8f94; border-radius: 8px; }
+.liw-board__edge-h { background: #f0f0f1; padding: .35rem .6rem; font-size: 12px; border-radius: 7px 7px 0 0; }
+.liw-board__zone { padding: .5rem; }
+.liw-board__zone.is-over { background: #ecf6ff; outline: 2px dashed #2271b1; }
+.liw-board__zone-h { font-size: 11px; text-transform: uppercase; color: #646970; margin: 0 0 .35rem; }
+.liw-board__zone-list { list-style: none; margin: 0 0 .4rem; padding: 0; }
+.liw-board__inst { display: flex; justify-content: space-between; align-items: center; background: #fffbe6; border: 1px solid #dba617; border-radius: 5px; padding: .25rem .4rem; margin: 0 0 .25rem; font-size: 12px; }
+.liw-board__drop { color: #8c8f94; font-style: italic; font-size: 11px; padding: .35rem; border: 1px dashed #dcdcde; border-radius: 5px; text-align: center; }
+.liw-board__rm { border: 0; background: transparent; color: #b32d2e; cursor: pointer; font-size: 15px; line-height: 1; }
+.liw-board__kb { display: flex; gap: .25rem; }
+.liw-board__kb-sel { flex: 1 1 auto; font-size: 11px; max-width: 140px; }
+.liw-board__kb-add { font-size: 11px; padding: 0 .5rem; cursor: pointer; }

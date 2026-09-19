@@ -12,6 +12,18 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.93 – CAPDB Etappe 6: Visuelles Timeline-Board (DnD + Baukasten)
+
+**Neu:** `assets/js/liw-cvf-board.js` + `assets/css/liw-cvf-board.css` – visuelles Board: Modulbaukasten
+(Plugin-Typen als Chips), horizontale/zoombare Timeline aus Bereichskarten mit Seiten-Plugin-Zonen +
+Übergangskarten mit Übergangs-Plugin-Zonen. **Drag-and-Drop** eines Plugin-Typs auf eine Zone (unzulässige
+Zielzone wird abgewiesen) UND **gleichwertige Tastaturbedienung** (§25: Auswahl + „Hinzufügen"). Zoom +/–.
+**Geändert:** `src/Admin/Pages/CvfBoardEditorPage.php` – admin-ajax-Dispatcher (`snapshot/add_instance/
+del_instance`, Nonce + Cap, Scope serverseitig geprüft), `enqueue()` (seitengebunden, filemtime-Bust),
+visuelle Board-Sektion in `render()` (`[data-liw-board]`). Alle Mutationen laufen über dieselben
+Repository-Operationen wie die Tabellenansicht. `scripts/liw-selftest.php` (+1 Assets). Board headless
+gerendert; DnD im echten wp-admin zu bedienen. Tests WP-frei 507 / Docker 384. Bump alpha.92 -> alpha.93.
+
 ## 0.1.0-alpha.92 – CAPDB Etappe 5: Board-Runtime + Ausführungsprotokoll
 
 **Neu (`src/Cvf/`):** `BoardRuntime` (rein: `entry_area`, `edges_from` [Prioritätssortierung], `plugins_for`

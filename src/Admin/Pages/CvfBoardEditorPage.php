@@ -17,6 +17,7 @@ declare( strict_types = 1 );
 namespace Liebherr\InterfaceWorld\Admin\Pages;
 
 use Liebherr\InterfaceWorld\Cvf\BoardRepository;
+use Liebherr\InterfaceWorld\Cvf\BoardSnapshot;
 use Liebherr\InterfaceWorld\Cvf\BoardValidator;
 use Liebherr\InterfaceWorld\Cvf\Flags;
 use Liebherr\InterfaceWorld\Cvf\PluginRegistry;
@@ -33,8 +34,86 @@ final class CvfBoardEditorPage {
 	private const ACTION   = 'liw_cvf_board_op';
 	private const NONCE    = 'liw_cvf_board_op';
 
+	public const HANDLE = 'liw-cvf-board';
+	private const AJAX  = 'liw_cvf_board_ajax';
+
 	public static function register(): void {
 		add_action( 'admin_post_' . self::ACTION, [ self::class, 'handle' ] );
+		add_action( 'wp_ajax_' . self::AJAX, [ self::class, 'ajax' ] );
+		add_action( 'admin_enqueue_scripts', [ self::class, 'enqueue' ] );
+	}
+
+	private static function ver( string $rel ): string {
+		$m = is_readable( LIW_PATH . $rel ) ? (int) filemtime( LIW_PATH . $rel ) : 0;
+		return $m > 0 ? (string) $m : LIW_VERSION;
+	}
+
+	public static function enqueue( string $hook ): void {
+		if ( false === strpos( $hook, self::MENU_SLUG ) ) {
+			return; // nur auf der Editor-Seite.
+		}
+		wp_enqueue_style( self::HANDLE, LIW_URL . 'assets/css/liw-cvf-board.css', [], self::ver( 'assets/css/liw-cvf-board.css' ) );
+		wp_enqueue_script( self::HANDLE, LIW_URL . 'assets/js/liw-cvf-board.js', [], self::ver( 'assets/js/liw-cvf-board.js' ), true );
+		wp_localize_script( self::HANDLE, 'liwCvfBoard', [
+			'ajax'  => admin_url( 'admin-ajax.php' ),
+			'action'=> self::AJAX,
+			'nonce' => wp_create_nonce( self::AJAX ),
+			'i18n'  => [
+				'baukasten'  => __( 'Modulbaukasten', 'liebherr-interface-world' ),
+				'pageZone'   => __( 'Seiten-Plugins', 'liebherr-interface-world' ),
+				'edgeZone'   => __( 'Übergangs-Plugins', 'liebherr-interface-world' ),
+				'dropHere'   => __( 'Plugin hierher ziehen', 'liebherr-interface-world' ),
+				'addKeyboard'=> __( 'Hinzufügen', 'liebherr-interface-world' ),
+				'forbidden'  => __( 'Unzulässige Zielzone für diesen Plugin-Typ.', 'liebherr-interface-world' ),
+				'remove'     => __( 'Entfernen', 'liebherr-interface-world' ),
+				'zoomIn'     => __( 'Vergrößern', 'liebherr-interface-world' ),
+				'zoomOut'    => __( 'Verkleinern', 'liebherr-interface-world' ),
+				'empty'      => __( 'Kein Board – zuerst Bereiche anlegen.', 'liebherr-interface-world' ),
+			],
+		] );
+	}
+
+	/** AJAX-Dispatcher für das visuelle Board (Snapshot lesen, Instanz hinzufügen/entfernen). */
+	public static function ajax(): void {
+		if ( ! self::can_edit() || ! check_ajax_referer( self::AJAX, 'nonce', false ) ) {
+			wp_send_json_error( [ 'reason' => 'forbidden' ], 403 );
+		}
+		$op    = isset( $_POST['op'] ) ? sanitize_key( wp_unslash( (string) $_POST['op'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$draft = BoardRepository::ensure_draft( get_current_user_id() );
+
+		if ( 'snapshot' === $op ) {
+			wp_send_json_success( self::board_data( $draft ) );
+		}
+		if ( 'add_instance' === $op ) {
+			$key     = isset( $_POST['plugin_key'] ) ? sanitize_key( wp_unslash( (string) $_POST['plugin_key'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$host    = isset( $_POST['host_type'] ) ? sanitize_key( wp_unslash( (string) $_POST['host_type'] ) ) : '';    // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$host_id = isset( $_POST['host_id'] ) ? (int) $_POST['host_id'] : 0;                                          // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$type_id = PluginRegistry::type_id( $key );
+			$defs    = PluginRegistry::definitions();
+			if ( 0 === $type_id || ! isset( $defs[ $key ] ) || ! PluginTaxonomy::scope_allowed( $host, (string) $defs[ $key ]['scopes'] ) ) {
+				wp_send_json_error( [ 'reason' => 'forbidden_scope' ], 400 );
+			}
+			$config = PluginRegistry::with_defaults( $key, [] );
+			BoardRepository::add_instance( $draft, $type_id, $host, $host_id, 'configured', 100, (string) wp_json_encode( $config ) );
+			wp_send_json_success( self::board_data( $draft ) );
+		}
+		if ( 'del_instance' === $op ) {
+			BoardRepository::delete_instance( $draft, isset( $_POST['instance_id'] ) ? (int) $_POST['instance_id'] : 0 ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			wp_send_json_success( self::board_data( $draft ) );
+		}
+		wp_send_json_error( [ 'reason' => 'unknown_op' ], 400 );
+	}
+
+	/** @return array<string,mixed> Board-Daten des Entwurfs für das visuelle Board (inkl. Typen-Bibliothek). */
+	private static function board_data( int $draft ): array {
+		$snap  = BoardSnapshot::of_version( $draft );
+		$types = [];
+		foreach ( PluginRegistry::definitions() as $k => $d ) {
+			$types[] = [ 'key' => $k, 'label' => (string) $d['label'], 'category' => (string) $d['category'], 'scopes' => (string) $d['scopes'] ];
+		}
+		$snap['types'] = $types;
+		$snap['draft'] = $draft;
+		return $snap;
 	}
 
 	private static function can_edit(): bool {
@@ -183,6 +262,10 @@ final class CvfBoardEditorPage {
 				<input type="hidden" name="op" value="discard" />
 				<button class="button"><?php echo esc_html__( 'Entwurf verwerfen', 'liebherr-interface-world' ); ?></button>
 			</form>
+
+			<h2><?php echo esc_html__( 'Visuelles Board', 'liebherr-interface-world' ); ?></h2>
+			<p class="description"><?php echo esc_html__( 'Plugin-Typen aus dem Modulbaukasten per Drag-and-Drop auf die Zonen ziehen (oder per Tastatur über „Hinzufügen"). Änderungen betreffen den Entwurf.', 'liebherr-interface-world' ); ?></p>
+			<div class="liw-board" data-liw-board><p><?php echo esc_html__( 'Board wird geladen …', 'liebherr-interface-world' ); ?></p></div>
 
 			<h2><?php echo esc_html__( 'Bereiche (Timeline)', 'liebherr-interface-world' ); ?></h2>
 			<table class="widefat striped"><thead><tr>
