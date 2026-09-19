@@ -98,6 +98,7 @@ final class Bootstrap {
 			PlatformTime\Rest::register();       // Plattformzeit REST (start/heartbeat/status/stop; self-gating ueber liw_ptime_enabled, §41).
 			PlatformTime\ClockWidget::register(); // Schwebende Session-Uhr / Schachuhr (S11, §41.6).
 		Frontend\WorldSwitcher::register();  // Plattform-Umschalter der vier Inseln (Cross-Navigation).
+			Frontend\ThemeMenu::register();      // My Liebherr/Pocket im Theme-Frontend-Menü (rollen-/flag-gated, §1/§29/§35).
 		Frontend\SimulatorView::register();  // Liebherr Simulation World – Startbildschirm [liw_simulator].
 		Frontend\RocketCompat::register(); // WP-Rocket-RUCSS-Safelist für .liw-Selektoren.
 		Frontend\PageTemplate::register(); // Vollbild-Seitenvorlage (ohne Theme-Kopf/-Fuß).

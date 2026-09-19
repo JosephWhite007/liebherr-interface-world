@@ -1300,6 +1300,15 @@ try {
 		wp_delete_post( $__pdf, true );
 		wp_delete_post( $__png, true );
 
+		// Theme-Frontend-Menü: My Liebherr wird am primary-Standort eingehängt, an anderen Standorten nicht.
+		$__tm_prim = apply_filters( 'wp_nav_menu_items', '', (object) [ 'theme_location' => 'primary' ] );
+		$__tm_foot = apply_filters( 'wp_nav_menu_items', '', (object) [ 'theme_location' => 'footer' ] );
+		liw_st_check(
+			'Theme-Menü: My Liebherr am primary-Standort eingehängt (rollen-/flag-gated), an anderem Standort nicht',
+			is_string( $__tm_prim ) && false !== strpos( $__tm_prim, 'liw-menu-my-liebherr' ) && false !== strpos( $__tm_prim, 'My Liebherr' )
+			&& false === strpos( (string) $__tm_foot, 'liw-menu-my-liebherr' )
+		);
+
 		// Nav: Pocket-Reiter aktiv, sobald Pocket scharf + Seite vorhanden.
 		$__prev_pocket_page = (int) get_option( 'liw_pocket_page_id', 0 );
 		update_option( 'liw_pocket_page_id', (int) get_option( 'liw_my_liebherr_page_id', 0 ) );

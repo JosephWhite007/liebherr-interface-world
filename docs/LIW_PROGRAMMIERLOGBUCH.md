@@ -21,6 +21,12 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.134 – My Liebherr/Pocket im Theme-Frontend-Menü
+
+- `src/Frontend/ThemeMenu.php` (NEU): `wp_nav_menu_items`-Filter, hängt My Liebherr/Pocket am Standort `target_location()` (Filter `liw_myl_theme_menu_location`, Std `primary`) an; `should_show()` = Flag + angemeldet + `liw_myl_access`; Pocket zusätzlich `liw_pocket_enabled` + Seite. Abschaltbar via `liw_myl_theme_menu`.
+- `src/Bootstrap.php`: `Frontend\ThemeMenu::register()`. `liebherr-interface-world.php` LIW_VERSION .133→.134.
+- Docker-Test: primary eingehängt, footer nicht. WP-frei 657/0, Docker 425/0.
+
 ## 0.1.0-alpha.133 – Medien-Pipeline Dreams/Gallery (§14/§16)
 
 - `src/MyLiebherr/MediaPipeline.php` (NEU): ALLOWED_MIME, max_bytes/size_ok, classify (rein) + validate/state/scan_ok/thumb/approve (nutzt MediaBridge::is_approved/META_APPROVED).

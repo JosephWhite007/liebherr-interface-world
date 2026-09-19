@@ -1,5 +1,18 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.134] – 2026-09-19 – My Liebherr/Pocket im Theme-Frontend-Menü der Website
+
+### Hinzugefügt
+- `Frontend\ThemeMenu`: hängt **My Liebherr** und **Pocket Information** additiv in das Theme-Navigationsmenü ein
+  (`wp_nav_menu_items`) – nur am Ziel-Standort (Filter `liw_myl_theme_menu_location`, Standard `primary`), nur für
+  **angemeldete** Nutzer mit `liw_myl_access`, nur bei aktivem Flag + veröffentlichter Seite (Pocket zusätzlich
+  `liw_pocket_enabled`). Ausgeloggte Besucher sehen die Punkte nicht; andere Menüs bleiben unberührt. Abschaltbar
+  über Filter `liw_myl_theme_menu`.
+
+### Verifikation
+- `scripts/liw-selftest.php` **425/425**: am `primary`-Standort eingehängt, an anderem Standort nicht.
+  `tests/run-tests.php` **657/657**. `LIW_VERSION` .133→.134.
+
 ## [0.1.0-alpha.133] – 2026-09-19 – Medien-Pipeline für Dreams/Gallery (§14/§16)
 
 ### Hinzugefügt
