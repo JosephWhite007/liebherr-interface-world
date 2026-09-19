@@ -12,6 +12,14 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.73 – Cockpit -> Simulation Builder verbunden
+
+**Geändert:** `src/Frontend/SimulatorView.php` – `target()`-Default = IW-Seite + `#liw-iw-simulation`.
+`assets/js/liw-intelligence-world.js` – nach Access-Gate-Eintritt Auto-Scroll zum Simulation Builder, wenn
+der Hash `#liw-iw-simulation` gesetzt ist (instant, verzögert). Selftest ergänzt. Bump alpha.72 -> alpha.73.
+Klärt die Frage „Cockpit <-> Simulations-Engine": navigatorische Verbindung gebaut; echte Engine bleibt
+Gruppe-B (Naht = `SimulationModel::forecast`). 
+
 ## 0.1.0-alpha.72 – Content Board: Medien-Picker auf freigegebene Bibliothek [Backlog A11]
 
 **Neu:** `src/Admin/ApprovedMediaFilter.php` (`restrict()` rein/testbar; `maybe_restrict()` honoriert Flag

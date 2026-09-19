@@ -57,7 +57,9 @@ der Reihe nach ab und befüllen sie mit Funktionalität), **B** = auf externe Fr
 - **what3words: Lizenz/Vertrag + Produktiv-Key (§4.3/§24.1)** → Auftraggeber (Technik steht, Mock-Fallback).
 - **Echte Artikelbook-Anbindung** im Core an Filter `liw_articlebook_register` → Integrationsentscheidung Core.
 - **I18nSeo Option B** (Core-`I18nRouter` um `page`/`liw_section`) → erst wenn Core-Router plattformweit aktiv.
-- **Simulation Board – Status-Übergänge** → erst mit echter Simulations-Engine (YAGNI).
+- **Simulation Board / echte Simulations-Engine** → externe Zulieferung (YAGNI). Naht steht: der Simulation
+  Builder rechnet über `SimulationModel::forecast()` (Mock), das Cockpit „Go" führt seit alpha.73 direkt dorthin;
+  eine echte Engine träte an die Stelle des Mock-Modells.
 - **World Connections – echte Geo-Karte** (Koordinaten + Kartenbibliothek) → optional, Kategorie A.
 - **Partnerbereich-Folgepunkte** (Auto-Konten, Doku-Fassung, Dokumente je Partner/Region, Core-Option-B,
   Design-System-Login) → teils Liebherr-Entscheidung.

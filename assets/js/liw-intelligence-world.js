@@ -144,7 +144,17 @@
 				world.removeAttribute( 'hidden' );
 				syncFromStatus( res.status );
 				startTimers();
-				try { world.scrollIntoView( { behavior: 'smooth', block: 'start' } ); } catch ( e ) {}
+				// Vom Cockpit „Go" (Anker #liw-iw-simulation): nach dem Eintritt direkt zum Simulation Builder.
+				var deepTarget = ( '#liw-iw-simulation' === window.location.hash )
+					? document.getElementById( 'liw-iw-simulation' ) : null;
+				try {
+					if ( deepTarget ) {
+						// Etwas verzögert + instant (zuverlässiger, sobald die Weltansicht gelayoutet ist).
+						window.setTimeout( function () { try { deepTarget.scrollIntoView( { block: 'start' } ); } catch ( e ) {} }, 250 );
+					} else {
+						world.scrollIntoView( { behavior: 'smooth', block: 'start' } );
+					}
+				} catch ( e ) {}
 			} ).catch( function () { announce( cfg.i18n.invalid ); refreshConfirm(); } );
 		} );
 

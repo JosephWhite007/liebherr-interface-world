@@ -863,6 +863,7 @@ try {
 	$__sim2 = do_shortcode( '[liw_simulator]' );
 	liw_st_check( 'SIM: Startbildschirm + „Start your journey"-CTA', str_contains( $__sim2, 'liw-sim' ) && str_contains( $__sim2, 'Start your journey' ) && str_contains( $__sim2, 'liw-sim__cta' ) );
 	liw_st_check( 'SIM: ohne Bild dunkler Platzhalter (liw-sim--plain)', str_contains( $__sim2, 'liw-sim--plain' ) );
+	liw_st_check( 'SIM: Go verlinkt Intelligence World -> Simulation Builder (#liw-iw-simulation, a)', str_contains( $__sim2, '#liw-iw-simulation' ) );
 	if ( (int) $__sim_opt > 0 ) {
 		update_option( 'liw_simulator_image_id', (int) $__sim_opt );
 		$__sim_img = do_shortcode( '[liw_simulator]' );

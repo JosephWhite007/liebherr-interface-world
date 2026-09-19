@@ -1,5 +1,18 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.73] – 2026-09-19 – Cockpit → Simulation Builder verbunden
+
+### Geändert
+- Das Cockpit („Start your journey / Go", `[liw_simulator]`) führt jetzt gezielt in den **Simulation Builder**:
+  Standard-Ziel = Intelligence-World-Seite + Anker `#liw-iw-simulation` (weiterhin per Option/Filter
+  `liw_simulator_target` überschreibbar). Nach dem Eintritt (Access Gate) scrollt die Weltansicht automatisch
+  zum Simulation Builder. Damit ist die zuvor nur navigatorisch getrennte Kette Cockpit → Simulation Builder
+  geschlossen (die Rechenlogik bleibt das Mock-`SimulationModel`; eine echte Engine ist die Gruppe-B-Zulieferung).
+
+### Verifikation
+- `tests/run-tests.php` **401/401**, `scripts/liw-selftest.php` **344/344** (Cockpit-„Go" verlinkt
+  `#liw-iw-simulation`). Browser: Go-Link korrekt; Eintritt enthüllt die Welt (Auto-Scroll best-effort).
+
 ## [0.1.0-alpha.72] – 2026-09-19 – Content Board: Medien-Picker auf freigegebene Bibliothek [Job A11]
 
 ### Hinzugefügt

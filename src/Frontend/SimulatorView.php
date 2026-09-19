@@ -49,7 +49,9 @@ final class SimulatorView {
 		$opt = (string) get_option( 'liw_simulator_target', '' );
 		if ( '' === $opt ) {
 			$iw = (int) get_option( 'liw_iw_page_id', 0 );
-			$opt = $iw > 0 ? (string) get_permalink( $iw ) : '#liw-sim';
+			// „Go" führt in die Intelligence World und – nach dem Eintritt – direkt zum Simulation Builder
+			// (Anker; die Weltansicht wird nach dem Access Gate sichtbar und dorthin gescrollt).
+			$opt = $iw > 0 ? (string) get_permalink( $iw ) . '#liw-iw-simulation' : '#liw-sim';
 		}
 		return (string) apply_filters( 'liw_simulator_target', $opt );
 	}
