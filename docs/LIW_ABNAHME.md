@@ -149,7 +149,7 @@ Verifikation: `tests/run-tests.php` 576/0, `scripts/liw-selftest.php` 408/0 (ech
 | MYL 014 | My Dreams: private Maschinenfavoriten anlegen/sortieren/entfernen | ✅ | `[liw_my_dreams]`, Tabelle `dream_item`, REST + Round-Trip-Selftest |
 | MYL 015 | Drei Galeriesichten mit getrennten Grants | ✅ (Kollegen aktiv / World Review offen) | `[liw_my_gallery]` privat + `share_grant` Kollegen/World + `[liw_shared_colleagues]`/`[liw_shared_world]` |
 | MYL 016 | Own Adventures nach Status/Maschine filtern | ✅ | `[liw_my_adventures]` (Insel-Wiederverwendung), Status-Filter, Maschine/Bauteil/Token |
-| MYL 017 | Drei-Wort-Name genau drei normalisierte Begriffe | ⚠️ Teil | `ContentRules::three_words`/`is_three_words` (Dreams-Titel); volles Label-/Synonym-System offen |
+| MYL 017 | Drei-Wort-Name genau drei normalisierte Begriffe | ✅ | `ThreeWordLabel` (Tabelle three_word_label): Maschine·Problem·Handlung normiert, Vorschlag→Bestätigung, Synonyme + Agentensuche |
 | MYL 018 | Kontaktanfrage: ohne Zustimmung kein Direktkontakt/Wallet-Verbindung | ✅ | `[liw_my_contacts]`: Erstkontakt nur als Anfrage; Connection entsteht erst bei accept |
 | MYL 019 | Gemeinsame Leistung erzeugt genau eine korrekte Buchung | ✅ (Naht) | Service proposed→confirmed; Buchung über Hook `liw_myl_service_charge` (deferred bis Wallet-Pflichtenheft) |
 | MYL 020 | Verbindung beenden: neue Leistungen verhindert, Historie bleibt | ✅ | Connection ended (Zustandsautomat), Service nur bei accepted/active vorschlagbar |

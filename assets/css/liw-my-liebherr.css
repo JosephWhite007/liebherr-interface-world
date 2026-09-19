@@ -172,3 +172,13 @@
 .liw-myl__ov-list a { text-decoration: none; }
 .liw-myl__ov-list a:hover { text-decoration: underline; }
 .liw-myl__ov-empty { color: #8a90a0; font-size: 13px; }
+
+/* Drei-Wort-Label (§32, alpha.130). */
+.liw-myl__twform { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.liw-myl__twform input { width: 92px; padding: 4px 6px; font-size: 12px; border: 1px solid #d9dde6; border-radius: 6px; }
+.liw-myl__twform input[name="synonyms"] { width: 140px; }
+.liw-myl__advsearch { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 10px; }
+.liw-myl__advsearch input { flex: 1 1 240px; padding: 6px 10px; border: 1px solid #d9dde6; border-radius: 8px; font-size: 14px; }
+@media ( prefers-color-scheme: dark ) {
+	.liw-myl__twform input, .liw-myl__advsearch input { background: #12141b; border-color: #2a2f3a; color: #eef1f6; }
+}

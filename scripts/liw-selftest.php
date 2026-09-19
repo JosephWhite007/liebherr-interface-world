@@ -1251,6 +1251,19 @@ try {
 		);
 		$wpdb->delete( \Liebherr\InterfaceWorld\Pocket\Schema::item_table(), [ 'id' => (int) ( $__ov_pk['id'] ?? 0 ) ] );
 
+		// Drei-Wort-Label (§32): set (normalisiert) → get → Agentensuche über Synonym findet das Adventure.
+		$__tw_pid = (int) wp_insert_post( [ 'post_type' => 'liw_adventure', 'post_status' => 'publish', 'post_title' => 'SELFTEST-TW-Adventure', 'post_author' => $__myl_admin_id ] );
+		$__tw_set = \Liebherr\InterfaceWorld\MyLiebherr\ThreeWordLabel::set( $__tw_pid, 'raupe', 'hydraulik', 'entlüften', 'Bagger,Kette' );
+		$__tw_get = \Liebherr\InterfaceWorld\MyLiebherr\ThreeWordLabel::get( $__tw_pid );
+		$__tw_hit = array_filter( \Liebherr\InterfaceWorld\MyLiebherr\ThreeWordLabel::search( 'Kette' ), static fn( $x ) => (int) $x['object_id'] === $__tw_pid );
+		liw_st_check(
+			'Drei-Wort-Label: set normalisiert → get → Agentensuche (Synonym "Kette") findet das Adventure',
+			! empty( $__tw_set['ok'] ) && 'Raupe Hydraulik Entlüften' === $__tw_set['display']
+			&& is_array( $__tw_get ) && 'Raupe' === $__tw_get['term_1'] && count( $__tw_hit ) >= 1
+		);
+		$wpdb->delete( \Liebherr\InterfaceWorld\MyLiebherr\Schema::three_word_table(), [ 'object_id' => $__tw_pid ] );
+		wp_delete_post( $__tw_pid, true );
+
 		// Nav: Pocket-Reiter aktiv, sobald Pocket scharf + Seite vorhanden.
 		$__prev_pocket_page = (int) get_option( 'liw_pocket_page_id', 0 );
 		update_option( 'liw_pocket_page_id', (int) get_option( 'liw_my_liebherr_page_id', 0 ) );

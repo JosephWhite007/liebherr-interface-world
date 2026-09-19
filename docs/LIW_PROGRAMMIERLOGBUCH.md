@@ -21,6 +21,15 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.130 – Drei-Wort-Label-Vollsystem (§32)
+
+- `src/MyLiebherr/Schema.php`: Tabelle `three_word_label` (object_type/object_id/locale/term_1..3/synonyms/taxonomy_version, UNIQUE object+locale).
+- `src/MyLiebherr/ThreeWordLabel.php` (NEU): rein normalize_term/from_words/valid/display/suggest/tokens; DB set/get; Agentensuche `search()` (Begriffe+Synonyme LIKE).
+- `src/MyLiebherr/ContentRest.php`: Routen `adventures/{id}/label` (GET/PUT, PUT nur Autor via `owns_adventure`) + `adventures/labels/search`.
+- `src/MyLiebherr/OwnAdventuresView.php`: Spalte „Drei-Wort-Name" + Vorschlag→Bestätigung-Formular je Zeile (`label_cell`) + Label-Suche (`search_html`, GET). `assets()` ergänzt.
+- `assets/js/liw-my-liebherr.js`: Formular-Handler respektiert `data-liw-method` (PUT). `assets/css`: twform/advsearch.
+- `liebherr-interface-world.php` LIW_VERSION .129→.130. Tests: WP-frei Label-Logik; Docker set→get→search. WP-frei 641/0, Docker 421/0.
+
 ## 0.1.0-alpha.129 – My-Overview-Widgets mit echten Daten
 
 - `src/MyLiebherr/OverviewData.php` (NEU): `tasks()`/`updates()`/`bookings()` aus Contact/Pocket/Share/Wallet; reine `truncate()` (max 4 + „+N …"). Cross-Modul guarded.

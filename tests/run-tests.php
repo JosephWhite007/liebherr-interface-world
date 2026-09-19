@@ -670,6 +670,19 @@ liw_assert( 'PTime SessionClock: now <= last_seen → keine Änderung', 10 === $
 liw_assert( 'PTime WalletBridge: ohne Core nicht verfügbar; balance_cents(0)=null (Gast-Guard)', false === $WB::available() && null === $WB::balance_cents( 0 ), $checks, $failures );
 liw_assert( 'MyL WalletBridge: source_label bekannt (booking_debit→Buchung), unbekannt→Rohwert; status_label pending→ausstehend', 'Buchung' === $WB::source_label( 'booking_debit' ) && 'nope' === $WB::source_label( 'nope' ) && 'ausstehend' === $WB::status_label( 'pending' ), $checks, $failures );
 
+// My Liebherr Drei-Wort-Label (ADR-LIW-MYL-001 §32): reine Normalisierung/Validierung/Vorschlag/Tokens.
+echo "-- My Liebherr Drei-Wort-Label --\n";
+require_once $root . '/src/MyLiebherr/ThreeWordLabel.php';
+$TW = '\Liebherr\InterfaceWorld\MyLiebherr\ThreeWordLabel';
+liw_assert( 'ThreeWordLabel: normalize → ein Wort, Großanfang (" hYDRAULIK zusatz" → "Hydraulik")', 'Hydraulik' === $TW::normalize_term( ' hYDRAULIK zusatz' ), $checks, $failures );
+$__tw_w = $TW::from_words( 'raupe', 'hydraulik', 'entlüften' );
+liw_assert( 'ThreeWordLabel: from_words normalisiert alle drei; valid=true; display "Raupe Hydraulik Entlüften"', 'Raupe' === $__tw_w[0] && $TW::valid( $__tw_w[0], $__tw_w[1], $__tw_w[2] ) && 'Raupe Hydraulik Entlüften' === $TW::display( $__tw_w[0], $__tw_w[1], $__tw_w[2] ), $checks, $failures );
+liw_assert( 'ThreeWordLabel: valid=false bei fehlendem Begriff', false === $TW::valid( 'Raupe', '', 'Entlüften' ), $checks, $failures );
+$__tw_s = $TW::suggest( 'Raupe R9200', 'Hydraulikpumpe', 'Foo Entlüften Bar' );
+liw_assert( 'ThreeWordLabel: suggest bildet drei Begriffe aus Maschine/Bauteil/Titel', 'Raupe' === $__tw_s[0] && 'Hydraulikpumpe' === $__tw_s[1] && '' !== $__tw_s[2], $checks, $failures );
+$__tw_tok = $TW::tokens( [ 'term_1' => 'Raupe', 'term_2' => 'Hydraulik', 'term_3' => 'Entlüften', 'synonyms' => 'Bagger, Kette' ] );
+liw_assert( 'ThreeWordLabel: tokens = 3 Begriffe + Synonyme (5)', 5 === count( $__tw_tok ) && in_array( 'Bagger', $__tw_tok, true ), $checks, $failures );
+
 // My Liebherr Overview-Daten (ADR-LIW-MYL-001 §5): reine truncate-Logik der Widget-Listen.
 echo "-- My Liebherr Overview-Daten --\n";
 require_once $root . '/src/MyLiebherr/OverviewData.php';

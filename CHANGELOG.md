@@ -1,5 +1,23 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.130] – 2026-09-19 – Drei-Wort-Label-Vollsystem für Own Adventures (§32)
+
+### Hinzugefügt
+- `MyLiebherr\ThreeWordLabel` + Tabelle `ary_liw_myl_three_word_label` (§37): normierter Drei-Wort-Name
+  **Maschine · Problem · Handlung** je Objekt/Locale, mit Synonymen und Taxonomie-Version. Reine Logik
+  (normalize/from_words/valid/display/suggest/tokens) + Persistenz (set/get) + **Agentensuche** `search()`
+  (Begriffe/Synonyme, kombiniert mit stabiler Objekt-ID).
+- REST (ContentRest): `GET/PUT my-liebherr/v1/adventures/{id}/label` (Setzen nur durch den **Autor**/Administer) +
+  `GET my-liebherr/v1/adventures/labels/search?q=`.
+- `OwnAdventuresView`: neue Spalte „Drei-Wort-Name" mit **Vorschlag → Bestätigung** je Beitrag (aus Maschine/Bauteil/
+  Titel vorbelegt), Synonym-Feld und einer **Label-Suche** (GET, serverseitig, kombiniert mit dem eigenen Bestand).
+- Generischer JS-Formular-Handler unterstützt jetzt `data-liw-method` (PUT).
+
+### Verifikation
+- `tests/run-tests.php` **641/641** (Normalisierung/Validierung/Vorschlag/Tokens), `scripts/liw-selftest.php` **421/421**
+  (set→get→Agentensuche über Synonym). Dev-Vorschau: „Raupe Hydraulik Entlüften", Synonym „Bagger" findet den Beitrag.
+  `LIW_VERSION` .129→.130. Erfüllt MYL 017 vollständig.
+
 ## [0.1.0-alpha.129] – 2026-09-19 – My-Overview-Widgets mit echten Daten
 
 ### Geändert

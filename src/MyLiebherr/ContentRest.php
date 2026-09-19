@@ -55,6 +55,11 @@ final class ContentRest {
 			[ 'methods' => 'POST', 'callback' => [ self::class, 'shares_create' ] ] + $perm,
 		] );
 		register_rest_route( self::NAMESPACE, '/shares/' . $id, [ [ 'methods' => 'DELETE', 'callback' => [ self::class, 'shares_revoke' ] ] + $perm ] );
+		register_rest_route( self::NAMESPACE, '/adventures/' . $id . '/label', [
+			[ 'methods' => 'GET', 'callback' => [ self::class, 'label_get' ] ] + $perm,
+			[ 'methods' => 'PUT', 'callback' => [ self::class, 'label_put' ] ] + $perm,
+		] );
+		register_rest_route( self::NAMESPACE, '/adventures/labels/search', [ [ 'methods' => 'GET', 'callback' => [ self::class, 'label_search' ] ] + $perm ] );
 	}
 
 	public static function require_access(): bool {
@@ -154,5 +159,40 @@ final class ContentRest {
 	public static function shares_revoke( \WP_REST_Request $r ): \WP_REST_Response {
 		$g = self::gate(); if ( $g ) { return $g; }
 		return new \WP_REST_Response( [ 'ok' => ShareRepository::revoke( self::uid(), (int) $r['id'] ) ], 200 );
+	}
+
+	// ── Drei-Wort-Label (§32) ─────────────────────────────────────────────────────
+	/** Nur der Autor des Adventures (oder Administer) darf den Drei-Wort-Namen setzen. */
+	private static function owns_adventure( int $id ): bool {
+		$post = get_post( $id );
+		if ( ! $post instanceof \WP_Post || 'liw_adventure' !== $post->post_type ) {
+			return false;
+		}
+		return (int) $post->post_author === self::uid() || current_user_can( Roles::CAP_ADMINISTER );
+	}
+
+	public static function label_get( \WP_REST_Request $r ): \WP_REST_Response {
+		$g = self::gate(); if ( $g ) { return $g; }
+		return new \WP_REST_Response( [ 'ok' => true, 'label' => ThreeWordLabel::get( (int) $r['id'] ) ], 200 );
+	}
+
+	public static function label_put( \WP_REST_Request $r ): \WP_REST_Response {
+		$g = self::gate(); if ( $g ) { return $g; }
+		if ( ! self::owns_adventure( (int) $r['id'] ) ) {
+			return new \WP_REST_Response( [ 'ok' => false, 'reason' => 'forbidden' ], 403 );
+		}
+		$res = ThreeWordLabel::set(
+			(int) $r['id'],
+			(string) $r->get_param( 'term_1' ),
+			(string) $r->get_param( 'term_2' ),
+			(string) $r->get_param( 'term_3' ),
+			(string) $r->get_param( 'synonyms' )
+		);
+		return new \WP_REST_Response( $res, 200 );
+	}
+
+	public static function label_search( \WP_REST_Request $r ): \WP_REST_Response {
+		$g = self::gate(); if ( $g ) { return $g; }
+		return new \WP_REST_Response( [ 'ok' => true, 'results' => ThreeWordLabel::search( (string) $r->get_param( 'q' ) ) ], 200 );
 	}
 }

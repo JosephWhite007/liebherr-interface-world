@@ -79,7 +79,7 @@
 		f.querySelectorAll( '[name]' ).forEach( function ( el ) {
 			body[ el.name ] = ( 'checkbox' === el.type ) ? ( el.checked ? 1 : 0 ) : el.value;
 		} );
-		api( path, 'POST', body, rootFor( f ) ).then( function ( d ) { if ( d && false !== d.ok ) { location.reload(); } } );
+		api( path, f.getAttribute( 'data-liw-method' ) || 'POST', body, rootFor( f ) ).then( function ( d ) { if ( d && false !== d.ok ) { location.reload(); } } );
 	} );
 	// Buttons mit data-liw-act="<pfad>" (+ optional data-liw-method) lösen eine Aktion aus; danach neu laden.
 	document.addEventListener( 'click', function ( ev ) {

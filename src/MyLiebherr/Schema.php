@@ -70,6 +70,11 @@ final class Schema {
 		return $wpdb->prefix . 'liw_myl_machine';
 	}
 
+	public static function three_word_table(): string {
+		global $wpdb;
+		return $wpdb->prefix . 'liw_myl_three_word_label';
+	}
+
 	public static function create_tables(): void {
 		global $wpdb;
 		$charset = $wpdb->get_charset_collate();
@@ -236,5 +241,22 @@ final class Schema {
 			PRIMARY KEY (id),
 			KEY idx_user (user_id)
 		) {$charset} COMMENT='Liebherr My Liebherr – persoenlich zugeordnete Maschinen';" );
+
+		$tw = self::three_word_table();
+		dbDelta( "CREATE TABLE {$tw} (
+			id               BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+			object_type      VARCHAR(24)  NOT NULL DEFAULT 'adventure',
+			object_id        BIGINT UNSIGNED NOT NULL,
+			locale           VARCHAR(8)   NOT NULL DEFAULT 'de',
+			term_1           VARCHAR(60)  NOT NULL DEFAULT '',
+			term_2           VARCHAR(60)  NOT NULL DEFAULT '',
+			term_3           VARCHAR(60)  NOT NULL DEFAULT '',
+			synonyms         VARCHAR(255) NOT NULL DEFAULT '',
+			taxonomy_version VARCHAR(16)  NOT NULL DEFAULT '1',
+			created_at       DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY (id),
+			UNIQUE KEY uniq_object_locale (object_type, object_id, locale),
+			KEY idx_terms (term_1, term_2, term_3)
+		) {$charset} COMMENT='Liebherr My Liebherr – normierte Drei-Wort-Namen Maschine Problem Handlung';" );
 	}
 }
