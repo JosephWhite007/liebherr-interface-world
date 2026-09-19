@@ -945,6 +945,13 @@ try {
 	$__emg_c = \Liebherr\InterfaceWorld\Emergency\EmergencyChallenge::create( $__emg_secret, time() );
 	liw_st_check( 'Emergency: Challenge einstellig (1..9) + richtige Antwort verifiziert', $__emg_c['a'] >= 1 && $__emg_c['a'] <= 9 && $__emg_c['b'] >= 1 && $__emg_c['b'] <= 9 && true === \Liebherr\InterfaceWorld\Emergency\EmergencyChallenge::verify( $__emg_c['token'], $__emg_c['a'] + $__emg_c['b'], $__emg_secret, time() )['ok'] );
 	liw_st_check( 'Emergency: REST-Namespace registriert (liw-emg/v1)', in_array( 'liw-emg/v1', rest_get_server()->get_namespaces(), true ) );
+	// JS-freier Fallback (alpha.79).
+	liw_st_check( 'Emergency: Koffer-Button ist Link auf JS-freien Fallback (?liw_help=1)', str_contains( $__emg_sc, '<a ' ) && str_contains( $__emg_sc, 'liw_help=1' ) );
+	$__emg_ch = \Liebherr\InterfaceWorld\Emergency\EmergencyChallenge::create( 'st-secret', time() );
+	$__emg_form = \Liebherr\InterfaceWorld\Emergency\EmergencyController::fallback_page_html( '/adventures/', '', '', $__emg_ch );
+	liw_st_check( 'Emergency: Fallback-Formular (POST + verstecktes Token + Aufgabe, JS-frei)', str_contains( $__emg_form, 'method="post"' ) && str_contains( $__emg_form, 'name="liw_emg_token"' ) && str_contains( $__emg_form, 'liw-emg-q' ) && str_contains( $__emg_form, '<!doctype html>' ) );
+	$__emg_area = \Liebherr\InterfaceWorld\Emergency\EmergencyController::fallback_page_html( '/adventures/', '', '<section class="liw-emg-hub">X</section>', $__emg_ch );
+	liw_st_check( 'Emergency: Fallback zeigt bei Erfolg die Area + Zurueck-Link', str_contains( $__emg_area, 'liw-emg-hub' ) && str_contains( $__emg_area, 'liw-emg-fallback__back' ) );
 
 	// ── [9] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
 	echo "\n[9] Programmierlogbuch / To-Dos\n";

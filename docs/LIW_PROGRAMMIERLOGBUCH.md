@@ -12,6 +12,16 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.79 – Hilfe-Koffer: JS-freier Fallback-Pfad (Barrierefreiheit)
+
+**Geändert:** `src/Emergency/EmergencyController.php` – Koffer-Button ist jetzt ein `<a>` auf den Fallback
+(`?liw_help=1&from=<Ort>`); das Overlay-JS fängt den Klick weiterhin ab (progressive Enhancement). Neuer
+Handler `maybe_render_fallback()` an `template_redirect` (Priorität 1, VOR `redirect_canonical`) rendert
+ohne JS eine eigenständige Emergency-Seite: serverseitiges Aufgaben-Formular (POST) → bei richtiger Antwort
+die Emergency-Area (`fallback_page_html()`, gleiche Engines wie REST/Overlay, keine Logik-Duplizierung;
+`noindex`, `nocache_headers`). `scripts/liw-selftest.php` (+3 Checks). Live per curl verifiziert (GET-Formular
+→ POST → Area). FALLE: ohne Prio 1 fing `redirect_canonical` das GET ab (302 → leerer Body). Bump alpha.78 -> alpha.79.
+
 ## 0.1.0-alpha.78 – Hilfe-Koffer & Emergency-Area (plattformweiter Hilfeassistent)
 
 **Neu:** `src/Emergency/EmergencyChallenge.php` (reine, signierte Rechenaufgabe mit ZWEI EINSTELLIGEN

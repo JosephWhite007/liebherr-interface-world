@@ -33,6 +33,7 @@ final class EmergencyController {
 		add_action( 'admin_enqueue_scripts', [ self::class, 'enqueue' ] );
 		add_action( 'wp_footer', [ self::class, 'render_button' ], 99 );
 		add_action( 'admin_footer', [ self::class, 'render_button' ], 99 );
+		add_action( 'template_redirect', [ self::class, 'maybe_render_fallback' ], 1 ); // JS-freier Pfad, vor redirect_canonical (Prio 10).
 		add_shortcode( self::SHORTCODE, [ self::class, 'shortcode' ] );
 		add_filter( 'style_loader_src', [ self::class, 'bust' ], 9999, 2 );
 		add_filter( 'script_loader_src', [ self::class, 'bust' ], 9999, 2 );
@@ -110,9 +111,105 @@ final class EmergencyController {
 		$cls   = 'liw-emg-dot' . ( $floating ? ' liw-emg-dot--float' : ' liw-emg-dot--inline' );
 		$label = esc_attr__( 'Hilfe – Emergency-Area öffnen', 'liebherr-interface-world' );
 		$icon  = esc_url( LIW_URL . 'assets/img/liw-emergency-suitcase.svg' );
-		return '<button type="button" class="' . esc_attr( $cls ) . '" data-liw-emg aria-label="' . $label . '" title="' . $label . '">'
+		// Echter Link auf den JS-freien Fallback; das Overlay-JS fängt den Klick ab (progressive Enhancement).
+		return '<a href="' . esc_url( self::fallback_url() ) . '" class="' . esc_attr( $cls ) . '" role="button" data-liw-emg aria-label="' . $label . '" title="' . $label . '">'
 			. '<span class="liw-emg-dot__ico" style="background-image:url(' . $icon . ')" aria-hidden="true"></span>'
-			. '</button>';
+			. '</a>';
+	}
+
+	/** Ziel-URL des JS-freien Fallbacks – trägt den aktuellen Ort als Kontext mit. */
+	private static function fallback_url(): string {
+		$from = is_admin()
+			? 'admin'
+			: ( isset( $_SERVER['REQUEST_URI'] ) ? (string) strtok( (string) wp_unslash( $_SERVER['REQUEST_URI'] ), '?' ) : '/' );
+		return add_query_arg( [ 'liw_help' => 1, 'from' => $from ], home_url( '/' ) );
+	}
+
+	// ── JS-freier Fallback (Barrierefreiheit) ────────────────────────────────
+	/**
+	 * Rendert bei ?liw_help=1 eine eigenständige Emergency-Seite: serverseitiges Aufgaben-Formular (POST) →
+	 * bei richtiger Antwort die Emergency-Area. Nutzt dieselben Engines wie der REST-/Overlay-Pfad (keine
+	 * Logik-Duplizierung). Läuft nur im Frontend (template_redirect); das Overlay-JS fängt den Klick sonst ab.
+	 */
+	public static function maybe_render_fallback(): void {
+		if ( ! isset( $_GET['liw_help'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- öffentliche Hilfe, kein Statuswechsel
+			return;
+		}
+		if ( ! apply_filters( 'liw_emergency_enabled', true ) ) {
+			return;
+		}
+		$from   = isset( $_GET['from'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['from'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$secret = self::secret();
+		$note   = '';
+		$hub    = '';
+		$method = isset( $_SERVER['REQUEST_METHOD'] ) ? strtoupper( (string) $_SERVER['REQUEST_METHOD'] ) : 'GET';
+
+		if ( 'POST' === $method && isset( $_POST['liw_emg_token'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- signiertes Challenge-Token ersetzt Nonce, kein Statuswechsel
+			$token  = sanitize_text_field( wp_unslash( (string) $_POST['liw_emg_token'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$answer = isset( $_POST['liw_emg_answer'] ) ? (int) $_POST['liw_emg_answer'] : PHP_INT_MIN; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$res    = EmergencyChallenge::verify( $token, $answer, $secret, time() );
+			if ( $res['ok'] ) {
+				$used_key = 'liw_emg_used_' . $res['nonce'];
+				if ( '' !== $res['nonce'] && false !== get_transient( $used_key ) ) {
+					$note = __( 'Diese Aufgabe wurde bereits verwendet.', 'liebherr-interface-world' );
+				} else {
+					if ( '' !== $res['nonce'] ) {
+						set_transient( $used_key, 1, self::USED_TTL );
+					}
+					$ctx = ( 'admin' === $from ) ? 'admin' : HelpTopicCatalog::detect( $from, false, '' );
+					$hub = self::render_hub( $ctx );
+				}
+			} elseif ( 'expired' === $res['reason'] ) {
+				$note = __( 'Aufgabe abgelaufen. Bitte lösen Sie die neue Aufgabe.', 'liebherr-interface-world' );
+			} elseif ( 'wrong' === $res['reason'] ) {
+				$note = __( 'Leider falsch. Bitte lösen Sie die neue Aufgabe.', 'liebherr-interface-world' );
+			} else {
+				$note = __( 'Bitte lösen Sie die Aufgabe.', 'liebherr-interface-world' );
+			}
+		}
+
+		$challenge = EmergencyChallenge::create( $secret, time() );
+		if ( ! headers_sent() ) {
+			header( 'Content-Type: text/html; charset=utf-8' );
+			nocache_headers();
+		}
+		echo self::fallback_page_html( $from, $note, $hub, $challenge ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- in fallback_page_html escaped.
+		exit;
+	}
+
+	/** Baut die vollständige Fallback-Seite (testbar). Bei gefülltem $hub die Area, sonst das Aufgaben-Formular. */
+	public static function fallback_page_html( string $from, string $note, string $hub, array $challenge ): string {
+		$css   = esc_url( LIW_URL . 'assets/css/liw-emergency.css' );
+		$title = __( 'Hilfe – Emergency-Area', 'liebherr-interface-world' );
+		$home  = esc_url( home_url( '/' ) );
+
+		if ( '' !== $hub ) {
+			$body = $hub . '<p class="liw-emg-fallback__back"><a href="' . $home . '">' . esc_html( __( 'Zurück zur Seite', 'liebherr-interface-world' ) ) . '</a></p>';
+		} else {
+			$action = esc_url( add_query_arg( [ 'liw_help' => 1, 'from' => $from ], home_url( '/' ) ) );
+			$body   = '<h2 class="liw-emg-modal__title">' . esc_html( $title ) . '</h2>';
+			if ( '' !== $note ) {
+				$body .= '<p class="liw-emg-note">' . esc_html( $note ) . '</p>';
+			}
+			$body .= '<p class="liw-emg-ask">' . esc_html( __( 'Bitte lösen Sie zum Eintritt in die Emergency-Area diese Aufgabe:', 'liebherr-interface-world' ) ) . '</p>';
+			$body .= '<p class="liw-emg-q">' . esc_html( EmergencyChallenge::question( (int) $challenge['a'], (int) $challenge['b'] ) ) . '</p>';
+			$body .= '<form class="liw-emg-form" method="post" action="' . $action . '">';
+			$body .= '<input type="hidden" name="liw_emg_token" value="' . esc_attr( (string) $challenge['token'] ) . '" />';
+			$body .= '<label class="liw-emg-form__lab" for="liw-emg-answer">' . esc_html( __( 'Ergebnis', 'liebherr-interface-world' ) ) . '</label>';
+			$body .= '<input class="liw-emg-form__inp" id="liw-emg-answer" name="liw_emg_answer" type="number" inputmode="numeric" autocomplete="off" required />';
+			$body .= '<button class="liw-emg-form__go" type="submit">' . esc_html( __( 'Eintreten', 'liebherr-interface-world' ) ) . '</button>';
+			$body .= '</form>';
+		}
+
+		return '<!doctype html><html lang="de"><head><meta charset="utf-8" />'
+			. '<meta name="viewport" content="width=device-width, initial-scale=1" />'
+			. '<meta name="robots" content="noindex,nofollow" />'
+			. '<title>' . esc_html( $title ) . '</title>'
+			. '<link rel="stylesheet" href="' . $css . '" />'
+			. '<style>body.liw-emg-fallback{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0c0e14;padding:16px;}body.liw-emg-fallback .liw-emg-modal{position:relative;}</style>'
+			. '</head><body class="liw-emg-fallback">'
+			. '<main class="liw-emg-modal" role="main">' . $body . '</main>'
+			. '</body></html>';
 	}
 
 	// ── REST ──────────────────────────────────────────────────────────────
