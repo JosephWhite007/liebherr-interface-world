@@ -610,8 +610,13 @@ try {
 	liw_st_check( 'Intro: Overlay ohne JS hidden (kein Trap)', ( bool ) preg_match( '/<div class="liw-intro"[^>]*\shidden>/', $__intro ) );
 	liw_st_check( 'Intro: Sternenhimmel + Bühne + Fenster', str_contains( $__intro, 'liw-intro__sky' ) && str_contains( $__intro, 'liw-intro__stage' ) && str_contains( $__intro, 'liw-intro__window' ) );
 	liw_st_check( 'Intro: Nutzungsbedingungen aufklappbar', str_contains( $__intro, 'liw-intro__terms-toggle' ) && str_contains( $__intro, 'aria-controls="liw-intro-terms"' ) );
-	liw_st_check( 'Intro: Rechen-Gate (zwei zweistellige Zahlen, data-liw-sum)', ( bool ) preg_match( '/data-liw-sum="(\d+)"/', $__intro, $__m ) && (int) $__m[1] >= 20 && (int) $__m[1] <= 198 && str_contains( $__intro, 'liw-intro__answer' ) );
-	liw_st_check( 'Intro: Summe passt zur angezeigten Gleichung', ( function () use ( $__intro ): bool { if ( ! preg_match( '/(\d+) \+ (\d+) =/', $__intro, $e ) || ! preg_match( '/data-liw-sum="(\d+)"/', $__intro, $s ) ) { return false; } return ( (int) $e[1] + (int) $e[2] ) === (int) $s[1]; } )() );
+	// Rechen-Gate seit alpha.88 über den zentralen ChallengeService, cache-sicher: KEINE Summe im (gecachten) HTML.
+	liw_st_check( 'Intro: Gate cache-sicher – keine Summe im HTML, REST-Basis + Antwortfeld vorhanden', ! str_contains( $__intro, 'data-liw-sum' ) && str_contains( $__intro, 'data-liw-rest' ) && str_contains( $__intro, 'data-liw-eq' ) && str_contains( $__intro, 'liw-intro__answer' ) );
+	liw_st_check( 'Intro: REST-Namespace liw-intro/v1 registriert', in_array( 'liw-intro/v1', rest_get_server()->get_namespaces(), true ) );
+	$__intro_ch = ( function () { $r = new \WP_REST_Request( 'GET', '/liw-intro/v1/challenge' ); return rest_do_request( $r )->get_data(); } )();
+	$__intro_ok = ( function () use ( $__intro_ch ) { $r = new \WP_REST_Request( 'POST', '/liw-intro/v1/verify' ); $r->set_param( 'token', $__intro_ch['token'] ); $r->set_param( 'answer', (int) $__intro_ch['a'] + (int) $__intro_ch['b'] ); return rest_do_request( $r )->get_data(); } )();
+	$__intro_no = ( function () use ( $__intro_ch ) { $r = new \WP_REST_Request( 'POST', '/liw-intro/v1/verify' ); $r->set_param( 'token', $__intro_ch['token'] ); $r->set_param( 'answer', 0 ); return rest_do_request( $r )->get_data(); } )();
+	liw_st_check( 'Intro: ChallengeService-Gate zweistellig, richtig=ok / falsch=nicht ok (serverseitig)', $__intro_ch['a'] >= 10 && $__intro_ch['a'] <= 99 && ! empty( $__intro_ok['ok'] ) && empty( $__intro_no['ok'] ) );
 	liw_st_check( 'Intro: Content-Modell hat intro-Zweig', isset( \Liebherr\InterfaceWorld\Settings\LocalIntelligenceContent::defaults()['intro']['title'] ) );
 	liw_st_check( 'Intro: Nutzungsbedingungen 5.1–5.8 als HTML gerendert', str_contains( $__intro, 'liw-intro__terms-section' ) && str_contains( $__intro, '5.1 Prototypstatus' ) && str_contains( $__intro, '5.8 Rechtlicher Freigabevorbehalt' ) && str_contains( $__intro, '<ul>' ) && str_contains( $__intro, '<ol>' ) );
 	liw_st_check( 'Intro: Terms-Renderer escaped (kein rohes <script>)', ! str_contains( \Liebherr\InterfaceWorld\Frontend\IntroOverlay::terms_html( "## Titel\n- <script>alert(1)</script>" ), '<script>' ) );

@@ -12,6 +12,19 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.88 – Redundanz-Abbau: Intro-Gate auf zentralen ChallengeService
+
+**Geändert:** `src/Frontend/IntroOverlay.php` – das Rechen-Gate des LI-Intro-Overlays nutzt jetzt den
+zentralen `Cvf\ChallengeService` (ADR-LIW-CVF-001 §5) statt eigener `wp_rand`-Logik. **Cache-sicher**: die
+Aufgabe wird NICHT mehr ins (WP-Rocket-gecachte) HTML eingebettet (`data-liw-sum` entfernt), sondern per
+REST geholt — neue Routen `GET liw-intro/v1/challenge` + `POST liw-intro/v1/verify` (öffentlich, kein Nonce),
+Secret = `AccessService::secret()`. Die Summe verlässt den Server nie; Prüfung serverseitig (signiert/TTL).
+`assets/js/liebherr-frontend.js` – Gate lädt die Aufgabe (`data-liw-eq` gefüllt), prüft per POST; Soft-Gate
+bleibt (Netzwerkfehler blockiert nicht), bei „expired" neue Aufgabe. `scripts/liw-selftest.php` – zwei
+`data-liw-sum`-Prüfungen ersetzt durch cache-sichere Checks + REST-Round-Trip. Live verifiziert (20+44 → frei).
+Damit ist eins der zwei doppelten Rechen-Gates aus §5 abgelöst (Download-Consent-Plugin = separates Repo,
+spätere Etappe). Tests WP-frei 476 / Docker 375. Bump alpha.87 -> alpha.88.
+
 ## 0.1.0-alpha.87 – CVF Phase 2: Backoffice-Board (Administration)
 
 **Neu:** `src/Admin/Pages/CvfBoardPage.php` – Menüpunkt „🧭 Customer View Flow" (Untermenü, Zugriff über

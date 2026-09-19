@@ -390,10 +390,20 @@
 		var input = overlay.querySelector( '.liw-intro__answer' );
 		var enter = overlay.querySelector( '.liw-intro__enter' );
 		var hint  = overlay.querySelector( '.liw-intro__hint' );
-		var sum   = parseInt( overlay.getAttribute( 'data-liw-sum' ), 10 );
+		var eq    = overlay.querySelector( '[data-liw-eq]' );
+		var rest  = overlay.getAttribute( 'data-liw-rest' ) || '';
+		var token = '';
 
-		function correct() { return parseInt( input.value, 10 ) === sum; }
-		function refresh() { enter.disabled = ! correct(); }
+		// Cache-sicher: Aufgabe serverseitig holen (nicht im gecachten HTML), Summe bleibt am Server.
+		function loadChallenge() {
+			if ( ! rest ) { return; }
+			fetch( rest + 'challenge', { headers: { 'Accept': 'application/json' } } )
+				.then( function ( r ) { return r.json(); } )
+				.then( function ( d ) { if ( d && d.token ) { token = d.token; if ( eq ) { eq.textContent = d.question; } } } )
+				.catch( function () {} );
+		}
+
+		function refresh() { enter.disabled = ( '' === input.value.replace( /\s/g, '' ) ); }
 
 		function cleanup() {
 			document.documentElement.classList.remove( 'liw-intro-lock' );
@@ -415,15 +425,38 @@
 		}
 
 		if ( form && input && enter ) {
+			loadChallenge();
 			input.addEventListener( 'input', refresh );
 			form.addEventListener( 'submit', function ( e ) {
 				e.preventDefault();
-				if ( ! correct() ) {
-					if ( hint ) { hint.textContent = 'Das Ergebnis stimmt noch nicht – bitte erneut rechnen.'; }
+				var ans = parseInt( input.value, 10 );
+				if ( isNaN( ans ) ) {
+					if ( hint ) { hint.textContent = 'Bitte eine Zahl eingeben.'; }
 					input.focus();
 					return;
 				}
-				dismiss();
+				// Soft-Gate: ohne erreichbaren Server nicht blockieren (rein niedrigschwellige Mensch-Prüfung).
+				if ( ! rest || ! token ) { dismiss(); return; }
+				enter.disabled = true;
+				fetch( rest + 'verify', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify( { token: token, answer: ans } )
+				} )
+					.then( function ( r ) { return r.json(); } )
+					.then( function ( d ) {
+						if ( d && d.ok ) { dismiss(); return; }
+						enter.disabled = false;
+						if ( d && d.reason === 'expired' ) {
+							if ( hint ) { hint.textContent = 'Aufgabe abgelaufen – neue Aufgabe.'; }
+							input.value = '';
+							loadChallenge();
+						} else {
+							if ( hint ) { hint.textContent = 'Das Ergebnis stimmt noch nicht – bitte erneut rechnen.'; }
+							input.focus();
+						}
+					} )
+					.catch( function () { dismiss(); } ); // Netzwerkfehler: Soft-Gate nicht blockieren.
 			} );
 			try { input.focus( { preventScroll: true } ); } catch ( e ) { input.focus(); }
 		}
