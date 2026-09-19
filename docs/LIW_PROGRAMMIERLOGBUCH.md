@@ -21,6 +21,14 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.105 – Browser-Favicon: geliefertes favicon.ico (Multi-Size)
+
+**Neu:** `assets/img/favicon.ico` (geliefert, 16/32px Multi-Size). **Geändert:** `src/Frontend/FaviconService.php`
+– `filter_site_icon_url()` bevorzugt jetzt die favicon.ico für die Browser-Zeile (sonst PNG/SVG-Globus). Damit
+zeigt der Tab (Front + wp-admin) die .ico; eine Quelle, keine Dublette. Der goldene Globus bleibt als
+Toolbar-/Login-Logo. `/favicon.ico` → 302 auf die .ico verifiziert. `scripts/liw-selftest.php` – zwei
+Favicon-Prüfungen um favicon.ico ergänzt. Tests WP-frei 511 / Docker 393. Bump alpha.104 -> alpha.105.
+
 ## 0.1.0-alpha.104 – Adventures: Liebherr-Startbild (Hero) oben
 
 **Geändert:** `src/Adventures/AdventuresView.php` – neue `hero_image_url()` (freigegebenes Mediathek-Bild via

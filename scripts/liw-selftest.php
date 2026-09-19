@@ -932,7 +932,7 @@ try {
 	// Favicon (goldener Planet, alpha.49). Icon-<link>s liefert Core (wp_site_icon) via unserem
 	// get_site_icon_url-Filter – EINE Quelle, keine eigenen <link> mehr (alpha.77, Dubletten-Fix).
 	$__fav_core = ( function (): string { ob_start(); if ( function_exists( 'wp_site_icon' ) ) { wp_site_icon(); } return (string) ob_get_clean(); } )();
-	liw_st_check( 'Favicon: Globus-Icon-<link> im <head> (von Core, ohne gesetztes Website-Icon)', get_option( 'site_icon' ) ? true : ( str_contains( $__fav_core, 'rel="icon"' ) && ( str_contains( $__fav_core, 'liw-planet-icon.svg' ) || str_contains( $__fav_core, 'goheal-gold-planet' ) ) ) );
+	liw_st_check( 'Favicon: Globus-Icon-<link> im <head> (von Core, ohne gesetztes Website-Icon)', get_option( 'site_icon' ) ? true : ( str_contains( $__fav_core, 'rel="icon"' ) && ( str_contains( $__fav_core, 'favicon.ico' ) || str_contains( $__fav_core, 'liw-planet-icon.svg' ) || str_contains( $__fav_core, 'goheal-gold-planet' ) ) ) );
 	// Kein doppelter Icon-<link> aus unserem output() (nur noch Marken-CSS).
 	$__fav = ( function (): string { ob_start(); \Liebherr\InterfaceWorld\Frontend\FaviconService::output(); return (string) ob_get_clean(); } )();
 	liw_st_check( 'Favicon: output() gibt KEINEN eigenen Icon-<link> mehr aus (keine Dublette)', ! str_contains( $__fav, 'rel="icon"' ) );
@@ -941,7 +941,7 @@ try {
 	liw_st_check( 'Brand-Logo: Login-Link → Seite, Login-Text → Seitenname', home_url( '/' ) === apply_filters( 'login_headerurl', 'x' ) && get_bloginfo( 'name' ) === apply_filters( 'login_headertext', 'x' ) );
 	// Browser-Tab-Favicon: /favicon.ico → Globus statt grauem WP-„W" (get_site_icon_url-Filter, alpha.76).
 	$__fav_url = \Liebherr\InterfaceWorld\Frontend\FaviconService::filter_site_icon_url( includes_url( 'images/w-logo-gray-white-bg.png' ), 32, 0 );
-	liw_st_check( 'Favicon.ico: Globus statt WP-„W" (nur ohne gesetztes Website-Icon)', get_option( 'site_icon' ) ? true : ( str_contains( $__fav_url, 'liw-planet-icon.svg' ) || str_contains( $__fav_url, 'goheal-gold-planet' ) ) );
+	liw_st_check( 'Favicon.ico: Globus statt WP-„W" (nur ohne gesetztes Website-Icon)', get_option( 'site_icon' ) ? true : ( str_contains( $__fav_url, 'favicon.ico' ) || str_contains( $__fav_url, 'liw-planet-icon.svg' ) || str_contains( $__fav_url, 'goheal-gold-planet' ) ) );
 	// Kein Doppelglobus in der Adminleiste: Core-Seitennamen-Icon abgeschaltet (alpha.80).
 	liw_st_check( 'Adminleiste: kein zweiter Globus (Seitennamen-Icon aus)', false === apply_filters( 'wp_admin_bar_show_site_icons', true ) );
 

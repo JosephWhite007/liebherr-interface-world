@@ -76,6 +76,11 @@ final class FaviconService {
 		if ( get_option( 'site_icon' ) ) {
 			return $url; // Echtes, im Customizer gesetztes Website-Icon behält Vorrang.
 		}
+		// Vorgabe für die Browser-Zeile: geliefertes favicon.ico (Multi-Size), sofern hinterlegt.
+		$ico = 'assets/img/favicon.ico';
+		if ( is_readable( LIW_PATH . $ico ) ) {
+			return LIW_URL . $ico;
+		}
 		$png = 'assets/img/goheal-gold-planet-192.png';
 		if ( is_readable( LIW_PATH . $png ) ) {
 			return LIW_URL . $png;
