@@ -471,6 +471,31 @@ $LIB    = '\Liebherr\InterfaceWorld\Admin\Pages\LocalIntelligenceBoardPage';
 $li_scn = $LIB::parse_scenarios( "A | Variante A | Basis\n- Absatz | 100\n- Mix | 70/30\nB | Variante B | Wachstum\n- Absatz | 150" );
 liw_assert( 'LI-Szenario-Parser: 2 Szenarien, A=2 Zeilen (Wert 100), B summary „Wachstum"', 2 === count( $li_scn ) && 'A' === $li_scn[0]['key'] && 2 === count( $li_scn[0]['rows'] ) && '100' === $li_scn[0]['rows'][0]['value'] && 'B' === $li_scn[1]['key'] && 'Wachstum' === $li_scn[1]['summary'], $checks, $failures );
 
+// Emergency – Hilfe-Koffer (einstellige Rechenaufgabe) + kontextbezogene Emergency-Area (alpha.78).
+require_once $root . '/src/Emergency/EmergencyChallenge.php';
+require_once $root . '/src/Emergency/HelpTopicCatalog.php';
+require_once $root . '/src/Emergency/EmergencyController.php';
+$EC = '\Liebherr\InterfaceWorld\Emergency\EmergencyChallenge';
+$__now = 1000000;
+$__c   = $EC::create( 'secret-xyz', $__now );
+liw_assert( 'EmergencyChallenge: zwei EINSTELLIGE Summanden (1..9) + Token + Ablauf in der Zukunft', $__c['a'] >= 1 && $__c['a'] <= 9 && $__c['b'] >= 1 && $__c['b'] <= 9 && '' !== $__c['token'] && $__c['expires'] > $__now, $checks, $failures );
+liw_assert( 'EmergencyChallenge: question ohne Loesung ("a + b = ?")', ( $__c['a'] . ' + ' . $__c['b'] . ' = ?' ) === $EC::question( $__c['a'], $__c['b'] ), $checks, $failures );
+$__sum = $__c['a'] + $__c['b'];
+liw_assert( 'EmergencyChallenge: richtige Antwort verifiziert (ok)', true === $EC::verify( $__c['token'], $__sum, 'secret-xyz', $__now )['ok'], $checks, $failures );
+liw_assert( 'EmergencyChallenge: falsche Antwort → ok=false, reason=wrong', false === $EC::verify( $__c['token'], $__sum + 1, 'secret-xyz', $__now )['ok'] && 'wrong' === $EC::verify( $__c['token'], $__sum + 1, 'secret-xyz', $__now )['reason'], $checks, $failures );
+liw_assert( 'EmergencyChallenge: abgelaufenes Token → reason=expired', 'expired' === $EC::verify( $__c['token'], $__sum, 'secret-xyz', $__c['expires'] + 1 )['reason'], $checks, $failures );
+liw_assert( 'EmergencyChallenge: falsches Secret → reason=invalid (Signatur)', 'invalid' === $EC::verify( $__c['token'], $__sum, 'anderes-secret', $__now )['reason'], $checks, $failures );
+liw_assert( 'EmergencyChallenge: manipuliertes Token → reason=invalid', 'invalid' === $EC::verify( $__c['token'] . 'x', $__sum, 'secret-xyz', $__now )['reason'], $checks, $failures );
+$HTC = '\Liebherr\InterfaceWorld\Emergency\HelpTopicCatalog';
+liw_assert( 'HelpTopicCatalog: Frontend-Pfad /intelligence-world/ → intelligence-world', 'intelligence-world' === $HTC::detect( '/intelligence-world/', false, '' ), $checks, $failures );
+liw_assert( 'HelpTopicCatalog: Admin-Seite liw-adventures → adventures', 'adventures' === $HTC::detect( '', true, 'liw-adventures' ), $checks, $failures );
+liw_assert( 'HelpTopicCatalog: unbekannter Admin-Kontext → admin, unbekanntes Frontend → default', 'admin' === $HTC::detect( '', true, 'irgendwas' ) && 'default' === $HTC::detect( '/impressum/', false, '' ), $checks, $failures );
+liw_assert( 'HelpTopicCatalog: unbekannter Schluessel faellt auf default zurueck', 'default' === $HTC::topic( 'gibtsnicht' )['key'], $checks, $failures );
+liw_assert( 'HelpTopicCatalog: allgemeine Schritte = GetHelpAssistant-SSOT (5, keine Duplikate)', 5 === count( $HTC::topic( 'default' )['steps'] ), $checks, $failures );
+$EMC = '\Liebherr\InterfaceWorld\Emergency\EmergencyController';
+$__hub = $EMC::render_hub( 'adventures' );
+liw_assert( 'EmergencyController: render_hub liefert Section mit Titel + <details>-Schritten', str_contains( $__hub, 'liw-emg-hub' ) && str_contains( $__hub, '<details>' ) && str_contains( $__hub, 'Adventures' ), $checks, $failures );
+
 // 3. strict_types=1 in jeder src/-Datei (Coding Standard, CLAUDE.md Abschnitt 5).
 echo "-- Coding Standard --\n";
 $iterator2 = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $root . '/src', FilesystemIterator::SKIP_DOTS ) );

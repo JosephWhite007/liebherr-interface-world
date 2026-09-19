@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Hilfe-Koffer">
+  <defs>
+    <linearGradient id="liwEmgG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ff9f45"/>
+      <stop offset="1" stop-color="#f4761f"/>
+    </linearGradient>
+  </defs>
+  <!-- Griff -->
+  <path d="M24 16v-3a5 5 0 0 1 5-5h6a5 5 0 0 1 5 5v3" fill="none" stroke="#c85a12" stroke-width="4" stroke-linecap="round"/>
+  <!-- Kofferkorpus -->
+  <rect x="8" y="16" width="48" height="38" rx="6" fill="url(#liwEmgG)" stroke="#c85a12" stroke-width="2"/>
+  <!-- Verschluss-Band -->
+  <rect x="8" y="30" width="48" height="6" fill="#c85a12" opacity="0.35"/>
+  <!-- Weißes Kreuz (Hilfe/Notfall) -->
+  <rect x="28" y="24" width="8" height="22" rx="2" fill="#fff"/>
+  <rect x="21" y="31" width="22" height="8" rx="2" fill="#fff"/>
+</svg>

@@ -12,6 +12,38 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.78 – Hilfe-Koffer & Emergency-Area (plattformweiter Hilfeassistent)
+
+**Neu:** `src/Emergency/EmergencyChallenge.php` (reine, signierte Rechenaufgabe mit ZWEI EINSTELLIGEN
+Zahlen 1–9; HMAC + TTL + Nonce; `create()/question()/make_token()/parse()/verify()`),
+`src/Emergency/HelpTopicCatalog.php` (reiner kontextbezogener Themenkatalog; `detect()/topic()/topics()`;
+allgemeine Schritte referenzieren `GetHelpAssistant` als SSOT – keine Duplikate),
+`src/Emergency/EmergencyController.php` (winziger Koffer-Punkt site-weit via `wp_footer`+`admin_footer`
+und Shortcode `[liw_emergency_suitcase]`; REST `liw-emg/v1` `GET /challenge` + `POST /verify` mit
+Einmalgebrauch via Transient; `render_hub()` = Emergency-Area; Secret in Option `liw_emg_secret`),
+`assets/js/liw-emergency.js` (Overlay: Aufgabe holen → prüfen → Emergency-Area inline anzeigen),
+`assets/css/liw-emergency.css` (16px oranger Punkt, bei Hover/Focus Koffer sichtbar; Modal-Overlay),
+`assets/img/liw-emergency-suitcase.svg` (oranger Hilfe-Koffer mit weißem Kreuz).
+**Geändert:** `src/Bootstrap.php` (`Emergency\EmergencyController::register()`),
+`tests/run-tests.php` (14 Asserts: Challenge-Roundtrip/expired/invalid/wrong, Katalog-Detect/Fallback,
+render_hub), `scripts/liw-selftest.php` (6 Checks inkl. REST-Namespace + einstellig). Live per Browser +
+REST-Round-Trip verifiziert (8+4 → Emergency-Area). Bump alpha.77 -> alpha.78.
+
+## 0.1.0-alpha.77 – Globus-Favicon nicht mehr doppelt (eine Quelle: Core)
+
+**Geändert:** `src/Frontend/FaviconService.php` – da `filter_site_icon_url()` `has_site_icon()` „wahr"
+macht, gibt WordPress-Core `wp_site_icon()` die Icon-`<link>`s in `wp_head`/`login_head` bereits selbst
+aus; unser eigener `<link rel="icon">` in `output()` entfiel (war Dublette), `output()` liefert nur noch
+das Marken-CSS. Für den Admin (Core hängt `wp_site_icon` nicht an `admin_head`) hängen wir dieselbe
+Core-Funktion an `admin_head`. `scripts/liw-selftest.php` angepasst (+1). Bump alpha.76 -> alpha.77.
+
+## 0.1.0-alpha.76 – Browser-Tab-Favicon zeigt Globus statt WP-„W"
+
+**Geändert:** `src/Frontend/FaviconService.php` – neuer Filter `get_site_icon_url`
+(`filter_site_icon_url()`): `/favicon.ico` leitet ohne gesetztes Website-Icon per Core auf das graue
+WP-Logo (`w-logo-gray-white-bg.png`) um; der Filter liefert stattdessen den Globus (echtes Customizer-
+Website-Icon behält Vorrang; PNG bevorzugt, sonst SVG). `scripts/liw-selftest.php` (+1). Bump alpha.75 -> alpha.76.
+
 ## 0.1.0-alpha.75 – Goldener Globus statt WordPress-Logo (Adminleiste + Login)
 
 **Geändert:** `src/Frontend/FaviconService.php` – `brand_logo_css()` (Globus-Hintergrund für

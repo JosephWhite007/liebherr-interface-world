@@ -933,6 +933,19 @@ try {
 	$__fav_url = \Liebherr\InterfaceWorld\Frontend\FaviconService::filter_site_icon_url( includes_url( 'images/w-logo-gray-white-bg.png' ), 32, 0 );
 	liw_st_check( 'Favicon.ico: Globus statt WP-„W" (nur ohne gesetztes Website-Icon)', get_option( 'site_icon' ) ? true : ( str_contains( $__fav_url, 'liw-planet-icon.svg' ) || str_contains( $__fav_url, 'goheal-gold-planet' ) ) );
 
+	// ── [8b] Emergency – Hilfe-Koffer & Emergency-Area (alpha.78) ────────────
+	echo "\n[8b] Emergency – Hilfe-Koffer\n";
+	$__emg_sc = do_shortcode( '[liw_emergency_suitcase]' );
+	liw_st_check( 'Emergency: Koffer-Shortcode rendert Button (data-liw-emg + Koffer-SVG)', str_contains( $__emg_sc, 'data-liw-emg' ) && str_contains( $__emg_sc, 'liw-emergency-suitcase.svg' ) );
+	liw_st_check( 'Emergency: Koffer-SVG-Asset vorhanden', is_readable( LIW_PATH . 'assets/img/liw-emergency-suitcase.svg' ) );
+	liw_st_check( 'Emergency: JS/CSS-Assets vorhanden', is_readable( LIW_PATH . 'assets/js/liw-emergency.js' ) && is_readable( LIW_PATH . 'assets/css/liw-emergency.css' ) );
+	$__emg_hub = \Liebherr\InterfaceWorld\Emergency\EmergencyController::render_hub( 'intelligence-world' );
+	liw_st_check( 'Emergency: render_hub liefert kontextbezogene Area (IW-Titel + <details>-Schritte)', str_contains( $__emg_hub, 'liw-emg-hub' ) && str_contains( $__emg_hub, 'Intelligence World' ) && str_contains( $__emg_hub, '<details>' ) );
+	$__emg_secret = 'st-secret';
+	$__emg_c = \Liebherr\InterfaceWorld\Emergency\EmergencyChallenge::create( $__emg_secret, time() );
+	liw_st_check( 'Emergency: Challenge einstellig (1..9) + richtige Antwort verifiziert', $__emg_c['a'] >= 1 && $__emg_c['a'] <= 9 && $__emg_c['b'] >= 1 && $__emg_c['b'] <= 9 && true === \Liebherr\InterfaceWorld\Emergency\EmergencyChallenge::verify( $__emg_c['token'], $__emg_c['a'] + $__emg_c['b'], $__emg_secret, time() )['ok'] );
+	liw_st_check( 'Emergency: REST-Namespace registriert (liw-emg/v1)', in_array( 'liw-emg/v1', rest_get_server()->get_namespaces(), true ) );
+
 	// ── [9] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
 	echo "\n[9] Programmierlogbuch / To-Dos\n";
 	liw_st_check( 'docs/LIW_PROGRAMMIERLOGBUCH.md vorhanden', is_readable( LIW_PATH . 'docs/LIW_PROGRAMMIERLOGBUCH.md' ) );

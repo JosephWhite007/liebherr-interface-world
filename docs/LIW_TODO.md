@@ -6,7 +6,26 @@ oder als offene Rückfrage an Joseph White dokumentiert wurden (Quelle jeweils a
 Sichtbar im Backend unter „Interface World → 📋 To-Dos". Wird bei jeder Aufgabe, die einen
 Punkt hier abschließt oder ergänzt, gepflegt.
 
-Stand: 19.09.2026 (0.1.0-alpha.61).
+Stand: 19.09.2026 (0.1.0-alpha.78).
+
+---
+
+## Auf Zuruf erledigt (ungeplant, nach Group A)
+
+- ~~**Browser-Tab-Favicon = Globus statt WP-„W".**~~ **ERLEDIGT (alpha.76/77):** `/favicon.ico` zeigt
+  über den Core-Filter `get_site_icon_url` den goldenen Globus; Icon-`<link>`s kommen aus EINER Quelle
+  (Core `wp_site_icon`), keine Dublette mehr. Echtes Customizer-Website-Icon behält Vorrang.
+- ~~**Hilfe-Koffer & Emergency-Area (plattformweit).**~~ **ERLEDIGT (alpha.78):** winziger oranger
+  Koffer-Punkt überall (Frontend + wp-admin, Shortcode `[liw_emergency_suitcase]`) → Overlay fragt zwei
+  EINSTELLIGE Zahlen (signiert, TTL, einmalig) → kontextbezogene Emergency-Area (universeller Hilfe-Hub;
+  allgemeine Schritte = GetHelp-SSOT). Offen (optional): geliefertes Koffer-PNG statt Platzhalter-SVG;
+  JS-freier Fallback-Pfad; spätere Zusammenführung der Rechen-Gates in den einheitlichen ChallengeService
+  (ADR-LIW-CVF-001 §5).
+
+### Customer View Flow & CAPDB — Phase 1 wartet auf Freigabe
+
+- **Integrationsplan `docs/ADR-LIW-CVF-001…md` erstellt (Phase-1-Gate, §19).** Kein Code bis zur Freigabe;
+  danach Phase 2 (Domänenmodell `liw_cvf_*` + ChallengeService). 5 offene Rückfragen im Dokument.
 
 ---
 

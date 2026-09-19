@@ -1,0 +1,142 @@
+/* Liebherr Emergency – Hilfe-Koffer & Emergency-Area. */
+
+/* Winziger Koffer-Punkt: gerade so als oranger Punkt erkennbar, bei Hover/Focus etwas größer. */
+.liw-emg-dot {
+	appearance: none;
+	-webkit-appearance: none;
+	border: 0;
+	padding: 0;
+	margin: 0;
+	cursor: pointer;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background: radial-gradient( circle at 50% 40%, #ff9f45, #f4761f 70% );
+	box-shadow: 0 1px 3px rgba( 0, 0, 0, 0.35 );
+	line-height: 0;
+	transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.liw-emg-dot__ico {
+	display: block;
+	width: 100%;
+	height: 100%;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 11px 11px;
+	opacity: 0; /* winzig: zuerst nur der orange Punkt, Koffer erscheint beim Vergrößern */
+	transition: opacity 0.15s ease;
+}
+.liw-emg-dot:hover,
+.liw-emg-dot:focus-visible {
+	transform: scale( 1.9 );
+	box-shadow: 0 2px 8px rgba( 0, 0, 0, 0.4 );
+	outline: none;
+}
+.liw-emg-dot:hover .liw-emg-dot__ico,
+.liw-emg-dot:focus-visible .liw-emg-dot__ico {
+	opacity: 1;
+}
+.liw-emg-dot--float {
+	position: fixed;
+	right: 14px;
+	bottom: 14px;
+	z-index: 100000; /* über der wp-admin-Leiste (z-index ~99999) */
+}
+.liw-emg-dot--inline {
+	display: inline-block;
+	vertical-align: middle;
+	margin: 0 0.25em;
+}
+
+/* Overlay „Plugin". */
+.liw-emg-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 100001;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 16px;
+	background: rgba( 12, 14, 20, 0.62 );
+	backdrop-filter: blur( 2px );
+}
+.liw-emg-modal {
+	position: relative;
+	width: 100%;
+	max-width: 440px;
+	max-height: 86vh;
+	overflow: auto;
+	background: #14161c;
+	color: #f2f4f8;
+	border: 1px solid rgba( 244, 118, 31, 0.5 );
+	border-radius: 14px;
+	box-shadow: 0 18px 50px rgba( 0, 0, 0, 0.55 );
+	padding: 22px 22px 26px;
+}
+.liw-emg-modal__close {
+	position: absolute;
+	top: 8px;
+	right: 10px;
+	appearance: none;
+	-webkit-appearance: none;
+	background: transparent;
+	border: 0;
+	color: #cfd4de;
+	font-size: 26px;
+	line-height: 1;
+	cursor: pointer;
+}
+.liw-emg-modal__close:hover { color: #fff; }
+.liw-emg-modal__title { margin: 0 0 8px; font-size: 20px; color: #ff9f45; }
+.liw-emg-ask { margin: 0 0 6px; color: #cfd4de; }
+.liw-emg-note { margin: 0 0 8px; color: #ffcf9a; font-weight: 600; }
+.liw-emg-q {
+	margin: 4px 0 14px;
+	font-size: 28px;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-align: center;
+}
+.liw-emg-form { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; }
+.liw-emg-form__lab { flex: 0 0 100%; font-size: 13px; color: #aeb4bf; }
+.liw-emg-form__inp {
+	flex: 1 1 auto;
+	min-width: 0;
+	padding: 10px 12px;
+	font-size: 18px;
+	border-radius: 8px;
+	border: 1px solid #3a3f4a;
+	background: #0d0f14;
+	color: #fff;
+}
+.liw-emg-form__go {
+	flex: 0 0 auto;
+	padding: 10px 18px;
+	font-size: 15px;
+	font-weight: 700;
+	border: 0;
+	border-radius: 8px;
+	cursor: pointer;
+	color: #241200;
+	background: linear-gradient( #ffb15e, #f4761f );
+}
+.liw-emg-form__go:disabled { opacity: 0.6; cursor: default; }
+.liw-emg-loading { color: #aeb4bf; }
+
+/* Emergency-Area (Hilfe-Hub) im Overlay. */
+.liw-emg-hub__title { margin: 0 0 8px; font-size: 20px; color: #ff9f45; }
+.liw-emg-hub__lead { margin: 0 0 12px; color: #cfd4de; }
+.liw-emg-hub__steps { list-style: none; margin: 0; padding: 0; }
+.liw-emg-hub__step { border-top: 1px solid #2a2f39; }
+.liw-emg-hub__step:first-child { border-top: 0; }
+.liw-emg-hub__step summary {
+	cursor: pointer;
+	padding: 10px 0;
+	font-weight: 600;
+	color: #eef1f6;
+}
+.liw-emg-hub__step p { margin: 0 0 12px; color: #c4c9d3; }
+
+@media ( prefers-reduced-motion: reduce ) {
+	.liw-emg-dot, .liw-emg-dot__ico { transition: none; }
+}
