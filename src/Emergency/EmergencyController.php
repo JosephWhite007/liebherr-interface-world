@@ -25,7 +25,24 @@ final class EmergencyController {
 	public const HANDLE      = 'liw-emergency';
 	public const SHORTCODE   = 'liw_emergency_suitcase';
 	private const SECRET_OPT = 'liw_emg_secret';
+	private const IMG_OPT     = 'liw_emergency_suitcase_image_id'; // Mediathek-Bild (Koffer) statt Platzhalter-SVG.
 	private const USED_TTL   = 900; // Einmal-Sperre einer eingelösten Aufgabe (s).
+
+	/**
+	 * URL des Koffer-Icons: gemäß CI-005 das freigegebene Mediathek-Bild (kleine thumbnail-Größe, damit die
+	 * hohe Auflösung nicht stört); sonst das Platzhalter-SVG. Bild per Option/Filter
+	 * `liw_emergency_suitcase_image_id` gesetzt.
+	 */
+	public static function icon_url(): string {
+		$id = (int) apply_filters( 'liw_emergency_suitcase_image_id', (int) get_option( self::IMG_OPT, 0 ) );
+		if ( $id > 0 && \Liebherr\InterfaceWorld\CoreBridge\MediaBridge::is_approved( $id ) ) {
+			$url = wp_get_attachment_image_url( $id, 'thumbnail' );
+			if ( is_string( $url ) && '' !== $url ) {
+				return $url;
+			}
+		}
+		return LIW_URL . 'assets/img/liw-emergency-suitcase.svg';
+	}
 
 	public static function register(): void {
 		add_action( 'rest_api_init', [ self::class, 'routes' ] );
@@ -78,7 +95,7 @@ final class EmergencyController {
 			'nonce'    => wp_create_nonce( 'wp_rest' ),
 			'isAdmin'  => is_admin(),
 			'adminPage'=> isset( $_GET['page'] ) ? sanitize_key( wp_unslash( (string) $_GET['page'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			'icon'     => esc_url_raw( LIW_URL . 'assets/img/liw-emergency-suitcase.svg' ),
+			'icon'     => esc_url_raw( self::icon_url() ),
 			'i18n'     => [
 				'title'    => __( 'Hilfe – Emergency', 'liebherr-interface-world' ),
 				'ask'      => __( 'Bitte lösen Sie zum Eintritt in die Emergency-Area diese Aufgabe:', 'liebherr-interface-world' ),
@@ -110,7 +127,7 @@ final class EmergencyController {
 	private static function button_html( bool $floating ): string {
 		$cls   = 'liw-emg-dot' . ( $floating ? ' liw-emg-dot--float' : ' liw-emg-dot--inline' );
 		$label = esc_attr__( 'Hilfe – Emergency-Area öffnen', 'liebherr-interface-world' );
-		$icon  = esc_url( LIW_URL . 'assets/img/liw-emergency-suitcase.svg' );
+		$icon  = esc_url( self::icon_url() );
 		// Echter Link auf den JS-freien Fallback; das Overlay-JS fängt den Klick ab (progressive Enhancement).
 		return '<a href="' . esc_url( self::fallback_url() ) . '" class="' . esc_attr( $cls ) . '" role="button" data-liw-emg aria-label="' . $label . '" title="' . $label . '">'
 			. '<span class="liw-emg-dot__ico" style="background-image:url(' . $icon . ')" aria-hidden="true"></span>'

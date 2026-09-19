@@ -21,6 +21,18 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.102 – Hilfe-Koffer nutzt geliefertes Mediathek-Motiv (statt Platzhalter-SVG)
+
+**Geändert:** `src/Emergency/EmergencyController.php` – neue `icon_url()`: liefert das freigegebene Mediathek-
+Bild des Koffers in kleiner `thumbnail`-Größe (die Originalauflösung 1448×1086 stört so nicht mehr), sonst das
+Platzhalter-SVG. Bild-ID über Option/Filter `liw_emergency_suitcase_image_id`; CI-005-Freigabe via
+`MediaBridge::is_approved`. `button_html()` + JS-Localize `icon` nutzen `icon_url()`. `scripts/liw-selftest.php`
+– zwei Prüfungen von SVG-Dateiname auf „Icon vorhanden" (background-image) gelockert (funktioniert mit SVG UND
+Mediathek-PNG). **Mediathek:** Attachment #3324 `GoHeal_EMERGENCY-Suitecase-A-LEVEL_001.png` — Option +
+`_liw_media_approved` sind NUR in der Dev-DB gesetzt; auf Staging/Live erneut setzen (Option auf die dortige
+Attachment-ID, Bild freigeben). Live verifiziert (echtes Koffer-Motiv am Get-Help-Titel + schwebend, Klick öffnet
+Overlay). Tests WP-frei 511 / Docker 393. Bump alpha.101 -> alpha.102.
+
 ## 0.1.0-alpha.101 – Hilfe-Koffer inline im „Get Help"-Abschnitt (Adventures)
 
 **Geändert:** `src/Adventures/GetHelpAssistant.php` – neben dem Titel „Get Help – geführte Hilfe" sitzt jetzt
