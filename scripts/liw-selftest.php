@@ -1240,6 +1240,17 @@ try {
 		);
 		$wpdb->delete( \Liebherr\InterfaceWorld\MyLiebherr\Schema::machine_table(), [ 'id' => (int) ( $__pr_mac['id'] ?? 0 ) ] );
 
+		// Overview-Widgets aus echten Daten: unquittierte kritische Pocket-Info erscheint in Tasks UND Neu.
+		$__ov_pk    = \Liebherr\InterfaceWorld\Pocket\PocketRepository::add( $__myl_admin_id, [ 'title' => 'SELFTEST-OV-Alert', 'priority' => 'critical', 'requires_ack' => 1, 'source' => 'Test' ] );
+		$__ov_tasks = \Liebherr\InterfaceWorld\MyLiebherr\OverviewData::tasks( $__myl_admin_id );
+		$__ov_upd   = \Liebherr\InterfaceWorld\MyLiebherr\OverviewData::updates( $__myl_admin_id );
+		liw_st_check(
+			'Overview-Widgets: Tasks (unquittierte Pflichtinfo) + Neu (kritisch) aus echten Daten',
+			count( array_filter( $__ov_tasks, static fn( $t ) => false !== strpos( (string) $t['label'], 'SELFTEST-OV-Alert' ) ) ) >= 1
+			&& count( array_filter( $__ov_upd, static fn( $u ) => false !== strpos( (string) $u['label'], 'SELFTEST-OV-Alert' ) ) ) >= 1
+		);
+		$wpdb->delete( \Liebherr\InterfaceWorld\Pocket\Schema::item_table(), [ 'id' => (int) ( $__ov_pk['id'] ?? 0 ) ] );
+
 		// Nav: Pocket-Reiter aktiv, sobald Pocket scharf + Seite vorhanden.
 		$__prev_pocket_page = (int) get_option( 'liw_pocket_page_id', 0 );
 		update_option( 'liw_pocket_page_id', (int) get_option( 'liw_my_liebherr_page_id', 0 ) );

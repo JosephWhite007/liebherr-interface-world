@@ -135,11 +135,11 @@ final class OverviewView {
 			case 'wallet':
 				return [ 'title' => __( 'Was besitze ich', 'liebherr-interface-world' ), 'body' => self::wallet_body( $uid ) ];
 			case 'updates':
-				return [ 'title' => __( 'Was ist neu', 'liebherr-interface-world' ), 'body' => esc_html__( 'Neue relevante Updates erscheinen hier, sobald sie verfügbar sind.', 'liebherr-interface-world' ) ];
+				return [ 'title' => __( 'Was ist neu', 'liebherr-interface-world' ), 'body' => self::list_body( OverviewData::updates( $uid ), __( 'Nichts Neues.', 'liebherr-interface-world' ) ) ];
 			case 'tasks':
-				return [ 'title' => __( 'Was muss ich tun', 'liebherr-interface-world' ), 'body' => esc_html__( 'Offene Aufgaben und Freigaben werden hier gebündelt.', 'liebherr-interface-world' ) ];
+				return [ 'title' => __( 'Was muss ich tun', 'liebherr-interface-world' ), 'body' => self::list_body( OverviewData::tasks( $uid ), __( 'Keine offenen Aufgaben.', 'liebherr-interface-world' ) ) ];
 			case 'bookings':
-				return [ 'title' => __( 'Gebuchte Leistung', 'liebherr-interface-world' ), 'body' => esc_html__( 'Zuletzt gebuchte Leistungen und Belege erscheinen hier.', 'liebherr-interface-world' ) ];
+				return [ 'title' => __( 'Gebuchte Leistung', 'liebherr-interface-world' ), 'body' => self::list_body( OverviewData::bookings( $uid ), __( 'Noch keine Buchungen.', 'liebherr-interface-world' ) ) ];
 		}
 		return null;
 	}
@@ -152,6 +152,26 @@ final class OverviewView {
 			. '<h1 class="liw-myl__title">' . esc_html__( 'My Liebherr', 'liebherr-interface-world' ) . '</h1>'
 			. '<p class="liw-myl__greet">' . esc_html( $greet ) . '</p>'
 			. '</header>';
+	}
+
+	/**
+	 * Rendert eine Widget-Liste aus {@see OverviewData}-Einträgen (Label + optional Link), gekürzt auf 4,
+	 * mit Anzahl-Badge und Fallback-Text bei leerer Liste.
+	 *
+	 * @param array<int,array{label:string,url:string}> $items
+	 */
+	private static function list_body( array $items, string $empty ): string {
+		if ( [] === $items ) {
+			return '<span class="liw-myl__ov-empty">' . esc_html( $empty ) . '</span>';
+		}
+		$count = count( $items );
+		$li    = '';
+		foreach ( OverviewData::truncate( $items ) as $it ) {
+			$label = esc_html( (string) $it['label'] );
+			$url   = (string) $it['url'];
+			$li   .= '<li>' . ( '' !== $url ? '<a href="' . esc_url( $url ) . '">' . $label . '</a>' : $label ) . '</li>';
+		}
+		return '<span class="liw-myl__ov-count">' . (int) $count . '</span><ul class="liw-myl__ov-list">' . $li . '</ul>';
 	}
 
 	/** Rumpf des Wallet-Widgets mit echtem, aber read-only Saldo aus der Plattform-Wallet (falls verfügbar). */

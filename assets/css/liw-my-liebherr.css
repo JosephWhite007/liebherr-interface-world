@@ -165,3 +165,10 @@
 	.liw-myl__conn, .liw-myl__pocket-item { background: #171922; border-color: #2a2f3a; }
 	.liw-myl__pocket-item--critical { background: #241413; }
 }
+
+/* Overview-Widget-Listen mit echten Daten (alpha.129). */
+.liw-myl__ov-count { display: inline-block; min-width: 20px; padding: 0 6px; border-radius: 999px; background: #f4761f; color: #fff; font-size: 12px; font-weight: 700; text-align: center; margin-bottom: 6px; }
+.liw-myl__ov-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
+.liw-myl__ov-list a { text-decoration: none; }
+.liw-myl__ov-list a:hover { text-decoration: underline; }
+.liw-myl__ov-empty { color: #8a90a0; font-size: 13px; }

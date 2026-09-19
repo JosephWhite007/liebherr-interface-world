@@ -1,5 +1,20 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.129] – 2026-09-19 – My-Overview-Widgets mit echten Daten
+
+### Geändert
+- Neuer Aggregator `MyLiebherr\OverviewData` speist die drei bisherigen Platzhalter-Kacheln aus echten Quellen (§5/§30):
+  - **Was ist neu** ← mit mir geteilte Bilder (`ShareRepository`) + hohe/kritische Pocket-Infos.
+  - **Was muss ich tun** ← offene Kontaktanfragen + zu bestätigende Leistungen (`ContactRepository`) + unquittierte
+    Pflicht-Pocket-Infos (`PocketRepository`).
+  - **Gebuchte Leistung** ← letzte Wallet-Buchungen (`WalletBridge`).
+  - Jede Kachel zeigt Anzahl-Badge + verlinkte Liste (gekürzt auf 4, „+N …"), sonst einen Leer-Hinweis. Rein lesend,
+    cross-Modul class_exists-guarded; reine `truncate()`-Logik testbar.
+
+### Verifikation
+- `tests/run-tests.php` **634/634** (truncate), `scripts/liw-selftest.php` **420/420** (Tasks+Neu aus echten Daten).
+  Dev-Vorschau: „neu" = 2 Alerts, „zu tun" = 2 Quittierungen. `LIW_VERSION` .128→.129.
+
 ## [0.1.0-alpha.128] – 2026-09-19 – Pocket Information regelbasiert (automatische, erklärbare Infos)
 
 ### Hinzugefügt

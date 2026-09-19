@@ -21,6 +21,12 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.129 – My-Overview-Widgets mit echten Daten
+
+- `src/MyLiebherr/OverviewData.php` (NEU): `tasks()`/`updates()`/`bookings()` aus Contact/Pocket/Share/Wallet; reine `truncate()` (max 4 + „+N …"). Cross-Modul guarded.
+- `src/MyLiebherr/OverviewView.php`: `widget_meta()` updates/tasks/bookings → `list_body()` (Anzahl-Badge + verlinkte Liste + Leer-Fallback). `assets/css/liw-my-liebherr.css`: Overview-Listen-Stile.
+- `liebherr-interface-world.php` LIW_VERSION .128→.129. Tests: WP-frei truncate; Docker Tasks+Neu aus echten Daten. WP-frei 634/0, Docker 420/0.
+
 ## 0.1.0-alpha.128 – Pocket Information regelbasiert (Auto-Content)
 
 - `src/Pocket/PocketRules.php` (NEU): `derive(uid)` → abgeleitete, nicht-persistierte, erklärbare Items (Briefing/Tasks/Machine/Adventure) aus MachineRepository/ContactRepository/eigene Adventures; guarded; via `Flags::rules_enabled()` (NEU, Default AN) abschaltbar.

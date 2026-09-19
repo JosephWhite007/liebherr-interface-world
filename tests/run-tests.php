@@ -670,6 +670,16 @@ liw_assert( 'PTime SessionClock: now <= last_seen → keine Änderung', 10 === $
 liw_assert( 'PTime WalletBridge: ohne Core nicht verfügbar; balance_cents(0)=null (Gast-Guard)', false === $WB::available() && null === $WB::balance_cents( 0 ), $checks, $failures );
 liw_assert( 'MyL WalletBridge: source_label bekannt (booking_debit→Buchung), unbekannt→Rohwert; status_label pending→ausstehend', 'Buchung' === $WB::source_label( 'booking_debit' ) && 'nope' === $WB::source_label( 'nope' ) && 'ausstehend' === $WB::status_label( 'pending' ), $checks, $failures );
 
+// My Liebherr Overview-Daten (ADR-LIW-MYL-001 §5): reine truncate-Logik der Widget-Listen.
+echo "-- My Liebherr Overview-Daten --\n";
+require_once $root . '/src/MyLiebherr/OverviewData.php';
+$OD = '\Liebherr\InterfaceWorld\MyLiebherr\OverviewData';
+$__od_items = [];
+for ( $__i = 1; $__i <= 6; $__i++ ) { $__od_items[] = [ 'label' => 'L' . $__i, 'url' => '' ]; }
+$__od_t = $OD::truncate( $__od_items, 4 );
+liw_assert( 'OverviewData: truncate auf 4 + „+2 …"-Hinweis (5. Eintrag)', 5 === count( $__od_t ) && 'L1' === $__od_t[0]['label'] && '+2 …' === $__od_t[4]['label'], $checks, $failures );
+liw_assert( 'OverviewData: kurze Liste bleibt unverändert', 3 === count( $OD::truncate( [ [ 'label' => 'a', 'url' => '' ], [ 'label' => 'b', 'url' => '' ], [ 'label' => 'c', 'url' => '' ] ], 4 ) ), $checks, $failures );
+
 // Pocket regelbasiert (ADR-LIW-MYL-001 §34): reine Feed-Merge-/Sortierlogik (Priorität, gespeicherte vor abgeleiteten).
 echo "-- Pocket Feed-Merge --\n";
 require_once $root . '/src/Pocket/FeedService.php';
