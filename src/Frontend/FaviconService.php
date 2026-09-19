@@ -29,6 +29,11 @@ final class FaviconService {
 		add_action( 'wp_head', [ self::class, 'output' ], 99 );
 		add_action( 'admin_head', [ self::class, 'output' ], 99 );
 		add_action( 'login_head', [ self::class, 'output' ], 99 );
+		// Core-Favicon: /favicon.ico leitet ohne gesetztes Website-Icon auf das graue WP-„W"
+		// (wp-includes/images/w-logo-gray-white-bg.png) um. Über get_site_icon_url() zeigt der
+		// Browser-Tab (v. a. im wp-admin) stattdessen den goldenen Globus. Ein echtes, im
+		// Customizer gesetztes Website-Icon behält Vorrang.
+		add_filter( 'get_site_icon_url', [ self::class, 'filter_site_icon_url' ], 10, 3 );
 		// Login-Logo verlinkt auf die Seite (statt wordpress.org) + spricht die Seite an (statt „Powered by WordPress").
 		add_filter( 'login_headerurl', static function () { return home_url( '/' ); } );
 		add_filter( 'login_headertext', static function () { return get_bloginfo( 'name' ); } );
@@ -46,6 +51,26 @@ final class FaviconService {
 			// Login-Seite: großes WordPress-Logo → Globus.
 			. 'body.login h1 a{background-image:url(' . $svg . ') !important;background-size:contain !important;width:120px;height:120px;}'
 			. '</style>' . "\n";
+	}
+
+	/**
+	 * Liefert die Globus-URL als Website-Icon, solange kein echtes (im Customizer gesetztes) vorhanden ist.
+	 * Bevorzugt ein hinterlegtes PNG (breiteste Browser-/OS-Kompatibilität), sonst das SVG.
+	 *
+	 * @param string $url     Von Core ermittelte Icon-URL (bei fehlendem Website-Icon Cores eigener
+	 *                        Fallback, z. B. das graue WP-„W" – daher NICHT als leer prüfbar).
+	 * @param int    $size    Angeforderte Kantenlänge in px (ungenutzt – Globus skaliert).
+	 * @param int    $blog_id Blog-ID im Multisite-Kontext (ungenutzt).
+	 */
+	public static function filter_site_icon_url( string $url, int $size = 512, int $blog_id = 0 ): string {
+		if ( get_option( 'site_icon' ) ) {
+			return $url; // Echtes, im Customizer gesetztes Website-Icon behält Vorrang.
+		}
+		$png = 'assets/img/goheal-gold-planet-192.png';
+		if ( is_readable( LIW_PATH . $png ) ) {
+			return LIW_URL . $png;
+		}
+		return LIW_URL . 'assets/img/liw-planet-icon.svg';
 	}
 
 	public static function output(): void {

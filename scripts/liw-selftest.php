@@ -925,6 +925,9 @@ try {
 	// Globus statt WordPress-Logo: Adminleiste + Login (alpha.75).
 	liw_st_check( 'Brand-Logo: Globus ersetzt WP-„W" in Adminleiste + Login-Logo (CSS)', str_contains( $__fav, 'wp-admin-bar-wp-logo' ) && str_contains( $__fav, 'body.login h1 a' ) && str_contains( $__fav, 'liw-planet-icon.svg' ) );
 	liw_st_check( 'Brand-Logo: Login-Link → Seite, Login-Text → Seitenname', home_url( '/' ) === apply_filters( 'login_headerurl', 'x' ) && get_bloginfo( 'name' ) === apply_filters( 'login_headertext', 'x' ) );
+	// Browser-Tab-Favicon: /favicon.ico → Globus statt grauem WP-„W" (get_site_icon_url-Filter, alpha.76).
+	$__fav_url = \Liebherr\InterfaceWorld\Frontend\FaviconService::filter_site_icon_url( includes_url( 'images/w-logo-gray-white-bg.png' ), 32, 0 );
+	liw_st_check( 'Favicon.ico: Globus statt WP-„W" (nur ohne gesetztes Website-Icon)', get_option( 'site_icon' ) ? true : ( str_contains( $__fav_url, 'liw-planet-icon.svg' ) || str_contains( $__fav_url, 'goheal-gold-planet' ) ) );
 
 	// ── [9] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
 	echo "\n[9] Programmierlogbuch / To-Dos\n";
