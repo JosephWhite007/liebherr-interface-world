@@ -111,10 +111,21 @@ final class BoardRepository {
 			$area[ $key ]   = self::add_area( $version_id, $key, $pos, $route, 'active', '' );
 			$pos++;
 		}
-		// Übergänge: Intelligence World → die drei Fachmodule (Modulauswahl nach WORLD_GRANTED).
+		// Übergänge: Intelligence World → die drei Fachmodule (Modulauswahl nach WORLD_GRANTED) mit Plugin-Kette
+		// (§28): zweistellige Addition am Übergang; First-Entry-Text auf der Modulseite. Nur wenn die Typen
+		// bereits registriert sind (PluginRegistry::sync lief) – sonst reine Bereiche/Kanten.
+		$type_challenge = PluginRegistry::type_id( 'challenge_addition' );
+		$type_first     = PluginRegistry::type_id( 'first_entry_text' );
 		foreach ( [ 'local_intelligence', 'interface_solutions', 'adventures' ] as $mod ) {
-			if ( isset( $area['intelligence_world'], $area[ $mod ] ) ) {
-				self::add_edge( $version_id, $area['intelligence_world'], $area[ $mod ], 'world_granted', '', 100 );
+			if ( ! isset( $area['intelligence_world'], $area[ $mod ] ) ) {
+				continue;
+			}
+			$edge = self::add_edge( $version_id, $area['intelligence_world'], $area[ $mod ], 'world_granted', '', 100 );
+			if ( $type_challenge > 0 ) {
+				self::add_instance( $version_id, $type_challenge, PluginTaxonomy::SCOPE_EDGE, $edge, 'configured', 100, (string) wp_json_encode( [ 'difficulty' => 'double' ] ) );
+			}
+			if ( $type_first > 0 ) {
+				self::add_instance( $version_id, $type_first, PluginTaxonomy::SCOPE_PAGE, $area[ $mod ], 'configured', 100, (string) wp_json_encode( [ 'title' => '', 'body' => '' ] ) );
 			}
 		}
 	}

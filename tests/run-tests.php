@@ -541,6 +541,15 @@ $PX = '\Liebherr\InterfaceWorld\Cvf\PluginTaxonomy';
 liw_assert( 'PluginState: 11 Zustaende; erlaubte/verbotene Uebergaenge (open->closing ok, open->scheduled nein)', 11 === count( $PS::all() ) && $PS::can_transition( 'open', 'closing' ) && $PS::can_transition( 'configured', 'scheduled' ) && ! $PS::can_transition( 'open', 'scheduled' ) && ! $PS::can_transition( 'closed', 'open' ), $checks, $failures );
 liw_assert( 'PluginTaxonomy: 2 Scopes, 7 Kategorien, parse_scopes + scope_allowed', 2 === count( $PX::scopes() ) && 7 === count( $PX::categories() ) && [ 'page', 'edge' ] === $PX::parse_scopes( 'page, edge, quatsch' ) && $PX::scope_allowed( 'edge', 'page,edge' ) && ! $PX::scope_allowed( 'edge', 'page' ), $checks, $failures );
 
+// CAPDB – Plugin-Registry (Definitionen + Config-Validierung, rein, alpha.90).
+require_once $root . '/src/Cvf/PluginRegistry.php';
+$PR = '\Liebherr\InterfaceWorld\Cvf\PluginRegistry';
+$__defs = $PR::definitions();
+$__cats = array_unique( array_map( static fn( $d ) => $d['category'], $__defs ) );
+liw_assert( 'PluginRegistry: 8 Typen decken alle 7 Kategorien ab', 8 === count( $__defs ) && 7 === count( $__cats ) && isset( $__defs['challenge_addition'], $__defs['open_module'], $__defs['set_grant'], $__defs['confirm'] ), $checks, $failures );
+liw_assert( 'PluginRegistry: validate_config enum/int/unknown', [] === $PR::validate_config( 'challenge_addition', [ 'difficulty' => 'double' ] ) && in_array( 'bad_enum_difficulty', $PR::validate_config( 'challenge_addition', [ 'difficulty' => 'triple' ] ), true ) && in_array( 'below_min_seconds', $PR::validate_config( 'countdown', [ 'seconds' => 0 ] ), true ) && in_array( 'not_int_seconds', $PR::validate_config( 'countdown', [ 'seconds' => 'x' ] ), true ) && [ 'unknown_type' ] === $PR::validate_config( 'gibtsnicht', [] ), $checks, $failures );
+liw_assert( 'PluginRegistry: with_defaults fuellt Schema-Defaults', 'double' === $PR::with_defaults( 'challenge_addition', [] )['difficulty'] && 5 === $PR::with_defaults( 'countdown', [] )['seconds'], $checks, $failures );
+
 // Emergency – Hilfe-Koffer (einstellige Rechenaufgabe) + kontextbezogene Emergency-Area (alpha.78).
 require_once $root . '/src/Emergency/EmergencyChallenge.php';
 require_once $root . '/src/Emergency/HelpTopicCatalog.php';

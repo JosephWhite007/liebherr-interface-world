@@ -1036,8 +1036,13 @@ try {
 		foreach ( [ $__p1['id'], $__pallow['id'] ] as $__vid ) { if ( $__vid ) { $wpdb->delete( $__vt, [ 'id' => $__vid ] ); } }
 	}
 
+	// CAPDB Plugin-Registry (alpha.90): 8 Typen, alle 7 Kategorien.
+	\Liebherr\InterfaceWorld\Cvf\PluginRegistry::sync();
+	liw_st_check( 'CAPDB-Registry: 8 Plugin-Typen registriert (idempotent), challenge_addition vorhanden', 8 === count( \Liebherr\InterfaceWorld\Cvf\PluginRegistry::all_types() ) && \Liebherr\InterfaceWorld\Cvf\PluginRegistry::type_id( 'challenge_addition' ) > 0 );
 	// CAPDB Board-Datenmodell (alpha.89): Entwurf/Seed/Publish/Rollback (mit Cleanup).
 	$__bd = \Liebherr\InterfaceWorld\Cvf\BoardRepository::ensure_draft( 1 );
+	$__bd_inst = \Liebherr\InterfaceWorld\Cvf\BoardRepository::instances( $__bd );
+	liw_st_check( 'CAPDB: Startkonfig seedet Plugin-Instanzen (Challenge auf Uebergaengen + First-Entry auf Seiten)', count( $__bd_inst ) >= 3 );
 	$__bd_areas = \Liebherr\InterfaceWorld\Cvf\BoardRepository::areas( $__bd );
 	$__bd_edges = \Liebherr\InterfaceWorld\Cvf\BoardRepository::edges( $__bd );
 	liw_st_check( 'CAPDB: Entwurf mit Startkonfig (4 Bereiche + 3 Uebergaenge, Einstieg intelligence_world@1)', $__bd > 0 && 4 === count( $__bd_areas ) && 3 === count( $__bd_edges ) && 'intelligence_world' === (string) $__bd_areas[0]['module_id'] && 1 === (int) $__bd_areas[0]['position'] );

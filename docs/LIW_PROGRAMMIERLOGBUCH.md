@@ -12,6 +12,17 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.90 – CAPDB Etappe 3: Plugin-Registry
+
+**Neu:** `src/Cvf/PluginRegistry.php` – zentrale, im Code gepflegte Bibliothek von 8 Plugin-Typen (alle 7
+Kategorien §26.1): access_code, challenge_addition, first_entry_text, open_module, set_grant, countdown,
+measurement, confirm. Je Typ: key, Kategorie, allowed_scopes, Parameterschema, Capability-Klasse. Kein
+User-Code (§26). Reine `definitions()/validate_config()/with_defaults()`; `sync()` upsertet idempotent in
+`liw_cvf_plugin_type`; `type_id()/all_types()`. **Geändert:** `liebherr-interface-world.php` – `PluginRegistry::
+sync()` in activate + selbstheilend in maybe_upgrade; `src/Cvf/BoardRepository.php` – `seed_start_config`
+seedet nun die Plugin-Kette (Challenge auf den drei Übergängen, First-Entry-Text auf den Modulseiten).
+`tests/run-tests.php` (+3), `scripts/liw-selftest.php` (+2). Tests WP-frei 494 / Docker 381. Bump alpha.89 -> alpha.90.
+
 ## 0.1.0-alpha.89 – CAPDB Etappe 2: Datenmodell + Board-Repository
 
 **Neu (`src/Cvf/`, ADR-LIW-CVF-002 §30):** `BoardSchema` (7 Tabellen `liw_cvf_board_area/board_edge/
