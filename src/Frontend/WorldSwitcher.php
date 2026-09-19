@@ -16,6 +16,8 @@ declare( strict_types = 1 );
 namespace Liebherr\InterfaceWorld\Frontend;
 
 use Liebherr\InterfaceWorld\Content\SitePages;
+use Liebherr\InterfaceWorld\MyLiebherr\Flags as MylFlags;
+use Liebherr\InterfaceWorld\MyLiebherr\Roles as MylRoles;
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
@@ -51,13 +53,43 @@ final class WorldSwitcher {
 		return $out;
 	}
 
-	/** key der aktuell angezeigten Insel (oder '' ). */
+	/**
+	 * Vollständige Plattform-Reiter für die Leiste: die vier Inseln (aus {@see worlds()}) plus – nur wenn My
+	 * Liebherr scharf ist ({@see MylFlags::enabled()}) – der persönliche Reiter „My Liebherr" (rollenabhängig,
+	 * §35: nur angemeldet mit {@see MylRoles::CAP_ACCESS} und veröffentlichter Seite) und der 6. Reiter „Pocket
+	 * Information" als sichtbarer, aber deaktivierter Platzhalter „in Vorbereitung" (JW-Entscheid 19.09.2026,
+	 * bewusste Ausprägung von Pflichtenheft §29/§34 „Platzhalter"). {@see worlds()} bleibt bewusst vierinselig,
+	 * damit die CVF-Modulauflösung unverändert bleibt (keine Redundanz).
+	 *
+	 * @return array<int,array{key:string,label:string,url:string,disabled:bool,note:string}>
+	 */
+	public static function platform_tabs(): array {
+		$tabs = [];
+		foreach ( self::worlds() as $key => $w ) {
+			$tabs[] = [ 'key' => $key, 'label' => $w['label'], 'url' => $w['url'], 'disabled' => false, 'note' => '' ];
+		}
+		if ( ! MylFlags::enabled() ) {
+			return $tabs;
+		}
+		$myl_id = (int) get_option( 'liw_my_liebherr_page_id', 0 );
+		if ( $myl_id > 0 && 'publish' === get_post_status( $myl_id )
+			&& is_user_logged_in() && current_user_can( MylRoles::CAP_ACCESS ) ) {
+			$tabs[] = [ 'key' => 'my_liebherr', 'label' => __( 'My Liebherr', 'liebherr-interface-world' ), 'url' => (string) get_permalink( $myl_id ), 'disabled' => false, 'note' => '' ];
+		}
+		$tabs[] = [ 'key' => 'pocket_information', 'label' => __( 'Pocket Information', 'liebherr-interface-world' ), 'url' => '', 'disabled' => true, 'note' => __( 'in Vorbereitung', 'liebherr-interface-world' ) ];
+		return $tabs;
+	}
+
+	/** key des aktuell angezeigten Bereichs (Insel oder My-Liebherr-Seite), oder '' . */
 	public static function current_key(): string {
 		$id = (int) get_queried_object_id();
 		foreach ( self::worlds() as $key => $w ) {
 			if ( $w['id'] === $id ) {
 				return $key;
 			}
+		}
+		if ( $id > 0 && $id === (int) get_option( 'liw_my_liebherr_page_id', 0 ) ) {
+			return 'my_liebherr';
 		}
 		return '';
 	}
@@ -67,19 +99,27 @@ final class WorldSwitcher {
 	}
 
 	public static function render( string $current = '' ): string {
-		$worlds = self::worlds();
-		if ( count( $worlds ) < 2 ) {
-			return ''; // Ohne mindestens zwei Zielen keine Umschaltung.
+		$tabs = self::platform_tabs();
+		if ( count( $tabs ) < 2 ) {
+			return ''; // Ohne mindestens zwei Ziele keine Umschaltung.
 		}
 		$items = '';
-		foreach ( $worlds as $key => $w ) {
-			$is_cur = $key === $current;
+		foreach ( $tabs as $tab ) {
+			$is_cur = $tab['key'] === $current;
+			if ( ! empty( $tab['disabled'] ) ) {
+				$items .= sprintf(
+					'<li class="liw-switcher__item"><span class="liw-switcher__link is-disabled" aria-disabled="true" title="%2$s">%1$s <em class="liw-switcher__note">%2$s</em></span></li>',
+					esc_html( $tab['label'] ),
+					esc_html( $tab['note'] )
+				);
+				continue;
+			}
 			$items .= sprintf(
 				'<li class="liw-switcher__item"><a class="liw-switcher__link%1$s" href="%2$s"%3$s>%4$s</a></li>',
 				$is_cur ? ' is-current' : '',
-				esc_url( $w['url'] ),
+				esc_url( $tab['url'] ),
 				$is_cur ? ' aria-current="page"' : '',
-				esc_html( $w['label'] )
+				esc_html( $tab['label'] )
 			);
 		}
 		return '<nav class="liw-switcher" aria-label="' . esc_attr__( 'Liebherr World – Bereiche', 'liebherr-interface-world' ) . '">'

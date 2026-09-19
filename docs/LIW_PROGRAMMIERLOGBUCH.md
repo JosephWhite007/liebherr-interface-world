@@ -21,6 +21,38 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.113 – My Liebherr Durchstich S2–S11 (Navigation, Overview, Plattformzeit)
+
+Alles hinter Flags (`liw_myl_enabled`/`liw_ptime_enabled`, Default AUS).
+
+- `src/Frontend/WorldSwitcher.php`: neue `platform_tabs()` (4 Inseln + My-Liebherr-Reiter rollenabhängig + Pocket-Platzhalter „in Vorbereitung"); `render()`/`current_key()` angepasst; `worlds()` unverändert (CVF).
+- `src/CoreBridge/WalletBridge.php` (NEU): read-only Fassade auf `Araliya\Platform\Core\Modules\Wallet\WalletService` (available/balance_cents/summary/transactions/format_cents), guarded.
+- `src/MyLiebherr/OverviewView.php` (NEU): Shortcode `[liw_my_liebherr]`, self-gating, Kacheln + Schnellaktionen + read-only Saldo; `assets()` lädt `assets/css/liw-my-liebherr.css` (NEU) mit filemtime-Bust.
+- `scripts/liw-seed-my-liebherr.php` (NEU): Seite `/my-liebherr/` (Vollbild), Option `liw_my_liebherr_page_id`.
+- `src/PlatformTime/` (NEU): `Flags` (`liw_ptime_enabled`/`liw_ptime_charge_live`), `TokenRule` (10/min Standard, versioniert, rein), `SessionClock` (serverautoritär, rein), `Schema` (`ary_liw_ptime_session`+`ary_liw_ptime_charge`), `SessionRepository` (start/heartbeat/status/stop, Reservieren→Bestätigen), `ChargeService` (append-only, Idempotenz, Hook `liw_ptime_charge`), `Rest` (`platform-time/start|heartbeat|status|stop`), `ClockWidget` (schwebende Uhr unten links).
+- `assets/js/liw-ptime-clock.js` + `assets/css/liw-ptime-clock.css` (NEU): Widget-Logik/Stil (reduced-motion-fest).
+- `liebherr-interface-world.php`: `LIW_VERSION` .108→.113; `create_tables()` + `PlatformTime\Schema::create_tables()`.
+- `src/Bootstrap.php`: `MyLiebherr\OverviewView`, `PlatformTime\Rest`, `PlatformTime\ClockWidget` registriert.
+- `tests/run-tests.php`: PTime-Unit-Block (TokenRule/SessionClock/WalletBridge-Guard). `scripts/liw-selftest.php`: PTime/Nav/Overview-Integrationsblock (selbst-bereinigt).
+- Tests: WP-frei 564/0, Docker 404/0. Seeder in Dev verifiziert (Seite #4176).
+
+## 0.1.0-alpha.108 – My Liebherr Fundament S1 (MYL-CORE)
+
+Neuer Modulbereich `src/MyLiebherr/` (ADR-LIW-MYL-001, Stufe S1). Alles hinter Flag `liw_myl_enabled` (Default AUS).
+
+- `src/MyLiebherr/Flags.php` (NEU): `OPT_ENABLED=liw_myl_enabled`, `enabled()` (Option ODER Filter).
+- `src/MyLiebherr/Schema.php` (NEU): `profile_table()`=`ary_liw_myl_profile`, `membership_table()`=`ary_liw_myl_membership`, `create_tables()` (dbDelta, COMMENT klammerfrei).
+- `src/MyLiebherr/Roles.php` (NEU): Caps `liw_myl_access`/`liw_myl_administer`, reine `role_caps()`, `grant()`/`revoke()` auf bestehende Rollen.
+- `src/MyLiebherr/EntitlementService.php` (NEU): reine `can(granted, cap, context)` (Objekt-/Org-Schnittmenge) + `granted_for(user_id)`.
+- `src/MyLiebherr/Context.php` (NEU): `ALLOWED_PERSONAS`, `allowed_fields()`, `sanitize_patch()` (rein), `for_user()` (Laufzeit-Sicht).
+- `src/MyLiebherr/ProfileRepository.php` (NEU): `get`/`ensure`/`update` (nur erlaubte Felder), `shape()`.
+- `src/MyLiebherr/MembershipRepository.php` (NEU): `for_user()` (Lesen), `shape()`.
+- `src/MyLiebherr/Rest.php` (NEU): `my-liebherr/v1/me` GET+PATCH, `require_login()`, self-gating (`disabled`), Objektbezug nur eigener Nutzer.
+- `liebherr-interface-world.php`: `LIW_VERSION` .107→.108; `create_tables()` + `MyLiebherr\Schema::create_tables()`; `maybe_upgrade_database()`/`activate()` + `MyLiebherr\Roles::grant()`; `deactivate()` + `MyLiebherr\Roles::revoke()`.
+- `src/Bootstrap.php`: `MyLiebherr\Rest::register()`.
+- `tests/run-tests.php`: My-Liebherr-Unit-Block (Roles/Context/Entitlement). `scripts/liw-selftest.php`: My-Liebherr-Integrationsblock (Tabellen/Rollen/Flags/Profil/REST, selbst-bereinigt).
+- Tests: WP-frei 537/0, Docker 398/0.
+
 ## 0.1.0-alpha.107 – My Liebherr: §41 Plattformzeit integriert + Programm-Workflow ADR-LIW-MYL-001
 
 **Nur Dokumentation** (kein Quellcode geändert außer Versionskonstante).

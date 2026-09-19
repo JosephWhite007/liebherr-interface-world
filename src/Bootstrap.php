@@ -80,6 +80,10 @@ final class Bootstrap {
 			Emergency\EmergencyController::register(); // Hilfe-Koffer + Emergency-Area (plattformweit, Front + Admin).
 			Cvf\Rest::register();      // Customer View Flow REST (Durchstich; self-gating ueber liw_cvf_enabled).
 			Cvf\FlowView::register();  // Customer View Flow Frontend [liw_cvf_flow] (self-gating).
+			MyLiebherr\Rest::register(); // My Liebherr REST (GET/PATCH me; self-gating ueber liw_myl_enabled, ADR-LIW-MYL-001 S1).
+			MyLiebherr\OverviewView::register(); // My Overview Startseite [liw_my_liebherr] (ADR-LIW-MYL-001 S4).
+			PlatformTime\Rest::register();       // Plattformzeit REST (start/heartbeat/status/stop; self-gating ueber liw_ptime_enabled, §41).
+			PlatformTime\ClockWidget::register(); // Schwebende Session-Uhr / Schachuhr (S11, §41.6).
 		Frontend\WorldSwitcher::register();  // Plattform-Umschalter der vier Inseln (Cross-Navigation).
 		Frontend\SimulatorView::register();  // Liebherr Simulation World – Startbildschirm [liw_simulator].
 		Frontend\RocketCompat::register(); // WP-Rocket-RUCSS-Safelist für .liw-Selektoren.

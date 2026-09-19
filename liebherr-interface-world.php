@@ -29,7 +29,7 @@ namespace Liebherr\InterfaceWorld;
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 // ── Konstanten ────────────────────────────────────────────────────────────────
-define( 'LIW_VERSION', '0.1.0-alpha.107' );
+define( 'LIW_VERSION', '0.1.0-alpha.113' );
 define( 'LIW_PATH', plugin_dir_path( __FILE__ ) );
 define( 'LIW_URL', plugin_dir_url( __FILE__ ) );
 define( 'LIW_BASENAME', plugin_basename( __FILE__ ) );
@@ -108,6 +108,8 @@ function create_tables(): void {
 	Adventures\TokenSchema::create_table();    // Adventures – Token-/Registrierungs-Ledger (Basislogik §5/§6/§9).
 	Cvf\Schema::create_tables();               // Customer View Flow – Workflow-Version + Sitzung + Execution-Log (ADR-LIW-CVF-001).
 	Cvf\BoardSchema::create_tables();          // CAPDB – Board/Plugin-Tabellen (ADR-LIW-CVF-002, §30).
+	MyLiebherr\Schema::create_tables();        // My Liebherr – persoenliches Profil + Mitgliedschaften (ADR-LIW-MYL-001 S1).
+	PlatformTime\Schema::create_tables();      // Plattformzeit – Session + Token-Abrechnungssatz (ADR-LIW-MYL-001 S9/S10, §41).
 }
 
 /**
@@ -128,6 +130,7 @@ function maybe_upgrade_database(): void {
 	CoreBridge\RoleBridge::ensure_partner_role(); // Rollen/Caps-Abgleich analog zum Schema (alpha.21).
 	Cvf\Roles::grant();                           // CVF-Caps an bestehende ARALIYA-Rollen (selbstheilend, alpha.85).
 	Cvf\PluginRegistry::sync();                   // CAPDB – Plugin-Typen registrieren (idempotent, alpha.90).
+	MyLiebherr\Roles::grant();                    // My-Liebherr-Caps an bestehende Rollen (selbstheilend, alpha.108).
 	update_option( 'liw_installed_version', LIW_VERSION );
 }
 
@@ -149,6 +152,7 @@ function activate(): void {
 	CoreBridge\RoleBridge::grant_capabilities();
 	Cvf\Roles::grant(); // CVF-Rollen-Mapping (JW-Entscheid §9.1) auf bestehende ARALIYA-Rollen.
 	Cvf\PluginRegistry::sync(); // CAPDB – Plugin-Typen registrieren.
+	MyLiebherr\Roles::grant(); // My-Liebherr-Caps (Zugang/Administration) auf bestehende Rollen (ADR-LIW-MYL-001 S1).
 
 	// Permalink-Hinweis (CLAUDE.md DoD Punkt 7): CPT-Rewrite-Regeln erfordern Flush.
 	update_option( 'liw_flush_rewrite_needed', '1' );
@@ -158,6 +162,7 @@ function activate(): void {
 function deactivate(): void {
 	CoreBridge\RoleBridge::revoke_capabilities();
 	Cvf\Roles::revoke();
+	MyLiebherr\Roles::revoke();
 	Contact\ContactRetention::unschedule();
 	flush_rewrite_rules();
 }

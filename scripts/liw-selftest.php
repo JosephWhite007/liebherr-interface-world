@@ -1001,6 +1001,104 @@ try {
 	// CVF Rollen-Mapping (alpha.85): CVF-Caps auf bestehende ARALIYA-Rollen (keine eigenen CVF-Rollen).
 	$__ro_admin = get_role( 'administrator' );
 	liw_st_check( 'CVF-Roles: administrator hat alle CVF-Caps (Grant lief bei Upgrade)', $__ro_admin instanceof \WP_Role && $__ro_admin->has_cap( \Liebherr\InterfaceWorld\Cvf\Roles::CAP_ADMINISTER ) && $__ro_admin->has_cap( \Liebherr\InterfaceWorld\Cvf\Roles::CAP_PUBLISH ) );
+	// ── My Liebherr – Fundament S1 (ADR-LIW-MYL-001): Tabellen, Rollen, Flag-Gating, Profil, REST /me ──
+	$__myl_prof = \Liebherr\InterfaceWorld\MyLiebherr\Schema::profile_table();
+	$__myl_memb = \Liebherr\InterfaceWorld\MyLiebherr\Schema::membership_table();
+	$__myl_prof_ok = $__myl_prof === $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $__myl_prof ) );
+	$__myl_memb_ok = $__myl_memb === $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $__myl_memb ) );
+	liw_st_check( 'MyL-Schema: Tabellen profile + membership existieren (maybe_upgrade)', $__myl_prof_ok && $__myl_memb_ok );
+
+	$__myl_admin = get_role( 'administrator' );
+	liw_st_check( 'MyL-Roles: administrator hat access + administer (Grant lief bei Upgrade)', $__myl_admin instanceof \WP_Role && $__myl_admin->has_cap( \Liebherr\InterfaceWorld\MyLiebherr\Roles::CAP_ACCESS ) && $__myl_admin->has_cap( \Liebherr\InterfaceWorld\MyLiebherr\Roles::CAP_ADMINISTER ) );
+	liw_st_check( 'MyL-Flags: enabled() Default AUS (Bereich bleibt hinter Flag)', false === \Liebherr\InterfaceWorld\MyLiebherr\Flags::enabled() );
+
+	$__myl_uid = 970001; // reine Profil-Tabellen-ID (Testdatensatz), kein WP-User noetig.
+	\Liebherr\InterfaceWorld\MyLiebherr\ProfileRepository::ensure( $__myl_uid );
+	$__myl_upd = \Liebherr\InterfaceWorld\MyLiebherr\ProfileRepository::update( $__myl_uid, [ 'persona' => 'customer', 'active_org_id' => 5 ] );
+	liw_st_check( 'MyL-Profil: ensure legt an, update persistiert persona/active_org (round-trip)', 'customer' === $__myl_upd['persona'] && 5 === $__myl_upd['active_org_id'] && [] === \Liebherr\InterfaceWorld\MyLiebherr\MembershipRepository::for_user( $__myl_uid ) );
+
+	$__myl_admin_id = 0;
+	$__myl_admins   = get_users( [ 'role' => 'administrator', 'number' => 1, 'fields' => 'ID' ] );
+	if ( [] !== $__myl_admins ) { $__myl_admin_id = (int) $__myl_admins[0]; }
+	$__myl_prev = get_current_user_id();
+	if ( $__myl_admin_id > 0 ) {
+		wp_set_current_user( $__myl_admin_id );
+		$__myl_get = static function () {
+			return rest_do_request( new \WP_REST_Request( 'GET', '/my-liebherr/v1/me' ) )->get_data();
+		};
+		$__me_off = $__myl_get();
+		update_option( 'liw_myl_enabled', 1 );
+		$__me_on = $__myl_get();
+		$__me_patch_req = new \WP_REST_Request( 'PATCH', '/my-liebherr/v1/me' );
+		$__me_patch_req->set_param( 'persona', 'reviewer' );
+		$__me_patch = rest_do_request( $__me_patch_req )->get_data();
+		delete_option( 'liw_myl_enabled' );
+		wp_set_current_user( $__myl_prev );
+		liw_st_check(
+			'MyL-REST /me: ohne Flag disabled; mit Flag ok+eigener Nutzer; PATCH persona angewendet',
+			isset( $__me_off['reason'] ) && 'disabled' === $__me_off['reason']
+			&& ! empty( $__me_on['ok'] ) && (int) $__me_on['me']['user_id'] === $__myl_admin_id
+			&& ! empty( $__me_patch['ok'] ) && in_array( 'persona', (array) $__me_patch['applied'], true ) && 'reviewer' === $__me_patch['me']['persona']
+		);
+		$wpdb->delete( $__myl_prof, [ 'user_id' => $__myl_admin_id ] ); // Test-Profil des Admins wieder entfernen.
+	}
+	$wpdb->delete( $__myl_prof, [ 'user_id' => $__myl_uid ] );
+
+	// ── Plattformzeit S9/S10/S11 + Navigation S2 + My Overview S4 (ADR-LIW-MYL-001, §41) ──
+	$__pt_s = \Liebherr\InterfaceWorld\PlatformTime\Schema::session_table();
+	$__pt_c = \Liebherr\InterfaceWorld\PlatformTime\Schema::charge_table();
+	liw_st_check(
+		'PTime-Schema: session + charge Tabellen existieren',
+		$__pt_s === $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $__pt_s ) )
+		&& $__pt_c === $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $__pt_c ) )
+	);
+	liw_st_check( 'PTime-Flags: enabled()/charge_live() Default AUS', false === \Liebherr\InterfaceWorld\PlatformTime\Flags::enabled() && false === \Liebherr\InterfaceWorld\PlatformTime\Flags::charge_live() );
+
+	$__pt_uid = 970002;
+	$__t0     = 1000000000;
+	\Liebherr\InterfaceWorld\PlatformTime\SessionRepository::start( $__pt_uid, $__t0 );
+	$__pt_hb   = \Liebherr\InterfaceWorld\PlatformTime\SessionRepository::heartbeat( $__pt_uid, $__t0 + 30 );
+	$__pt_stop = \Liebherr\InterfaceWorld\PlatformTime\SessionRepository::stop( $__pt_uid, $__t0 + 60 );
+	$__pt_stop2 = \Liebherr\InterfaceWorld\PlatformTime\SessionRepository::stop( $__pt_uid, $__t0 + 90 );
+	liw_st_check(
+		'PTime-Session: start→heartbeat(30s)→stop(60s)=60s/10 Token pending; zweiter Stop no_session (Idempotenz)',
+		30 === (int) $__pt_hb['active_seconds'] && ! empty( $__pt_stop['ok'] ) && 60 === (int) $__pt_stop['active_seconds']
+		&& 10 === (int) $__pt_stop['tokens'] && 'pending' === $__pt_stop['charge']['status']
+		&& empty( $__pt_stop2['ok'] ) && 'no_session' === $__pt_stop2['reason']
+	);
+	$wpdb->delete( $__pt_c, [ 'user_id' => $__pt_uid ] );
+	$wpdb->delete( $__pt_s, [ 'user_id' => $__pt_uid ] );
+
+	update_option( 'liw_myl_enabled', 1 );
+	$__tabs = \Liebherr\InterfaceWorld\Frontend\WorldSwitcher::platform_tabs();
+	$__tab_last = end( $__tabs );
+	liw_st_check( 'Nav S2: mit Flag erscheint Pocket-Reiter als deaktivierter Platzhalter', is_array( $__tab_last ) && 'pocket_information' === $__tab_last['key'] && true === (bool) $__tab_last['disabled'] );
+
+	$__ov_prev = get_current_user_id();
+	if ( $__myl_admin_id > 0 ) {
+		wp_set_current_user( $__myl_admin_id );
+		$__ov = do_shortcode( '[liw_my_liebherr]' );
+		liw_st_check( 'My Overview S4: [liw_my_liebherr] rendert fuer Admin (liw-myl + Titel)', is_string( $__ov ) && false !== strpos( $__ov, 'liw-myl' ) && false !== strpos( $__ov, 'My Liebherr' ) );
+
+		$__pt_req = static function ( $route, $method ) {
+			return rest_do_request( new \WP_REST_Request( $method, '/my-liebherr/v1/platform-time/' . $route ) )->get_data();
+		};
+		$__pt_off   = $__pt_req( 'status', 'GET' );
+		update_option( 'liw_ptime_enabled', 1 );
+		$__pt_start = $__pt_req( 'start', 'POST' );
+		$__pt_stopR = $__pt_req( 'stop', 'POST' );
+		delete_option( 'liw_ptime_enabled' );
+		liw_st_check(
+			'PTime-REST: ohne Flag disabled; mit Flag start ok + stop ok (nur eigener Nutzer)',
+			isset( $__pt_off['reason'] ) && 'disabled' === $__pt_off['reason'] && ! empty( $__pt_start['ok'] ) && ! empty( $__pt_stopR['ok'] )
+		);
+		$wpdb->delete( $__pt_c, [ 'user_id' => $__myl_admin_id ] );
+		$wpdb->delete( $__pt_s, [ 'user_id' => $__myl_admin_id ] );
+		$wpdb->delete( $__myl_prof, [ 'user_id' => $__myl_admin_id ] );
+		wp_set_current_user( $__ov_prev );
+	}
+	delete_option( 'liw_myl_enabled' );
+
 	// CVF Frontend-Wiring (alpha.86): kompletter REST-Durchstich mit temporaer gesetztem Flag.
 	update_option( 'liw_cvf_enabled', 1 );
 	\Liebherr\InterfaceWorld\Cvf\AccessService::set_code( 'LIEBHERR-DEMO' );

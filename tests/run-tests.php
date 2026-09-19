@@ -600,6 +600,48 @@ $EMC = '\Liebherr\InterfaceWorld\Emergency\EmergencyController';
 $__hub = $EMC::render_hub( 'adventures' );
 liw_assert( 'EmergencyController: render_hub liefert Section mit Titel + <details>-Schritten', str_contains( $__hub, 'liw-emg-hub' ) && str_contains( $__hub, '<details>' ) && str_contains( $__hub, 'Adventures' ), $checks, $failures );
 
+// My Liebherr – Fundament S1: Rollen-Mapping, Kontext-Feldfreigabe, Entitlement-Kernlogik (ADR-LIW-MYL-001).
+echo "-- My Liebherr (S1) --\n";
+require_once $root . '/src/MyLiebherr/Roles.php';
+require_once $root . '/src/MyLiebherr/EntitlementService.php';
+require_once $root . '/src/MyLiebherr/Context.php';
+$MR = '\Liebherr\InterfaceWorld\MyLiebherr\Roles';
+$ME = '\Liebherr\InterfaceWorld\MyLiebherr\EntitlementService';
+$MC = '\Liebherr\InterfaceWorld\MyLiebherr\Context';
+$__mrc = $MR::role_caps();
+liw_assert( 'MyL Roles: 2 Caps (access, administer); administrator/araliya_admin erhalten beide', 2 === count( $MR::all_caps() ) && $__mrc['administrator'] === $MR::all_caps() && $__mrc['araliya_admin'] === $MR::all_caps(), $checks, $failures );
+liw_assert( 'MyL Roles: araliya_ops erhaelt nur access (kein administer)', [ $MR::CAP_ACCESS ] === $__mrc['araliya_ops'], $checks, $failures );
+liw_assert( 'MyL Context: allowed_fields = genau 5 (persona, locale, timezone, active_org_id, active_role)', 5 === count( $MC::allowed_fields() ) && in_array( 'active_org_id', $MC::allowed_fields(), true ), $checks, $failures );
+$__patch = $MC::sanitize_patch( [ 'persona' => 'employee', 'locale' => 'de_DE', 'active_org_id' => '7', 'evil' => 'x', 'active_role' => 'ops' ] );
+liw_assert( 'MyL Context: sanitize_patch behaelt erlaubte Felder, verwirft unbekannte, castet org_id', 'employee' === $__patch['persona'] && 7 === $__patch['active_org_id'] && ! array_key_exists( 'evil', $__patch ), $checks, $failures );
+liw_assert( 'MyL Context: unzulaessige Persona wird verworfen', ! array_key_exists( 'persona', $MC::sanitize_patch( [ 'persona' => 'hacker' ] ) ), $checks, $failures );
+$__acc = [ $MR::CAP_ACCESS ];
+$__adm = [ $MR::CAP_ACCESS, $MR::CAP_ADMINISTER ];
+liw_assert( 'MyL Entitlement: fehlende Cap → false', false === $ME::can( $__acc, $MR::CAP_ADMINISTER ), $checks, $failures );
+liw_assert( 'MyL Entitlement: eigenes Objekt mit Cap → true', true === $ME::can( $__acc, $MR::CAP_ACCESS, [ 'owner_user_id' => 5, 'actor_user_id' => 5 ] ), $checks, $failures );
+liw_assert( 'MyL Entitlement: fremdes Objekt ohne Administer → false, mit Administer → true', false === $ME::can( $__acc, $MR::CAP_ACCESS, [ 'owner_user_id' => 9, 'actor_user_id' => 5 ] ) && true === $ME::can( $__adm, $MR::CAP_ACCESS, [ 'owner_user_id' => 9, 'actor_user_id' => 5 ] ), $checks, $failures );
+liw_assert( 'MyL Entitlement: Org-Mismatch ohne Administer → false, passende Org → true', false === $ME::can( $__acc, $MR::CAP_ACCESS, [ 'required_org_id' => 3, 'active_org_id' => 1 ] ) && true === $ME::can( $__acc, $MR::CAP_ACCESS, [ 'required_org_id' => 3, 'active_org_id' => 3 ] ), $checks, $failures );
+
+// Plattformzeit S9/S10 (ADR-LIW-MYL-001, §41): Tokenregel, serverautoritäre Zeitlogik, Wallet-Guard.
+echo "-- Plattformzeit (S9/S10) --\n";
+require_once $root . '/src/PlatformTime/TokenRule.php';
+require_once $root . '/src/PlatformTime/SessionClock.php';
+require_once $root . '/src/CoreBridge/WalletBridge.php';
+$TR = '\Liebherr\InterfaceWorld\PlatformTime\TokenRule';
+$SCk = '\Liebherr\InterfaceWorld\PlatformTime\SessionClock';
+$WB = '\Liebherr\InterfaceWorld\CoreBridge\WalletBridge';
+$__tr = new $TR( 10, 'ptime-1' );
+liw_assert( 'PTime TokenRule: 60s=10 Token, 6s=1, 59s=9 (konservativ ganzzahlig)', 10 === $__tr->tokens_for( 60 ) && 1 === $__tr->tokens_for( 6 ) && 9 === $__tr->tokens_for( 59 ), $checks, $failures );
+$__trc = new $TR( 10, 'ptime-1', 5, 8 );
+liw_assert( 'PTime TokenRule: Min/Max-Clamp (0s→min 5, 600s→max 8)', 5 === $__trc->tokens_for( 0 ) && 8 === $__trc->tokens_for( 600 ), $checks, $failures );
+$__acc1 = $SCk::accrue( 0, 100, 130, 300 );
+liw_assert( 'PTime SessionClock: zeitnah rechnet Gap voll an (30s, kein Idle)', 30 === $__acc1['active'] && 130 === $__acc1['last_seen'] && false === $__acc1['idle'], $checks, $failures );
+$__acc2 = $SCk::accrue( 30, 100, 500, 300 );
+liw_assert( 'PTime SessionClock: Gap > Timeout → Idle/Pause, keine Anrechnung', 30 === $__acc2['active'] && true === $__acc2['idle'] && 500 === $__acc2['last_seen'], $checks, $failures );
+$__acc3 = $SCk::accrue( 10, 100, 100, 300 );
+liw_assert( 'PTime SessionClock: now <= last_seen → keine Änderung', 10 === $__acc3['active'] && false === $__acc3['idle'], $checks, $failures );
+liw_assert( 'PTime WalletBridge: ohne Core nicht verfügbar; balance_cents(0)=null (Gast-Guard)', false === $WB::available() && null === $WB::balance_cents( 0 ), $checks, $failures );
+
 // 3. strict_types=1 in jeder src/-Datei (Coding Standard, CLAUDE.md Abschnitt 5).
 echo "-- Coding Standard --\n";
 $iterator2 = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $root . '/src', FilesystemIterator::SKIP_DOTS ) );

@@ -1,5 +1,59 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.113] – 2026-09-19 – My Liebherr Durchstich S2–S11 (Navigation, Overview, Plattformzeit-Schachuhr)
+
+Vertikaler Durchstich nach ADR-LIW-MYL-001, alles hinter Flags (`liw_myl_enabled`/`liw_ptime_enabled`, Default AUS).
+
+### S2 – Sechs-Reiter-Navigation
+- `Frontend\WorldSwitcher` um `platform_tabs()` erweitert: die vier Inseln plus – nur bei `liw_myl_enabled`,
+  angemeldet und mit `liw_myl_access` – der Reiter **My Liebherr** (rollenabhängig, nur bei veröffentlichter Seite)
+  sowie **Pocket Information** als sichtbarer, deaktivierter Platzhalter „in Vorbereitung" (JW-Entscheid).
+  `worlds()` bleibt bewusst vierinselig (CVF-Modulauflösung unverändert, keine Redundanz).
+
+### S4 – My Overview (Bankkonto-Startseite)
+- `MyLiebherr\OverviewView` (`[liw_my_liebherr]`, self-gating, nur angemeldet + `liw_myl_access`): Begrüßung,
+  vier Kacheln (Was besitze ich / neu / zu tun / gebucht), Schnellaktionen, Hinweis auf die Session-Uhr.
+- **Read-only Wallet:** neuer `CoreBridge\WalletBridge` → Plattform Health Wallet (`WalletService`): Saldo/Summary/
+  Transaktionen (EUR-Cent), guarded über `class_exists`; **keine zweite Saldenquelle** (§7).
+- Seeder `scripts/liw-seed-my-liebherr.php` (Seite `/my-liebherr/`, Vollbild-Vorlage, Option `liw_my_liebherr_page_id`).
+
+### S9–S11 – Plattformzeit / Session-Uhr / Token-Schachuhr (§41)
+- `PlatformTime\Schema` → Tabellen `ary_liw_ptime_session` + `ary_liw_ptime_charge` (append-only, UNIQUE idempotency_key).
+- `PlatformTime\TokenRule` (versioniert, **10 Token/Minute** Standard, konfigurierbar `liw_ptime_token_per_min`),
+  `SessionClock` (serverautoritäre, konservative Zeitfortschreibung; Idle > Timeout zählt nicht), `SessionRepository`
+  (Reservieren beim Eintritt → Bestätigen beim Verlassen), `ChargeService` (genau ein Abrechnungssatz je Abschnitt,
+  Idempotenz; Wallet-Buchung als Naht hinter `liw_ptime_charge_live`, sonst *ausstehend* protokolliert + Hook `liw_ptime_charge`).
+- `PlatformTime\Rest`: `my-liebherr/v1/platform-time/{start,heartbeat,status,stop}` (angemeldet + `liw_myl_access`, self-gating).
+- `PlatformTime\ClockWidget` (S11): schwebende Session-Uhr **unten links** (kollidiert nicht mit dem Hilfe-Koffer),
+  ein-/ausklappbar, Zeit + laufende Token; Anzeige tickt lokal, maßgeblich der serverautoritäre Heartbeat (~30 s).
+  Assets `liw-ptime-clock.js/.css` (reduced-motion-fest).
+
+### Verifikation
+- `tests/run-tests.php` **564/564**, `scripts/liw-selftest.php` **404/404** (Schema, Rollen, Flag-Gating,
+  Session-Round-Trip start→heartbeat→stop=60 s/10 Token pending + Idempotenz, Nav-Platzhalter, Overview-Shortcode,
+  Plattformzeit-REST). Seeder in Dev verifiziert (Seite #4176). Optionen/Seiten-ID nur Dev-DB → auf Staging/Live erneut setzen.
+
+## [0.1.0-alpha.108] – 2026-09-19 – My Liebherr Fundament S1 (MYL-CORE: Kontext, Entitlements, /me)
+
+### Hinzugefügt
+- **Modulbereich `src/MyLiebherr/`** (ADR-LIW-MYL-001, Stufe S1, hinter Flag `liw_myl_enabled`, Default AUS):
+  - `Schema` – zwei Tabellen `ary_liw_myl_profile` (persönliches Profil je Nutzer) + `ary_liw_myl_membership`
+    (Nutzer × Organisation × Rolle), additiv über `create_tables()`/`maybe_upgrade_database()`.
+  - `Roles` – zwei Caps `liw_myl_access` (jede angemeldete Rolle) + `liw_myl_administer` (Vollzugriff), auf
+    bestehende ARALIYA-/WP-Rollen gemappt (keine eigenen Rollen), selbstheilend bei Aktivierung/Upgrade.
+  - `EntitlementService` – reine Schnittmengen-Logik (Cap × Objektbezug × Organisation; fremde Objekte nur
+    mit Administer), SEC 01: Sichtbarkeit ≠ Berechtigung.
+  - `Context` – persönliche Sicht (Profil, Rollen, Mitgliedschaften, aktive Org/Rolle, Caps) + Feld-Allowlist
+    und `sanitize_patch()` (Feldfreigabe §18; unzulässige Persona/Felder werden verworfen).
+  - `ProfileRepository` / `MembershipRepository` – Persistenz (ensure/get/update bzw. Lesen).
+  - `Rest` – `GET/PATCH my-liebherr/v1/me` (angemeldet; nur eigener Nutzer, Objektfilter; self-gating → disabled ohne Flag).
+- Verdrahtet in `Bootstrap::init()` (REST) sowie Aktivierung/Upgrade/Deaktivierung (Tabellen + Rollen-Grant/Revoke).
+
+### Verifikation
+- `tests/run-tests.php` **537/537** (Rollen-Mapping, Kontext-Feldfreigabe, Entitlement-Kernlogik),
+  `scripts/liw-selftest.php` **398/398** (Tabellen, Rollen-Grant, Flag-Gating, Profil-Round-Trip, echter
+  REST-`/me`-Durchlauf inkl. PATCH). Testdaten selbst-bereinigt.
+
 ## [0.1.0-alpha.107] – 2026-09-19 – My Liebherr: Plattformzeit integriert + kompletter Programm-Workflow
 
 ### Dokumentation

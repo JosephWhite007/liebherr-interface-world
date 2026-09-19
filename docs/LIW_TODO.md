@@ -21,8 +21,16 @@ Pflichtenheft `Programmierpflichtenheft_My_Liebherr.md` (v2.0) liegt vor und ist
 Session-Uhr/Token-Schachuhr** erweitert. Vollständiger Arbeits-Workflow (alle Module, Stufen S0–S24):
 **`docs/ADR-LIW-MYL-001_MyLiebherr_Programm_Workflow.md`**.
 
-- **Phase-0-Gate:** gebündelter §38-Startklärungsblock (ADR-LIW-MYL-001 §4) — 4 blockierende + 8 Annahme-Fragen.
-  Umsetzung (Stufe S1 ff.) startet erst nach Beantwortung/Bestätigung.
+- **Phase-0-Gate:** §38-Startklärung freigegeben (19.09.); Wallet-Quelle = Plattform Health Wallet (ADR-LIW-MYL-001 §4).
+- **Vertikaler Durchstich S1–S11 ✅ umgesetzt (alpha.108–113):** S1 MYL-CORE (`src/MyLiebherr/`: Context/Entitlement/Roles/
+  Profil+Membership/Flags/REST `me`, Tabellen profile+membership) · S2 6-Reiter-Nav (`WorldSwitcher::platform_tabs`, My-Liebherr-
+  Reiter rollenabhängig + Pocket „in Vorbereitung") · S4 My Overview (`[liw_my_liebherr]` + read-only `CoreBridge\WalletBridge`,
+  Seeder) · S9/S10/S11 Plattformzeit (`src/PlatformTime/`: SessionClock/TokenRule/Repository/ChargeService/REST + schwebende
+  Session-Uhr unten links). Alles hinter `liw_myl_enabled`/`liw_ptime_enabled` (Default AUS). WP-frei 564 / Docker 404.
+- **Auf Staging/Live nachziehen:** Seeder `liw-seed-my-liebherr.php --confirm`, Optionen `liw_my_liebherr_page_id`,
+  ggf. `liw_myl_enabled`/`liw_ptime_enabled`/`liw_ptime_token_per_min`; Permalinks neu speichern.
+- **Als Nächstes (Breite):** S3 Dashboard, S5 Profile, S6 R1-Abnahme; dann R2-Wallet-UI (S7/S8), R3 ff. Wallet-Mehrwährung/
+  Token-Buchung = Core-Kategorie A + kommendes Wallet-Pflichtenheft (Buchungsnaht bleibt bis dahin Flag AUS).
 - Reihenfolge: R0 Verträge → R1 Fundament (Kontext/Nav/Dashboard/Overview/Profile) → R2 Wallet-Adapter +
   **Plattformzeit-Schachuhr** → R3 Adventures/Dreams/Gallery + CVF-4→6-Karten → R4 Qualität/Sharing/Kontakte →
   R5 Pocket/Machines/CVF-Simulation → R6 Pilot.
