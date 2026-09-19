@@ -56,6 +56,11 @@ Produktsegmenten + Lösungswelt + 6 Hotel-Knoten (je Drei-Wörter-Ort, englisch)
 - Simulation Builder (alpha.56, **geliefert**): geführte Szenarien/Forecasts mit Beispieldaten
   (`SimulationModel` rein/testbar + `SimulationView` `[liw_iw_simulation]`, live per JS). Offen: echte
   Datenquellen/Compute-Metering statt Beispielmodell, Speichern/Vergleich von Szenarien.
+- Simulator-Startseite (alpha.57, **geliefert**): Seite `/liebherr-simulator/` (Seeder liw-seed-simulator.php,
+  Option `liw_simulator_page_id`), Cockpit-Startbild + „Go" → Intelligence World. Bild-Slots World-Connections
+  (`liw_world_connections_image_id`) + Simulator (`liw_simulator_image_id`) aus der Mediathek gesetzt & freigegeben
+  – **nur Dev-DB**, auf Staging/Live erneut hochladen/freigeben/zuweisen. GIF `Liebherr_Cockpit_Sprachzyklus`
+  (#2838) liegt bereit, noch keinem Slot zugeordnet.
 - Protokoll & Compute: Compute-Metering (Mock), Nutzungs-/Kostenprotokoll PDF+JSON (§5.5/§8).
 - Pricing/Storage/Admin/Rollen/Audit (§14–§16, §19).
 - **Prototyp-Grenzen (§21):** kein echtes Payment/Produktivdaten; Produktivschaltung erst nach Freigabe.

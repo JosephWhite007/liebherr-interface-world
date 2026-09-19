@@ -734,6 +734,12 @@ try {
 	} else {
 		update_option( 'liw_simulator_image_id', (int) $__sim_opt );
 	}
+	// Startseite (alpha.57): sofern angelegt (Option gesetzt), muss sie veröffentlicht + Vollbild + Shortcode sein.
+	$__sim_pid = (int) get_option( 'liw_simulator_page_id', 0 );
+	if ( $__sim_pid > 0 ) {
+		$__sim_page = get_post( $__sim_pid );
+		liw_st_check( 'SIM: Startseite /liebherr-simulator/ veröffentlicht + Vollbild-Vorlage + [liw_simulator]', $__sim_page instanceof WP_Post && 'publish' === $__sim_page->post_status && \Liebherr\InterfaceWorld\Frontend\PageTemplate::TEMPLATE === get_page_template_slug( $__sim_pid ) && has_shortcode( (string) $__sim_page->post_content, 'liw_simulator' ) );
+	}
 
 	// what3words-Provider (alpha.53): austauschbar; ohne Key Mock, Erfassung bleibt robust.
 	liw_st_check( 'W3W: Provider-Klasse vorhanden', class_exists( \Liebherr\InterfaceWorld\Adventures\Location\What3WordsProvider::class ) );

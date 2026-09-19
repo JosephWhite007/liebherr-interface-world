@@ -1,5 +1,30 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.57] – 2026-09-19 – Simulation World: eigene Startseite + Cockpit-/World-Connections-Bilder
+
+### Hinzugefügt
+- **Startseite `/liebherr-simulator/`** (Seeder `scripts/liw-seed-simulator.php`, idempotent): Seite mit
+  `[liw_simulator]`, Vollbild-Vorlage; Seiten-ID in Option `liw_simulator_page_id`. Der „Go / Start your
+  journey"-CTA führt in die Intelligence World. Damit ist das Cockpit-Startbild tatsächlich sichtbar.
+
+### Geändert (Konfiguration/Assets – im Dev-System gesetzt, nicht im Repo)
+- **World-Connections-Bild** auf das freigegebene Mediathek-Bild `Liebherr_Solutions_ON-BOARD-VIEW_001`
+  gesetzt (Option `liw_world_connections_image_id`) → ersetzt die abstrakte SVG-Karte durch die reale
+  Globus-Grafik mit Standort-Flaggen.
+- **Simulator-Startbild** auf das freigegebene Mediathek-Bild `Liebherr_Cockpit_001` gesetzt
+  (Option `liw_simulator_image_id`). Beide Bilder mussten in der Mediathek freigegeben werden
+  (`_liw_media_approved`, MediaBridge CI-005).
+
+### Verifikation
+- `tests/run-tests.php` **342/342**, `scripts/liw-selftest.php` **302/302** (Startseite bei gesetzter
+  `liw_simulator_page_id` veröffentlicht + Vollbild-Vorlage; Bild-/SVG-Zweige weiterhin zustandsunabhängig).
+  Browser: `/liebherr-simulator/` zeigt das Cockpit-Bild + „Start your journey" → „Go" verlinkt die
+  Intelligence World; World-Connections-Karte zeigt das reale Bild.
+
+### Hinweis (Deployment)
+- Die Bild-Zuordnungen sind DB-Optionen und wandern **nicht** über Git; auf Staging/Live müssen die Bilder
+  erneut hochgeladen, freigegeben und die Optionen gesetzt werden (bzw. über den Deployment-Manager-Medienimport).
+
 ## [0.1.0-alpha.56] – 2026-09-19 – Intelligence World: Simulation Builder (geführte Szenarien/Forecasts)
 
 ### Hinzugefügt

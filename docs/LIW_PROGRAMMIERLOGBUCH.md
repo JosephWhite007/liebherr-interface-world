@@ -12,6 +12,18 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.57 – Simulation World: Startseite + Bild-Slots gefüllt
+
+**Neu:** `scripts/liw-seed-simulator.php` (idempotenter Seeder: Seite `/liebherr-simulator/` mit
+`[liw_simulator]`, Vollbild-Vorlage `PageTemplate::TEMPLATE`, ID in Option `liw_simulator_page_id`).
+`scripts/liw-selftest.php` – Prüfung ergänzt (bei gesetzter `liw_simulator_page_id`: Seite publish +
+Vollbild-Vorlage + enthält `[liw_simulator]`). Bump alpha.56 → alpha.57.
+
+**Konfiguration (Dev-DB, KEINE Code-/Repo-Änderung):** Optionen gesetzt – `liw_world_connections_image_id`
+= Attachment `Liebherr_Solutions_ON-BOARD-VIEW_001`, `liw_simulator_image_id` = `Liebherr_Cockpit_001`; beide
+Attachments per `_liw_media_approved=1` freigegeben (sonst greifen `WorldMapView::connections_image_url()` /
+`SimulatorView::image_url()` nicht). Diese Werte müssen auf Staging/Live neu gesetzt werden (Medienimport).
+
 ## 0.1.0-alpha.56 – Intelligence World: Simulation Builder
 
 **Neu:** `src/IntelligenceWorld/SimulationModel.php` (reine Engine: `forecast()`, `scenarios()`,
