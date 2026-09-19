@@ -39,6 +39,16 @@ final class AdventureCpt {
 	public const M_MEDIA_URL  = '_liw_adv_media_url'; // MVP-Fallback: externe Bild-URL (bis Upload-Backend, §14/§21).
 	public const M_SOLVED     = '_liw_adv_solved';     // open | in_progress | solved
 
+	// Basislogik „Adventure Area" (Registrierung, Tokenwert, Veröffentlichung §1–§9).
+	public const M_TOKEN_VALUE     = '_liw_adv_token_value';      // vom Ersteller festgelegte Tokenanzahl (int >= 0)
+	public const M_REG_STATUS      = '_liw_adv_reg_status';       // RegistrationStatus::*
+	public const M_REG_ID          = '_liw_adv_reg_id';           // eindeutige Registrier-ID
+	public const M_VERSION         = '_liw_adv_version';          // Beitragsversion (int, ab 1)
+	public const M_ARTICLEBOOK_REF = '_liw_adv_articlebook_ref';  // Referenz im Artikelbook
+	public const M_ARTICLEBOOK_URL = '_liw_adv_articlebook_url';  // Link zum Artikelbook-Eintrag
+	public const M_RIGHTS_OK       = '_liw_adv_rights_confirmed'; // '1' = Rechte/Bereitstellung zugesichert
+	public const M_USAGE_SCOPE     = '_liw_adv_usage_scope';      // erlaubter Nutzungsumfang (Freitext/Kennung)
+
 	public static function register(): void {
 		register_post_type( self::POST_TYPE, [
 			'labels'              => [

@@ -1,5 +1,40 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.59] – 2026-09-19 – Adventures: Basislogik Registrierung, Tokenwert & Artikelbook (Fundament + REST)
+
+### Hinzugefügt (serverseitiges Fundament der „Adventure Area"-Basislogik §1–§9)
+- **`Adventures\RegistrationStatus`** (rein): Status-Automat mit 9 Status (Entwurf → eingereicht → registriert →
+  Validierung beantragt → validiert → freigegeben, plus Nachbesserung/Gesperrt/Archiviert), erlaubte Übergänge,
+  Veröffentlichungsstufen (nur registriert = im Firmennetz nutzbar; nur freigegeben = im Liebherr-World-Netz).
+- **`Adventures\TokenPolicy`** (rein): **frei definierbarer Tokenwert** vom Ersteller; Zugriffsauflösung –
+  eigene Beiträge frei, sonst Budgetprüfung/Berechtigung; Preisänderung nur für zukünftige Zugriffe.
+- **`Adventures\TokenSchema` + `TokenLedger`**: append-only **Hash-Ketten-Ledger** (`liw_adv_ledger`),
+  revisionssicher – dokumentiert Registrierung, Validierung, Veröffentlichung, Preisänderung und jeden
+  Tokenzugriff (Nutzer, Beitrag+Version, Zeitpunkt, akzeptierter Tokenwert, Umfang, Org-Einheit, Transaktions-ID).
+- **`Adventures\RegistrationService`**: erzwingt den Ablauf serverseitig – `register()` (Rechte-Zusicherung
+  Pflicht) → Artikelbook-Registrierung + Ledger; `request_validation()`, `set_validation_result()`,
+  `publish_world()`, `block()`/`archive()`, `set_token_value()` (Versionierung), `access_preview()`, `record_access()`.
+- **`CoreBridge\ArticlebookBridge`**: Naht zum Artikelbook – Filter `liw_articlebook_register` (+ `liw_articlebook_url`)
+  mit lokalem Fallback-Ref; die echte Core-Anbindung bleibt einklinkbar (keine harte Kopplung).
+- **REST `liw-adv/v1`**: `create` (registriert direkt bei Tokenwert + Rechte-Zusicherung), `register`,
+  `request-validation`, `access` (Vorschau), `accept` (Tokenzugriff), `moderate` (validieren/freigeben/sperren).
+- CPT-Meta ergänzt (Tokenwert, Status, Reg-ID, Version, Artikelbook-Ref/URL, Rechte, Nutzungsumfang);
+  Ledger-Tabelle in `create_tables()`.
+
+### Hintergrund (Architektur)
+- Das Core-Workboard (`admin.php?page=araliya-workboard`) ist **nicht** cross-plugin wiederverwendbar (keine
+  Hooks/REST/Shortcodes, feste Rollen-/Tabellenbindung, feste Preis-Pauschale). Daher – wie „Workboard-Optik"
+  an anderen Stellen der Plattform – im Satelliten **nachgebaut**, mit **frei wählbarem** Tokenwert statt fester
+  Pauschale. Die Workboard-Optik-Eingabemaske (Frontend + Backend) folgt in alpha.60.
+
+### Verifikation
+- `tests/run-tests.php` **368/368** (Status-Automat, Tokenregeln, Ledger-Hashkette),
+  `scripts/liw-selftest.php` **311/311** (Registrierung → Artikelbook-Ref, fremder/eigener Zugriff,
+  Validierung → Freigabe, Ledger-Kette unverändert, alle Routen registriert).
+
+### Hinweis
+- Prototyp (§21): kein echtes Tokenbudget-Konto (Filter `liw_adv_token_budget`); Artikelbook-Verknüpfung als Naht.
+
 ## [0.1.0-alpha.58] – 2026-09-19 – Intelligence World: Nutzungs-/Kostenprotokoll (JSON + Druck/PDF)
 
 ### Hinzugefügt

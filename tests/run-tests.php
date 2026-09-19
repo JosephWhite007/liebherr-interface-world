@@ -403,6 +403,24 @@ liw_assert( 'Policy: public_approved+publish öffentlich sichtbar', Policy::can_
 liw_assert( 'Policy: interne Sichtbarkeit nur für Angemeldete', ! Policy::can_view( 'publish', 'organization', false, false, false ) && Policy::can_view( 'publish', 'organization', false, true, false ), $checks, $failures );
 liw_assert( 'Policy: nicht-publish (Critical/pending) nicht öffentlich (§22.5)', ! Policy::can_view( 'pending', 'public_approved', false, true, false ) && Policy::can_view( 'pending', 'public_approved', true, false, false ), $checks, $failures );
 
+// 2u. Adventure Area – Basislogik: Tokenwert, Registrierung, Ledger (§1–§9, alpha.59).
+echo "-- Adventures Basislogik (Token/Registrierung, alpha.59) --\n";
+require_once $root . '/src/Adventures/RegistrationStatus.php';
+require_once $root . '/src/Adventures/TokenPolicy.php';
+require_once $root . '/src/Adventures/TokenLedger.php';
+$RS = '\Liebherr\InterfaceWorld\Adventures\RegistrationStatus';
+$TP = '\Liebherr\InterfaceWorld\Adventures\TokenPolicy';
+$TL = '\Liebherr\InterfaceWorld\Adventures\TokenLedger';
+liw_assert( 'RegistrationStatus: 9 Status + gültige/ungültige Übergänge', 9 === count( $RS::labels() ) && $RS::can_transition( 'draft', 'submitted' ) && $RS::can_transition( 'validated', 'published' ) && ! $RS::can_transition( 'draft', 'published' ) && ! $RS::can_transition( 'registered', 'validated' ), $checks, $failures );
+liw_assert( 'RegistrationStatus: nur registriert+ nutzbar im Firmennetz; nur published im World-Netz', $RS::usable_in_company_net( 'registered' ) && $RS::usable_in_company_net( 'validated' ) && ! $RS::usable_in_company_net( 'draft' ) && ! $RS::usable_in_company_net( 'blocked' ) && $RS::published_in_world( 'published' ) && ! $RS::published_in_world( 'validated' ) && $RS::can_request_validation( 'registered' ) && ! $RS::can_request_validation( 'draft' ), $checks, $failures );
+liw_assert( 'TokenPolicy: Ersteller frei (0), fremd mit Budget belastet, ohne Budget abgelehnt', 0 === $TP::resolve_access( 25, true, 0 )['charge'] && 'author' === $TP::resolve_access( 25, true, 0 )['reason'] && $TP::resolve_access( 25, false, 100 )['allowed'] && 25 === $TP::resolve_access( 25, false, 100 )['charge'] && ! $TP::resolve_access( 25, false, 5 )['allowed'], $checks, $failures );
+liw_assert( 'TokenPolicy: Wert 0 frei, Berechtigung umgeht Budget, sanitize/next_version', 'free' === $TP::resolve_access( 0, false, 0 )['reason'] && $TP::resolve_access( 25, false, 0, true )['allowed'] && 0 === $TP::sanitize_value( -7 ) && 3 === $TP::next_version( 2, true ) && 2 === $TP::next_version( 2, false ), $checks, $failures );
+$tl_core = [ 'entry_uid' => 'e1', 'contribution_id' => 7, 'seq' => 1, 'kind' => 'access', 'token_value' => 25, 'metadata' => [ 'b' => 2, 'a' => 1 ] ];
+$tl_same = [ 'metadata' => [ 'a' => 1, 'b' => 2 ], 'kind' => 'access', 'seq' => 1, 'contribution_id' => 7, 'token_value' => 25, 'entry_uid' => 'e1' ];
+liw_assert( 'TokenLedger: canonical stabil (Schlüsselreihenfolge egal)', $TL::canonical( $tl_core ) === $TL::canonical( $tl_same ), $checks, $failures );
+liw_assert( 'TokenLedger: Hash verkettet (prev_hash geht ein) + Manipulation ändert Hash', $TL::hash( 'PREV', $tl_core ) !== $TL::hash( '', $tl_core ) && $TL::hash( '', $tl_core ) !== $TL::hash( '', array_merge( $tl_core, [ 'token_value' => 26 ] ) ), $checks, $failures );
+liw_assert( 'TokenLedger: gültige Vorgangsarten (access/registered/…)', $TL::is_valid_kind( 'access' ) && $TL::is_valid_kind( 'registered' ) && ! $TL::is_valid_kind( 'quatsch' ) && 9 === count( $TL::kinds() ), $checks, $failures );
+
 // 3. strict_types=1 in jeder src/-Datei (Coding Standard, CLAUDE.md Abschnitt 5).
 echo "-- Coding Standard --\n";
 $iterator2 = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $root . '/src', FilesystemIterator::SKIP_DOTS ) );

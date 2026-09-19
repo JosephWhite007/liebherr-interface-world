@@ -18,6 +18,16 @@ Policy (Intelligence-Zugang, Critical nie auto-öffentlich, 7 Sichtbarkeiten, Or
 Insel `[liw_adventures]` (Hero/Filter/Create/Stream), Seite `/liebherr-adventures/` + Demo-Seeder. Details:
 `docs/ADVENTURES_NOTES.md`.
 
+**Geliefert (alpha.59) – Basislogik „Adventure Area" (Fundament + REST):** Ersteller-bestimmter,
+**frei definierbarer Tokenwert** (`TokenPolicy`), 9-Status-Registrierungs-/Veröffentlichungs-Automat
+(`RegistrationStatus`), revisionssicheres Hash-Ketten-Ledger (`TokenSchema`/`TokenLedger`, Tabelle
+`liw_adv_ledger`), Workflow-Orchestrator (`RegistrationService`: register/validate/publish/access), Artikelbook-
+Naht (`CoreBridge\ArticlebookBridge`, Filter `liw_articlebook_register`), REST register/request-validation/
+access/accept/moderate. Core-Workboard bewusst NICHT wiederverwendet (nicht cross-plugin-fähig) → Workboard-Optik
+nachgebaut. **Offen (alpha.60):** gemeinsame Workboard-Optik-Eingabemaske (Frontend `[liw_adventures]` + Admin-
+Board) mit Tokenwert + Nutzungsumfang + Rechte-Zusicherung; Tokenakzeptanz-UI beim Zugriff; Moderations-Board;
+echte Artikelbook-Anbindung im Core über den Filter; echtes Tokenbudget-Konto (§21).
+
 **Offen / nächste Etappen:** World Map + Detailseite, Medien-Upload/Transcoding (§14; MVP: externe Bild-URL),
 Moderations-UI/Audit (§17/§12.3), Get-Help-Assistent (Phase 3), Suche/Filter Maschine/Bauteil (§18),
 Mehrsprachigkeit der Nutzerinhalte (§15). **alpha.53:** what3words als echter Ortsdienst angebunden

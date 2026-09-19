@@ -12,6 +12,26 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.59 – Adventures: Basislogik Registrierung, Tokenwert & Artikelbook (Fundament + REST)
+
+**Neu:** `src/Adventures/RegistrationStatus.php` (reiner 9-Status-Automat + Übergänge + Veröffentlichungsstufen),
+`src/Adventures/TokenPolicy.php` (reine Tokenregeln: `resolve_access`, `sanitize_value`, `next_version`),
+`src/Adventures/TokenSchema.php` (Tabelle `liw_adv_ledger`, COMMENT ohne Klammern),
+`src/Adventures/TokenLedger.php` (append-only Hash-Kette: reine `canonical`/`hash` + `append`/`chain_for`/
+`verify_chain`), `src/Adventures/RegistrationService.php` (Workflow-Orchestrator: register/request_validation/
+set_validation_result/publish_world/block/archive/set_token_value/access_preview/record_access),
+`src/CoreBridge/ArticlebookBridge.php` (Filter `liw_articlebook_register`/`liw_articlebook_url` + lokaler Fallback).
+
+**Geändert:** `src/Adventures/AdventureCpt.php` (Meta M_TOKEN_VALUE/M_REG_STATUS/M_REG_ID/M_VERSION/
+M_ARTICLEBOOK_REF/M_ARTICLEBOOK_URL/M_RIGHTS_OK/M_USAGE_SCOPE). `src/Adventures/Rest.php` (Routen register/
+request-validation/access/accept/moderate; `create()` registriert direkt bei Tokenwert+Rechte-Zusicherung).
+`liebherr-interface-world.php` (`Adventures\TokenSchema::create_table()` in create_tables). Tests/Selftest ergänzt.
+Bump alpha.58 → alpha.59.
+
+**Entscheidung:** Core-Workboard nicht wiederverwendbar (Analyse: keine Hooks/REST/Shortcodes, feste Rollen-/
+`ary_change_requests`-Bindung, feste Preis-Pauschale) → im Satelliten nachgebaut, frei wählbarer Tokenwert.
+Eingabemaske in Workboard-Optik (Frontend+Backend) folgt alpha.60. Ledger-Muster gespiegelt von IntelligenceWorld\EventLog.
+
 ## 0.1.0-alpha.58 – Intelligence World: Nutzungs-/Kostenprotokoll
 
 **Neu:** `src/IntelligenceWorld/ProtocolBuilder.php` (reine `build()`: Sitzung + Events + vorab berechnetes

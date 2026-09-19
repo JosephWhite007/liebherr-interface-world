@@ -710,8 +710,43 @@ try {
 	$__advhtml = do_shortcode( '[liw_adventures]' );
 	liw_st_check( 'ADV: Insel rendert Hero + Filter + Stream + Partner-Attribution', str_contains( $__advhtml, 'liw-adv__hero' ) && str_contains( $__advhtml, 'data-liw-adv-stream' ) && str_contains( $__advhtml, 'Location powered by' ) );
 	liw_st_check( 'ADV: REST-Route liw-adv/v1 registriert', array_key_exists( '/' . \Liebherr\InterfaceWorld\Adventures\Rest::NAMESPACE . '/create', rest_get_server()->get_routes() ) );
-	// Aufräumen (Testdaten).
-	foreach ( [ $__a1['id'], $__a2['id'] ] as $__id ) { if ( $__id > 0 ) { wp_delete_post( (int) $__id, true ); } }
+
+	// ── [8e2] Basislogik: Registrierung, Tokenwert, Artikelbook, Ledger, Statuswege (§1–§9, alpha.59) ──
+	$RSVC   = '\Liebherr\InterfaceWorld\Adventures\RegistrationService';
+	$TLED   = '\Liebherr\InterfaceWorld\Adventures\TokenLedger';
+	$NS     = \Liebherr\InterfaceWorld\Adventures\Rest::NAMESPACE;
+	$routes = rest_get_server()->get_routes();
+	$have   = array_key_exists( '/' . $NS . '/register', $routes ) && array_key_exists( '/' . $NS . '/request-validation', $routes )
+		&& array_key_exists( '/' . $NS . '/access', $routes ) && array_key_exists( '/' . $NS . '/accept', $routes ) && array_key_exists( '/' . $NS . '/moderate', $routes );
+	liw_st_check( 'ADV-Reg: REST-Routen register/request-validation/access/accept/moderate registriert', $have );
+
+	$__reg = $RSVC::register( (int) $__a1['id'], [ 'token_value' => 25, 'rights_confirmed' => true, 'usage_scope' => 'view', 'author_ref' => 1 ] );
+	liw_st_check( 'ADV-Reg: register → registriert + Artikelbook-Ref + Tokenwert', ! empty( $__reg['ok'] ) && 'registered' === ( $__reg['status'] ?? '' ) && '' !== ( $__reg['articlebook_ref'] ?? '' ) && 25 === (int) $RSVC::get_registration( (int) $__a1['id'] )['token_value'] );
+
+	$__d = $ADV::create( [ 'title' => 'SELFTEST-ADV-REG2', 'story' => 's', 'type' => 'field_experience', 'urgency' => 'informative', 'intent' => 'draft', 'lat' => 48.0, 'lng' => 10.0, 'author_id' => 1 ] );
+	update_post_meta( $__d['id'], '_liw_adv_selftest', 1 );
+	$__noRights = $RSVC::register( (int) $__d['id'], [ 'token_value' => 10, 'rights_confirmed' => false ] );
+	liw_st_check( 'ADV-Reg: Registrierung ohne Rechte-Zusicherung abgelehnt (§1/§8)', empty( $__noRights['ok'] ) && 'rights_not_confirmed' === ( $__noRights['error'] ?? '' ) );
+
+	$__acc  = $RSVC::record_access( (int) $__a1['id'], 2, [ 'budget' => 100, 'org_unit' => 'DE-OPS' ] );
+	liw_st_check( 'ADV-Reg: fremder Zugriff belastet Tokenwert (25) + Transaktions-ID (§5/§6)', ! empty( $__acc['ok'] ) && 25 === (int) $__acc['charge'] && '' !== ( $__acc['transaction_id'] ?? '' ) );
+	$__accA = $RSVC::record_access( (int) $__a1['id'], 1, [ 'budget' => 0 ] );
+	liw_st_check( 'ADV-Reg: Ersteller-Zugriff ohne Belastung (§6)', ! empty( $__accA['ok'] ) && 0 === (int) $__accA['charge'] );
+
+	$RSVC::request_validation( (int) $__a1['id'] );
+	$__val = $RSVC::set_validation_result( (int) $__a1['id'], true );
+	$__pub = $RSVC::publish_world( (int) $__a1['id'] );
+	liw_st_check( 'ADV-Reg: Validierung → Veröffentlichungsfreigabe (published, §4/§7)', ! empty( $__val['ok'] ) && ! empty( $__pub['ok'] ) && 'published' === $RSVC::current_status( (int) $__a1['id'] ) );
+	liw_st_check( 'ADV-Reg: Ledger-Kette unverändert (revisionssicher, §9)', $TLED::verify_chain( (int) $__a1['id'] ) );
+
+	// Aufräumen (Testdaten inkl. Ledger).
+	global $wpdb; $__lt = \Liebherr\InterfaceWorld\Adventures\TokenSchema::table();
+	foreach ( [ $__a1['id'], $__a2['id'], $__d['id'] ] as $__id ) {
+		if ( $__id > 0 ) {
+			$wpdb->query( $wpdb->prepare( "DELETE FROM {$__lt} WHERE contribution_id = %d", (int) $__id ) ); // phpcs:ignore WordPress.DB
+			wp_delete_post( (int) $__id, true );
+		}
+	}
 	liw_st_check( 'ADV: Testdaten entfernt', null === get_post( $__a1['id'] ) );
 
 	// Cross-Navigation: gemeinsamer Plattform-Umschalter (alpha.52).
