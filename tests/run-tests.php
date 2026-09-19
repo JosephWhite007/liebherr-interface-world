@@ -516,6 +516,13 @@ $__as_hash   = $AS::hash_code( 'LIEBHERR-DEMO', $__as_secret );
 liw_assert( 'AccessService: hash_code deterministisch + verify akzeptiert richtige Eingabe (case-insensitiv)', $__as_hash === $AS::hash_code( 'liebherr-demo', $__as_secret ) && true === $AS::verify( 'liebherr-demo', $__as_hash, $__as_secret ), $checks, $failures );
 liw_assert( 'AccessService: falscher Code + leerer Hash werden abgelehnt', false === $AS::verify( 'FALSCH', $__as_hash, $__as_secret ) && false === $AS::verify( 'LIEBHERR-DEMO', '', $__as_secret ), $checks, $failures );
 
+// CVF – Rollen-Mapping (reine Mapping-Logik, alpha.85).
+require_once $root . '/src/Cvf/Roles.php';
+$RO = '\Liebherr\InterfaceWorld\Cvf\Roles';
+$__rc = $RO::role_caps();
+liw_assert( 'Roles: 5 CVF-Caps; administrator/araliya_admin erhalten alle', 5 === count( $RO::all_caps() ) && $__rc['administrator'] === $RO::all_caps() && $__rc['araliya_admin'] === $RO::all_caps(), $checks, $failures );
+liw_assert( 'Roles: Marketing→edit_content, Ops→edit_workflow+publish, keine eigenen CVF-Rollen', in_array( $RO::CAP_EDIT_CONTENT, $__rc['araliya_marketing'], true ) && in_array( $RO::CAP_EDIT_WORKFLOW, $__rc['araliya_ops'], true ) && in_array( $RO::CAP_PUBLISH, $__rc['araliya_ops'], true ) && 5 === count( $RO::map() ), $checks, $failures );
+
 // Emergency – Hilfe-Koffer (einstellige Rechenaufgabe) + kontextbezogene Emergency-Area (alpha.78).
 require_once $root . '/src/Emergency/EmergencyChallenge.php';
 require_once $root . '/src/Emergency/HelpTopicCatalog.php';

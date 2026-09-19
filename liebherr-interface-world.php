@@ -4,7 +4,7 @@
  * Plugin URI:   https://araliya.info
  * Description:  Administrierbare, mehrsprachige Landingpage "Interface World Connections" für Liebherr-Händler-,
  *               Lieferanten- und Kundenanbindung (Magic Cube, Interface LogiQ). Solution Provider: GoHeal.
- * Version:      0.1.0-alpha.84
+ * Version:      0.1.0-alpha.85
  * Author:       GoHeal
  * Author URI:   https://araliya.info
  * Requires at least: 6.0
@@ -29,7 +29,7 @@ namespace Liebherr\InterfaceWorld;
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 // ── Konstanten ────────────────────────────────────────────────────────────────
-define( 'LIW_VERSION', '0.1.0-alpha.84' );
+define( 'LIW_VERSION', '0.1.0-alpha.85' );
 define( 'LIW_PATH', plugin_dir_path( __FILE__ ) );
 define( 'LIW_URL', plugin_dir_url( __FILE__ ) );
 define( 'LIW_BASENAME', plugin_basename( __FILE__ ) );
@@ -125,6 +125,7 @@ function maybe_upgrade_database(): void {
 
 	create_tables();
 	CoreBridge\RoleBridge::ensure_partner_role(); // Rollen/Caps-Abgleich analog zum Schema (alpha.21).
+	Cvf\Roles::grant();                           // CVF-Caps an bestehende ARALIYA-Rollen (selbstheilend, alpha.85).
 	update_option( 'liw_installed_version', LIW_VERSION );
 }
 
@@ -144,6 +145,7 @@ function activate(): void {
 
 	CPT\LiwSectionCpt::register();
 	CoreBridge\RoleBridge::grant_capabilities();
+	Cvf\Roles::grant(); // CVF-Rollen-Mapping (JW-Entscheid §9.1) auf bestehende ARALIYA-Rollen.
 
 	// Permalink-Hinweis (CLAUDE.md DoD Punkt 7): CPT-Rewrite-Regeln erfordern Flush.
 	update_option( 'liw_flush_rewrite_needed', '1' );
@@ -152,6 +154,7 @@ function activate(): void {
 /** Deaktivierung: Rollen-Capabilities entfernen, Rewrite-Regeln zurücksetzen. Keine Datenlöschung (Kategorie A). */
 function deactivate(): void {
 	CoreBridge\RoleBridge::revoke_capabilities();
+	Cvf\Roles::revoke();
 	Contact\ContactRetention::unschedule();
 	flush_rewrite_rules();
 }

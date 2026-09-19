@@ -990,6 +990,9 @@ try {
 	for ( $__i = 0; $__i < 6; $__i++ ) { $__as_last = \Liebherr\InterfaceWorld\Cvf\AccessService::attempt( 'FALSCH', $__as_key ); }
 	liw_st_check( 'CVF-Access: zu viele Fehlversuche → Lockout (reason=locked)', 'locked' === $__as_last['reason'] && true === \Liebherr\InterfaceWorld\Cvf\AccessService::is_locked( $__as_key ) );
 	\Liebherr\InterfaceWorld\Cvf\AccessService::clear( $__as_key );
+	// CVF Rollen-Mapping (alpha.85): CVF-Caps auf bestehende ARALIYA-Rollen (keine eigenen CVF-Rollen).
+	$__ro_admin = get_role( 'administrator' );
+	liw_st_check( 'CVF-Roles: administrator hat alle CVF-Caps (Grant lief bei Upgrade)', $__ro_admin instanceof \WP_Role && $__ro_admin->has_cap( \Liebherr\InterfaceWorld\Cvf\Roles::CAP_ADMINISTER ) && $__ro_admin->has_cap( \Liebherr\InterfaceWorld\Cvf\Roles::CAP_PUBLISH ) );
 
 	// ── [9] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
 	echo "\n[9] Programmierlogbuch / To-Dos\n";

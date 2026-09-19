@@ -12,6 +12,19 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.85 – CVF Phase 2: Rollen-Mapping auf die ARALIYA-Rollen
+
+**Neu:** `src/Cvf/Roles.php` (JW-Entscheid §9.1) – KEINE eigenen CVF-Rollen: fünf feingranulare
+`liw_cvf_`-Capabilities (edit_content/edit_workflow/publish/audit/administer) werden über eine reine
+Mapping-Tabelle `map()` auf bestehende ARALIYA-Rollen abgebildet (Content-Editor→araliya_marketing,
+Workflow-Editor/Publisher→araliya_ops, Auditor→araliya_finance/reception, Voll = administrator/araliya_admin).
+`role_caps()` aggregiert Slug→Caps (rein/testbar); `grant()/revoke()` vergeben/entfernen die Caps nur an
+VORHANDENE Rollen (robust gegen abweichende Core-Rollensätze). **Geändert:** `liebherr-interface-world.php`
+– `Roles::grant()` in `activate()` UND selbstheilend in `maybe_upgrade_database()`, `Roles::revoke()` in
+`deactivate()` (administrator bleibt unberührt). `tests/run-tests.php` (+2 reine Mapping-Asserts),
+`scripts/liw-selftest.php` (+1: administrator hat nach Upgrade alle CVF-Caps). Tests WP-frei 465 / Docker 370.
+Bump alpha.84 -> alpha.85.
+
 ## 0.1.0-alpha.84 – CVF Phase 2: Feature-Flags + gehärteter Zugangscode
 
 **Neu (`src/Cvf/`):** `Flags` – `enabled()` (Option/Filter `liw_cvf_enabled`, Default AUS → CVF-Runtime
