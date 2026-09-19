@@ -786,6 +786,7 @@ try {
 	$__prev = \Liebherr\InterfaceWorld\Adventures\Rest::access( $__acReq )->get_data();
 	liw_st_check( 'ADV-Zugriff: Rest::access zeigt Tokenwert + Nutzungsumfang-Label vor Bestätigung', ! empty( $__prev['ok'] ) && isset( $__prev['preview']['token_value'], $__prev['preview']['usage_label'] ) && 25 === (int) $__prev['preview']['token_value'] && false === $__prev['preview']['is_author'] );
 	$__acpReq = new WP_REST_Request( 'POST' ); $__acpReq->set_param( 'post_id', (int) $__a1['id'] );
+	\Liebherr\InterfaceWorld\Adventures\TokenAccount::grant( 2, 100 ); // Test-Isolation: Guthaben sicherstellen (sonst laufen wiederholte Selftests das Konto leer).
 	$__accd = \Liebherr\InterfaceWorld\Adventures\Rest::accept( $__acpReq )->get_data();
 	liw_st_check( 'ADV-Zugriff: Rest::accept protokolliert + Transaktions-ID (Budget-Filter)', ! empty( $__accd['ok'] ) && 25 === (int) $__accd['charge'] && '' !== (string) ( $__accd['transaction_id'] ?? '' ) );
 	wp_set_current_user( (int) $__prev_user );
@@ -1114,6 +1115,21 @@ try {
 	liw_st_check( 'CAPDB-A35: Entwurf aendert die aktive Version nicht (Bereiche unveraendert)', $__a35_before === $__a35_after && count( \Liebherr\InterfaceWorld\Cvf\BoardSnapshot::of_version( $__a35_dr )['areas'] ) === $__a35_after + 1 );
 	if ( isset( $wpdb ) ) {
 		foreach ( array_unique( array_filter( [ $__a35_vid, (int) $__a35_dr, \Liebherr\InterfaceWorld\Cvf\BoardRepository::draft_id() ] ) ) as $__vid ) {
+			if ( $__vid > 0 ) { \Liebherr\InterfaceWorld\Cvf\BoardRepository::clear_board( (int) $__vid ); $wpdb->delete( \Liebherr\InterfaceWorld\Cvf\Schema::version_table(), [ 'id' => (int) $__vid ] ); }
+		}
+	}
+
+	// CAPDB Härtung/Skala (alpha.96): >= 50 Stufen ohne Funktionsverlust (§21).
+	$__sc = \Liebherr\InterfaceWorld\Cvf\BoardRepository::create_draft( 1 );
+	for ( $__i = 5; $__i <= 54; $__i++ ) {
+		\Liebherr\InterfaceWorld\Cvf\BoardRepository::add_area( $__sc, 'mod_' . $__i, $__i, '', 'active', '' );
+	}
+	$__sc_areas = \Liebherr\InterfaceWorld\Cvf\BoardRepository::areas( $__sc );
+	$__sc_val   = \Liebherr\InterfaceWorld\Cvf\BoardValidator::validate( $__sc );
+	$__sc_snap  = \Liebherr\InterfaceWorld\Cvf\BoardSnapshot::of_version( $__sc );
+	liw_st_check( 'CAPDB-Skala: >= 50 Bereiche validieren + Snapshot ohne Fehler (§21)', count( $__sc_areas ) >= 50 && [] === $__sc_val && count( $__sc_snap['areas'] ) === count( $__sc_areas ) );
+	if ( isset( $wpdb ) ) {
+		foreach ( array_unique( array_filter( [ (int) $__sc, \Liebherr\InterfaceWorld\Cvf\BoardRepository::draft_id() ] ) ) as $__vid ) {
 			if ( $__vid > 0 ) { \Liebherr\InterfaceWorld\Cvf\BoardRepository::clear_board( (int) $__vid ); $wpdb->delete( \Liebherr\InterfaceWorld\Cvf\Schema::version_table(), [ 'id' => (int) $__vid ] ); }
 		}
 	}

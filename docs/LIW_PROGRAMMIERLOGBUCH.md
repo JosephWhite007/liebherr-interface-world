@@ -12,6 +12,15 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.96 – CAPDB Etappe 9: Härtung (≥50 Stufen) + Test-Isolation
+
+**Geändert:** `scripts/liw-selftest.php` – Skalentest: Board mit ≥50 Bereichen validiert + Snapshot ohne
+Fehler (§21 „mindestens 50 Stufen"). Zusätzlich Test-Isolation des Adventures-Accept-Checks: Guthaben von
+User 2 vor dem `accept` per `TokenAccount::grant` sichergestellt (wiederholte Selftest-Läufe hatten das
+Konto sonst leergebucht → falscher Fehlschlag). Damit ist die CAPDB-Baureihe (Etappe 2–9) abgeschlossen:
+Datenmodell · Plugin-Registry · Tabellenansicht · Runtime+Ausführungsprotokoll · visuelles DnD-Board ·
+Simulation · Diff/Flags/Abnahme · Skala. Tests WP-frei 511 / Docker 389. Bump alpha.95 -> alpha.96.
+
 ## 0.1.0-alpha.95 – CAPDB Etappe 8: Diff, Feature-Flag, Abnahme A25–A36
 
 **Neu:** `src/Cvf/BoardDiff.php` (reiner, positionsstabiler Snapshot-Vergleich: hinzugefügte/entfernte

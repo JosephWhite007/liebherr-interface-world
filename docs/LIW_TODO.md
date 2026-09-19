@@ -22,10 +22,16 @@ Stand: 19.09.2026 (0.1.0-alpha.78).
   JS-freier Fallback-Pfad; spätere Zusammenführung der Rechen-Gates in den einheitlichen ChallengeService
   (ADR-LIW-CVF-001 §5).
 
-### Customer View Flow & CAPDB — Phase 1 wartet auf Freigabe
+### Customer View Flow & CAPDB — umgesetzt (Phase 1–2 + CAPDB-Board)
 
-- **Integrationsplan `docs/ADR-LIW-CVF-001…md` erstellt (Phase-1-Gate, §19).** Kein Code bis zur Freigabe;
-  danach Phase 2 (Domänenmodell `liw_cvf_*` + ChallengeService). 5 offene Rückfragen im Dokument.
+- ~~**Phase 1 Integrationsplan (ADR-LIW-CVF-001).**~~ Freigegeben, 5 Entscheidungen dokumentiert.
+- ~~**Phase 2 (alpha.81–88):**~~ ChallengeService · Durchstich-Runtime · Persistenz · Flags · Zugangscode-
+  Härtung · Rollen-Mapping · begehbarer Durchstich `[liw_cvf_flow]` · Admin-Board · Intro-Gate auf ChallengeService.
+- ~~**CAPDB-Board (ADR-LIW-CVF-002, alpha.89–96):**~~ Datenmodell · Plugin-Registry · Tabellenansicht ·
+  Runtime+Ausführungsprotokoll · visuelles DnD-Board · Simulation · Diff/Flags · Abnahme A25–A36 · ≥50 Stufen.
+- **Offen/optional:** Board als LIVE-Runtime scharfschalten (heute Editier-/Simulations-Ebene hinter Flags);
+  Eigenschaften-Panel-Feinschliff; A11y-/Last-Vollmessung auf Staging; Download-Consent-Plugin (separates Repo)
+  auf den ChallengeService umstellen (§5-Redundanzabbau, 2. Gate).
 
 ---
 

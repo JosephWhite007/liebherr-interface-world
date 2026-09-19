@@ -129,3 +129,24 @@ Tastatur gleichwertig · unzulässige Plugin-Zielzonen abgewiesen · vollständi
 
 *Nach Freigabe dieses Plans beginnt Etappe 2 (Datenmodell + Startkonfig-Seeder). Bis dahin kein Code, keine
 Schemaänderung; der vertikale Durchstich (Phase 2) bleibt unverändert.*
+
+---
+
+## 10 Umsetzungsstand (freigegeben, „arbeite bis zum Ende durch")
+
+Etappe 2–9 umgesetzt (alpha.89–alpha.96), jede mit grünen Tests:
+
+- **alpha.89 (E2):** Datenmodell (7 Tabellen `liw_cvf_board_*`/`plugin_*`), `PluginState` (11 Zustände),
+  `PluginTaxonomy`, `BoardRepository` (Entwurf/Publish/Rollback + CRUD + Startkonfig-Seeder), `BoardValidator`.
+- **alpha.90 (E3):** `PluginRegistry` (8 Typen, alle 7 Kategorien; Manifest/Schema/Scope/Capability; `sync()`).
+- **alpha.91 (E4):** Tabellenansicht/Editor `CvfBoardEditorPage` (Pflicht §6; Lifecycle + CRUD + Publish/Rollback).
+- **alpha.92 (E5):** `BoardRuntime` (Auflösung/Prioritäten/Zeitfenster), `BoardSnapshot`, `ExecutionLog`
+  (`plugin_execution`), REST `GET /board`; Flow-Challenge protokolliert serverseitig.
+- **alpha.93 (E6):** visuelles Timeline-Board (Modulbaukasten, DnD + Tastatur, Zonen, Zoom; admin-ajax).
+- **alpha.94 (E7):** Simulation (Abspielkopf/Zeitlineal/Protokoll) — reine Vorschau, keine echten Aktionen.
+- **alpha.95 (E8):** `BoardDiff`, `Flags::board_enabled`, Diff-Sektion; Abnahme A26/A34/A35.
+- **alpha.96 (E9):** Härtung ≥50 Stufen (§21) + Test-Isolation.
+
+**Offen/optional:** Board als LIVE-Runtime scharfschalten (heute treibt der flache Phase-2-Durchstich die
+Customer-View; das Board ist Editier-/Simulations-/Audit-Ebene hinter Flags) — Umschaltung ist eine bewusste
+Folgeentscheidung. Feinschliff Eigenschaften-Panel (E-Zone) im visuellen Board; volle A11y-/Last-Messung auf Staging.
