@@ -445,6 +445,10 @@ liw_assert( 'UploadService: is_allowed_ext akzeptiert Bilder, lehnt exe/pdf ab',
 require_once $root . '/src/Adventures/GetHelpAssistant.php';
 $GH = '\Liebherr\InterfaceWorld\Adventures\GetHelpAssistant';
 liw_assert( 'GetHelpAssistant: 5 geführte Schritte + Shortcode + erster Schritt „secure"', 5 === count( $GH::steps() ) && 'liw_adventures_help' === $GH::SHORTCODE && 'secure' === $GH::steps()[0]['key'], $checks, $failures );
+require_once $root . '/src/Admin/Pages/LocalIntelligenceBoardPage.php';
+$LIB    = '\Liebherr\InterfaceWorld\Admin\Pages\LocalIntelligenceBoardPage';
+$li_scn = $LIB::parse_scenarios( "A | Variante A | Basis\n- Absatz | 100\n- Mix | 70/30\nB | Variante B | Wachstum\n- Absatz | 150" );
+liw_assert( 'LI-Szenario-Parser: 2 Szenarien, A=2 Zeilen (Wert 100), B summary „Wachstum"', 2 === count( $li_scn ) && 'A' === $li_scn[0]['key'] && 2 === count( $li_scn[0]['rows'] ) && '100' === $li_scn[0]['rows'][0]['value'] && 'B' === $li_scn[1]['key'] && 'Wachstum' === $li_scn[1]['summary'], $checks, $failures );
 
 // 3. strict_types=1 in jeder src/-Datei (Coding Standard, CLAUDE.md Abschnitt 5).
 echo "-- Coding Standard --\n";

@@ -37,7 +37,8 @@ der Reihe nach ab und befüllen sie mit Funktionalität), **B** = auf externe Fr
    `/upload`, Datei-Feld in der Maske). Offen: Video-Upload + Transcoding (spätere Etappe).
 7. ~~**Adventures – Get-Help-Assistent (Phase 3).**~~ **ERLEDIGT (alpha.68):** `GetHelpAssistant` (5 geführte
    Schritte, `[liw_adventures_help]`, Hero-CTA + inline in der Insel).
-8. **Local Intelligence – Szenario-Editor im Board.** Feingranulare A/B/C-Pflege statt Seeder/Standardwerte.
+8. ~~**Local Intelligence – Szenario-Editor im Board.**~~ **ERLEDIGT (alpha.69):** A/B/C-Varianten (Label,
+   Zusammenfassung, Kennzahlen-Zeilen) im LI-Board pflegbar (`parse_scenarios`).
 9. **Simulation Builder – Szenarien speichern/vergleichen.** Persistenz + Nebeneinander-Vergleich.
 10. **Nutzungs-/Kostenprotokoll – echte serverseitige PDF-Erzeugung** (statt Browser-Druck).
 11. **Content Board – Medien-Picker auf freigegebene Bibliothek beschränken** (CI-005; braucht Docker-Prüfung).

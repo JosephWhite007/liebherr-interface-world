@@ -1,5 +1,19 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.69] – 2026-09-19 – Local Intelligence: Szenario-Editor im Board [Job A8]
+
+### Hinzugefügt
+- **Szenario-Editor** im Local-Intelligence-Board (Modul 4 – Simulation World): die A/B/C-Varianten
+  (Key, Label, Zusammenfassung + Kennzahlen-Zeilen „Label | Wert") sind jetzt redaktionell pflegbar –
+  kompaktes Strukturfeld (Kopfzeile je Variante, darunter „- Label | Wert"). Vorher nur über Seeder/Defaults.
+  Parser `parse_scenarios()`; Bereinigung/Ablage über die bestehende `LocalIntelligenceContent::sanitize()`.
+
+### Erledigt (Backlog Gruppe A, Punkt 8)
+
+### Verifikation
+- `tests/run-tests.php` **393/393** (Parser: 2 Szenarien, Zeilen/Key/Summary), `scripts/liw-selftest.php`
+  **339/339** (Board rendert den A/B/C-Editor).
+
 ## [0.1.0-alpha.68] – 2026-09-19 – Adventures: Get-Help-Assistent (Phase 3) [Job A7]
 
 ### Hinzugefügt

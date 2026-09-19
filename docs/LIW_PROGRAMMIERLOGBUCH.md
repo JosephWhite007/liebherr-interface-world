@@ -12,6 +12,14 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.69 – Local Intelligence: Szenario-Editor im Board [Backlog A8]
+
+**Geändert:** `src/Admin/Pages/LocalIntelligenceBoardPage.php` – `scenarios_area()` (Render des A/B/C-Editors
+als Strukturfeld), `parse_scenarios()` (public, rein/testbar), im Save `$raw['simulation']['scenarios']`
+eingehängt (Content::sanitize bereinigt). Kein Datenmodell-Change (Szenarien in `liw_local_intelligence`
+existieren, waren nur nicht editierbar). Tests/Selftest. Bump alpha.68 → alpha.69.
+**Nächster Bau:** A9 – Simulation Builder: Szenarien speichern/vergleichen.
+
 ## 0.1.0-alpha.68 – Adventures: Get-Help-Assistent (Phase 3) [Backlog A7]
 
 **Neu:** `src/Adventures/GetHelpAssistant.php` (`steps()` rein/testbar [5 Schritte], `render()` barrierefreie

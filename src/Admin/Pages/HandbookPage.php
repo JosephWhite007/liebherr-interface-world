@@ -119,6 +119,8 @@ final class HandbookPage {
 
 			<p><?php esc_html_e( 'Adventures – Get-Help-Assistent (seit alpha.68): Auf der Adventures-Insel führt „Get Help" durch Service- und Notfallsituationen: zuerst sichern, Lage einschätzen, qualifizierte Hilfe kontaktieren, den Vorfall als Service/Hilfe-Beitrag (kritisch, mit Drei-Wörter-Ort) erfassen und nachverfolgen. Kritische Beiträge werden nie automatisch veröffentlicht, sondern priorisiert geprüft. Auch als Shortcode [liw_adventures_help] einsetzbar.', 'liebherr-interface-world' ); ?></p>
 
+			<p><?php esc_html_e( 'Local Intelligence – Szenario-Editor (seit alpha.69): Im Local-Intelligence-Board (Modul 4 – Simulation World) lassen sich die Varianten A/B/C jetzt direkt pflegen: je Variante eine Kopfzeile „Key | Label | Zusammenfassung" und darunter Kennzahlen als „- Label | Wert". Bisher waren diese Werte nur über die Standardwerte/den Seeder änderbar. Leeres Feld behält die Standardwerte.', 'liebherr-interface-world' ); ?></p>
+
 			<h2><?php esc_html_e( 'Nachvollziehbarkeit: Programmierlogbuch und To-Dos', 'liebherr-interface-world' ); ?></h2>
 			<p><?php esc_html_e( 'Der Reiter „🧾 Programmierlogbuch" listet jede Quellcodeänderung auf Datei-/Klassenebene (was wurde wann geändert). Der Reiter „📋 To-Dos" listet offene bzw. bewusst zurückgestellte Punkte mit Quellenangabe (z. B. Content Board §19, echte Karte für die World Connections Map, Docker-Praxistest). Beide werden bei jeder Aufgabe gepflegt, in der sich etwas ändert.', 'liebherr-interface-world' ); ?></p>
 

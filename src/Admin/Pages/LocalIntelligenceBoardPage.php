@@ -77,7 +77,7 @@ final class LocalIntelligenceBoardPage {
 		self::text( 'simulation][title', __( 'Überschrift', 'liebherr-interface-world' ), (string) $d['simulation']['title'] );
 		self::area( 'simulation][intro', __( 'Einleitung', 'liebherr-interface-world' ), (string) $d['simulation']['intro'] );
 		self::text( 'simulation][demo_note', __( 'Demo-Hinweis', 'liebherr-interface-world' ), (string) $d['simulation']['demo_note'] );
-		echo '<p class="description">' . esc_html__( 'Szenarien A/B/C werden über die Standardwerte bzw. den Seeder gepflegt (Demo-Daten).', 'liebherr-interface-world' ) . '</p>';
+		self::scenarios_area( (array) ( $d['simulation']['scenarios'] ?? [] ) );
 
 		// Modul 5 – Knowledge.
 		self::group( __( 'Modul 5 – Wissensassistenz', 'liebherr-interface-world' ) );
@@ -170,6 +170,53 @@ final class LocalIntelligenceBoardPage {
 		echo '</td></tr></tbody></table>';
 	}
 
+	/**
+	 * Szenario-Editor (A/B/C): je Szenario eine Kopfzeile „Key | Label | Zusammenfassung", darunter Zeilen
+	 * „- Label | Wert". Ein neuer Header (ohne führendes „- ") beginnt das nächste Szenario.
+	 *
+	 * @param array<int,array<string,mixed>> $scenarios
+	 */
+	private static function scenarios_area( array $scenarios ): void {
+		$text = '';
+		foreach ( $scenarios as $s ) {
+			if ( ! is_array( $s ) ) { continue; }
+			$text .= (string) ( $s['key'] ?? '' ) . ' | ' . (string) ( $s['label'] ?? '' ) . ' | ' . (string) ( $s['summary'] ?? '' ) . "\n";
+			foreach ( (array) ( $s['rows'] ?? [] ) as $r ) {
+				if ( ! is_array( $r ) ) { continue; }
+				$text .= '- ' . (string) ( $r['label'] ?? '' ) . ' | ' . (string) ( $r['value'] ?? '' ) . "\n";
+			}
+		}
+		echo '<table class="form-table" role="presentation"><tbody><tr><th scope="row"><label for="liw-li-sim-scenarios">' . esc_html__( 'Szenarien A/B/C', 'liebherr-interface-world' ) . '</label></th><td>';
+		printf( '<textarea id="liw-li-sim-scenarios" name="liw_li_sim_scenarios" rows="10" class="large-text code">%s</textarea>', esc_textarea( trim( $text ) ) );
+		echo '<p class="description">' . esc_html__( 'Je Variante eine Kopfzeile „Key | Label | Zusammenfassung"; darunter Kennzahlen als „- Label | Wert". Leer lassen = Standardwerte behalten.', 'liebherr-interface-world' ) . '</p>';
+		echo '</td></tr></tbody></table>';
+	}
+
+	/**
+	 * Parst den Szenario-Editor-Text in die Szenario-Struktur (Content::sanitize bereinigt final).
+	 *
+	 * @return array<int,array<string,mixed>>
+	 */
+	public static function parse_scenarios( string $raw ): array {
+		$out = [];
+		$cur = null;
+		foreach ( preg_split( '/\r\n|\r|\n/', $raw ) as $line ) {
+			$line = trim( (string) $line );
+			if ( '' === $line ) { continue; }
+			if ( 0 === strpos( $line, '- ' ) ) {
+				if ( null === $cur ) { continue; }
+				$p = array_map( 'trim', explode( '|', substr( $line, 2 ), 2 ) );
+				$cur['rows'][] = [ 'label' => $p[0] ?? '', 'value' => $p[1] ?? '' ];
+				continue;
+			}
+			if ( null !== $cur ) { $out[] = $cur; }
+			$p   = array_map( 'trim', explode( '|', $line, 3 ) );
+			$cur = [ 'key' => $p[0] ?? '', 'label' => $p[1] ?? '', 'summary' => $p[2] ?? '', 'rows' => [] ];
+		}
+		if ( null !== $cur ) { $out[] = $cur; }
+		return $out;
+	}
+
 	/** @param array<string,mixed> $data */
 	private static function title_intro_list( string $group, string $modkey, string $listkey, array $data ): void {
 		self::group( $group );
@@ -208,6 +255,9 @@ final class LocalIntelligenceBoardPage {
 
 		// Einsatzfelder (Tag | Titel | Problem | Prinzip | Nutzen).
 		$raw['usecases']['items'] = self::parse_usecases( self::post_line( 'liw_li_usecases' ) );
+
+		// Simulation-Szenarien A/B/C (§ A8).
+		$raw['simulation']['scenarios'] = self::parse_scenarios( self::post_line( 'liw_li_sim_scenarios' ) );
 
 		$after = Content::save( $raw );
 
