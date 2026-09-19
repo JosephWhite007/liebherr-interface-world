@@ -721,6 +721,7 @@ try {
 	liw_st_check( 'ADV: Stream zeigt veröffentlichtes public_approved, nicht das kritische', in_array( 'SELFTEST-ADV-OK', $__titles, true ) && ! in_array( 'SELFTEST-ADV-CRIT', $__titles, true ) );
 	$__advhtml = do_shortcode( '[liw_adventures]' );
 	liw_st_check( 'ADV: Insel rendert Hero + Filter + Stream + Partner-Attribution', str_contains( $__advhtml, 'liw-adv__hero' ) && str_contains( $__advhtml, 'data-liw-adv-stream' ) && str_contains( $__advhtml, 'Location powered by' ) );
+	liw_st_check( 'ADV-Help: Get-Help-Assistent in Insel + Shortcode rendert 5 Schritte', str_contains( $__advhtml, 'id="liw-adv-help"' ) && shortcode_exists( 'liw_adventures_help' ) && 5 === substr_count( do_shortcode( '[liw_adventures_help]' ), 'liw-adv__help-step"' ) );
 	liw_st_check( 'ADV: REST-Route liw-adv/v1 registriert', array_key_exists( '/' . \Liebherr\InterfaceWorld\Adventures\Rest::NAMESPACE . '/create', rest_get_server()->get_routes() ) );
 
 	// ── [8e2] Basislogik: Registrierung, Tokenwert, Artikelbook, Ledger, Statuswege (§1–§9, alpha.59) ──

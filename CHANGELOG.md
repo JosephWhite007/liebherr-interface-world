@@ -1,5 +1,19 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.68] – 2026-09-19 – Adventures: Get-Help-Assistent (Phase 3) [Job A7]
+
+### Hinzugefügt
+- **Get-Help-Assistent** `Adventures\GetHelpAssistant` (Shortcode `[liw_adventures_help]`, inline in der Insel
+  + Hero-CTA „Get Help"): geführte Schritte für Service-/Notfallsituationen (zuerst sichern → Lage einschätzen →
+  qualifizierte Hilfe kontaktieren → Beitrag als Service/Hilfe erfassen → nachverfolgen), barrierefrei als
+  `<details>`, mit CTA zur Erfassung. Kritische Beiträge werden weiterhin nie automatisch veröffentlicht (§22.5).
+
+### Erledigt (Backlog Gruppe A, Punkt 7)
+
+### Verifikation
+- `tests/run-tests.php` **392/392** (5 Schritte, Shortcode), `scripts/liw-selftest.php` **338/338** (Assistent in
+  der Insel + Shortcode rendert 5 Schritte).
+
 ## [0.1.0-alpha.67] – 2026-09-19 – Adventures: Medien-Upload [Job A6]
 
 ### Hinzugefügt

@@ -119,6 +119,7 @@ final class AdventuresView {
 				<div class="liw-adv__cta-row">
 					<a class="liw-cta liw-cta--primary" href="#liw-adv-create"><?php echo esc_html__( 'Create Adventure', 'liebherr-interface-world' ); ?></a>
 					<a class="liw-cta liw-cta--secondary" href="#liw-adv-stream"><?php echo esc_html__( 'Discover', 'liebherr-interface-world' ); ?></a>
+					<a class="liw-cta liw-cta--secondary" href="#liw-adv-help"><?php echo esc_html__( 'Get Help', 'liebherr-interface-world' ); ?></a>
 				</div>
 				<p class="liw-adv__partner"><?php echo esc_html( $partner ); ?> · <?php echo esc_html__( 'Nur Demo-Daten (Prototyp).', 'liebherr-interface-world' ); ?></p>
 			</section>
@@ -158,6 +159,8 @@ final class AdventuresView {
 					<p><?php echo esc_html__( 'Zum Erstellen von Adventures ist ein aktiver Intelligence-Zugang (Anmeldung) erforderlich.', 'liebherr-interface-world' ); ?></p>
 				</section>
 			<?php endif; ?>
+
+			<?php echo GetHelpAssistant::render(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- in GetHelpAssistant escaped. ?>
 
 			<section class="liw-adv__stream-wrap" id="liw-adv-stream">
 				<h2><?php echo esc_html__( 'Discover', 'liebherr-interface-world' ); ?></h2>

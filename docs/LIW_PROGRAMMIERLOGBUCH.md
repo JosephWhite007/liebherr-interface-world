@@ -12,6 +12,13 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.68 – Adventures: Get-Help-Assistent (Phase 3) [Backlog A7]
+
+**Neu:** `src/Adventures/GetHelpAssistant.php` (`steps()` rein/testbar [5 Schritte], `render()` barrierefreie
+`<details>`, Shortcode `[liw_adventures_help]`). **Geändert:** `AdventuresView` (Hero-CTA „Get Help" + Assistent
+inline vor dem Stream), `src/Bootstrap.php` (`GetHelpAssistant::register()`), `assets/css/liw-adventures.css`
+(`.liw-adv__help*`). Tests/Selftest. Bump alpha.67 → alpha.68. **Nächster Bau:** A8 – Local-Intelligence-Szenario-Editor im Board.
+
 ## 0.1.0-alpha.67 – Adventures: Medien-Upload [Backlog A6]
 
 **Neu:** `src/Adventures/UploadService.php` (`allowed_exts`/`is_allowed_ext` [rein], `handle()` via

@@ -35,7 +35,8 @@ der Reihe nach ab und befüllen sie mit Funktionalität), **B** = auf externe Fr
    beim Zugriff (`Rest::accept`), Guthaben-Anzeige im Dialog, Backoffice-Aufladung.
 6. ~~**Adventures – Medien-Upload (§14).**~~ **ERLEDIGT (alpha.67):** Bild-Upload (`UploadService` + REST
    `/upload`, Datei-Feld in der Maske). Offen: Video-Upload + Transcoding (spätere Etappe).
-7. **Adventures – Get-Help-Assistent (Phase 3).** Geführte Hilfe bei kritischen Beiträgen.
+7. ~~**Adventures – Get-Help-Assistent (Phase 3).**~~ **ERLEDIGT (alpha.68):** `GetHelpAssistant` (5 geführte
+   Schritte, `[liw_adventures_help]`, Hero-CTA + inline in der Insel).
 8. **Local Intelligence – Szenario-Editor im Board.** Feingranulare A/B/C-Pflege statt Seeder/Standardwerte.
 9. **Simulation Builder – Szenarien speichern/vergleichen.** Persistenz + Nebeneinander-Vergleich.
 10. **Nutzungs-/Kostenprotokoll – echte serverseitige PDF-Erzeugung** (statt Browser-Druck).

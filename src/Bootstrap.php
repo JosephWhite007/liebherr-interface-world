@@ -72,6 +72,7 @@ final class Bootstrap {
 		Adventures\Rest::register();             // Liebherr Adventures REST (Stream/Locate/Create).
 		Adventures\AdventuresView::register();   // Liebherr Adventures Insel-Frontend.
 		Adventures\DetailView::register();       // Liebherr Adventures – Detailseite eines Beitrags (Backlog A3).
+		Adventures\GetHelpAssistant::register(); // Liebherr Adventures – Get-Help-Assistent (Backlog A7).
 		LegacyRedirect::register();        // 301 Altroute /interface-world/ → Unterseite (LI §3.2).
 		PartnerDocumentsView::register();
 		FrontendAssets::register();

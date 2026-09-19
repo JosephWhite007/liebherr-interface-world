@@ -117,6 +117,8 @@ final class HandbookPage {
 
 			<p><?php esc_html_e( 'Adventures – Bild-Upload (seit alpha.67): In der Eingabemaske kann statt einer Bild-URL ein Bild direkt hochgeladen werden (JPG/PNG/WebP/GIF). Es wird als Beitragsbild gesetzt und im Stream und auf der Detailseite angezeigt. Video-Upload und Transcoding sind bewusst eine spätere Etappe.', 'liebherr-interface-world' ); ?></p>
 
+			<p><?php esc_html_e( 'Adventures – Get-Help-Assistent (seit alpha.68): Auf der Adventures-Insel führt „Get Help" durch Service- und Notfallsituationen: zuerst sichern, Lage einschätzen, qualifizierte Hilfe kontaktieren, den Vorfall als Service/Hilfe-Beitrag (kritisch, mit Drei-Wörter-Ort) erfassen und nachverfolgen. Kritische Beiträge werden nie automatisch veröffentlicht, sondern priorisiert geprüft. Auch als Shortcode [liw_adventures_help] einsetzbar.', 'liebherr-interface-world' ); ?></p>
+
 			<h2><?php esc_html_e( 'Nachvollziehbarkeit: Programmierlogbuch und To-Dos', 'liebherr-interface-world' ); ?></h2>
 			<p><?php esc_html_e( 'Der Reiter „🧾 Programmierlogbuch" listet jede Quellcodeänderung auf Datei-/Klassenebene (was wurde wann geändert). Der Reiter „📋 To-Dos" listet offene bzw. bewusst zurückgestellte Punkte mit Quellenangabe (z. B. Content Board §19, echte Karte für die World Connections Map, Docker-Praxistest). Beide werden bei jeder Aufgabe gepflegt, in der sich etwas ändert.', 'liebherr-interface-world' ); ?></p>
 
