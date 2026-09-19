@@ -979,6 +979,18 @@ try {
 	$__emg_area = \Liebherr\InterfaceWorld\Emergency\EmergencyController::fallback_page_html( '/adventures/', '', '<section class="liw-emg-hub">X</section>', $__emg_ch );
 	liw_st_check( 'Emergency: Fallback zeigt bei Erfolg die Area + Zurueck-Link', str_contains( $__emg_area, 'liw-emg-hub' ) && str_contains( $__emg_area, 'liw-emg-fallback__back' ) );
 
+	// CVF Flags + gehaerteter Zugangscode (alpha.84).
+	liw_st_check( 'CVF-Flags: enabled() Default AUS (CVF-Runtime bleibt hinter Flag)', false === \Liebherr\InterfaceWorld\Cvf\Flags::enabled() );
+	$__as_key = 'st-throttle-' . wp_generate_password( 6, false );
+	\Liebherr\InterfaceWorld\Cvf\AccessService::clear( $__as_key );
+	\Liebherr\InterfaceWorld\Cvf\AccessService::set_code( 'LIEBHERR-DEMO' );
+	$__as_ok = \Liebherr\InterfaceWorld\Cvf\AccessService::attempt( 'liebherr-demo', $__as_key );
+	liw_st_check( 'CVF-Access: richtiger Code (case-insensitiv) → ok, Hash gespeichert (kein Klartext)', true === $__as_ok['ok'] && \Liebherr\InterfaceWorld\Cvf\AccessService::is_configured() && 64 === strlen( \Liebherr\InterfaceWorld\Cvf\AccessService::get_hash() ) );
+	$__as_last = [ 'ok' => true ];
+	for ( $__i = 0; $__i < 6; $__i++ ) { $__as_last = \Liebherr\InterfaceWorld\Cvf\AccessService::attempt( 'FALSCH', $__as_key ); }
+	liw_st_check( 'CVF-Access: zu viele Fehlversuche → Lockout (reason=locked)', 'locked' === $__as_last['reason'] && true === \Liebherr\InterfaceWorld\Cvf\AccessService::is_locked( $__as_key ) );
+	\Liebherr\InterfaceWorld\Cvf\AccessService::clear( $__as_key );
+
 	// ── [9] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
 	echo "\n[9] Programmierlogbuch / To-Dos\n";
 	liw_st_check( 'docs/LIW_PROGRAMMIERLOGBUCH.md vorhanden', is_readable( LIW_PATH . 'docs/LIW_PROGRAMMIERLOGBUCH.md' ) );

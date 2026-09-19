@@ -507,6 +507,15 @@ liw_assert( 'Runtime: Happy Path new→…→in_module (Challenge zweistellig au
 liw_assert( 'Runtime: ungültiger Übergang lässt Zustand unverändert (reason=invalid_transition)', 'new' === $RT::next( $VS::NEW, $RT::EV_CHALLENGE_OK, $cfg )['state'] && 'invalid_transition' === $RT::next( $VS::NEW, $RT::EV_CHALLENGE_OK, $cfg )['reason'], $checks, $failures );
 liw_assert( 'Runtime: block aus jedem Zustand → blocked (und bleibt blockiert)', 'blocked' === $RT::next( $VS::AT_CHALLENGE, $RT::EV_BLOCK, $cfg )['state'] && 'is_blocked' === $RT::next( $VS::BLOCKED, $RT::EV_CODE_OK, $cfg )['reason'], $checks, $failures );
 
+// CVF – AccessService: gehaerteter Zugangscode (Hash/Secret), reine Kernlogik (alpha.84).
+require_once $root . '/src/Cvf/AccessService.php';
+$AS = '\Liebherr\InterfaceWorld\Cvf\AccessService';
+liw_assert( 'AccessService: normalize ignoriert Gross-/Kleinschreibung + Randleerzeichen', 'LIEBHERR-DEMO' === $AS::normalize( '  liebherr-demo ' ), $checks, $failures );
+$__as_secret = 'as-secret-123';
+$__as_hash   = $AS::hash_code( 'LIEBHERR-DEMO', $__as_secret );
+liw_assert( 'AccessService: hash_code deterministisch + verify akzeptiert richtige Eingabe (case-insensitiv)', $__as_hash === $AS::hash_code( 'liebherr-demo', $__as_secret ) && true === $AS::verify( 'liebherr-demo', $__as_hash, $__as_secret ), $checks, $failures );
+liw_assert( 'AccessService: falscher Code + leerer Hash werden abgelehnt', false === $AS::verify( 'FALSCH', $__as_hash, $__as_secret ) && false === $AS::verify( 'LIEBHERR-DEMO', '', $__as_secret ), $checks, $failures );
+
 // Emergency – Hilfe-Koffer (einstellige Rechenaufgabe) + kontextbezogene Emergency-Area (alpha.78).
 require_once $root . '/src/Emergency/EmergencyChallenge.php';
 require_once $root . '/src/Emergency/HelpTopicCatalog.php';

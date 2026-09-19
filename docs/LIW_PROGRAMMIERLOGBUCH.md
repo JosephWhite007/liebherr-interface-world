@@ -12,6 +12,19 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.84 – CVF Phase 2: Feature-Flags + gehärteter Zugangscode
+
+**Neu (`src/Cvf/`):** `Flags` – `enabled()` (Option/Filter `liw_cvf_enabled`, Default AUS → CVF-Runtime
+bleibt hinter Flag) + `four_eyes()` (Option/Filter `liw_cvf_four_eyes`, Default AUS, JW-Entscheid §9.4).
+`AccessService` (JW-Entscheid §9.2) – Zugangscode als HMAC-SHA256 gegen Secret (Option `liw_cvf_secret`),
+NIE Klartext gespeichert; reine Kernlogik `normalize()/hash_code()/verify()` (zeitkonstant, WP-frei
+testbar); Verwaltung `secret()/set_code()/get_hash()/is_configured()`; Rate-Limit/Lockout pro Drossel-
+schlüssel über Transients (`attempt()`, MAX_ATTEMPTS 5 / LOCK_TTL 300, `is_locked()/clear()`).
+**Geändert:** `tests/run-tests.php` (+3 Asserts reine Access-Kernlogik), `scripts/liw-selftest.php` (+3:
+Flag Default AUS, richtiger Code → ok + Hash gespeichert, Lockout nach Fehlversuchen). Aktiv erst mit
+`liw_cvf_enabled`; der bestehende IW-Prototyp-Eintritt bleibt bis dahin unverändert. Tests WP-frei 461 /
+Docker 369. Bump alpha.83 -> alpha.84.
+
 ## 0.1.0-alpha.83 – CVF Phase 2: Persistenz (Version + Sitzung + Execution-Log)
 
 **Neu (`src/Cvf/`):** `Schema` – drei Tabellen `liw_cvf_workflow_version` (veröffentlichte Version
