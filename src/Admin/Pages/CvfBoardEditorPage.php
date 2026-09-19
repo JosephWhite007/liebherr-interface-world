@@ -402,10 +402,36 @@ final class CvfBoardEditorPage {
 				<button class="button"><?php echo esc_html__( 'Plugin hinzufügen', 'liebherr-interface-world' ); ?></button>
 			</form>
 
+			<h2><?php echo esc_html__( 'Änderungen gegenüber aktiver Version (Diff)', 'liebherr-interface-world' ); ?></h2>
+			<?php self::diff_block( $draft ); ?>
+
 			<h2><?php echo esc_html__( 'Veröffentlichte Versionen / Rollback', 'liebherr-interface-world' ); ?></h2>
 			<?php self::versions_table( $post_url ); ?>
 		</div>
 		<?php
+	}
+
+	private static function diff_block( int $draft ): void {
+		$pub = BoardRepository::published_id();
+		if ( $pub <= 0 ) {
+			echo '<p>' . esc_html__( 'Keine aktive Version – der Entwurf wird die erste Veröffentlichung.', 'liebherr-interface-world' ) . '</p>';
+			return;
+		}
+		$diff = \Liebherr\InterfaceWorld\Cvf\BoardDiff::compare( BoardSnapshot::of_version( $pub ), BoardSnapshot::of_version( $draft ) );
+		if ( ! $diff['changed'] ) {
+			echo '<p>' . esc_html__( 'Keine Änderungen gegenüber der aktiven Version.', 'liebherr-interface-world' ) . '</p>';
+			return;
+		}
+		echo '<ul class="ul-disc">';
+		foreach ( [ 'areas' => __( 'Bereiche', 'liebherr-interface-world' ), 'edges' => __( 'Übergänge', 'liebherr-interface-world' ), 'instances' => __( 'Plugins', 'liebherr-interface-world' ) ] as $k => $label ) {
+			foreach ( (array) $diff[ $k ]['added'] as $v ) {
+				echo '<li style="color:#1a7f37">+ ' . esc_html( $label . ': ' . $v ) . '</li>';
+			}
+			foreach ( (array) $diff[ $k ]['removed'] as $v ) {
+				echo '<li style="color:#b32d2e">– ' . esc_html( $label . ': ' . $v ) . '</li>';
+			}
+		}
+		echo '</ul>';
 	}
 
 	/** @param array<int,array<string,mixed>> $areas */

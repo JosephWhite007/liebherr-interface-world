@@ -566,6 +566,15 @@ liw_assert( 'BoardRuntime: resolve_window leitet closeAt aus openAt+duration ab 
 $__mk = $BR::marker_plan( [ [ 'id' => 1, 'plugin_key' => 'a' ] ], [ 1 => [ 'open_at_ms' => 5000, 'close_at_ms' => 20000 ] ] );
 liw_assert( 'BoardRuntime: marker_plan open vor close, zeitsortiert', 2 === count( $__mk ) && 'open' === $__mk[0]['type'] && 5000 === $__mk[0]['at_ms'] && 'close' === $__mk[1]['type'], $checks, $failures );
 
+// CAPDB – BoardDiff (reiner Snapshot-Vergleich, alpha.95).
+require_once $root . '/src/Cvf/BoardDiff.php';
+$BD = '\Liebherr\InterfaceWorld\Cvf\BoardDiff';
+$__snapA = [ 'areas' => [ [ 'id' => 1, 'module_id' => 'iw', 'position' => 1 ] ], 'edges' => [], 'instances' => [ [ 'plugin_key' => 'x', 'host_type' => 'page', 'host_id' => 1 ] ] ];
+$__snapB = [ 'areas' => [ [ 'id' => 9, 'module_id' => 'iw', 'position' => 1 ] ], 'edges' => [], 'instances' => [ [ 'plugin_key' => 'x', 'host_type' => 'page', 'host_id' => 9 ], [ 'plugin_key' => 'y', 'host_type' => 'page', 'host_id' => 9 ] ] ];
+$__d = $BD::compare( $__snapA, $__snapB );
+liw_assert( 'BoardDiff: erkennt hinzugefuegtes Plugin (positionsstabil), changed=true', $__d['changed'] && [ 'y@page#1' ] === $__d['instances']['added'] && [] === $__d['instances']['removed'] && [] === $__d['areas']['added'], $checks, $failures );
+liw_assert( 'BoardDiff: identische Struktur -> changed=false', false === $BD::compare( $__snapA, $__snapA )['changed'], $checks, $failures );
+
 // Emergency – Hilfe-Koffer (einstellige Rechenaufgabe) + kontextbezogene Emergency-Area (alpha.78).
 require_once $root . '/src/Emergency/EmergencyChallenge.php';
 require_once $root . '/src/Emergency/HelpTopicCatalog.php';

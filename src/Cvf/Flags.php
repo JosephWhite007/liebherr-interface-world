@@ -20,8 +20,15 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 final class Flags {
 
-	public const OPT_ENABLED   = 'liw_cvf_enabled';
-	public const OPT_FOUR_EYES = 'liw_cvf_four_eyes';
+	public const OPT_ENABLED    = 'liw_cvf_enabled';
+	public const OPT_FOUR_EYES  = 'liw_cvf_four_eyes';
+	public const OPT_BOARD      = 'liw_cvf_board_enabled';
+
+	/** CAPDB-Board/Runtime scharf? Default AUS; Option ODER Filter `liw_cvf_board_enabled` (§19.1). */
+	public static function board_enabled(): bool {
+		$opt = (bool) get_option( self::OPT_BOARD, false );
+		return (bool) apply_filters( 'liw_cvf_board_enabled', $opt );
+	}
 
 	/** CVF-Runtime aktiv? Default AUS; über Option ODER Filter `liw_cvf_enabled` einschaltbar. */
 	public static function enabled(): bool {

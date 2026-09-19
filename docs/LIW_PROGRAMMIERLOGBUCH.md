@@ -12,6 +12,16 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.95 – CAPDB Etappe 8: Diff, Feature-Flag, Abnahme A25–A36
+
+**Neu:** `src/Cvf/BoardDiff.php` (reiner, positionsstabiler Snapshot-Vergleich: hinzugefügte/entfernte
+Bereiche/Übergänge/Plugins, `changed`). **Geändert:** `src/Cvf/Flags.php` (`board_enabled()` + Option
+`liw_cvf_board_enabled`, Default AUS, §19.1). `src/Admin/Pages/CvfBoardEditorPage.php` – Diff-Sektion
+(Entwurf vs. aktive Version). Validierung/Vier-Augen/Publish/Rollback waren bereits vorhanden (alpha.89).
+`tests/run-tests.php` (+2 BoardDiff), `scripts/liw-selftest.php` (+3 Abnahme: A26 Scope-Reject, A34
+deaktivierte Instanz nicht ausgeführt, A35 Entwurf ändert aktive Version nicht). Tests WP-frei 511 / Docker 388.
+Bump alpha.94 -> alpha.95.
+
 ## 0.1.0-alpha.94 – CAPDB Etappe 7: Simulation (Abspielkopf)
 
 **Geändert:** `src/Admin/Pages/CvfBoardEditorPage.php` – ajax-Op `sim` + `build_sim()` erzeugt über

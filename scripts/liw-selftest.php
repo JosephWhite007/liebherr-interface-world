@@ -1099,6 +1099,25 @@ try {
 	}
 	delete_option( 'liw_cvf_enabled' );
 
+	// CAPDB Abnahme A25-A36 (alpha.95): Auszug maschinell geprueft.
+	liw_st_check( 'CAPDB-A26: Seiten-Plugin auf Uebergang unzulaessig (Scope abgewiesen)', ! \Liebherr\InterfaceWorld\Cvf\PluginTaxonomy::scope_allowed( 'edge', (string) \Liebherr\InterfaceWorld\Cvf\PluginRegistry::definitions()['first_entry_text']['scopes'] ) );
+	$__a34 = \Liebherr\InterfaceWorld\Cvf\BoardRuntime::plugins_for( [ 'instances' => [ [ 'id' => 1, 'plugin_key' => 'x', 'host_type' => 'edge', 'host_id' => 7, 'status' => 'disabled', 'priority' => 1 ] ] ], 'edge', 7 );
+	liw_st_check( 'CAPDB-A34: deaktivierte Instanz wird nicht ausgefuehrt (aus Runtime ausgeschlossen)', 0 === count( $__a34 ) );
+	// A35: Entwurfsaenderung laesst die veroeffentlichte Version unveraendert.
+	$__a35_bd  = \Liebherr\InterfaceWorld\Cvf\BoardRepository::create_draft( 1 );
+	$__a35_pub = \Liebherr\InterfaceWorld\Cvf\BoardRepository::publish_draft( $__a35_bd, 993001, false );
+	$__a35_vid = (int) $__a35_bd;
+	$__a35_before = count( \Liebherr\InterfaceWorld\Cvf\BoardSnapshot::of_version( $__a35_vid )['areas'] );
+	$__a35_dr  = \Liebherr\InterfaceWorld\Cvf\BoardRepository::create_draft( 1 );
+	\Liebherr\InterfaceWorld\Cvf\BoardRepository::add_area( $__a35_dr, 'extra_module', 99, '', 'active', '' );
+	$__a35_after = count( \Liebherr\InterfaceWorld\Cvf\BoardSnapshot::of_version( $__a35_vid )['areas'] );
+	liw_st_check( 'CAPDB-A35: Entwurf aendert die aktive Version nicht (Bereiche unveraendert)', $__a35_before === $__a35_after && count( \Liebherr\InterfaceWorld\Cvf\BoardSnapshot::of_version( $__a35_dr )['areas'] ) === $__a35_after + 1 );
+	if ( isset( $wpdb ) ) {
+		foreach ( array_unique( array_filter( [ $__a35_vid, (int) $__a35_dr, \Liebherr\InterfaceWorld\Cvf\BoardRepository::draft_id() ] ) ) as $__vid ) {
+			if ( $__vid > 0 ) { \Liebherr\InterfaceWorld\Cvf\BoardRepository::clear_board( (int) $__vid ); $wpdb->delete( \Liebherr\InterfaceWorld\Cvf\Schema::version_table(), [ 'id' => (int) $__vid ] ); }
+		}
+	}
+
 	// ── [9] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
 	echo "\n[9] Programmierlogbuch / To-Dos\n";
 	liw_st_check( 'docs/LIW_PROGRAMMIERLOGBUCH.md vorhanden', is_readable( LIW_PATH . 'docs/LIW_PROGRAMMIERLOGBUCH.md' ) );
