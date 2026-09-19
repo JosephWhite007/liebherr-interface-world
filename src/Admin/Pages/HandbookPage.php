@@ -2,10 +2,12 @@
 /**
  * Liebherr Interface Solutions – Handbuch (Admin-Seite)
  *
- * Handbuch-Regel (CLAUDE.md Abschnitt 1): letzter Reiter des Moduls, fortgeschrieben bei
- * jeder fachlichen Erweiterung. Deckt seit alpha.22 alle neun Boards (inkl. Content
- * Board, Kontaktanfragen und Partnerdokumente) sowie die sieben Frontend-Shortcodes und die Nachvollziehbarkeits-Reiter
- * (Programmierlogbuch, To-Dos) ab.
+ * Handbuch-Regel (CLAUDE.md Abschnitt 1): letzter Reiter des Moduls, fortgeschrieben bei jeder fachlichen
+ * Erweiterung. Das Werkzeug ist über die ursprüngliche Schnittstellen-Landingpage weit hinausgewachsen und
+ * beschreibt heute eine vollständige, simulationsfähige Informationsdienst-Plattform für Liebherr mit vier
+ * begehbaren Welten (Intelligence World, Local Intelligence, Interface Solutions, Adventures), einem
+ * geführten Besucher-Einstieg (Customer View Flow) und dem CAPDB-Workflow-Board. Der Kopf des Handbuchs
+ * fasst Stand, Bedienung und Scharfschaltung zusammen; darunter steht die vollständige Feature-Historie.
  *
  * @package Liebherr\InterfaceWorld\Admin\Pages
  * @since   0.1.0-alpha.1
@@ -24,8 +26,21 @@ final class HandbookPage {
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Liebherr Interface World – Handbuch', 'liebherr-interface-world' ); ?></h1>
 
+			<h2><?php esc_html_e( 'Stand heute: eine vollwertige Simulations- und Informationsdienst-Plattform', 'liebherr-interface-world' ); ?></h2>
+			<p><?php esc_html_e( 'Aus der urspruenglich geplanten Schnittstellen-Landingpage ist eine vollstaendige, mehrsprachige Plattform fuer Liebherr-Informationsdienste geworden. Besucher bewegen sich durch vier begehbare Welten; Redaktion und Administration pflegen Inhalte, Tarife, Beitraege und ganze Besuchs-Workflows im Backoffice. Sicherheitsrelevante Freigaben, Zugaenge, Timer und Zustandswechsel werden immer serverseitig geprueft und sind vollstaendig nachvollziehbar.', 'liebherr-interface-world' ); ?></p>
+			<h3><?php esc_html_e( 'Die vier Welten', 'liebherr-interface-world' ); ?></h3>
+			<p><?php esc_html_e( '1) Intelligence World – der globale Einstieg mit Zugangscode, Sitzung, sekundengenauer Abrechnung (Prototyp, kein echtes Payment) und dem Simulation Builder (Prognosen konservativ/basis/ambitioniert). 2) Local Intelligence – lokale Planung, Simulation und Entscheidungsunterstuetzung mit Szenario-Schalter A/B/C. 3) Interface Solutions – Schnittstellenkatalog, Datenzugriff und View-Logik (die urspruengliche Interface World). 4) Adventures – ortsbezogene Wissens-, Hilfe- und Simulationsbeitraege mit Drei-Woerter-Ort, Tokenwert und Artikelbook-Registrierung.', 'liebherr-interface-world' ); ?></p>
+			<h3><?php esc_html_e( 'Plattformweite Helfer', 'liebherr-interface-world' ); ?></h3>
+			<p><?php esc_html_e( 'Ueberall erreichbar: der goldene Globus als Marken-Icon, der winzige orange Hilfe-Koffer, der in die Emergency-Area fuehrt, der Plattform-Umschalter zwischen den vier Welten, mehrsprachige Inhalte (DE/EN/PL) und – als Grundregel – zu jedem Modul ein erreichbarer Anleitungs-Knopf. Neu ist der gefuehrte Besucher-Einstieg Customer View Flow (CVF) samt dem CAPDB-Workflow-Board.', 'liebherr-interface-world' ); ?></p>
+			<h2><?php esc_html_e( 'Bedienung in Kuerze', 'liebherr-interface-world' ); ?></h2>
+			<p><?php esc_html_e( 'Alles Backoffice liegt unter dem Menue „Interface World“. Ganz oben verlinken Frontpage-Direktlinks die vier oeffentlichen Welten (Intelligence World, Local Intelligence, Interface Solutions, Adventures). Darunter folgen die Pflege-Boards (u. a. Intelligence World, Local Intelligence, Adventures, Content, Media, Sprachen, Kontakt, Partnerdokumente) und – als eigener Verwaltungsbereich – die Plattform-Administration mit Customer View Flow, CVF Board, Deployment und Nachvollziehbarkeit. Jede Pflegeaktion laeuft ueber ein Board mit Nonce- und Rechtepruefung; jede Aenderung ist auditierbar.', 'liebherr-interface-world' ); ?></p>
+			<p><?php esc_html_e( 'Nachvollziehbarkeit: der Reiter „Programmierlogbuch“ listet jede Quellcodeaenderung, der Reiter „To-Dos“ die offenen bzw. bewusst zurueckgestellten Punkte. Beide werden bei jeder Auslieferung gepflegt.', 'liebherr-interface-world' ); ?></p>
+			<h2><?php esc_html_e( 'Customer View Flow und Workflows scharfschalten', 'liebherr-interface-world' ); ?></h2>
+			<p><?php esc_html_e( 'Der Customer View Flow bildet die Besuchsreise als editierbare Timeline ab: Eingang mit Zugangscode, eine Rechenaufgabe zur Bestaetigung, Modulauswahl und ein First-Entry, bevor das gewaehlte Modul geoeffnet wird. Er ist standardmaessig DEAKTIVIERT und beruehrt den bestehenden Eintritt nicht, bis er ausdruecklich scharfgeschaltet wird.', 'liebherr-interface-world' ); ?></p>
+			<p><?php esc_html_e( 'So schalten Sie einen Workflow scharf: 1) Unter „CVF Board“ den Ablauf bearbeiten – in der verpflichtenden Tabellenansicht ODER im visuellen Board Bereiche, Uebergaenge und Plugins (per Drag-and-Drop oder Tastatur) zuordnen und die Zeiten sekundengenau setzen. 2) Mit dem Abspielkopf simulieren (reine Vorschau, keine echten Aktionen). 3) Der Entwurf wird validiert und als UNVERAENDERLICHE Version veroeffentlicht (optional mit Vier-Augen-Freigabe); ein Rollback stellt jederzeit eine fruehere Version wieder her. 4) Unter „Customer View Flow“ den Schalter „Customer View Flow aktiv“ (Option liw_cvf_enabled) setzen und den Zugangscode hinterlegen (nur als Hash gespeichert). 5) Soll die veroeffentlichte Board-Konfiguration den Ablauf LIVE steuern (Module, Schwierigkeit, First-Entry-Texte aus dem Board), zusaetzlich die Option liw_cvf_board_enabled setzen. Ohne diese Schalter bleibt der schlanke Standard-Durchstich aktiv – die Umschaltung ist gefahrlos reversibel. Zugaenge, Timer und Zustandswechsel prueft immer der Server; alles ist auditierbar.', 'liebherr-interface-world' ); ?></p>
+
 			<h2><?php esc_html_e( 'Warum dieses Werkzeug entstanden ist', 'liebherr-interface-world' ); ?></h2>
-			<p><?php esc_html_e( 'Liebherr-Händler, -Lieferanten und -Kunden sind weltweit an unterschiedliche Systeme angebunden. Diese Landingpage macht sichtbar, welche technischen Verbindungen es gibt, in welchem Zustand sie sind, und öffnet zugleich einen öffentlichen Kanal für neue Partneranfragen (Onboarding) – ohne dass technisches Wissen nur in Köpfen statt in der Plattform existiert.', 'liebherr-interface-world' ); ?></p>
+			<p><?php esc_html_e( 'Ausgangspunkt: Liebherr-Händler, -Lieferanten und -Kunden sind weltweit an unterschiedliche Systeme angebunden. Der erste Baustein (heute die Welt „Interface Solutions") macht sichtbar, welche technischen Verbindungen es gibt, in welchem Zustand sie sind, und öffnet einen öffentlichen Kanal für Partneranfragen (Onboarding) – damit technisches Wissen in der Plattform statt nur in Köpfen liegt. Daraus ist inzwischen die oben beschriebene, vollwertige Simulations- und Informationsdienst-Plattform gewachsen; die folgenden Abschnitte dokumentieren alle Bereiche in ihrer Entstehungsreihenfolge.', 'liebherr-interface-world' ); ?></p>
 
 			<h2><?php esc_html_e( 'Die vierzehn Bereiche im Überblick', 'liebherr-interface-world' ); ?></h2>
 

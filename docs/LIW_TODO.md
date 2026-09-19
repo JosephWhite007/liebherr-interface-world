@@ -1,4 +1,9 @@
-# Liebherr Interface Solutions — To-Dos
+# Liebherr World — To-Dos
+
+> **Scope (19.09.2026):** Das Plugin trägt heute eine vollwertige Simulations-/Informationsdienst-Plattform
+> mit vier Welten (Intelligence World, Local Intelligence, Interface Solutions, Adventures), dem Customer
+> View Flow und dem CAPDB-Workflow-Board. Diese Liste sammelt offene/zurückgestellte Punkte dazu.
+
 
 Offene bzw. für später geplante Punkte. Diese Liste erfindet nichts Neues, sondern fasst
 Punkte zusammen, die im Projektverlauf bereits als „bewusst nicht Teil dieser Auslieferung"

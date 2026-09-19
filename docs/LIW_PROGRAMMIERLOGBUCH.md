@@ -1,4 +1,13 @@
-# Liebherr Interface Solutions — Programmierlogbuch
+# Liebherr World — Programmierlogbuch
+
+> **Scope-Hinweis (19.09.2026):** Das Plugin `liebherr-interface-world` ist über die ursprüngliche
+> Schnittstellen-Landingpage weit hinausgewachsen. Es trägt heute eine vollwertige, simulationsfähige
+> Informationsdienst-Plattform mit vier begehbaren Welten (Intelligence World, Local Intelligence,
+> Interface Solutions, Adventures), dem geführten Customer View Flow und dem CAPDB-Workflow-Board.
+> „Interface Solutions" ist nur noch **eine** der vier Welten. Fachliche Beschreibung: Admin-Reiter
+> „📖 Handbuch"; Menü-Neuordnung: `docs/ADR-LIW-ADMIN-001_Menu_Struktur.md`.
+
+
 
 Protokolliert **jede Änderung am Quellcode** dieses Plugins auf Datei-/Klassenebene – ergänzend
 zu `CHANGELOG.md` (fachliche Sicht: *was* wurde geliefert) und dem projektweiten
@@ -11,6 +20,19 @@ Begonnen: 18.09.2026 (Entscheidung Joseph White – ab sofort wird jede Quellcod
 mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-Logbuch).
 
 ---
+
+## 0.1.0-alpha.98 – Doku-Überarbeitung: Handbuch neu aufgestellt + Menü-Analyse
+
+**Geändert:** `src/Admin/Pages/HandbookPage.php` – Handbuch-Kopf komplett neu: das Werkzeug beschreibt sich
+jetzt als vollwertige Simulations-/Informationsdienst-Plattform (nicht mehr nur Schnittstellen-Landingpage).
+Neue Abschnitte oben: „Stand heute" (vier Welten + plattformweite Helfer), „Bedienung in Kürze" und
+„Customer View Flow und Workflows scharfschalten" (Schritt-für-Schritt inkl. Flags `liw_cvf_enabled`/
+`liw_cvf_board_enabled`, Publish/Vier-Augen/Rollback, serverseitige Prüfung). Docblock + „Warum"-Absatz auf
+die Evolution nachgezogen; die detaillierte Feature-Historie bleibt darunter erhalten. **Neu:**
+`docs/ADR-LIW-ADMIN-001_Menu_Struktur.md` – Analyse zur Aufteilung des Backoffice-Menüs in **Frontend**
+(vier Welten) und **Backoffice** (Pflege-Boards) mit Unterbereich **Administration Plattform** (CVF/CVF-Board/
+Audit/Doku); vollständiges Mapping + Umsetzungsempfehlung (Variante A: zwei Top-Level-Menüs), noch NICHT
+umgesetzt. Programmierlogbuch-/To-Do-Intro auf den Plattform-Scope nachgezogen. Bump alpha.97 -> alpha.98.
 
 ## 0.1.0-alpha.97 – CAPDB: Live-Umschaltung (Board treibt die Customer-View)
 
