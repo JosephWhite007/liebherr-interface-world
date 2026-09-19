@@ -21,6 +21,16 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.101 – Hilfe-Koffer inline im „Get Help"-Abschnitt (Adventures)
+
+**Geändert:** `src/Adventures/GetHelpAssistant.php` – neben dem Titel „Get Help – geführte Hilfe" sitzt jetzt
+der Emergency-Koffer als kleines, wiedererkennbares Hilfesymbol (`do_shortcode('[liw_emergency_suitcase]')`);
+Klick öffnet dasselbe Emergency-Hilfe-Plugin (Overlay) wie der plattformweite schwebende Koffer.
+`assets/css/liw-adventures.css` – im Get-Help-Kontext wird das Koffer-Icon dauerhaft klein gezeigt (statt nur
+als oranger Punkt), damit es vertraut wird. `scripts/liw-selftest.php` (+1: Koffer im Get-Help-Titel +
+data-liw-emg + SVG). Im Browser verifiziert (Klick → „2 + 9 = ?" → Emergency-Area). Koffer weiterhin
+Platzhalter-SVG (geliefertes PNG jederzeit austauschbar). Tests WP-frei 511 / Docker 393. Bump alpha.100 -> alpha.101.
+
 ## 0.1.0-alpha.100 – CAPDB: Eigenschaften-Panel im visuellen Board (Zone E)
 
 **Geändert:** `assets/js/liw-cvf-board.js` – Klick (oder Enter/Space) auf eine Plugin-Instanz öffnet ein

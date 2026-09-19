@@ -137,3 +137,11 @@
 .liw-adv__help-step summary { cursor: pointer; font-weight: 700; }
 .liw-adv__help-step p { margin: .5rem 0 0; line-height: 1.55; }
 @media (prefers-color-scheme: dark) { .liw-adv__help { background: #0f1a24; color: #eaf2f8; border-color: #26333f; } .liw-adv__help-lead { color: #9fb0bd; } .liw-adv__help-step details { border-color: #26333f; } }
+
+/* Hilfe-Koffer inline in der „Get Help"-Überschrift (alpha.101): den Koffer dauerhaft klein zeigen,
+   damit er als wiedererkennbares Hilfesymbol vertraut wird (Klick öffnet das Emergency-Plugin). */
+.liw-adv__help-suitcase { display: inline-flex; vertical-align: middle; margin-left: .4rem; }
+.liw-adv__help-suitcase .liw-emg-dot { width: 20px; height: 20px; }
+.liw-adv__help-suitcase .liw-emg-dot__ico { opacity: 1; background-size: 15px 15px; }
+.liw-adv__help-suitcase .liw-emg-dot:hover,
+.liw-adv__help-suitcase .liw-emg-dot:focus-visible { transform: scale( 1.3 ); }

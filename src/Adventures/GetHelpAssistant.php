@@ -49,7 +49,7 @@ final class GetHelpAssistant {
 		ob_start();
 		?>
 		<section class="liw-adv__help" id="liw-adv-help" aria-labelledby="liw-adv-help-h">
-			<h2 class="liw-adv__help-title" id="liw-adv-help-h"><?php echo esc_html__( 'Get Help – geführte Hilfe', 'liebherr-interface-world' ); ?></h2>
+			<h2 class="liw-adv__help-title" id="liw-adv-help-h"><?php echo esc_html__( 'Get Help – geführte Hilfe', 'liebherr-interface-world' ); ?> <span class="liw-adv__help-suitcase"><?php echo do_shortcode( '[liw_emergency_suitcase]' ); // Hilfe-Koffer: Klick öffnet das Emergency-Hilfe-Plugin (alpha.101). ?></span></h2>
 			<p class="liw-adv__help-lead"><?php echo esc_html__( 'Schritt-für-Schritt bei Service- und Notfallsituationen. Sicherheit geht vor – erst sichern, dann melden.', 'liebherr-interface-world' ); ?></p>
 			<ol class="liw-adv__help-steps" role="list">
 				<?php foreach ( self::steps() as $s ) : ?>

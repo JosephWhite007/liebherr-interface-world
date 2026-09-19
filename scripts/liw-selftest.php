@@ -742,6 +742,8 @@ try {
 	$__advhtml = do_shortcode( '[liw_adventures]' );
 	liw_st_check( 'ADV: Insel rendert Hero + Filter + Stream + Partner-Attribution', str_contains( $__advhtml, 'liw-adv__hero' ) && str_contains( $__advhtml, 'data-liw-adv-stream' ) && str_contains( $__advhtml, 'Location powered by' ) );
 	liw_st_check( 'ADV-Help: Get-Help-Assistent in Insel + Shortcode rendert 5 Schritte', str_contains( $__advhtml, 'id="liw-adv-help"' ) && shortcode_exists( 'liw_adventures_help' ) && 5 === substr_count( do_shortcode( '[liw_adventures_help]' ), 'liw-adv__help-step"' ) );
+	// Hilfe-Koffer inline in der Get-Help-Überschrift (alpha.101): Klick öffnet das Emergency-Plugin.
+	liw_st_check( 'ADV-Help: Koffer-Hilfesymbol im Get-Help-Titel (öffnet Emergency-Overlay)', ( function (): bool { $h = do_shortcode( '[liw_adventures_help]' ); return str_contains( $h, 'liw-adv__help-suitcase' ) && str_contains( $h, 'data-liw-emg' ) && str_contains( $h, 'liw-emergency-suitcase.svg' ); } )() );
 	// A8 – Local-Intelligence-Szenario-Editor im Board (alpha.69).
 	$__pu_li = get_current_user_id(); wp_set_current_user( 1 );
 	$__lib_html = ( function (): string { ob_start(); \Liebherr\InterfaceWorld\Admin\Pages\LocalIntelligenceBoardPage::render(); return (string) ob_get_clean(); } )();
