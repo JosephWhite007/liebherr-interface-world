@@ -125,4 +125,17 @@ final class SessionRepository {
 		$t = Schema::log_table();
 		return (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$t} WHERE session_id = %d", $session_id ) ); // phpcs:ignore WordPress.DB
 	}
+
+	/**
+	 * Jüngste Zustandsübergänge (neueste zuerst) für die Backoffice-Ansicht.
+	 *
+	 * @return array<int,array<string,mixed>>
+	 */
+	public static function recent_log( int $limit = 50 ): array {
+		global $wpdb;
+		$t     = Schema::log_table();
+		$limit = max( 1, min( 200, $limit ) );
+		$rows  = $wpdb->get_results( $wpdb->prepare( "SELECT session_id, event, from_state, to_state, action, reason, created_at FROM {$t} ORDER BY id DESC LIMIT %d", $limit ), ARRAY_A ); // phpcs:ignore WordPress.DB
+		return is_array( $rows ) ? $rows : [];
+	}
 }

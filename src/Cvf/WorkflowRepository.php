@@ -98,6 +98,40 @@ final class WorkflowRepository {
 	}
 
 	/**
+	 * Versionshistorie (neueste zuerst).
+	 *
+	 * @return array<int,array<string,mixed>>
+	 */
+	public static function history( int $limit = 20 ): array {
+		global $wpdb;
+		$t     = Schema::version_table();
+		$limit = max( 1, min( 100, $limit ) );
+		$rows  = $wpdb->get_results( $wpdb->prepare( "SELECT id, version, checksum, state, published_at, published_by FROM {$t} ORDER BY id DESC LIMIT %d", $limit ), ARRAY_A ); // phpcs:ignore WordPress.DB
+		return is_array( $rows ) ? $rows : [];
+	}
+
+	/** Benutzer-ID des letzten Veröffentlichers (0 wenn keiner/unbekannt) – Grundlage der Vier-Augen-Prüfung. */
+	public static function last_published_by(): int {
+		global $wpdb;
+		$t = Schema::version_table();
+		return (int) $wpdb->get_var( "SELECT published_by FROM {$t} WHERE state = 'published' ORDER BY id DESC LIMIT 1" ); // phpcs:ignore WordPress.DB
+	}
+
+	/**
+	 * Veröffentlicht mit optionaler Vier-Augen-Prüfung: ist sie aktiv, darf der Freigebende nicht der
+	 * letzte Veröffentlicher sein (§9.4). Reine Guard-Logik oberhalb von publish().
+	 *
+	 * @param array<string,mixed> $config
+	 * @return array{ok:bool,reason:string,id:int,version:string,checksum:string}
+	 */
+	public static function publish_guarded( array $config, int $user_id, bool $four_eyes ): array {
+		if ( $four_eyes && $user_id > 0 && self::last_published_by() === $user_id ) {
+			return [ 'ok' => false, 'reason' => 'four_eyes_same_person', 'id' => 0, 'version' => '', 'checksum' => '' ];
+		}
+		return self::publish( $config, $user_id );
+	}
+
+	/**
 	 * @param array<string,mixed> $row
 	 * @return array{id:int,version:string,checksum:string,config:array<string,mixed>}
 	 */

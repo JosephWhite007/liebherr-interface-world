@@ -118,4 +118,23 @@ final class WorkflowVersion {
 	public static function checksum( array $config ): string {
 		return hash( 'sha256', self::canonical( $config ) );
 	}
+
+	/**
+	 * Setzt die Schwierigkeit der Challenge-Stufe (rein). Unbekannte Stufe fällt auf den ChallengeService-
+	 * Default zurück. Liefert eine NEUE Config (Original unverändert).
+	 *
+	 * @param array<string,mixed> $config
+	 * @return array<string,mixed>
+	 */
+	public static function set_challenge_difficulty( array $config, string $difficulty ): array {
+		$difficulty = ChallengeService::normalize( $difficulty );
+		$stages     = self::stages( $config );
+		foreach ( $stages as $i => $stage ) {
+			if ( isset( $stage['type'] ) && StageType::CHALLENGE === $stage['type'] ) {
+				$stages[ $i ]['difficulty'] = $difficulty;
+			}
+		}
+		$config['stages'] = $stages;
+		return $config;
+	}
 }

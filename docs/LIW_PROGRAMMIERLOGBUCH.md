@@ -12,6 +12,20 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.87 – CVF Phase 2: Backoffice-Board (Administration)
+
+**Neu:** `src/Admin/Pages/CvfBoardPage.php` – Menüpunkt „🧭 Customer View Flow" (Untermenü, Zugriff über
+`Cvf\Roles::CAP_ADMINISTER`): Flag an/aus + Vier-Augen-Schalter, Zugangscode setzen (nur Hash), veröffentlichte
+Version + Prüfsumme ansehen, Challenge-Schwierigkeit (ein-/zweistellig) ändern und als NEUE unveränderliche
+Version veröffentlichen (leichtgewichtige Vier-Augen-Prüfung), Versionshistorie- und Execution-Log-Tabelle.
+Drei admin-post-Handler (je Nonce + Capability). **Geändert:** `src/Cvf/WorkflowVersion.php`
+(`set_challenge_difficulty()` rein), `src/Cvf/WorkflowRepository.php` (`history()/last_published_by()/
+publish_guarded()` – Vier-Augen: Freigebender ≠ letzter Veröffentlicher), `src/Cvf/SessionRepository.php`
+(`recent_log()`), `src/Admin/AdminMenu.php` (Submenu + use), `src/Bootstrap.php` (Registrierung),
+`tests/run-tests.php` (+1 set_challenge_difficulty), `scripts/liw-selftest.php` (+2: Board-Klasse/Slug,
+Vier-Augen-Guard mit Cleanup). Board headless als Admin gerendert (alle Sektionen + Formularfelder da).
+Tests WP-frei 476 / Docker 374. Bump alpha.86 -> alpha.87.
+
 ## 0.1.0-alpha.86 – CVF Phase 2: begehbarer Durchstich (Frontend-Wiring)
 
 **Neu (`src/Cvf/`):** `Steps` (rein: Zustand → Schritt-Typ/Deskriptor), `Rest` (REST `liw-cvf/v1`:

@@ -20,6 +20,7 @@ use Liebherr\InterfaceWorld\Admin\Pages\ComponentsBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\ConnectionBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\ContactBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\ContentBoardPage;
+use Liebherr\InterfaceWorld\Admin\Pages\CvfBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\HandbookPage;
 use Liebherr\InterfaceWorld\Admin\Pages\HeaderBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\IntelligenceWorldBoardPage;
@@ -34,6 +35,7 @@ use Liebherr\InterfaceWorld\Admin\Pages\SimulationBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\TodoBoardPage;
 use Liebherr\InterfaceWorld\Content\SitePages;
 use Liebherr\InterfaceWorld\CoreBridge\RoleBridge;
+use Liebherr\InterfaceWorld\Cvf\Roles as CvfRoles;
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
@@ -149,6 +151,15 @@ final class AdminMenu {
 			RoleBridge::CAP_MANAGE_CONTENT,
 			IntelligenceWorldBoardPage::MENU_SLUG,
 			[ IntelligenceWorldBoardPage::class, 'render' ]
+		);
+
+		add_submenu_page(
+			'liw-interface-board',
+			__( 'Customer View Flow', 'liebherr-interface-world' ),
+			__( '🧭 Customer View Flow', 'liebherr-interface-world' ),
+			CvfRoles::CAP_ADMINISTER,
+			CvfBoardPage::MENU_SLUG,
+			[ CvfBoardPage::class, 'render' ]
 		);
 
 		add_submenu_page(

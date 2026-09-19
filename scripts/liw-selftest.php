@@ -1019,6 +1019,18 @@ try {
 		$wpdb->delete( \Liebherr\InterfaceWorld\Cvf\Schema::session_table(), [ 'id' => (int) $__f_b['session'] ] );
 	}
 
+	// CVF Backoffice-Board (alpha.87): Klasse/Slug + Vier-Augen-Guard (mit Cleanup).
+	liw_st_check( 'CVF-Board: Klasse + Menu-Slug vorhanden', class_exists( '\Liebherr\InterfaceWorld\Admin\Pages\CvfBoardPage' ) && 'liw-cvf-board' === \Liebherr\InterfaceWorld\Admin\Pages\CvfBoardPage::MENU_SLUG );
+	$__pub_uid = 990001;
+	$__p1 = \Liebherr\InterfaceWorld\Cvf\WorkflowRepository::publish( \Liebherr\InterfaceWorld\Cvf\WorkflowVersion::default_config(), $__pub_uid );
+	$__pblock = \Liebherr\InterfaceWorld\Cvf\WorkflowRepository::publish_guarded( \Liebherr\InterfaceWorld\Cvf\WorkflowVersion::default_config(), $__pub_uid, true );
+	$__pallow = \Liebherr\InterfaceWorld\Cvf\WorkflowRepository::publish_guarded( \Liebherr\InterfaceWorld\Cvf\WorkflowVersion::default_config(), $__pub_uid + 1, true );
+	liw_st_check( 'CVF-Board: Vier-Augen blockt selben Veroeffentlicher, laesst anderen zu', ! empty( $__p1['ok'] ) && empty( $__pblock['ok'] ) && 'four_eyes_same_person' === $__pblock['reason'] && ! empty( $__pallow['ok'] ) );
+	if ( isset( $wpdb ) ) {
+		$__vt = \Liebherr\InterfaceWorld\Cvf\Schema::version_table();
+		foreach ( [ $__p1['id'], $__pallow['id'] ] as $__vid ) { if ( $__vid ) { $wpdb->delete( $__vt, [ 'id' => $__vid ] ); } }
+	}
+
 	// ── [9] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
 	echo "\n[9] Programmierlogbuch / To-Dos\n";
 	liw_st_check( 'docs/LIW_PROGRAMMIERLOGBUCH.md vorhanden', is_readable( LIW_PATH . 'docs/LIW_PROGRAMMIERLOGBUCH.md' ) );
