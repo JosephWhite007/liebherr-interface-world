@@ -1,5 +1,15 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.126] – 2026-09-19 – Übersichtsseite „Liebherr Frontend": My Liebherr + Pocket in der Linkliste
+
+### Geändert
+- `Admin\AdminMenu::render_frontend()`: die Link-Liste auf der Übersichtsseite selbst (oben im Seiteninhalt) führt
+  nun neben den vier Welten auch **👤 My Liebherr** und **🎒 Pocket Information** (Direktlink zur Live-Seite), passend
+  zu den Menüpunkten aus alpha.125. Intro-Text auf „Welten und persönliche Reiter" erweitert.
+
+### Verifikation
+- Live geprüft: `render_frontend()` listet beide Links. `LIW_VERSION` .125→.126.
+
 ## [0.1.0-alpha.125] – 2026-09-19 – My Liebherr + Pocket im Menü „Liebherr Frontend" verankert
 
 ### Geändert

@@ -135,9 +135,11 @@ final class AdminMenu {
 			[ SitePages::li_url(), '🌍 Local Intelligence' ],
 			[ SitePages::interface_url(), '🌐 Interface Solutions' ],
 			[ self::adv_url(), '📸 Adventures' ],
+			[ self::page_url( 'liw_my_liebherr_page_id' ), '👤 My Liebherr' ],
+			[ self::page_url( 'liw_pocket_page_id' ), '🎒 Pocket Information' ],
 		];
 		echo '<div class="wrap"><h1>' . esc_html__( 'Liebherr Frontend', 'liebherr-interface-world' ) . '</h1>';
-		echo '<p>' . esc_html__( 'Die vier begehbaren Welten der Plattform (öffnet die Live-Seite in neuem Tab).', 'liebherr-interface-world' ) . '</p><ul class="ul-disc">';
+		echo '<p>' . esc_html__( 'Die begehbaren Welten und die persönlichen Reiter der Plattform (öffnet die Live-Seite in neuem Tab).', 'liebherr-interface-world' ) . '</p><ul class="ul-disc">';
 		foreach ( $items as $it ) {
 			if ( '' !== $it[0] ) {
 				echo '<li><a href="' . esc_url( (string) $it[0] ) . '" target="_blank" rel="noopener">' . esc_html( (string) $it[1] ) . '</a></li>';
