@@ -18,9 +18,10 @@ der Reihe nach ab und befüllen sie mit Funktionalität), **B** = auf externe Fr
 
 ### Gruppe A – intern baubar (Reihenfolge)
 
-1. **Intelligence World – Pflege-Board (Backoffice).** Administrierbares Board für Navigation & Hotels
-   (13 Segmente, Lösungswelt, 6 Hotels inkl. Drei-Wörter-Orte) UND für Tarife/Budgets (Preismodell) statt
-   nur Optionen `liw_iw_catalog`/`liw_iw_world`. Zwei Platzhalter-Hotels kuratierbar. (IW §19.1)
+1. ~~**Intelligence World – Pflege-Board (Backoffice).**~~ **ERLEDIGT (alpha.62):** Board
+   `Admin\Pages\IntelligenceWorldBoardPage` (Menü „🪐 Intelligence World") pflegt Tarife/Budgets + Eintrittstexte
+   (`liw_iw_world`) UND Katalog Navigation & Hotels (`liw_iw_catalog`: 13 Segmente + Lösungswelt + 6 Hotels,
+   Platzhalter kuratierbar). Save via admin-post; `save_from_request()` testbar.
 2. **Intelligence World – Compute-Metering (Mock) + kostenpflichtige Module.** Modul-/Rechenlast-Ereignisse
    als Ledger-Einträge (§6.4/§8); diese Ereignisse erscheinen anschließend im Nutzungs-/Kostenprotokoll.
 3. **Adventures – Detailseite.** Einzelansicht eines Beitrags (Titel, Story, Medien, Ort, Tokenwert, Status)
@@ -113,11 +114,11 @@ Produktsegmenten + Lösungswelt + 6 Hotel-Knoten (je Drei-Wörter-Ort, englisch)
 „Produktsegmente & Lösungswelt" / „Hotelwelt" sind live (Anker `#liw-iw-segments` / `#liw-iw-hotels`).
 
 **Offen / nächste Etappen:**
-- Navigation & Hotels – Ausbau: Backoffice-Pflegemodul für Segmente/Hotels/Drei-Wörter-Orte, Untermenüs +
-  Master-Linkmodell (§19.1), echte Verortung der Hotels über what3words, zwei Platzhalter-Hotels kuratieren.
+- Navigation & Hotels – Ausbau: **Pflege-Board geliefert (alpha.62)**; offen bleiben Untermenüs +
+  Master-Linkmodell (§19.1) und echte Verortung der Hotels über what3words.
 - Preismodell (alpha.55, **geliefert**): Sekundentakt 0,09 EUR/Sek., Monatsbudget 5.000,00 EUR, lokaler
-  Speicher 1 TB (min.) – Anzeige, Ticker und `billing_status` konsistent umgestellt. Offen: Backoffice-Formular
-  zur Pflege der Tarife/Budgets (derzeit nur Option `liw_iw_world`).
+  Speicher 1 TB (min.) – Anzeige, Ticker und `billing_status` konsistent umgestellt. Backoffice-Formular zur
+  Pflege der Tarife/Budgets **geliefert (alpha.62, IW-Pflege-Board)**.
 - Simulation Builder (alpha.56, **geliefert**): geführte Szenarien/Forecasts mit Beispieldaten
   (`SimulationModel` rein/testbar + `SimulationView` `[liw_iw_simulation]`, live per JS). Offen: echte
   Datenquellen/Compute-Metering statt Beispielmodell, Speichern/Vergleich von Szenarien.

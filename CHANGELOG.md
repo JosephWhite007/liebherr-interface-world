@@ -1,5 +1,26 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.62] – 2026-09-19 – Intelligence World: Backoffice-Pflege-Board (Tarife + Navigation/Hotels) [Job A1]
+
+### Hinzugefügt
+- **Pflege-Board** `Admin\Pages\IntelligenceWorldBoardPage` (Menü „🪐 Intelligence World"): administrierbare
+  Bearbeitung von **Tarifen/Budgets** (Preis/Sek., Abrechnungstakt, Budget + Zeitraum, Speicher + „min."-Flag,
+  Demo-Code) und **Eintrittstexten** (Option `liw_iw_world`) sowie des **Katalogs Navigation & Hotels** –
+  13 Produktsegmente, Lösungswelt und 6 Hotels je mit Drei-Wörter-Ort (Option `liw_iw_catalog`); die zwei
+  Platzhalter-Hotels sind damit kuratierbar. Speichern über admin-post (Nonce + `CAP_MANAGE_CONTENT`);
+  Bereinigung über die bestehenden `sanitize()`/`save()` der Content-Klassen.
+- `save_from_request()` von der HTTP-Schicht getrennt (reines Array) → unit-testbar; Checkboxen werden auf 0/1
+  normalisiert (Abwählen greift), Beträge in Minor-Units mit Live-Klartext-Hinweis (z. B. „0,09 EUR / Sek.").
+
+### Erledigt (Backlog Gruppe A, Punkt 1)
+- Damit ist der zurückgestellte Punkt „Navigation & Hotels – Backoffice-Pflegemodul" **und** „Preismodell –
+  Backoffice-Formular zur Pflege der Tarife/Budgets" abgeschlossen.
+
+### Verifikation
+- `tests/run-tests.php` **374/374**, `scripts/liw-selftest.php` **321/321** (Seite registriert; `save_from_request`
+  Round-Trip Tarif + Katalog; Zurücksetzen auf Defaults). Headless zusätzlich: Preis/Budget/Segment/Hotel geändert
+  und persistiert, `storage_is_minimum` abwählbar.
+
 ## [0.1.0-alpha.61] – 2026-09-19 – Adventures: Tokenakzeptanz-Dialog beim Zugriff (§5/§6)
 
 ### Hinzugefügt

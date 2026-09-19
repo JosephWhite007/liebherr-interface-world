@@ -12,6 +12,20 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.62 – Intelligence World: Backoffice-Pflege-Board (Tarife + Navigation/Hotels) [Backlog A1]
+
+**Neu:** `src/Admin/Pages/IntelligenceWorldBoardPage.php` (MENU_SLUG `liw-iw-board`; `render()` = Formular für
+Tarife/Budgets + Eintrittstexte + Katalog-Editor [Segmente/Lösungswelt/Hotels]; `handle_save()` admin-post mit
+Nonce+Cap; `save_from_request(array)` getrennt/testbar → WorldContent::save + CatalogContent::save; Feld-Helfer
+text/number/checkbox/select/node_editor, alles escaped). Checkbox `storage_is_minimum` wird auf 0/1 normalisiert.
+
+**Geändert:** `src/Admin/AdminMenu.php` (Submenü „🪐 Intelligence World" + use-Import),
+`src/Bootstrap.php` (`IntelligenceWorldBoardPage::register()` für admin_post). Tests/Selftest ergänzt.
+Bump alpha.61 → alpha.62.
+
+**Ergebnis:** Backlog-A1 erledigt (Navigation & Hotels + Tarife jetzt im Backoffice pflegbar statt nur Optionen).
+Nächster Bau laut Reihenfolge: **A2 – Compute-Metering (Mock) + kostenpflichtige Module als Ledger-Ereignisse**.
+
 ## Dokumentationsstand 19.09.2026 (nach alpha.61, Push origin/master fd4d464..0353085)
 
 Konsolidierungslauf, kein Quellcode geändert. Geprüft: alle drei Bücher sind auf aktuellem Stand –

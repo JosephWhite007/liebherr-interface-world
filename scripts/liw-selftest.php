@@ -690,6 +690,18 @@ try {
 	$__sim3 = do_shortcode( '[liw_iw_simulation]' );
 	liw_st_check( 'IW-Sim: eigenständiger Shortcode rendert Formular + Ausgabe', str_contains( $__sim3, 'liw-iw--sim-standalone' ) && str_contains( $__sim3, 'data-liw-sim-out' ) );
 
+	// ── [8d4] IW-Pflege-Board (Tarife + Navigation/Hotels, §19, alpha.62) ──
+	$IWB = '\Liebherr\InterfaceWorld\Admin\Pages\IntelligenceWorldBoardPage';
+	liw_st_check( 'IW-Board: Seite registriert (MENU_SLUG + render + save_from_request)', 'liw-iw-board' === $IWB::MENU_SLUG && method_exists( $IWB, 'render' ) && method_exists( $IWB, 'save_from_request' ) );
+	$__dW = \Liebherr\InterfaceWorld\IntelligenceWorld\WorldContent::defaults();
+	$__dC = \Liebherr\InterfaceWorld\IntelligenceWorld\CatalogContent::defaults();
+	$__segs = $__dC['segments']; $__segs[0]['label'] = 'SELFTEST-SEG';
+	$IWB::save_from_request( [ 'landing' => $__dW['landing'], 'gate' => $__dW['gate'], 'pricing' => array_merge( $__dW['pricing'], [ 'base_price_second_minor' => 7 ] ), 'solution' => $__dC['solution'], 'segments' => $__segs, 'hotels' => $__dC['hotels'] ] );
+	liw_st_check( 'IW-Board: save_from_request speichert Tarif + Katalog (round-trip)', 7 === (int) \Liebherr\InterfaceWorld\IntelligenceWorld\WorldContent::get()['pricing']['base_price_second_minor'] && 'SELFTEST-SEG' === \Liebherr\InterfaceWorld\IntelligenceWorld\CatalogContent::get()['segments'][0]['label'] );
+	delete_option( \Liebherr\InterfaceWorld\IntelligenceWorld\WorldContent::OPTION );
+	delete_option( \Liebherr\InterfaceWorld\IntelligenceWorld\CatalogContent::OPTION );
+	liw_st_check( 'IW-Board: Zurücksetzen (Defaults) nach Test', 9 === (int) \Liebherr\InterfaceWorld\IntelligenceWorld\WorldContent::get()['pricing']['base_price_second_minor'] );
+
 	// ── [8e] Liebherr Adventures – vierte Insel (§3/§4/§9, alpha.51) ──
 	echo "\n[8e] Liebherr Adventures\n";
 	$ADV = '\Liebherr\InterfaceWorld\Adventures\AdventureService';

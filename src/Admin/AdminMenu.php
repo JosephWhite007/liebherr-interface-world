@@ -22,6 +22,7 @@ use Liebherr\InterfaceWorld\Admin\Pages\ContactBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\ContentBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\HandbookPage;
 use Liebherr\InterfaceWorld\Admin\Pages\HeaderBoardPage;
+use Liebherr\InterfaceWorld\Admin\Pages\IntelligenceWorldBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\InterfaceBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\LanguageBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\LocalIntelligenceBoardPage;
@@ -139,6 +140,15 @@ final class AdminMenu {
 			RoleBridge::CAP_MANAGE_CONTENT,
 			AdventureBoardPage::MENU_SLUG,
 			[ AdventureBoardPage::class, 'render' ]
+		);
+
+		add_submenu_page(
+			'liw-interface-board',
+			__( 'Intelligence World – Pflege', 'liebherr-interface-world' ),
+			__( '🪐 Intelligence World', 'liebherr-interface-world' ),
+			RoleBridge::CAP_MANAGE_CONTENT,
+			IntelligenceWorldBoardPage::MENU_SLUG,
+			[ IntelligenceWorldBoardPage::class, 'render' ]
 		);
 
 		add_submenu_page(
