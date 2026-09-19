@@ -21,6 +21,17 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.100 – CAPDB: Eigenschaften-Panel im visuellen Board (Zone E)
+
+**Geändert:** `assets/js/liw-cvf-board.js` – Klick (oder Enter/Space) auf eine Plugin-Instanz öffnet ein
+Eigenschaften-Panel (§24.2 Zone E): Parameter werden aus dem Typ-Schema gerendert (enum→Select, int→Number,
+text→Text) und mit der aktuellen Config vorbelegt; dazu die Zeitsteuerung (open/close/duration/timeout in
+Sek., resume/repeat). Speichern läuft über zwei AJAX-Ops. `src/Admin/Pages/CvfBoardEditorPage.php` – ajax-Ops
+`update_instance` (Config gegen `PluginRegistry::validate_config` geprüft, optional Status) und `set_schedule`;
+`board_data()` liefert je Typ jetzt auch das Parameterschema; Helfer `instance_key()`. `src/Cvf/BoardRepository.php`
+– `update_instance()` (Config/Status). `assets/css/liw-cvf-board.css` (Panel-Stile). `scripts/liw-selftest.php`
+(+1: update_instance + set_schedule persistiert). Tests WP-frei 511 / Docker 392. Bump alpha.99 -> alpha.100.
+
 ## 0.1.0-alpha.99 – Backoffice-Menü: Aufteilung Frontend / Backoffice (+ Administration Plattform)
 
 **Geändert:** `src/Admin/AdminMenu.php` – `add_menu()` komplett neu (Variante A, ADR-LIW-ADMIN-001, JW „a"):

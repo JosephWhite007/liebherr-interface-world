@@ -75,6 +75,14 @@ final class CvfBoardEditorPage {
 				'step'       => __( 'Schritt', 'liebherr-interface-world' ),
 				'reset'      => __( 'Zurücksetzen', 'liebherr-interface-world' ),
 				'simNote'    => __( 'Reine Vorschau – es werden keine echten Freigaben, Nachrichten oder Aktionen ausgeführt.', 'liebherr-interface-world' ),
+				'edit'       => __( 'Bearbeiten', 'liebherr-interface-world' ),
+				'propsTitle' => __( 'Eigenschaften', 'liebherr-interface-world' ),
+				'params'     => __( 'Parameter', 'liebherr-interface-world' ),
+				'noParams'   => __( 'Keine Parameter', 'liebherr-interface-world' ),
+				'timing'     => __( 'Zeitsteuerung (Sek.)', 'liebherr-interface-world' ),
+				'save'       => __( 'Speichern', 'liebherr-interface-world' ),
+				'saveErr'    => __( 'Speichern fehlgeschlagen (Parameter ungültig?).', 'liebherr-interface-world' ),
+				'close'      => __( 'Schließen', 'liebherr-interface-world' ),
 			],
 		] );
 	}
@@ -105,6 +113,44 @@ final class CvfBoardEditorPage {
 		}
 		if ( 'del_instance' === $op ) {
 			BoardRepository::delete_instance( $draft, isset( $_POST['instance_id'] ) ? (int) $_POST['instance_id'] : 0 ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			wp_send_json_success( self::board_data( $draft ) );
+		}
+		if ( 'update_instance' === $op ) {
+			$iid = isset( $_POST['instance_id'] ) ? (int) $_POST['instance_id'] : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$key = self::instance_key( $draft, $iid );
+			if ( '' === $key ) {
+				wp_send_json_error( [ 'reason' => 'unknown_instance' ], 400 );
+			}
+			$config = [];
+			$raw    = isset( $_POST['config_json'] ) ? trim( (string) wp_unslash( $_POST['config_json'] ) ) : ''; // phpcs:ignore WordPress.Security
+			if ( '' !== $raw ) {
+				$decoded = json_decode( $raw, true );
+				if ( is_array( $decoded ) ) { $config = $decoded; }
+			}
+			$config   = PluginRegistry::with_defaults( $key, $config );
+			$problems = PluginRegistry::validate_config( $key, $config );
+			if ( count( $problems ) > 0 ) {
+				wp_send_json_error( [ 'reason' => 'config:' . implode( ',', $problems ) ], 400 );
+			}
+			$status = isset( $_POST['status'] ) ? sanitize_key( wp_unslash( (string) $_POST['status'] ) ) : null; // phpcs:ignore WordPress.Security
+			if ( null !== $status && ! \Liebherr\InterfaceWorld\Cvf\PluginState::is_valid( $status ) ) { $status = null; }
+			BoardRepository::update_instance( $draft, $iid, (string) wp_json_encode( $config ), $status );
+			wp_send_json_success( self::board_data( $draft ) );
+		}
+		if ( 'set_schedule' === $op ) {
+			$iid = isset( $_POST['instance_id'] ) ? (int) $_POST['instance_id'] : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( '' === self::instance_key( $draft, $iid ) ) {
+				wp_send_json_error( [ 'reason' => 'unknown_instance' ], 400 );
+			}
+			BoardRepository::set_schedule( $iid, [
+				'time_origin'   => isset( $_POST['time_origin'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['time_origin'] ) ) : 'page.entered', // phpcs:ignore WordPress.Security
+				'open_at_ms'    => self::secs_to_ms( $_POST['open_at'] ?? '' ),   // phpcs:ignore WordPress.Security
+				'close_at_ms'   => self::secs_to_ms( $_POST['close_at'] ?? '' ),  // phpcs:ignore WordPress.Security
+				'duration_ms'   => self::secs_to_ms( $_POST['duration'] ?? '' ),  // phpcs:ignore WordPress.Security
+				'timeout_ms'    => self::secs_to_ms( $_POST['timeout'] ?? '' ),   // phpcs:ignore WordPress.Security
+				'repeat_policy' => isset( $_POST['repeat_policy'] ) ? sanitize_key( wp_unslash( (string) $_POST['repeat_policy'] ) ) : 'once_per_version', // phpcs:ignore WordPress.Security
+				'resume_policy' => isset( $_POST['resume_policy'] ) ? sanitize_key( wp_unslash( (string) $_POST['resume_policy'] ) ) : 'continue', // phpcs:ignore WordPress.Security
+			] );
 			wp_send_json_success( self::board_data( $draft ) );
 		}
 		if ( 'sim' === $op ) {
@@ -145,11 +191,25 @@ final class CvfBoardEditorPage {
 		$snap  = BoardSnapshot::of_version( $draft );
 		$types = [];
 		foreach ( PluginRegistry::definitions() as $k => $d ) {
-			$types[] = [ 'key' => $k, 'label' => (string) $d['label'], 'category' => (string) $d['category'], 'scopes' => (string) $d['scopes'] ];
+			$types[] = [ 'key' => $k, 'label' => (string) $d['label'], 'category' => (string) $d['category'], 'scopes' => (string) $d['scopes'], 'schema' => $d['schema'] ];
 		}
 		$snap['types'] = $types;
 		$snap['draft'] = $draft;
 		return $snap;
+	}
+
+	/** Plugin-key einer Instanz im Entwurf (leer, wenn nicht vorhanden). */
+	private static function instance_key( int $draft, int $instance_id ): string {
+		$keys = [];
+		foreach ( PluginRegistry::all_types() as $t ) {
+			$keys[ (int) $t['id'] ] = (string) $t['plugin_key'];
+		}
+		foreach ( BoardRepository::instances( $draft ) as $ins ) {
+			if ( (int) $ins['id'] === $instance_id ) {
+				return $keys[ (int) $ins['plugin_type_id'] ] ?? '';
+			}
+		}
+		return '';
 	}
 
 	private static function can_edit(): bool {

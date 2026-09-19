@@ -36,3 +36,15 @@
 .liw-sim-head { position: absolute; top: 0; left: 0; width: 2px; height: 100%; background: #2271b1; transition: left .18s linear; }
 .liw-sim-log { list-style: none; margin: 0; padding: 0; max-height: 220px; overflow: auto; font-size: 12px; font-variant-numeric: tabular-nums; }
 .liw-sim-log li { padding: .2rem .35rem; border-bottom: 1px solid #f0f0f1; }
+
+/* Eigenschaften-Panel (Zone E). */
+.liw-board__inst { cursor: pointer; }
+.liw-board__inst:focus-visible { outline: 2px solid #2271b1; outline-offset: 1px; }
+.liw-board__props { margin: 1rem 0 0; padding: .75rem; background: #fff; border: 1px solid #2271b1; border-radius: 8px; max-width: 520px; }
+.liw-board__props-h { display: flex; justify-content: space-between; align-items: center; font-weight: 600; margin: 0 0 .5rem; }
+.liw-board__props-x { border: 0; background: transparent; font-size: 18px; line-height: 1; cursor: pointer; color: #b32d2e; }
+.liw-board__props fieldset { border: 1px solid #dcdcde; border-radius: 6px; padding: .5rem .6rem; margin: 0 0 .6rem; }
+.liw-board__props legend { font-size: 11px; text-transform: uppercase; color: #646970; padding: 0 .3rem; }
+.liw-board__pf { display: flex; align-items: center; gap: .5rem; margin: 0 0 .35rem; font-size: 12px; }
+.liw-board__pf > span { flex: 0 0 90px; color: #50575e; }
+.liw-board__pf input, .liw-board__pf select { flex: 1 1 auto; min-width: 0; }

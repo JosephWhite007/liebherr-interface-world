@@ -202,6 +202,18 @@ final class BoardRepository {
 		return is_array( $r ) ? $r : [];
 	}
 
+	/** Aktualisiert Konfiguration (und optional Status) einer Instanz im gegebenen Entwurf. */
+	public static function update_instance( int $version_id, int $instance_id, string $config_json, ?string $status = null ): void {
+		global $wpdb;
+		$data   = [ 'config_json' => '' !== $config_json ? $config_json : null ];
+		$format = [ '%s' ];
+		if ( null !== $status && '' !== $status ) {
+			$data['status'] = $status;
+			$format[]       = '%s';
+		}
+		$wpdb->update( BoardSchema::plugin_instance_table(), $data, [ 'id' => $instance_id, 'version_id' => $version_id ], $format, [ '%d', '%d' ] ); // phpcs:ignore WordPress.DB
+	}
+
 	public static function delete_instance( int $version_id, int $instance_id ): void {
 		global $wpdb;
 		$wpdb->delete( BoardSchema::plugin_schedule_table(), [ 'instance_id' => $instance_id ], [ '%d' ] ); // phpcs:ignore WordPress.DB

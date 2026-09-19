@@ -1187,6 +1187,27 @@ try {
 	$__tops = array_map( static fn( $m ) => $m[2], (array) ( $GLOBALS['menu'] ?? [] ) );
 	liw_st_check( 'Menü: zwei Top-Level (Liebherr Frontend + Backoffice) registriert + Landeseiten vorhanden', in_array( 'liw-frontend', $__tops, true ) && in_array( 'liw-interface-board', $__tops, true ) && method_exists( '\Liebherr\InterfaceWorld\Admin\AdminMenu', 'render_frontend' ) && method_exists( '\Liebherr\InterfaceWorld\Admin\AdminMenu', 'render_admin_platform' ) );
 
+	// CAPDB Eigenschaften-Panel (alpha.100): update_instance + set_schedule (Repository-Ebene).
+	\Liebherr\InterfaceWorld\Cvf\PluginRegistry::sync();
+	$__pp_bd = \Liebherr\InterfaceWorld\Cvf\BoardRepository::create_draft( 1 );
+	$__pp_ch = \Liebherr\InterfaceWorld\Cvf\PluginRegistry::type_id( 'challenge_addition' );
+	$__pp_iid = 0;
+	foreach ( \Liebherr\InterfaceWorld\Cvf\BoardRepository::instances( $__pp_bd ) as $__x ) { if ( (int) $__x['plugin_type_id'] === $__pp_ch ) { $__pp_iid = (int) $__x['id']; break; } }
+	if ( $__pp_iid > 0 ) {
+		\Liebherr\InterfaceWorld\Cvf\BoardRepository::update_instance( $__pp_bd, $__pp_iid, (string) wp_json_encode( [ 'difficulty' => 'single' ] ), 'scheduled' );
+		\Liebherr\InterfaceWorld\Cvf\BoardRepository::set_schedule( $__pp_iid, [ 'open_at_ms' => 3000, 'timeout_ms' => 120000 ] );
+		$__pp_snap = \Liebherr\InterfaceWorld\Cvf\BoardSnapshot::of_version( $__pp_bd );
+		$__pp_cfg = []; $__pp_st = '';
+		foreach ( $__pp_snap['instances'] as $__x ) { if ( (int) $__x['id'] === $__pp_iid ) { $__pp_cfg = (array) $__x['config']; $__pp_st = (string) $__x['status']; } }
+		$__pp_sched = \Liebherr\InterfaceWorld\Cvf\BoardRepository::schedule( $__pp_iid );
+		liw_st_check( 'CAPDB-Props: update_instance (Config+Status) + set_schedule persistiert', 'single' === ( $__pp_cfg['difficulty'] ?? '' ) && 'scheduled' === $__pp_st && (int) ( $__pp_sched['open_at_ms'] ?? 0 ) === 3000 );
+	}
+	if ( isset( $wpdb ) ) {
+		foreach ( array_unique( array_filter( [ (int) $__pp_bd, \Liebherr\InterfaceWorld\Cvf\BoardRepository::draft_id() ] ) ) as $__vid ) {
+			if ( $__vid > 0 ) { \Liebherr\InterfaceWorld\Cvf\BoardRepository::clear_board( (int) $__vid ); $wpdb->delete( \Liebherr\InterfaceWorld\Cvf\Schema::version_table(), [ 'id' => (int) $__vid ] ); }
+		}
+	}
+
 	// ── [9] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
 	echo "\n[9] Programmierlogbuch / To-Dos\n";
 	liw_st_check( 'docs/LIW_PROGRAMMIERLOGBUCH.md vorhanden', is_readable( LIW_PATH . 'docs/LIW_PROGRAMMIERLOGBUCH.md' ) );

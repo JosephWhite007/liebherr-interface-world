@@ -11,6 +11,7 @@
 	var root = document.querySelector( '[data-liw-board]' );
 	if ( ! root ) { return; }
 	var zoom = 100;
+	var lastData = null;
 
 	function esc( s ) {
 		return String( s == null ? '' : s ).replace( /[&<>"']/g, function ( c ) {
@@ -39,7 +40,7 @@
 
 	function zoneHtml( data, label, hostType, hostId ) {
 		var list = instancesFor( data, hostType, hostId ).map( function ( i ) {
-			return '<li class="liw-board__inst" data-inst="' + i.id + '">' + esc( i.plugin_key ) +
+			return '<li class="liw-board__inst" data-inst="' + i.id + '" data-key="' + esc( i.plugin_key ) + '" tabindex="0" title="' + esc( I.edit || 'Bearbeiten' ) + '"><span class="liw-board__inst-lbl">' + esc( i.plugin_key ) + '</span>' +
 				' <button type="button" class="liw-board__rm" data-inst="' + i.id + '" title="' + esc( I.remove ) + '">×</button></li>';
 		} ).join( '' );
 		return '<div class="liw-board__zone" data-host-type="' + hostType + '" data-host-id="' + hostId + '">' +
@@ -58,6 +59,7 @@
 	}
 
 	function render( data ) {
+		lastData = data;
 		if ( ! data || ! data.areas || ! data.areas.length ) {
 			root.innerHTML = '<p>' + esc( I.empty ) + '</p>';
 			return;
@@ -98,9 +100,95 @@
 			'<div class="liw-sim-ruler"><div class="liw-sim-head"></div></div>' +
 			'<ol class="liw-sim-log" role="log" aria-live="polite"></ol>' +
 			'<p class="liw-board__note">' + esc( I.simNote || 'Reine Vorschau – es werden keine echten Freigaben, Nachrichten oder Aktionen ausgeführt.' ) + '</p>' +
-			'</div>';
+			'</div>' +
+			'<div class="liw-board__props" data-liw-props hidden></div>';
 		bind( data );
 		bindSim();
+		bindProps();
+	}
+
+	// ── Eigenschaften-Panel (§24.2 Zone E): Instanz-Parameter + Zeitsteuerung inline bearbeiten. ──
+	function typeByKey( key ) {
+		return ( ( lastData && lastData.types ) || [] ).filter( function ( t ) { return t.key === key; } )[ 0 ] || null;
+	}
+	function instById( id ) {
+		return ( ( lastData && lastData.instances ) || [] ).filter( function ( i ) { return Number( i.id ) === Number( id ); } )[ 0 ] || null;
+	}
+	function schedById( id ) {
+		return ( lastData && lastData.schedules && lastData.schedules[ id ] ) ? lastData.schedules[ id ] : {};
+	}
+	function ms2s( v ) { return ( v == null || v === '' ) ? '' : ( Number( v ) / 1000 ); }
+
+	function openProps( id ) {
+		var panel = root.querySelector( '[data-liw-props]' );
+		var ins = instById( id );
+		if ( ! panel || ! ins ) { return; }
+		var type = typeByKey( ins.plugin_key );
+		var schema = ( type && type.schema ) ? type.schema : {};
+		var cfg = ins.config || {};
+		var sch = schedById( id );
+		var fields = '';
+		Object.keys( schema ).forEach( function ( f ) {
+			var spec = schema[ f ] || {};
+			var val = ( cfg[ f ] != null ) ? cfg[ f ] : ( spec['default'] != null ? spec['default'] : '' );
+			var input;
+			if ( spec.type === 'enum' ) {
+				input = '<select data-cfg="' + esc( f ) + '">' + ( spec.values || [] ).map( function ( o ) {
+					return '<option value="' + esc( o ) + '"' + ( String( o ) === String( val ) ? ' selected' : '' ) + '>' + esc( o ) + '</option>';
+				} ).join( '' ) + '</select>';
+			} else if ( spec.type === 'int' ) {
+				input = '<input type="number" data-cfg="' + esc( f ) + '" value="' + esc( val ) + '" />';
+			} else {
+				input = '<input type="text" data-cfg="' + esc( f ) + '" value="' + esc( val ) + '" />';
+			}
+			fields += '<label class="liw-board__pf"><span>' + esc( f ) + '</span>' + input + '</label>';
+		} );
+		var repeat = sch.repeat_policy || 'once_per_version';
+		var resume = sch.resume_policy || 'continue';
+		panel.innerHTML =
+			'<div class="liw-board__props-h">' + esc( I.propsTitle || 'Eigenschaften' ) + ': ' + esc( ins.plugin_key ) +
+			' <button type="button" class="liw-board__props-x" title="' + esc( I.close || 'Schließen' ) + '">×</button></div>' +
+			'<form data-inst="' + id + '"><fieldset><legend>' + esc( I.params || 'Parameter' ) + '</legend>' + ( fields || '<em>' + esc( I.noParams || 'Keine Parameter' ) + '</em>' ) + '</fieldset>' +
+			'<fieldset><legend>' + esc( I.timing || 'Zeitsteuerung (Sek.)' ) + '</legend>' +
+			'<label class="liw-board__pf"><span>open</span><input type="number" step="0.1" data-sch="open_at" value="' + esc( ms2s( sch.open_at_ms ) ) + '" /></label>' +
+			'<label class="liw-board__pf"><span>close</span><input type="number" step="0.1" data-sch="close_at" value="' + esc( ms2s( sch.close_at_ms ) ) + '" /></label>' +
+			'<label class="liw-board__pf"><span>duration</span><input type="number" step="0.1" data-sch="duration" value="' + esc( ms2s( sch.duration_ms ) ) + '" /></label>' +
+			'<label class="liw-board__pf"><span>timeout</span><input type="number" step="0.1" data-sch="timeout" value="' + esc( ms2s( sch.timeout_ms ) ) + '" /></label>' +
+			'<label class="liw-board__pf"><span>resume</span><select data-sch="resume_policy">' + [ 'continue', 'restart', 'cancel' ].map( function ( o ) { return '<option' + ( o === resume ? ' selected' : '' ) + '>' + o + '</option>'; } ).join( '' ) + '</select></label>' +
+			'<label class="liw-board__pf"><span>repeat</span><select data-sch="repeat_policy">' + [ 'once_per_version', 'each_visit' ].map( function ( o ) { return '<option' + ( o === repeat ? ' selected' : '' ) + '>' + o + '</option>'; } ).join( '' ) + '</select></label>' +
+			'</fieldset>' +
+			'<p><button type="submit" class="button button-primary">' + esc( I.save || 'Speichern' ) + '</button></p></form>';
+		panel.hidden = false;
+		panel.scrollIntoView( { block: 'nearest' } );
+		var x = panel.querySelector( '.liw-board__props-x' );
+		if ( x ) { x.addEventListener( 'click', function () { panel.hidden = true; panel.innerHTML = ''; } ); }
+		var form = panel.querySelector( 'form' );
+		if ( form ) { form.addEventListener( 'submit', function ( e ) { e.preventDefault(); saveProps( form ); } ); }
+	}
+
+	function saveProps( form ) {
+		var id = form.getAttribute( 'data-inst' );
+		var cfg = {};
+		form.querySelectorAll( '[data-cfg]' ).forEach( function ( el ) { cfg[ el.getAttribute( 'data-cfg' ) ] = el.value; } );
+		var sched = { instance_id: id };
+		form.querySelectorAll( '[data-sch]' ).forEach( function ( el ) { sched[ el.getAttribute( 'data-sch' ) ] = el.value; } );
+		call( 'update_instance', { instance_id: id, config_json: JSON.stringify( cfg ) } ).then( function ( r ) {
+			if ( ! r || ! r.success ) { window.alert( I.saveErr || 'Speichern fehlgeschlagen (Parameter?).' ); return; }
+			call( 'set_schedule', sched ).then( function ( r2 ) {
+				if ( r2 && r2.success ) { render( r2.data ); var pnl = root.querySelector( '[data-liw-props]' ); if ( pnl ) { pnl.hidden = false; } openProps( id ); }
+			} );
+		} );
+	}
+
+	function bindProps() {
+		root.querySelectorAll( '.liw-board__inst' ).forEach( function ( li ) {
+			var open = function ( e ) {
+				if ( e.target.closest && e.target.closest( '.liw-board__rm' ) ) { return; }
+				openProps( li.getAttribute( 'data-inst' ) );
+			};
+			li.addEventListener( 'click', open );
+			li.addEventListener( 'keydown', function ( e ) { if ( e.key === 'Enter' || e.key === ' ' ) { e.preventDefault(); open( e ); } } );
+		} );
 	}
 
 	// ── Simulation (Abspielkopf, §27.1): rein clientseitige Vorschau, keine echten Aktionen. ──
