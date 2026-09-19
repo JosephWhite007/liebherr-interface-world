@@ -1,5 +1,20 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.71] – 2026-09-19 – Intelligence World: serverseitige Protokoll-PDF [Job A10]
+
+### Hinzugefügt
+- **Serverseitiger PDF-Generator** `IntelligenceWorld\PdfDocument` (ohne Fremdbibliothek, Core-Font Helvetica,
+  A4, automatischer Seitenumbruch, Nicht-ASCII ASCII-nah transliteriert) + `ProtocolBuilder::to_lines()`.
+- **REST** `GET liw-iw/v1/session/protocol-pdf` streamt das Nutzungs-/Kostenprotokoll als echtes PDF
+  (Content-Disposition attachment). Im Protokoll am Sitzungsende gibt es zusätzlich zum Browser-Druck den
+  Link „PDF herunterladen (Server)".
+
+### Erledigt (Backlog Gruppe A, Punkt 10)
+
+### Verifikation
+- `tests/run-tests.php` **397/397** (`to_lines`; PDF `%PDF…%%EOF`, transliteriert), `scripts/liw-selftest.php`
+  **342/342** (Route registriert; gültiges PDF aus Sitzungsprotokoll). `file` erkennt „PDF document, version 1.4".
+
 ## [0.1.0-alpha.70] – 2026-09-19 – Simulation Builder: Szenarien speichern & vergleichen [Job A9]
 
 ### Hinzugefügt

@@ -41,7 +41,8 @@ der Reihe nach ab und befüllen sie mit Funktionalität), **B** = auf externe Fr
    Zusammenfassung, Kennzahlen-Zeilen) im LI-Board pflegbar (`parse_scenarios`).
 9. ~~**Simulation Builder – Szenarien speichern/vergleichen.**~~ **ERLEDIGT (alpha.70):** Speichern (localStorage)
    + Nebeneinander-Vergleichstabelle (Szenario/Horizont/Start/Ende/Δ).
-10. **Nutzungs-/Kostenprotokoll – echte serverseitige PDF-Erzeugung** (statt Browser-Druck).
+10. ~~**Nutzungs-/Kostenprotokoll – echte serverseitige PDF-Erzeugung.**~~ **ERLEDIGT (alpha.71):** reiner
+    PDF-Generator `PdfDocument` + REST `/session/protocol-pdf` (Download, ohne Fremd-Lib).
 11. **Content Board – Medien-Picker auf freigegebene Bibliothek beschränken** (CI-005; braucht Docker-Prüfung).
 
 ### Gruppe B – auf externe Freigabe/Zulieferung angewiesen (nicht allein baubar)

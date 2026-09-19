@@ -12,6 +12,14 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.71 – Intelligence World: serverseitige Protokoll-PDF [Backlog A10]
+
+**Neu:** `src/IntelligenceWorld/PdfDocument.php` (reiner PDF-Generator `from_lines`, A4/Helvetica/xref,
+Translit). `ProtocolBuilder::to_lines()` (Protokoll → Textzeilen, rein). `Rest::protocol_pdf` + Route
+`GET /session/protocol-pdf` (streamt PDF). **Geändert:** `assets/js/liw-intelligence-world.js` (Protokoll-Aktion
+„PDF herunterladen (Server)"), `WorldView` i18n `proto_pdf`. Tests/Selftest. Bump alpha.70 → alpha.71.
+**Nächster Bau:** A11 – Content Board: Medien-Picker auf freigegebene Bibliothek beschränken.
+
 ## 0.1.0-alpha.70 – Simulation Builder: Szenarien speichern & vergleichen [Backlog A9]
 
 **Geändert:** `src/IntelligenceWorld/SimulationView.php` (Button „Szenario speichern" + Container

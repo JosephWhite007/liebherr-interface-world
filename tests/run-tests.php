@@ -392,6 +392,12 @@ $pb_ev2 = [
 $pb2 = \Liebherr\InterfaceWorld\IntelligenceWorld\ProtocolBuilder::build( $pb_session, $pb_ev2, $pb_billing, 'EUR', true, '2026-01-01T00:02:00Z' );
 liw_assert( 'ProtocolBuilder: 2 Modul-Posten + Modulsumme 5,30 EUR (530)', 2 === count( $pb2['line_items'] ) && 530 === $pb2['billing']['modules_cost_minor'] && '5,30 EUR' === $pb2['billing']['modules_display'], $checks, $failures );
 liw_assert( 'ProtocolBuilder: Gesamt = Basis (900) + Module (530) = 1430 (14,30 EUR)', 1430 === $pb2['billing']['total_cost_minor'] && '14,30 EUR' === $pb2['billing']['total_display'], $checks, $failures );
+// PDF-Export (A10, alpha.71).
+require_once $root . '/src/IntelligenceWorld/PdfDocument.php';
+$pb_lines = \Liebherr\InterfaceWorld\IntelligenceWorld\ProtocolBuilder::to_lines( $pb2 );
+liw_assert( 'ProtocolBuilder::to_lines: enthält Sitzung + Gesamtkosten + Ereignisse', in_array( 'Sitzung: S-TEST', $pb_lines, true ) && ( (bool) preg_grep( '/^Gesamtkosten: /', $pb_lines ) ) && ( (bool) preg_grep( '/^Ereignisse \(/', $pb_lines ) ), $checks, $failures );
+$pdf = \Liebherr\InterfaceWorld\IntelligenceWorld\PdfDocument::from_lines( 'Protokoll', $pb_lines );
+liw_assert( 'PdfDocument: gültiges PDF (%PDF … %%EOF) + transliteriert (EUR statt €)', 0 === strpos( $pdf, '%PDF-1.' ) && false !== strpos( $pdf, '%%EOF' ) && false !== strpos( $pdf, 'EUR' ) && false === strpos( $pdf, '€' ) && strlen( $pdf ) > 400, $checks, $failures );
 
 // 2p. Liebherr Adventures – Fundament (vierte Insel, §3/§4/§9, alpha.51) – reine Logik ohne WP.
 echo "-- Liebherr Adventures (alpha.51) --\n";

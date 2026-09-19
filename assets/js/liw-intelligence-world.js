@@ -188,7 +188,8 @@
 				escHtml( t.proto_time ) + '</th><th>' + escHtml( t.proto_event ) + '</th></tr></thead><tbody>' + rows + '</tbody></table>' +
 				'<div class="liw-iw__proto-actions">' +
 				'<button type="button" class="liw-cta liw-cta--secondary" data-liw-iw-proto-json>' + escHtml( t.proto_json ) + '</button> ' +
-				'<button type="button" class="liw-cta liw-cta--secondary" data-liw-iw-proto-print>' + escHtml( t.proto_print ) + '</button>' +
+				'<button type="button" class="liw-cta liw-cta--secondary" data-liw-iw-proto-print>' + escHtml( t.proto_print ) + '</button> ' +
+				'<a class="liw-cta liw-cta--secondary" href="' + escHtml( cfg.rest + 'session/protocol-pdf?session_code=' + encodeURIComponent( p.session_code ) ) + '">' + escHtml( t.proto_pdf || 'PDF (Server)' ) + '</a>' +
 				'</div></div>';
 			proto.removeAttribute( 'hidden' );
 

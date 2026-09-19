@@ -96,6 +96,46 @@ final class ProtocolBuilder {
 		];
 	}
 
+	/**
+	 * Formatiert ein Protokoll (aus {@see self::build()}) in Textzeilen für den PDF-/Text-Export. Rein/testbar.
+	 *
+	 * @param array<string,mixed> $p
+	 * @return array<int,string>
+	 */
+	public static function to_lines( array $p ): array {
+		$b     = is_array( $p['billing'] ?? null ) ? $p['billing'] : [];
+		$lines = [
+			'Sitzung: ' . (string) ( $p['session_code'] ?? '' ),
+			'Status: ' . (string) ( $p['status'] ?? '' ),
+			'Start: ' . (string) ( $p['started_at'] ?? '' ),
+			'Ende: ' . (string) ( $p['ended_at'] ?? '' ),
+			'Aktive Zeit: ' . (string) ( $p['active_display'] ?? '' ),
+			'Basiskosten (Zeit): ' . (string) ( $b['base_cost_display'] ?? '' ),
+			'Zusatzkosten (Module): ' . (string) ( $b['modules_display'] ?? '' ),
+			'Gesamtkosten: ' . (string) ( $b['total_display'] ?? ( $b['base_cost_display'] ?? '' ) ),
+			'Budget: ' . (string) ( $b['budget_display'] ?? '' ) . ' (' . (int) ( $b['budget_pct'] ?? 0 ) . ' %)',
+			'Integritaet: ' . ( ! empty( $p['integrity_ok'] ) ? 'unveraendert' : 'VERAENDERT' ),
+			'Erstellt (UTC): ' . (string) ( $p['generated_at'] ?? '' ),
+			'',
+		];
+		$items = is_array( $p['line_items'] ?? null ) ? $p['line_items'] : [];
+		if ( [] !== $items ) {
+			$lines[] = 'Kostenpflichtige Module:';
+			foreach ( $items as $it ) {
+				$lines[] = '- ' . (string) ( $it['label'] ?? '' ) . ' (x' . (int) ( $it['units'] ?? 1 ) . '): ' . (string) ( $it['cost_display'] ?? '' );
+			}
+			$lines[] = '';
+		}
+		$events = is_array( $p['events'] ?? null ) ? $p['events'] : [];
+		$lines[] = 'Ereignisse (' . count( $events ) . '):';
+		foreach ( $events as $e ) {
+			$lines[] = (int) ( $e['seq'] ?? 0 ) . '. ' . (string) ( $e['occurred_at'] ?? '' ) . '  ' . (string) ( $e['label'] ?? '' );
+		}
+		$lines[] = '';
+		$lines[] = 'Prototyp - Beispieldaten, keine echte Abrechnung.';
+		return $lines;
+	}
+
 	/** hh:mm:ss (auch > 24 h). Rein. */
 	private static function hms( int $seconds ): string {
 		$seconds = max( 0, $seconds );

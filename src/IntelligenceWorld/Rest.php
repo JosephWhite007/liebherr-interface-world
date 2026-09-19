@@ -70,6 +70,29 @@ final class Rest {
 			'callback'            => [ self::class, 'use_module' ],
 			'permission_callback' => $perm,
 		] );
+		register_rest_route( self::NAMESPACE, '/session/protocol-pdf', [
+			'methods'             => 'GET',
+			'callback'            => [ self::class, 'protocol_pdf' ],
+			'permission_callback' => $perm,
+		] );
+	}
+
+	/** Nutzungs-/Kostenprotokoll als serverseitig erzeugtes PDF (§5.5/§8, Download). */
+	public static function protocol_pdf( \WP_REST_Request $req ) {
+		$code = self::require_session( $req );
+		if ( null === $code ) {
+			return new \WP_REST_Response( [ 'ok' => false ], 404 );
+		}
+		$protocol = self::build_protocol( $code, WorldContent::get() );
+		$pdf      = PdfDocument::from_lines( 'Liebherr Intelligence World - Nutzungs- und Kostenprotokoll', ProtocolBuilder::to_lines( $protocol ) );
+		if ( ! headers_sent() ) {
+			header( 'Content-Type: application/pdf' );
+			header( 'Content-Disposition: attachment; filename="liebherr-iw-protokoll-' . sanitize_file_name( $code ) . '.pdf"' );
+			header( 'Content-Length: ' . strlen( $pdf ) );
+			header( 'X-Robots-Tag: noindex' );
+		}
+		echo $pdf; // phpcs:ignore WordPress.Security.EscapeOutput -- Binär-PDF.
+		exit;
 	}
 
 	/**

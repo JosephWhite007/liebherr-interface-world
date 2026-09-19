@@ -100,6 +100,7 @@ final class WorldView {
 				'proto_broken'  => __( 'Achtung: Protokollkette verändert!', 'liebherr-interface-world' ),
 				'proto_json'    => __( 'Als JSON herunterladen', 'liebherr-interface-world' ),
 				'proto_print'   => __( 'Drucken / als PDF speichern', 'liebherr-interface-world' ),
+				'proto_pdf'     => __( 'PDF herunterladen (Server)', 'liebherr-interface-world' ),
 				'mod_extra'     => __( 'Zusatzkosten (Module)', 'liebherr-interface-world' ),
 				'mod_total'     => __( 'Gesamtkosten', 'liebherr-interface-world' ),
 				'mod_used'      => __( 'genutzt', 'liebherr-interface-world' ),

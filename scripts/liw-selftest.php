@@ -898,6 +898,10 @@ try {
 		$__proto = \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::build_protocol( $__pc, \Liebherr\InterfaceWorld\IntelligenceWorld\WorldContent::get() );
 		liw_st_check( 'IW-Proto: build_protocol liefert Kopf, Ereignisse (>=4), Integrität + Prototyp-Flag', $__proto['session_code'] === $__pc && $__proto['event_count'] >= 4 && true === $__proto['integrity_ok'] && true === $__proto['prototype'] && isset( $__proto['billing']['base_cost_display'] ) && isset( $__proto['events'][0]['label'] ) );
 		liw_st_check( 'IW-Proto: Modul-Posten + Gesamtkosten (Basis+Module) im Protokoll', count( $__proto['line_items'] ) >= 2 && $__proto['billing']['modules_cost_minor'] >= 255 && $__proto['billing']['total_cost_minor'] === $__proto['billing']['base_cost_minor'] + $__proto['billing']['modules_cost_minor'] );
+		// A10 – serverseitiges PDF.
+		liw_st_check( 'IW-PDF: REST-Route /session/protocol-pdf registriert', array_key_exists( '/' . \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::NAMESPACE . '/session/protocol-pdf', rest_get_server()->get_routes() ) );
+		$__pdf = \Liebherr\InterfaceWorld\IntelligenceWorld\PdfDocument::from_lines( 'Protokoll', \Liebherr\InterfaceWorld\IntelligenceWorld\ProtocolBuilder::to_lines( $__proto ) );
+		liw_st_check( 'IW-PDF: gültiges PDF aus Sitzungsprotokoll erzeugt', 0 === strpos( $__pdf, '%PDF-1.' ) && false !== strpos( $__pdf, '%%EOF' ) && strlen( $__pdf ) > 500 );
 	}
 	if ( isset( $__ok['session_code'] ) ) { global $wpdb; $wpdb->query( $wpdb->prepare( 'DELETE FROM ' . \Liebherr\InterfaceWorld\IntelligenceWorld\Schema::event_table() . ' WHERE session_code = %s', (string) $__ok['session_code'] ) ); $wpdb->query( $wpdb->prepare( 'DELETE FROM ' . \Liebherr\InterfaceWorld\IntelligenceWorld\Schema::session_table() . ' WHERE session_code = %s', (string) $__ok['session_code'] ) ); }
 	// Favicon (goldener Planet, alpha.49).
