@@ -949,6 +949,9 @@ try {
 	$__emg_c = \Liebherr\InterfaceWorld\Emergency\EmergencyChallenge::create( $__emg_secret, time() );
 	liw_st_check( 'Emergency: Challenge einstellig (1..9) + richtige Antwort verifiziert', $__emg_c['a'] >= 1 && $__emg_c['a'] <= 9 && $__emg_c['b'] >= 1 && $__emg_c['b'] <= 9 && true === \Liebherr\InterfaceWorld\Emergency\EmergencyChallenge::verify( $__emg_c['token'], $__emg_c['a'] + $__emg_c['b'], $__emg_secret, time() )['ok'] );
 	liw_st_check( 'Emergency: REST-Namespace registriert (liw-emg/v1)', in_array( 'liw-emg/v1', rest_get_server()->get_namespaces(), true ) );
+	// Einheitlicher ChallengeService (ADR-LIW-CVF-001 §5, alpha.81) – SSOT der Rechenaufgabe.
+	$__cs = \Liebherr\InterfaceWorld\Cvf\ChallengeService::create( 'st-cvf', time(), 'double' );
+	liw_st_check( 'CVF-ChallengeService: double zweistellig + Roundtrip; Koffer nutzt ihn (single)', $__cs['a'] >= 10 && $__cs['b'] <= 99 && true === \Liebherr\InterfaceWorld\Cvf\ChallengeService::verify( $__cs['token'], $__cs['a'] + $__cs['b'], 'st-cvf', time() )['ok'] && $__emg_c['a'] <= 9 );
 	// JS-freier Fallback (alpha.79).
 	liw_st_check( 'Emergency: Koffer-Button ist Link auf JS-freien Fallback (?liw_help=1)', str_contains( $__emg_sc, '<a ' ) && str_contains( $__emg_sc, 'liw_help=1' ) );
 	$__emg_ch = \Liebherr\InterfaceWorld\Emergency\EmergencyChallenge::create( 'st-secret', time() );

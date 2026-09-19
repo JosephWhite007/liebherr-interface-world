@@ -471,6 +471,15 @@ $LIB    = '\Liebherr\InterfaceWorld\Admin\Pages\LocalIntelligenceBoardPage';
 $li_scn = $LIB::parse_scenarios( "A | Variante A | Basis\n- Absatz | 100\n- Mix | 70/30\nB | Variante B | Wachstum\n- Absatz | 150" );
 liw_assert( 'LI-Szenario-Parser: 2 Szenarien, A=2 Zeilen (Wert 100), B summary „Wachstum"', 2 === count( $li_scn ) && 'A' === $li_scn[0]['key'] && 2 === count( $li_scn[0]['rows'] ) && '100' === $li_scn[0]['rows'][0]['value'] && 'B' === $li_scn[1]['key'] && 'Wachstum' === $li_scn[1]['summary'], $checks, $failures );
 
+// CVF – einheitlicher ChallengeService (ADR-LIW-CVF-001 §5, alpha.81).
+require_once $root . '/src/Cvf/ChallengeService.php';
+$CS = '\Liebherr\InterfaceWorld\Cvf\ChallengeService';
+$__cs_now = 2000000;
+$__cs_s   = $CS::create( 'cvf-secret', $__cs_now, 'double' );
+liw_assert( 'ChallengeService: double → zwei ZWEISTELLIGE Zahlen (10..99) + Stufe double', $__cs_s['a'] >= 10 && $__cs_s['a'] <= 99 && $__cs_s['b'] >= 10 && $__cs_s['b'] <= 99 && 'double' === $__cs_s['difficulty'], $checks, $failures );
+liw_assert( 'ChallengeService: single → einstellig; unbekannte Stufe fällt auf single', 'single' === $CS::create( 'x', $__cs_now, 'single' )['difficulty'] && 'single' === $CS::create( 'x', $__cs_now, 'quatsch' )['difficulty'] && $CS::create( 'x', $__cs_now, 'single' )['a'] <= 9, $checks, $failures );
+liw_assert( 'ChallengeService: Roundtrip richtig=ok, falsch=wrong, abgelaufen=expired, Fremdsecret=invalid', true === $CS::verify( $__cs_s['token'], $__cs_s['a'] + $__cs_s['b'], 'cvf-secret', $__cs_now )['ok'] && 'wrong' === $CS::verify( $__cs_s['token'], 0, 'cvf-secret', $__cs_now )['reason'] && 'expired' === $CS::verify( $__cs_s['token'], $__cs_s['a'] + $__cs_s['b'], 'cvf-secret', $__cs_s['expires'] + 1 )['reason'] && 'invalid' === $CS::verify( $__cs_s['token'], $__cs_s['a'] + $__cs_s['b'], 'anders', $__cs_now )['reason'], $checks, $failures );
+
 // Emergency – Hilfe-Koffer (einstellige Rechenaufgabe) + kontextbezogene Emergency-Area (alpha.78).
 require_once $root . '/src/Emergency/EmergencyChallenge.php';
 require_once $root . '/src/Emergency/HelpTopicCatalog.php';

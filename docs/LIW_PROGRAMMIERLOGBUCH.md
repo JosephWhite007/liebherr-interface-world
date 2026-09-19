@@ -12,6 +12,18 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.81 – CVF Phase 2 (Start): einheitlicher ChallengeService
+
+**Neu:** `src/Cvf/ChallengeService.php` (ADR-LIW-CVF-001 §5) – EINE reine, testbare Quelle für die
+„Human Verification"-Rechenaufgabe der Plattform: HMAC-signiert, TTL, Nonce-Einmalgebrauch, Summe bleibt
+serverseitig; Schwierigkeit konfigurierbar (`single` = 1–9, `double` = 10–99); `create()/question()/
+make_token()/verify()/parse()/bounds()/normalize()`. **Geändert:** `src/Emergency/EmergencyChallenge.php`
+ist jetzt ein dünner Adapter darauf (Schwierigkeit `single`), Signier-/TTL-/Nonce-Logik nicht mehr
+dupliziert (öffentliche API unverändert → Koffer-Tests grün). `tests/run-tests.php` (+3 Asserts, require
+vor EmergencyChallenge), `scripts/liw-selftest.php` (+1). Nächste CVF-Schritte: die zwei Alt-Rechen-Gates
+(LI-IntroOverlay, Download-Consent) auf den Service umstellen (danach Altpfad entfernen) + Domänenmodell
+`liw_cvf_*`. Tests WP-frei 432 / Docker 363. Bump alpha.80 -> alpha.81.
+
 ## 0.1.0-alpha.80 – Kopfzeile: Doppelglobus entfernt + voll-breite World-Leiste
 
 **Geändert:** `src/Frontend/FaviconService.php` – Filter `wp_admin_bar_show_site_icons` → `__return_false`:
