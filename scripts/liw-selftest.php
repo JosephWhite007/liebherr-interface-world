@@ -703,6 +703,11 @@ try {
 	delete_option( \Liebherr\InterfaceWorld\IntelligenceWorld\CatalogContent::OPTION );
 	liw_st_check( 'IW-Board: Zurücksetzen (Defaults) nach Test', 9 === (int) \Liebherr\InterfaceWorld\IntelligenceWorld\WorldContent::get()['pricing']['base_price_second_minor'] );
 
+	// A11 – Medien-Picker auf freigegebene Bibliothek (CI-005).
+	$AMF = '\Liebherr\InterfaceWorld\Admin\ApprovedMediaFilter';
+	$__amf = $AMF::maybe_restrict( [ 'liw_approved_only' => 1 ] );
+	liw_st_check( 'A11-MediaFilter: maybe_restrict mit Flag → approved-meta_query, ohne Flag unverändert', ! empty( $__amf['meta_query'] ) && empty( $AMF::maybe_restrict( [] )['meta_query'] ) && '_liw_media_approved' === $AMF::restrict( [] )['meta_query'][0]['key'] );
+
 	// ── [8e] Liebherr Adventures – vierte Insel (§3/§4/§9, alpha.51) ──
 	echo "\n[8e] Liebherr Adventures\n";
 	$ADV = '\Liebherr\InterfaceWorld\Adventures\AdventureService';

@@ -12,6 +12,15 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.72 – Content Board: Medien-Picker auf freigegebene Bibliothek [Backlog A11]
+
+**Neu:** `src/Admin/ApprovedMediaFilter.php` (`restrict()` rein/testbar; `maybe_restrict()` honoriert Flag
+`liw_approved_only`; `enqueue()` setzt das Flag via `wp.media.query`-Override nur auf LIW-Board-Seiten
+[`is_liw_admin_page`], Hook `ajax_query_attachments_args`). **Geändert:** `src/Bootstrap.php`
+(`ApprovedMediaFilter::register()` im Admin-Zweig). Tests/Selftest. Bump alpha.71 → alpha.72.
+Kontext-Raten am `post_id` bewusst vermieden (To-Do-Hinweis); stattdessen seitengebundenes Flag.
+**Backlog Gruppe A (A1–A11) vollständig abgearbeitet.**
+
 ## 0.1.0-alpha.71 – Intelligence World: serverseitige Protokoll-PDF [Backlog A10]
 
 **Neu:** `src/IntelligenceWorld/PdfDocument.php` (reiner PDF-Generator `from_lines`, A4/Helvetica/xref,

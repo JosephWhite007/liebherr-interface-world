@@ -399,6 +399,14 @@ liw_assert( 'ProtocolBuilder::to_lines: enthält Sitzung + Gesamtkosten + Ereign
 $pdf = \Liebherr\InterfaceWorld\IntelligenceWorld\PdfDocument::from_lines( 'Protokoll', $pb_lines );
 liw_assert( 'PdfDocument: gültiges PDF (%PDF … %%EOF) + transliteriert (EUR statt €)', 0 === strpos( $pdf, '%PDF-1.' ) && false !== strpos( $pdf, '%%EOF' ) && false !== strpos( $pdf, 'EUR' ) && false === strpos( $pdf, '€' ) && strlen( $pdf ) > 400, $checks, $failures );
 
+// Approved-Media-Filter (A11, alpha.72).
+require_once $root . '/src/CoreBridge/MediaBridge.php';
+require_once $root . '/src/Admin/ApprovedMediaFilter.php';
+$AMF = '\Liebherr\InterfaceWorld\Admin\ApprovedMediaFilter';
+$amf1 = $AMF::restrict( [] );
+liw_assert( 'ApprovedMediaFilter: restrict ergänzt approved-meta_query', isset( $amf1['meta_query'][0]['key'] ) && '_liw_media_approved' === $amf1['meta_query'][0]['key'] && '1' === $amf1['meta_query'][0]['value'], $checks, $failures );
+liw_assert( 'ApprovedMediaFilter: ohne Flag unverändert, mit Flag beschränkt', empty( $AMF::maybe_restrict( [] )['meta_query'] ) && ! empty( $AMF::maybe_restrict( [ 'liw_approved_only' => 1 ] )['meta_query'] ) && ! isset( $AMF::maybe_restrict( [ 'liw_approved_only' => 1 ] )['liw_approved_only'] ), $checks, $failures );
+
 // 2p. Liebherr Adventures – Fundament (vierte Insel, §3/§4/§9, alpha.51) – reine Logik ohne WP.
 echo "-- Liebherr Adventures (alpha.51) --\n";
 require_once $root . '/src/Adventures/Taxonomy.php';

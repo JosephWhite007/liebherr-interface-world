@@ -16,7 +16,7 @@ Konsolidierte Liste aller im Projektverlauf zurückgestellten Punkte, in Umsetzu
 Punkt in den themenbezogenen Abschnitten weiter unten. Zwei Gruppen: **A** = intern baubar (wir arbeiten sie
 der Reihe nach ab und befüllen sie mit Funktionalität), **B** = auf externe Freigabe/Zulieferung angewiesen.
 
-### Gruppe A – intern baubar (Reihenfolge)
+### Gruppe A – intern baubar (Reihenfolge) — VOLLSTÄNDIG ABGEARBEITET (alpha.62–alpha.72)
 
 1. ~~**Intelligence World – Pflege-Board (Backoffice).**~~ **ERLEDIGT (alpha.62):** Board
    `Admin\Pages\IntelligenceWorldBoardPage` (Menü „🪐 Intelligence World") pflegt Tarife/Budgets + Eintrittstexte
@@ -43,7 +43,8 @@ der Reihe nach ab und befüllen sie mit Funktionalität), **B** = auf externe Fr
    + Nebeneinander-Vergleichstabelle (Szenario/Horizont/Start/Ende/Δ).
 10. ~~**Nutzungs-/Kostenprotokoll – echte serverseitige PDF-Erzeugung.**~~ **ERLEDIGT (alpha.71):** reiner
     PDF-Generator `PdfDocument` + REST `/session/protocol-pdf` (Download, ohne Fremd-Lib).
-11. **Content Board – Medien-Picker auf freigegebene Bibliothek beschränken** (CI-005; braucht Docker-Prüfung).
+11. ~~**Content Board – Medien-Picker auf freigegebene Bibliothek beschränken** (CI-005).~~ **ERLEDIGT (alpha.72):**
+    `ApprovedMediaFilter` (Flag `liw_approved_only`, seitengebunden auf LIW-Board-Seiten; `ajax_query_attachments_args`).
 
 ### Gruppe B – auf externe Freigabe/Zulieferung angewiesen (nicht allein baubar)
 

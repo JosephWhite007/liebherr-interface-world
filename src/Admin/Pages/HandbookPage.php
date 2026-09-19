@@ -125,6 +125,8 @@ final class HandbookPage {
 
 			<p><?php esc_html_e( 'Nutzungs-/Kostenprotokoll als PDF (seit alpha.71): Zusätzlich zum Browser-Druck gibt es am Sitzungsende „PDF herunterladen (Server)" – die Plattform erzeugt das Protokoll direkt als PDF-Datei (ohne Fremdsoftware). Das PDF enthält Sitzungskopf, Basis-/Modul-/Gesamtkosten, Budget, Integritätsstatus und die Ereignisliste.', 'liebherr-interface-world' ); ?></p>
 
+			<p><?php esc_html_e( 'Medien-Auswahl auf freigegebene Bilder beschränkt (seit alpha.72): Auf den Liebherr-Backoffice-Seiten zeigt der Medien-Dialog nur noch freigegebene Medien (CI-005). Die übrige WordPress-Mediathek bleibt davon unberührt. So ist sichergestellt, dass in der Redaktion nur freigegebene Motive verwendet werden.', 'liebherr-interface-world' ); ?></p>
+
 			<h2><?php esc_html_e( 'Nachvollziehbarkeit: Programmierlogbuch und To-Dos', 'liebherr-interface-world' ); ?></h2>
 			<p><?php esc_html_e( 'Der Reiter „🧾 Programmierlogbuch" listet jede Quellcodeänderung auf Datei-/Klassenebene (was wurde wann geändert). Der Reiter „📋 To-Dos" listet offene bzw. bewusst zurückgestellte Punkte mit Quellenangabe (z. B. Content Board §19, echte Karte für die World Connections Map, Docker-Praxistest). Beide werden bei jeder Aufgabe gepflegt, in der sich etwas ändert.', 'liebherr-interface-world' ); ?></p>
 

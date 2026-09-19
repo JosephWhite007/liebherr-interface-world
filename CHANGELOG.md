@@ -1,5 +1,20 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.72] – 2026-09-19 – Content Board: Medien-Picker auf freigegebene Bibliothek [Job A11]
+
+### Hinzugefügt
+- **Approved-Media-Filter** `Admin\ApprovedMediaFilter`: beschränkt den WordPress-Medien-Modal auf freigegebene
+  Anhänge (`_liw_media_approved = 1`), aber nur wenn die Abfrage das Flag `liw_approved_only` trägt. Dieses Flag
+  setzt ein seitengebundenes Skript ausschließlich auf den Liebherr-Backoffice-Board-Seiten (Slug `liw-…`).
+  Damit greift CI-005 zuverlässig in der LIW-Redaktion, ohne die globale Mediathek zu verändern und ohne das
+  unzuverlässige Raten am `post_id`-Kontext (bewusst vermieden).
+
+### Erledigt (Backlog Gruppe A, Punkt 11 – letzter Punkt)
+- Damit ist die gesamte intern baubare Abarbeitungsliste (A1–A11) abgeschlossen.
+
+### Verifikation
+- `tests/run-tests.php` **401/401** (`restrict`/`maybe_restrict`), `scripts/liw-selftest.php` **343/343**.
+
 ## [0.1.0-alpha.71] – 2026-09-19 – Intelligence World: serverseitige Protokoll-PDF [Job A10]
 
 ### Hinzugefügt
