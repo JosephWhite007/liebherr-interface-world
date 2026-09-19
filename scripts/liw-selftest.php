@@ -957,6 +957,20 @@ try {
 	$__cvf_a = \Liebherr\InterfaceWorld\Cvf\Runtime::next( \Liebherr\InterfaceWorld\Cvf\VisitorState::AT_ENTRY, \Liebherr\InterfaceWorld\Cvf\Runtime::EV_CODE_OK, $__cvf_cfg );
 	$__cvf_e = \Liebherr\InterfaceWorld\Cvf\Runtime::next( \Liebherr\InterfaceWorld\Cvf\VisitorState::AT_FIRST_ENTRY, \Liebherr\InterfaceWorld\Cvf\Runtime::EV_FIRST_ENTRY_DONE, $__cvf_cfg );
 	liw_st_check( 'CVF-Runtime: Default-Config gültig; code_ok→Challenge(double); first_entry_done→in_module', \Liebherr\InterfaceWorld\Cvf\WorkflowVersion::is_valid( $__cvf_cfg ) && 'double' === $__cvf_a['params']['difficulty'] && \Liebherr\InterfaceWorld\Cvf\VisitorState::is_admitted( $__cvf_e['state'] ) );
+	// CVF Persistenz (alpha.83): veroeffentlichte Version + Sitzung + Execution-Log.
+	$__cvf_active = \Liebherr\InterfaceWorld\Cvf\WorkflowRepository::ensure_active();
+	liw_st_check( 'CVF-Persistenz: aktive Version vorhanden + Pruefsumme passt zur Config', $__cvf_active['id'] > 0 && $__cvf_active['checksum'] === \Liebherr\InterfaceWorld\Cvf\WorkflowVersion::checksum( $__cvf_active['config'] ) );
+	$__cvf_vid  = 'st-visitor-' . wp_generate_password( 8, false );
+	$__cvf_sess = \Liebherr\InterfaceWorld\Cvf\SessionRepository::start( $__cvf_vid );
+	\Liebherr\InterfaceWorld\Cvf\SessionRepository::advance( $__cvf_sess['id'], \Liebherr\InterfaceWorld\Cvf\Runtime::EV_CODE_OK );
+	\Liebherr\InterfaceWorld\Cvf\SessionRepository::advance( $__cvf_sess['id'], \Liebherr\InterfaceWorld\Cvf\Runtime::EV_CHALLENGE_OK );
+	\Liebherr\InterfaceWorld\Cvf\SessionRepository::advance( $__cvf_sess['id'], \Liebherr\InterfaceWorld\Cvf\Runtime::EV_MODULE_SELECTED );
+	$__cvf_s4 = \Liebherr\InterfaceWorld\Cvf\SessionRepository::advance( $__cvf_sess['id'], \Liebherr\InterfaceWorld\Cvf\Runtime::EV_FIRST_ENTRY_DONE );
+	liw_st_check( 'CVF-Persistenz: Sitzung new->at_entry->...->in_module, Uebergaenge append-only protokolliert', 'at_entry' === $__cvf_sess['state'] && 'in_module' === $__cvf_s4['state'] && \Liebherr\InterfaceWorld\Cvf\SessionRepository::log_count( $__cvf_sess['id'] ) >= 5 );
+	if ( isset( $wpdb ) ) {
+		$wpdb->delete( \Liebherr\InterfaceWorld\Cvf\Schema::log_table(), [ 'session_id' => $__cvf_sess['id'] ] );
+		$wpdb->delete( \Liebherr\InterfaceWorld\Cvf\Schema::session_table(), [ 'id' => $__cvf_sess['id'] ] );
+	}
 	// JS-freier Fallback (alpha.79).
 	liw_st_check( 'Emergency: Koffer-Button ist Link auf JS-freien Fallback (?liw_help=1)', str_contains( $__emg_sc, '<a ' ) && str_contains( $__emg_sc, 'liw_help=1' ) );
 	$__emg_ch = \Liebherr\InterfaceWorld\Emergency\EmergencyChallenge::create( 'st-secret', time() );

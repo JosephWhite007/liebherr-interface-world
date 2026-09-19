@@ -12,6 +12,19 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.83 – CVF Phase 2: Persistenz (Version + Sitzung + Execution-Log)
+
+**Neu (`src/Cvf/`):** `Schema` – drei Tabellen `liw_cvf_workflow_version` (veröffentlichte Version
+UNVERÄNDERLICH + Prüfsumme), `liw_cvf_visitor_session` (anonyme Sitzung, an Version gebunden),
+`liw_cvf_execution_log` (append-only Übergangsprotokoll); COMMENT ohne Klammern (Falle alpha.16).
+`WorkflowRepository` (`publish()` validiert + speichert unveränderlich mit SHA-256-Prüfsumme,
+`get_active()/get()/ensure_active()/next_version()`), `SessionRepository` (`start()` bindet an aktive
+Version + Zustand new→at_entry, `advance()` schreibt Zustand über die reine Runtime fort UND protokolliert
+JEDEN Übergang append-only, `get()/get_by_visitor()/log_count()`). **Geändert:** `liebherr-interface-world.php`
+`create_tables()` → `Cvf\Schema::create_tables()` (läuft via maybe_upgrade_database). `scripts/liw-selftest.php`
+(+2: aktive Version/Prüfsumme, Sitzungsdurchlauf new→in_module mit protokollierten Übergängen, inkl. Cleanup).
+Tabellen auf Docker verifiziert (ary_liw_cvf_*). Tests WP-frei 454 / Docker 366. Bump alpha.82 -> alpha.83.
+
 ## 0.1.0-alpha.82 – CVF Phase 2: Durchstich-Runtime (Config + Zustandsmaschine)
 
 **Neu (rein/testbar, `src/Cvf/`):** `StageType` (entry/challenge/module_select/first_entry),
