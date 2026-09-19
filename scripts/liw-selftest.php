@@ -537,9 +537,21 @@ try {
 	liw_st_check( 'CI angewendet: Logo freigegeben (approved=1)', 0 < \Liebherr\InterfaceWorld\Branding\BrandTokens::logo_id() && \Liebherr\InterfaceWorld\CoreBridge\MediaBridge::is_approved( \Liebherr\InterfaceWorld\Branding\BrandTokens::logo_id() ) );
 	liw_st_check( 'Webfonts: @font-face fuer freigegebene Liebherr-Fonts', str_contains( \Liebherr\InterfaceWorld\Frontend\FontFaceService::css(), "font-family:'LiebherrHead'" ) && str_contains( \Liebherr\InterfaceWorld\Frontend\FontFaceService::css(), "font-family:'LiebherrText'" ) );
 	liw_st_check( 'Shortcode [liw_world_map] registriert', shortcode_exists( \Liebherr\InterfaceWorld\Frontend\WorldMapView::SHORTCODE ) );
+	// Zustandsunabhängig: Option temporär überbrücken, damit der SVG-Fallback (ohne Bild) deterministisch prüfbar
+	// bleibt – auch wenn im Dev-System ein World-Connections-Bild (liw_world_connections_image_id) gesetzt ist.
+	$__wc_opt = get_option( 'liw_world_connections_image_id', 0 );
+	update_option( 'liw_world_connections_image_id', 0 );
 	$__wm = do_shortcode( '[liw_world_map]' );
-	liw_st_check( '[liw_world_map] rendert SVG + Zentrale + Text-Alternative', str_contains( $__wm, 'liw-worldmap__svg' ) && str_contains( $__wm, 'liw-worldmap__hub' ) && str_contains( $__wm, 'liw-worldmap__list' ) );
+	liw_st_check( '[liw_world_map] rendert SVG + Zentrale + Text-Alternative (ohne Bild)', str_contains( $__wm, 'liw-worldmap__svg' ) && str_contains( $__wm, 'liw-worldmap__hub' ) && str_contains( $__wm, 'liw-worldmap__list' ) );
 	liw_st_check( '[liw_world_map] enthaelt Regionsknoten aus DEMO-Verbindungen', str_contains( $__wm, 'data-region="europe"' ) || str_contains( $__wm, 'data-region="asia_pacific"' ) );
+	// Bild-Zweig: freigegebenes Media-Bild ersetzt die SVG-Karte.
+	if ( (int) $__wc_opt > 0 ) {
+		update_option( 'liw_world_connections_image_id', (int) $__wc_opt );
+		$__wm_img = do_shortcode( '[liw_world_map]' );
+		liw_st_check( '[liw_world_map] mit freigegebenem Bild: <img> statt SVG', str_contains( $__wm_img, '<img' ) && str_contains( $__wm_img, 'liw-worldmap' ) );
+	} else {
+		update_option( 'liw_world_connections_image_id', (int) $__wc_opt );
+	}
 	// LP-14 Footer + Cache-Buster + RUCSS-Safelist (alpha.38).
 	liw_st_check( 'Shortcode [liw_footer] registriert', shortcode_exists( \Liebherr\InterfaceWorld\Frontend\FooterView::SHORTCODE ) );
 	$__ft = do_shortcode( '[liw_footer]' );
@@ -670,6 +682,14 @@ try {
 	$__nav = do_shortcode( '[liw_iw_navigation]' );
 	liw_st_check( 'IW-Nav: eigenständiger Shortcode rendert beide Abschnitte', str_contains( $__nav, 'liw-iw--nav-standalone' ) && str_contains( $__nav, 'id="liw-iw-segments"' ) && str_contains( $__nav, 'id="liw-iw-hotels"' ) );
 
+	// ── [8d3] Simulation Builder (geführte Szenarien/Forecasts, §6.4, alpha.56) ──
+	liw_st_check( 'IW-Sim: Shortcode [liw_iw_simulation] registriert', shortcode_exists( 'liw_iw_simulation' ) );
+	liw_st_check( 'IW-Sim: Simulationssektion (#liw-iw-simulation) im Weltraum eingebettet', str_contains( $__world, 'id="liw-iw-simulation"' ) && str_contains( $__world, 'data-liw-sim' ) );
+	liw_st_check( 'IW-Sim: Formular (Segment/Szenario/Horizont) + Default-Forecast (SVG + Tabelle)', str_contains( $__world, 'data-liw-sim-segment' ) && 3 === substr_count( $__world, 'data-liw-sim-scenario' ) && str_contains( $__world, 'data-liw-sim-horizon' ) && str_contains( $__world, 'liw-iw__sim-chart' ) && str_contains( $__world, 'liw-iw__sim-table' ) );
+	liw_st_check( 'IW-Sim: Hub-Kachel „Simulation Builder" verlinkt jetzt (Anker)', str_contains( $__world, 'href="#liw-iw-simulation"' ) );
+	$__sim3 = do_shortcode( '[liw_iw_simulation]' );
+	liw_st_check( 'IW-Sim: eigenständiger Shortcode rendert Formular + Ausgabe', str_contains( $__sim3, 'liw-iw--sim-standalone' ) && str_contains( $__sim3, 'data-liw-sim-out' ) );
+
 	// ── [8e] Liebherr Adventures – vierte Insel (§3/§4/§9, alpha.51) ──
 	echo "\n[8e] Liebherr Adventures\n";
 	$ADV = '\Liebherr\InterfaceWorld\Adventures\AdventureService';
@@ -701,9 +721,19 @@ try {
 
 	// Simulation-World-Startbildschirm (alpha.53).
 	liw_st_check( 'SIM: Shortcode [liw_simulator] registriert', shortcode_exists( 'liw_simulator' ) );
+	// Zustandsunabhängig: Startbild-Option temporär überbrücken (im Dev-System kann ein Cockpit-Bild gesetzt sein).
+	$__sim_opt = get_option( 'liw_simulator_image_id', 0 );
+	update_option( 'liw_simulator_image_id', 0 );
 	$__sim2 = do_shortcode( '[liw_simulator]' );
 	liw_st_check( 'SIM: Startbildschirm + „Start your journey"-CTA', str_contains( $__sim2, 'liw-sim' ) && str_contains( $__sim2, 'Start your journey' ) && str_contains( $__sim2, 'liw-sim__cta' ) );
 	liw_st_check( 'SIM: ohne Bild dunkler Platzhalter (liw-sim--plain)', str_contains( $__sim2, 'liw-sim--plain' ) );
+	if ( (int) $__sim_opt > 0 ) {
+		update_option( 'liw_simulator_image_id', (int) $__sim_opt );
+		$__sim_img = do_shortcode( '[liw_simulator]' );
+		liw_st_check( 'SIM: mit freigegebenem Cockpit-Bild wird das Bild eingebettet', str_contains( $__sim_img, '<img' ) && ! str_contains( $__sim_img, 'liw-sim--plain' ) );
+	} else {
+		update_option( 'liw_simulator_image_id', (int) $__sim_opt );
+	}
 
 	// what3words-Provider (alpha.53): austauschbar; ohne Key Mock, Erfassung bleibt robust.
 	liw_st_check( 'W3W: Provider-Klasse vorhanden', class_exists( \Liebherr\InterfaceWorld\Adventures\Location\What3WordsProvider::class ) );

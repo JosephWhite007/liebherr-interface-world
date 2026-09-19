@@ -1,5 +1,28 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.56] – 2026-09-19 – Intelligence World: Simulation Builder (geführte Szenarien/Forecasts)
+
+### Hinzugefügt
+- **Reine Forecast-Engine** `IntelligenceWorld\SimulationModel`: deterministische, ganzzahlige Beispiel-
+  Prognose aus Basiswert, Wachstum (‰/Periode), Periodenzahl und Szenario (Konservativ A / Basis B /
+  Ambitioniert C, skaliert das Wachstum ×0,7/1,0/1,3). `sample_baseline()` leitet je Produktsegment eine
+  reproduzierbare Ausgangslage ab. Vollständig ohne WordPress unit-testbar.
+- **Simulation Builder** `IntelligenceWorld\SimulationView` (Shortcode `[liw_iw_simulation]` +
+  `render_section()`): geführtes Formular (Segment · Szenario · Zeithorizont 6/12/24) mit Auswertungszeile,
+  Inline-SVG-Balkendiagramm und Wertetabelle. **Default-Prognose serverseitig gerendert** (funktioniert ohne
+  JavaScript); mit Skript rechnet `assets/js/liw-iw-simulation.js` bei jeder Eingabe live nach – dieselbe
+  Formel wie die PHP-Engine (kein Server-Roundtrip).
+- **Funktions-Hub vollständig live:** Die letzte Platzhalter-Kachel „Simulation Builder" verlinkt jetzt (Anker
+  `#liw-iw-simulation`); die Sektion ist inline im Weltraum eingebettet.
+
+### Verifikation
+- `tests/run-tests.php` **342/342** (Forecast-Reihe/Delta, Szenario-Skalierung, Klemmung, deterministische
+  Baseline), `scripts/liw-selftest.php` **299/299** (Formular + Default-Forecast im Weltraum, Hub-Anker,
+  eigenständiger Shortcode). Browser end-to-end: Live-Neuberechnung bei Segment-/Szenario-/Horizont-Wechsel.
+
+### Hinweis
+- Prototyp (§21): Beispieldaten/-modell, keine echte Prognose.
+
 ## [0.1.0-alpha.55] – 2026-09-19 – Intelligence World: Preismodell (Sekundentakt, Monatsbudget, 1 TB)
 
 ### Geändert

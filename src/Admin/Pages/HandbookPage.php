@@ -93,6 +93,8 @@ final class HandbookPage {
 
 			<p><?php esc_html_e( 'Preismodell der Intelligence World (seit alpha.55): Die Eröffnungsseite weist die kostenpflichtige Nutzung jetzt im Sekundentakt aus – Preis 0,09 EUR / Sek., Sitzungsbudget 5.000,00 EUR / Monat und lokaler Speicher 1 TB (mindestens). Diese Werte steuern auch die Live-Kostenanzeige (Ticker) und die Warnschwellen bei 50/80/100 %. Es handelt sich weiterhin um einen Prototyp mit Beispieltarifen (keine echte Abrechnung); alle Werte sind administrierbar (Option liw_iw_world), ein Backoffice-Formular dafür folgt.', 'liebherr-interface-world' ); ?></p>
 
+			<p><?php esc_html_e( 'Simulation Builder (seit alpha.56): Die dritte Kachel im Funktionsbereich der Intelligence World ist jetzt begehbar. Über ein geführtes Formular wählen Sie ein Produktsegment, ein Szenario (Konservativ A / Basis B / Ambitioniert C) und den Zeithorizont (6/12/24 Perioden); die Beispiel-Prognose (Kurvenverlauf als Balken, Auswertung und Wertetabelle) aktualisiert sich sofort. Die Grundlage ist bewusst ein deterministisches Beispielmodell – keine echte Prognose. Auch als Shortcode [liw_iw_simulation] auf einer eigenen Seite einsetzbar.', 'liebherr-interface-world' ); ?></p>
+
 			<h2><?php esc_html_e( 'Nachvollziehbarkeit: Programmierlogbuch und To-Dos', 'liebherr-interface-world' ); ?></h2>
 			<p><?php esc_html_e( 'Der Reiter „🧾 Programmierlogbuch" listet jede Quellcodeänderung auf Datei-/Klassenebene (was wurde wann geändert). Der Reiter „📋 To-Dos" listet offene bzw. bewusst zurückgestellte Punkte mit Quellenangabe (z. B. Content Board §19, echte Karte für die World Connections Map, Docker-Praxistest). Beide werden bei jeder Aufgabe gepflegt, in der sich etwas ändert.', 'liebherr-interface-world' ); ?></p>
 

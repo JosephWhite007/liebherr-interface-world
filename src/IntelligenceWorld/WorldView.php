@@ -156,7 +156,7 @@ final class WorldView {
 				</div>
 				<div class="liw-iw__world-body">
 					<h2 class="liw-iw__hub-title"><?php echo esc_html__( 'Funktionsbereiche', 'liebherr-interface-world' ); ?></h2>
-					<p class="liw-iw__demo-note"><?php echo esc_html__( 'Sie sind in der Intelligence World (Prototyp, Beispieldaten). Wählen Sie einen Bereich. Produktsegmente, Lösungswelt und Hotels sind unten begehbar; der Simulation Builder folgt in einer weiteren Etappe.', 'liebherr-interface-world' ); ?></p>
+					<p class="liw-iw__demo-note"><?php echo esc_html__( 'Sie sind in der Intelligence World (Prototyp, Beispieldaten). Wählen Sie einen Bereich. Produktsegmente, Lösungswelt, Hotels und der Simulation Builder sind unten begehbar.', 'liebherr-interface-world' ); ?></p>
 					<ul class="liw-iw__hub" role="list">
 						<?php foreach ( self::hub_tiles() as $tile ) : ?>
 							<?php if ( $tile['enabled'] && '' !== $tile['url'] ) : ?>
@@ -177,6 +177,7 @@ final class WorldView {
 						<?php endforeach; ?>
 					</ul>
 					<?php echo NavigationView::render_sections(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- in NavigationView escaped. ?>
+					<?php echo SimulationView::render_section(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- in SimulationView escaped. ?>
 					<div class="liw-iw__protocol" data-liw-iw-protocol hidden></div>
 				</div>
 			</section>
@@ -232,8 +233,8 @@ final class WorldView {
 			[
 				'label'   => __( 'Simulation Builder', 'liebherr-interface-world' ),
 				'desc'    => __( 'Geführte Szenarien, Forecasts und Auswertungen (Beispieldaten).', 'liebherr-interface-world' ),
-				'url'     => '',
-				'enabled' => false,
+				'url'     => '#liw-iw-simulation',
+				'enabled' => true,
 			],
 		];
 

@@ -12,6 +12,24 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.56 – Intelligence World: Simulation Builder
+
+**Neu:** `src/IntelligenceWorld/SimulationModel.php` (reine Engine: `forecast()`, `scenarios()`,
+`scenario_label()`, `sample_baseline()`, Konstante `HORIZONS`; ganzzahlig, deterministisch).
+`src/IntelligenceWorld/SimulationView.php` (Shortcode `[liw_iw_simulation]` + `render_section()`/
+`render_forecast()`/`bars_svg()`; Formular + serverseitiger Default-Forecast, eigener JS-Cache-Buster
+`bust()` für die Simulations-JS). `assets/js/liw-iw-simulation.js` (spiegelt `SimulationModel::forecast()`
+1:1, rechnet live, baut Ausgabe im DOM neu). `assets/css/liw-intelligence-world.css` – Simulations-Stile
+ergänzt (`.liw-iw__sim*`).
+
+**Geändert:** `src/IntelligenceWorld/WorldView.php` – Hub-Kachel „Simulation Builder" live (Anker
+`#liw-iw-simulation`, `enabled=true`); `SimulationView::render_section()` nach der Navigation eingebettet;
+Demo-Hinweistext aktualisiert. `src/Bootstrap.php` – `IntelligenceWorld\SimulationView::register()`.
+`tests/run-tests.php` + `scripts/liw-selftest.php` – Prüfungen ergänzt. Bump alpha.55 → alpha.56.
+
+**Design:** `<details>` für die Wertetabelle (barrierefrei); SVG-Balken rein dekorativ, Tabelle ist die
+zugängliche Alternative. Formel bewusst in PHP (SSOT, testbar) und JS gespiegelt – bei Änderungen BEIDE anpassen.
+
 ## 0.1.0-alpha.55 – Intelligence World: Preismodell (Sekundentakt/Monat/TB)
 
 **Geändert:** `src/IntelligenceWorld/WorldContent.php` – Pricing-Defaults auf `price_unit=second`,

@@ -53,8 +53,10 @@ Produktsegmenten + Lösungswelt + 6 Hotel-Knoten (je Drei-Wörter-Ort, englisch)
 - Preismodell (alpha.55, **geliefert**): Sekundentakt 0,09 EUR/Sek., Monatsbudget 5.000,00 EUR, lokaler
   Speicher 1 TB (min.) – Anzeige, Ticker und `billing_status` konsistent umgestellt. Offen: Backoffice-Formular
   zur Pflege der Tarife/Budgets (derzeit nur Option `liw_iw_world`).
-- Simulation & Protokoll: Simulation Builder (§6.4), Compute-Metering (Mock), Nutzungs-/Kostenprotokoll
-  PDF+JSON (§5.5/§8).
+- Simulation Builder (alpha.56, **geliefert**): geführte Szenarien/Forecasts mit Beispieldaten
+  (`SimulationModel` rein/testbar + `SimulationView` `[liw_iw_simulation]`, live per JS). Offen: echte
+  Datenquellen/Compute-Metering statt Beispielmodell, Speichern/Vergleich von Szenarien.
+- Protokoll & Compute: Compute-Metering (Mock), Nutzungs-/Kostenprotokoll PDF+JSON (§5.5/§8).
 - Pricing/Storage/Admin/Rollen/Audit (§14–§16, §19).
 - **Prototyp-Grenzen (§21):** kein echtes Payment/Produktivdaten; Produktivschaltung erst nach Freigabe.
 

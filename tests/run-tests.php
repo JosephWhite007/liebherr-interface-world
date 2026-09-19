@@ -347,6 +347,22 @@ liw_assert( 'CatalogContent: sanitize verwirft Knoten ohne Anzeigenamen', 1 === 
 require_once $root . '/src/IntelligenceWorld/NavigationView.php';
 liw_assert( 'NavigationView: Shortcode-Konstante + render_sections vorhanden', 'liw_iw_navigation' === \Liebherr\InterfaceWorld\IntelligenceWorld\NavigationView::SHORTCODE && method_exists( \Liebherr\InterfaceWorld\IntelligenceWorld\NavigationView::class, 'render_sections' ), $checks, $failures );
 
+// 2s. Intelligence World – Simulation Builder (geführte Szenarien/Forecasts, §6.4, alpha.56).
+echo "-- Intelligence World – Simulation Builder (alpha.56) --\n";
+require_once $root . '/src/IntelligenceWorld/SimulationModel.php';
+require_once $root . '/src/IntelligenceWorld/SimulationView.php';
+$SM = '\Liebherr\InterfaceWorld\IntelligenceWorld\SimulationModel';
+$fc = $SM::forecast( 1000, 100, 12, 'base' );
+liw_assert( 'SimulationModel: Basis 1000 @10%/12P → 12 Werte, Start 1100, Ende 3138', 12 === count( $fc['values'] ) && 1100 === $fc['values'][0] && 3138 === $fc['end'], $checks, $failures );
+liw_assert( 'SimulationModel: delta_permille = 2138 (Ende vs. Basis)', 2138 === $fc['delta_permille'], $checks, $failures );
+liw_assert( 'SimulationModel: Szenario skaliert Wachstum (A=70‰, B=100‰, C=130‰)', 70 === $SM::forecast( 1000, 100, 6, 'conservative' )['effective_permille'] && 100 === $SM::forecast( 1000, 100, 6, 'base' )['effective_permille'] && 130 === $SM::forecast( 1000, 100, 6, 'ambitious' )['effective_permille'], $checks, $failures );
+liw_assert( 'SimulationModel: Perioden auf 60 geklemmt, ungültiges Szenario → base', 60 === $SM::forecast( 1000, 100, 999, 'quatsch' )['periods'] && 'base' === $SM::forecast( 1000, 100, 999, 'quatsch' )['scenario'], $checks, $failures );
+liw_assert( 'SimulationModel: Basis < 0 geklemmt (alle Werte 0, delta 0)', 0 === $SM::forecast( -5, 100, 6, 'base' )['end'] && 0 === $SM::forecast( -5, 100, 6, 'base' )['delta_permille'], $checks, $failures );
+$bl1 = $SM::sample_baseline( 'earthmoving' );
+$bl2 = $SM::sample_baseline( 'earthmoving' );
+liw_assert( 'SimulationModel: sample_baseline deterministisch + in Grenzen (base 1000..9999, growth 10..99)', $bl1 === $bl2 && $bl1['base'] >= 1000 && $bl1['base'] <= 9999 && $bl1['growth_permille'] >= 10 && $bl1['growth_permille'] <= 99, $checks, $failures );
+liw_assert( 'SimulationView: Shortcode-Konstante + render_section/render_forecast vorhanden', 'liw_iw_simulation' === \Liebherr\InterfaceWorld\IntelligenceWorld\SimulationView::SHORTCODE && method_exists( \Liebherr\InterfaceWorld\IntelligenceWorld\SimulationView::class, 'render_section' ) && method_exists( \Liebherr\InterfaceWorld\IntelligenceWorld\SimulationView::class, 'render_forecast' ), $checks, $failures );
+
 // 2p. Liebherr Adventures – Fundament (vierte Insel, §3/§4/§9, alpha.51) – reine Logik ohne WP.
 echo "-- Liebherr Adventures (alpha.51) --\n";
 require_once $root . '/src/Adventures/Taxonomy.php';
