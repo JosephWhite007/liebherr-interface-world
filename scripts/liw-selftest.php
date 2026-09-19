@@ -749,6 +749,14 @@ try {
 	}
 	liw_st_check( 'ADV: Testdaten entfernt', null === get_post( $__a1['id'] ) );
 
+	// ── [8e3] Workboard-Optik-Eingabemaske (Frontend + Backend, alpha.60) ──
+	$__form_fe = \Liebherr\InterfaceWorld\Adventures\SubmissionForm::render( 'frontend' );
+	$__form_ad = \Liebherr\InterfaceWorld\Adventures\SubmissionForm::render( 'admin' );
+	liw_st_check( 'ADV-Maske: Tokenwert + Nutzungsumfang + Rechte-Zusicherung + Registrieren-Aktion', str_contains( $__form_fe, 'data-liw-adv-token' ) && str_contains( $__form_fe, 'data-liw-adv-usage' ) && str_contains( $__form_fe, 'data-liw-adv-rights' ) && str_contains( $__form_fe, 'data-liw-adv-submit="register"' ) && str_contains( $__form_fe, 'liw-wb__token' ) );
+	liw_st_check( 'ADV-Maske: Backend-Kontext (liw-wb--admin) + gleiche Felder', str_contains( $__form_ad, 'liw-wb--admin' ) && str_contains( $__form_ad, 'data-liw-adv-token' ) );
+	liw_st_check( 'ADV-Maske: Frontend-Insel nutzt die gemeinsame Maske', str_contains( do_shortcode( '[liw_adventures]' ), 'liw-wb__token' ) || ! \Liebherr\InterfaceWorld\Adventures\Policy::can_create() );
+	liw_st_check( 'ADV-Board: Backend-Seite registriert (MENU_SLUG + render)', 'liw-adventure-board' === \Liebherr\InterfaceWorld\Admin\Pages\AdventureBoardPage::MENU_SLUG && method_exists( \Liebherr\InterfaceWorld\Admin\Pages\AdventureBoardPage::class, 'render' ) );
+
 	// Cross-Navigation: gemeinsamer Plattform-Umschalter (alpha.52).
 	$__sw = \Liebherr\InterfaceWorld\Frontend\WorldSwitcher::render( 'adventures' );
 	liw_st_check( 'Cross-Nav: World-Switcher verlinkt die vier Inseln', str_contains( $__sw, 'liw-switcher' ) && str_contains( $__sw, 'Intelligence World' ) && str_contains( $__sw, 'Local Intelligence' ) && str_contains( $__sw, 'Interface Solutions' ) && str_contains( $__sw, 'Adventures' ) );

@@ -13,6 +13,7 @@ declare( strict_types = 1 );
 
 namespace Liebherr\InterfaceWorld\Admin;
 
+use Liebherr\InterfaceWorld\Admin\Pages\AdventureBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\AuditBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\BrandBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\ComponentsBoardPage;
@@ -129,6 +130,15 @@ final class AdminMenu {
 			RoleBridge::CAP_MANAGE_INTERFACES,
 			SimulationBoardPage::MENU_SLUG,
 			[ SimulationBoardPage::class, 'render' ]
+		);
+
+		add_submenu_page(
+			'liw-interface-board',
+			__( 'Adventures – Board & Registrierung', 'liebherr-interface-world' ),
+			__( '🗺 Adventures', 'liebherr-interface-world' ),
+			RoleBridge::CAP_MANAGE_CONTENT,
+			AdventureBoardPage::MENU_SLUG,
+			[ AdventureBoardPage::class, 'render' ]
 		);
 
 		add_submenu_page(

@@ -24,9 +24,15 @@ Insel `[liw_adventures]` (Hero/Filter/Create/Stream), Seite `/liebherr-adventure
 `liw_adv_ledger`), Workflow-Orchestrator (`RegistrationService`: register/validate/publish/access), Artikelbook-
 Naht (`CoreBridge\ArticlebookBridge`, Filter `liw_articlebook_register`), REST register/request-validation/
 access/accept/moderate. Core-Workboard bewusst NICHT wiederverwendet (nicht cross-plugin-fähig) → Workboard-Optik
-nachgebaut. **Offen (alpha.60):** gemeinsame Workboard-Optik-Eingabemaske (Frontend `[liw_adventures]` + Admin-
-Board) mit Tokenwert + Nutzungsumfang + Rechte-Zusicherung; Tokenakzeptanz-UI beim Zugriff; Moderations-Board;
-echte Artikelbook-Anbindung im Core über den Filter; echtes Tokenbudget-Konto (§21).
+nachgebaut.
+
+**Geliefert (alpha.60) – Eingabemaske in Workboard-Optik (Frontend + Backend):** gemeinsamer Renderer
+`Adventures\SubmissionForm` (Tokenwert + Nutzungsumfang + Rechte-Zusicherung; Aktionen Entwurf/Registrieren)
+im Frontend `[liw_adventures]` UND im Backoffice `Admin\Pages\AdventureBoardPage` (Menü „🗺 Adventures", Board
+über alle Beiträge + Moderation validieren/freigeben/sperren/archivieren via REST `moderate`). **Offen:**
+Tokenakzeptanz-UI beim Zugriff (access/accept serverseitig vorhanden, Frontend-Bestätigungsdialog fehlt); echte
+Artikelbook-Anbindung im Core an Filter `liw_articlebook_register`; Auto-Übersetzung der Adventure-Felder
+(TranslationBridge / Core save_post); echtes Tokenbudget-Konto (§21).
 
 **Offen / nächste Etappen:** World Map + Detailseite, Medien-Upload/Transcoding (§14; MVP: externe Bild-URL),
 Moderations-UI/Audit (§17/§12.3), Get-Help-Assistent (Phase 3), Suche/Filter Maschine/Bauteil (§18),

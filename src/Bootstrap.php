@@ -84,6 +84,7 @@ final class Bootstrap {
 			AdminMenu::register();
 			AdminAssets::register();
 			Admin\Pages\ContentBoardPage::register(); // AJAX-Reorder (§19).
+			Admin\Pages\AdventureBoardPage::register(); // Adventures-Board & Registrierung (Basislogik §7/§8).
 			Admin\SectionScheduleMetabox::register();  // Sichtbarkeits-Zeitfenster (§19).
 		}
 

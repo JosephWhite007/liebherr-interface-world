@@ -67,6 +67,9 @@ final class AdventuresView {
 				'geoErr'   => __( 'Standort nicht verfügbar – bitte Koordinaten eingeben.', 'liebherr-interface-world' ),
 				'empty'    => __( 'Noch keine Adventures für diese Auswahl.', 'liebherr-interface-world' ),
 				'saving'   => __( 'Wird gespeichert …', 'liebherr-interface-world' ),
+				'needTitle'  => __( 'Titel erforderlich.', 'liebherr-interface-world' ),
+				'needRights' => __( 'Bitte die Rechte-Zusicherung bestätigen.', 'liebherr-interface-world' ),
+				'articlebook' => __( 'Artikelbook', 'liebherr-interface-world' ),
 			],
 		] );
 	}
@@ -110,41 +113,7 @@ final class AdventuresView {
 			</section>
 
 			<?php if ( $can ) : ?>
-				<section class="liw-adv__create" id="liw-adv-create" data-liw-adv-create>
-					<h2><?php echo esc_html__( 'Create Adventure', 'liebherr-interface-world' ); ?></h2>
-					<div class="liw-adv__field"><label><?php echo esc_html__( 'Titel', 'liebherr-interface-world' ); ?> *<br><input type="text" data-liw-adv-title maxlength="140" /></label></div>
-					<div class="liw-adv__field"><label><?php echo esc_html__( 'Kurzgeschichte', 'liebherr-interface-world' ); ?><br><textarea data-liw-adv-story rows="3"></textarea></label></div>
-					<div class="liw-adv__field"><label><?php echo esc_html__( 'Bild-URL (optional, Demo)', 'liebherr-interface-world' ); ?><br><input type="url" data-liw-adv-image placeholder="https://…" /></label></div>
-					<div class="liw-adv__grid">
-						<label><?php echo esc_html__( 'Inhaltstyp', 'liebherr-interface-world' ); ?> *
-							<select data-liw-adv-type><?php foreach ( Taxonomy::content_types() as $code => $label ) : ?><option value="<?php echo esc_attr( $code ); ?>"><?php echo esc_html( $label ); ?></option><?php endforeach; ?></select>
-						</label>
-						<label><?php echo esc_html__( 'Dringlichkeit', 'liebherr-interface-world' ); ?> *
-							<select data-liw-adv-urgency><?php foreach ( Taxonomy::urgency_levels() as $code => $label ) : ?><option value="<?php echo esc_attr( $code ); ?>"<?php echo 'informative' === $code ? ' selected' : ''; ?>><?php echo esc_html( $label ); ?></option><?php endforeach; ?></select>
-						</label>
-						<label><?php echo esc_html__( 'Sichtbarkeit', 'liebherr-interface-world' ); ?>
-							<select data-liw-adv-visibility><?php foreach ( Policy::visibilities() as $code => $label ) : ?><option value="<?php echo esc_attr( $code ); ?>"<?php echo 'organization' === $code ? ' selected' : ''; ?>><?php echo esc_html( $label ); ?></option><?php endforeach; ?></select>
-						</label>
-						<label><?php echo esc_html__( 'Ortsschutz', 'liebherr-interface-world' ); ?>
-							<select data-liw-adv-protection>
-								<option value="region" selected><?php echo esc_html__( 'Nur Region', 'liebherr-interface-world' ); ?></option>
-								<option value="exact"><?php echo esc_html__( 'Exakt (nur Berechtigte)', 'liebherr-interface-world' ); ?></option>
-								<option value="hidden"><?php echo esc_html__( 'Verbergen', 'liebherr-interface-world' ); ?></option>
-							</select>
-						</label>
-					</div>
-					<div class="liw-adv__locate">
-						<button type="button" class="liw-cta liw-cta--secondary" data-liw-adv-locate><?php echo esc_html__( 'Standort ermitteln', 'liebherr-interface-world' ); ?></button>
-						<input type="number" step="any" data-liw-adv-lat placeholder="lat" class="liw-adv__coord" />
-						<input type="number" step="any" data-liw-adv-lng placeholder="lng" class="liw-adv__coord" />
-						<span class="liw-adv__words" data-liw-adv-words></span>
-					</div>
-					<div class="liw-adv__actions">
-						<button type="button" class="liw-cta liw-cta--secondary" data-liw-adv-submit="draft"><?php echo esc_html__( 'Als Entwurf', 'liebherr-interface-world' ); ?></button>
-						<button type="button" class="liw-cta liw-cta--primary" data-liw-adv-submit="submit"><?php echo esc_html__( 'Einreichen', 'liebherr-interface-world' ); ?></button>
-						<p class="liw-adv__msg" role="status" data-liw-adv-msg></p>
-					</div>
-				</section>
+				<?php echo SubmissionForm::render( 'frontend' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- in SubmissionForm escaped. ?>
 			<?php else : ?>
 				<section class="liw-adv__gate-note" id="liw-adv-create">
 					<p><?php echo esc_html__( 'Zum Erstellen von Adventures ist ein aktiver Intelligence-Zugang (Anmeldung) erforderlich.', 'liebherr-interface-world' ); ?></p>

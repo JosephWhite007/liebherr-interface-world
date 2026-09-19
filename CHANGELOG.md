@@ -1,5 +1,28 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.60] – 2026-09-19 – Adventures: Workboard-Optik-Eingabemaske (Frontend + Backend) mit Token-Bewertung
+
+### Hinzugefügt
+- **Gemeinsame Eingabemaske** `Adventures\SubmissionForm` (Workboard-Optik) – EIN Renderer für **Frontend
+  (`[liw_adventures]`) und Backend-Board**. Felder: Kategorie (Inhaltstyp) + Dringlichkeit, Titel/Beschreibung,
+  Sichtbarkeit/Ortsschutz, **frei definierbarer Tokenwert + Nutzungsumfang** und **Rechte-Zusicherung**.
+  Aktionen: „Als Entwurf sichern" und „Registrieren & im Artikelbook eintragen".
+- **Backoffice-Board** `Admin\Pages\AdventureBoardPage` (Menü „🗺 Adventures"): dieselbe Maske plus ein Board
+  über alle Beiträge (Status, Tokenwert, Version, Artikelbook-Referenz) mit Moderations-Aktionen (Validieren,
+  Für World freigeben, Sperren, Archivieren) über REST `liw-adv/v1/moderate`.
+- Frontend-Submit (`liw-adventures.js`) sendet Tokenwert/Nutzungsumfang/Rechte-Zusicherung; Aktion
+  „register" registriert direkt (verlangt bestätigte Rechte) und zeigt die Artikelbook-Referenz.
+
+### Verifikation
+- `tests/run-tests.php` **372/372**, `scripts/liw-selftest.php` **315/315** (Maske Frontend+Backend mit
+  Token/Nutzungsumfang/Rechte/Registrieren; Board-Seite registriert). Headless gerendert: Admin-Board 7,9 KB
+  inkl. Maske + Board-Tabelle; Frontend-Maske mit erzwungenem Zugang. (Sichtprüfung im Browser erfordert Login;
+  anonym erscheint korrekt die Zugangs-Notiz.)
+
+### Hinweis
+- Bewusster Nachbau statt Wiederverwendung des Core-Workboards (nicht cross-plugin-fähig); frei wählbarer
+  Tokenwert statt fester Core-Pauschale. Prototyp (§21): Tokenbudget via Filter, Artikelbook-Verknüpfung als Naht.
+
 ## [0.1.0-alpha.59] – 2026-09-19 – Adventures: Basislogik Registrierung, Tokenwert & Artikelbook (Fundament + REST)
 
 ### Hinzugefügt (serverseitiges Fundament der „Adventure Area"-Basislogik §1–§9)

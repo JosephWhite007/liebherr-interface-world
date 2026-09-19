@@ -12,6 +12,24 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.60 – Adventures: Workboard-Optik-Eingabemaske (Frontend + Backend)
+
+**Neu:** `src/Adventures/SubmissionForm.php` (gemeinsamer Masken-Renderer `render('frontend'|'admin')` in
+Workboard-Optik: Kategorie/Dringlichkeit/Titel/Beschreibung + Token-Block [Tokenwert `data-liw-adv-token`,
+Nutzungsumfang `data-liw-adv-usage`, Rechte `data-liw-adv-rights`] + Aktionen draft/register).
+`src/Admin/Pages/AdventureBoardPage.php` (Backend-Board: MENU_SLUG `liw-adventure-board`, `render()` = Maske
+[admin] + Board-Tabelle über alle Beiträge mit Status/Token/Version/Artikelbook + Moderations-Buttons →
+REST `moderate`; eigenes Enqueue von liw-adventures css/js + Inline-Moderations-JS).
+
+**Geändert:** `src/Adventures/AdventuresView.php` (Create-Panel → `SubmissionForm::render('frontend')`; i18n
+needTitle/needRights/articlebook). `assets/js/liw-adventures.js` (Submit sendet token_value/usage_scope/
+rights_confirmed; Aktion „register" = intent submit + Rechte-Pflicht; zeigt Artikelbook-Ref). `src/Admin/AdminMenu.php`
+(Submenü „🗺 Adventures" + use-Import). `src/Bootstrap.php` (`AdventureBoardPage::register()`).
+`assets/css/liw-adventures.css` (`.liw-wb*`-Stile). Tests/Selftest ergänzt. Bump alpha.59 → alpha.60.
+
+**Verifikation:** WP-frei 372 / Docker 315; Admin-Board + Frontend-Maske headless gerendert (Browser-Sicht
+erfordert Login). Hinweis: Frontend-Maske nur mit Intelligence-Zugang (Policy::can_create), sonst Zugangs-Notiz.
+
 ## 0.1.0-alpha.59 – Adventures: Basislogik Registrierung, Tokenwert & Artikelbook (Fundament + REST)
 
 **Neu:** `src/Adventures/RegistrationStatus.php` (reiner 9-Status-Automat + Übergänge + Veröffentlichungsstufen),

@@ -85,10 +85,15 @@
 			} );
 		} );
 
+		var rightsEl = $( '[data-liw-adv-rights]', root );
 		[].forEach.call( root.querySelectorAll( '[data-liw-adv-submit]' ), function ( btn ) {
 			btn.addEventListener( 'click', function () {
+				var action = btn.getAttribute( 'data-liw-adv-submit' ); // draft | submit | register
 				var title = ( $( '[data-liw-adv-title]', root ) || {} ).value || '';
-				if ( ! title.trim() ) { msg.textContent = '⚠ Titel erforderlich.'; return; }
+				if ( ! title.trim() ) { msg.textContent = '⚠ ' + ( cfg.i18n.needTitle || 'Titel erforderlich.' ); return; }
+				var wantsRegister = 'register' === action;
+				var rights = !! ( rightsEl && rightsEl.checked );
+				if ( wantsRegister && ! rights ) { msg.textContent = '⚠ ' + ( cfg.i18n.needRights || 'Rechte-Zusicherung erforderlich.' ); return; }
 				msg.textContent = cfg.i18n.saving;
 				api( 'create', { method: 'POST', auth: true, body: {
 					title: title,
@@ -98,11 +103,18 @@
 					urgency: ( $( '[data-liw-adv-urgency]', root ) || {} ).value || '',
 					visibility: ( $( '[data-liw-adv-visibility]', root ) || {} ).value || '',
 					protection: ( $( '[data-liw-adv-protection]', root ) || {} ).value || 'region',
-					intent: btn.getAttribute( 'data-liw-adv-submit' ),
+					token_value: parseInt( ( $( '[data-liw-adv-token]', root ) || {} ).value, 10 ) || 0,
+					usage_scope: ( $( '[data-liw-adv-usage]', root ) || {} ).value || '',
+					rights_confirmed: wantsRegister && rights,
+					intent: wantsRegister ? 'submit' : action,
 					lat: latEl.value !== '' ? parseFloat( latEl.value ) : null,
 					lng: lngEl.value !== '' ? parseFloat( lngEl.value ) : null
 				} } ).then( function ( res ) {
-					msg.textContent = res && res.message ? res.message : ( res && res.ok ? 'OK' : ( res && res.error ) || 'Fehler' );
+					var extra = '';
+					if ( res && res.registration && res.registration.ok && res.registration.articlebook_ref ) {
+						extra = ' · ' + ( cfg.i18n.articlebook || 'Artikelbook' ) + ': ' + res.registration.articlebook_ref;
+					}
+					msg.textContent = ( res && res.message ? res.message : ( res && res.ok ? 'OK' : ( res && res.error ) || 'Fehler' ) ) + extra;
 					if ( res && res.ok ) { refreshStream( root ); }
 				} ).catch( function () { msg.textContent = 'Fehler.'; } );
 			} );
