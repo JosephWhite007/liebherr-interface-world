@@ -1,5 +1,29 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.63] – 2026-09-19 – Intelligence World: Compute-Metering + kostenpflichtige Module [Job A2]
+
+### Hinzugefügt
+- **Modul-/Compute-Katalog** `IntelligenceWorld\ModuleCatalog` (rein, testbar): 5 abrechenbare Aktionen
+  (Datenabfrage 0,15 · Datenquelle 0,50 · Simulation 5,00 · Compute-Job 1,20/Einheit · Export 2,00) mit
+  Ereignistyp, Preiseinheit (`PriceRule`) und Mock-Preis in Minor-Units.
+- **Metering-REST** `POST liw-iw/v1/session/use` (`Rest::use_module`): schreibt bei aktiver Sitzung ein
+  Ereignis mit Kosten ins Ereignis-Ledger (Metadaten: action/label/units/cost_minor).
+- **Protokoll-Integration** (`ProtocolBuilder`): kostenpflichtige Ereignisse werden als **Posten** ausgewiesen
+  (`line_items`), plus **Modulsumme**, **Basiskosten (Zeit)** und **Gesamtkosten** (`billing.modules_cost_minor`/
+  `total_cost_minor`). Das Nutzungs-/Kostenprotokoll enthält damit die Zusatzkosten als eigene Tabelle.
+- **Frontend**: Panel „Kostenpflichtige Module & Rechenlast (Demo)" im Funktions-Hub – Buttons je Aktion mit
+  Preis; laufende **Zusatzkosten**-Anzeige; das Protokoll am Sitzungsende listet Posten + Gesamtsumme.
+
+### Erledigt (Backlog Gruppe A, Punkt 2)
+- „Compute-Metering (Mock) + kostenpflichtige Module/Rechenlast als Ledger-Ereignisse (§6.4/§8)" und
+  „Modul-/Compute-Ereignisse ins Protokoll" abgeschlossen.
+
+### Verifikation
+- `tests/run-tests.php` **381/381** (Katalogpreise, Protokoll: Basis 900 + Module 530 = 1430),
+  `scripts/liw-selftest.php` **324/324** (Route `session/use`; use_module belastet 0,15 + Ledger; Protokoll mit
+  Posten + Gesamtsumme). Browser end-to-end: Simulation 5,00 + Datenabfrage 0,15 → Zusatzkosten 5,15;
+  Protokoll Basis 1,17 + Module 5,15 = **Gesamt 6,32 EUR**.
+
 ## [0.1.0-alpha.62] – 2026-09-19 – Intelligence World: Backoffice-Pflege-Board (Tarife + Navigation/Hotels) [Job A1]
 
 ### Hinzugefügt

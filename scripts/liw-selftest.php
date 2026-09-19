@@ -824,11 +824,17 @@ try {
 	liw_st_check( 'IW: Access-Gate weist falschen Code ab (ok=false)', empty( $__bad['ok'] ) );
 	// Nutzungs-/Kostenprotokoll (§5.5/§8, alpha.58): Route + build_protocol Ende-zu-Ende.
 	liw_st_check( 'IW-Proto: REST-Route /session/protocol registriert', array_key_exists( '/' . \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::NAMESPACE . '/session/protocol', rest_get_server()->get_routes() ) );
+	liw_st_check( 'IW-Modul: REST-Route /session/use registriert', array_key_exists( '/' . \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::NAMESPACE . '/session/use', rest_get_server()->get_routes() ) );
 	if ( isset( $__ok['session_code'] ) ) {
 		$__pc = (string) $__ok['session_code'];
+		// Compute-Metering: kostenpflichtige Module nutzen, solange die Sitzung aktiv ist (alpha.63).
+		$__u1 = ( function ( $c ) { $r = new WP_REST_Request( 'POST' ); $r->set_param( 'session_code', $c ); $r->set_param( 'action', 'data_query' ); return \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::use_module( $r )->get_data(); } )( $__pc );
+		liw_st_check( 'IW-Modul: use_module belastet Datenabfrage (0,15 = 15) + Ledger-Ereignis', ! empty( $__u1['ok'] ) && 15 === (int) $__u1['cost_minor'] );
+		( function ( $c ) { $r = new WP_REST_Request( 'POST' ); $r->set_param( 'session_code', $c ); $r->set_param( 'action', 'compute' ); $r->set_param( 'units', 2 ); \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::use_module( $r ); } )( $__pc );
 		\Liebherr\InterfaceWorld\IntelligenceWorld\SessionService::end( $__pc );
 		$__proto = \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::build_protocol( $__pc, \Liebherr\InterfaceWorld\IntelligenceWorld\WorldContent::get() );
 		liw_st_check( 'IW-Proto: build_protocol liefert Kopf, Ereignisse (>=4), Integrität + Prototyp-Flag', $__proto['session_code'] === $__pc && $__proto['event_count'] >= 4 && true === $__proto['integrity_ok'] && true === $__proto['prototype'] && isset( $__proto['billing']['base_cost_display'] ) && isset( $__proto['events'][0]['label'] ) );
+		liw_st_check( 'IW-Proto: Modul-Posten + Gesamtkosten (Basis+Module) im Protokoll', count( $__proto['line_items'] ) >= 2 && $__proto['billing']['modules_cost_minor'] >= 255 && $__proto['billing']['total_cost_minor'] === $__proto['billing']['base_cost_minor'] + $__proto['billing']['modules_cost_minor'] );
 	}
 	if ( isset( $__ok['session_code'] ) ) { global $wpdb; $wpdb->query( $wpdb->prepare( 'DELETE FROM ' . \Liebherr\InterfaceWorld\IntelligenceWorld\Schema::event_table() . ' WHERE session_code = %s', (string) $__ok['session_code'] ) ); $wpdb->query( $wpdb->prepare( 'DELETE FROM ' . \Liebherr\InterfaceWorld\IntelligenceWorld\Schema::session_table() . ' WHERE session_code = %s', (string) $__ok['session_code'] ) ); }
 	// Favicon (goldener Planet, alpha.49).

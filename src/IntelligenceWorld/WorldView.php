@@ -72,6 +72,7 @@ final class WorldView {
 				'session_budget'    => (int) $cfg['pricing']['session_budget_minor'],
 				'storage_budget_mb' => (int) $cfg['pricing']['storage_budget_mb'],
 			],
+			'modules' => ModuleCatalog::public_list( (string) $cfg['pricing']['currency'] ),
 			'i18n' => [
 				'invalid'   => __( 'Der Bestätigungscode ist nicht gültig.', 'liebherr-interface-world' ),
 				'consents'  => __( 'Bitte bestätigen Sie beide Pflichterklärungen.', 'liebherr-interface-world' ),
@@ -99,6 +100,11 @@ final class WorldView {
 				'proto_broken'  => __( 'Achtung: Protokollkette verändert!', 'liebherr-interface-world' ),
 				'proto_json'    => __( 'Als JSON herunterladen', 'liebherr-interface-world' ),
 				'proto_print'   => __( 'Drucken / als PDF speichern', 'liebherr-interface-world' ),
+				'mod_extra'     => __( 'Zusatzkosten (Module)', 'liebherr-interface-world' ),
+				'mod_total'     => __( 'Gesamtkosten', 'liebherr-interface-world' ),
+				'mod_used'      => __( 'genutzt', 'liebherr-interface-world' ),
+				'proto_items'   => __( 'Kostenpflichtige Module', 'liebherr-interface-world' ),
+				'proto_cost'    => __( 'Kosten', 'liebherr-interface-world' ),
 			],
 		] );
 	}
@@ -193,6 +199,18 @@ final class WorldView {
 							<?php endif; ?>
 						<?php endforeach; ?>
 					</ul>
+
+					<section class="liw-iw__nav liw-iw__modules" id="liw-iw-modules" data-liw-iw-modules aria-labelledby="liw-iw-modules-h">
+						<h3 class="liw-iw__nav-title" id="liw-iw-modules-h"><?php echo esc_html__( 'Kostenpflichtige Module & Rechenlast (Demo)', 'liebherr-interface-world' ); ?></h3>
+						<p class="liw-iw__nav-lead"><?php echo esc_html__( 'Neben der Zeit-Basisabrechnung: jede Nutzung wird als Posten ins Ledger geschrieben und erscheint im Nutzungs-/Kostenprotokoll (Beispielpreise, Prototyp).', 'liebherr-interface-world' ); ?></p>
+						<div class="liw-iw__mod-actions">
+							<?php foreach ( ModuleCatalog::public_list( $cur ) as $m ) : ?>
+								<button type="button" class="liw-cta liw-cta--secondary liw-iw__mod-btn" data-liw-iw-use="<?php echo esc_attr( (string) $m['key'] ); ?>"><?php echo esc_html( (string) $m['label'] ); ?> · <?php echo esc_html( (string) $m['price_display'] ); ?></button>
+							<?php endforeach; ?>
+						</div>
+						<p class="liw-iw__mod-total"><?php echo esc_html__( 'Zusatzkosten (Module):', 'liebherr-interface-world' ); ?> <strong data-liw-iw-modtotal><?php echo esc_html( Money::format( 0, $cur ) ); ?></strong></p>
+					</section>
+
 					<?php echo NavigationView::render_sections(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- in NavigationView escaped. ?>
 					<?php echo SimulationView::render_section(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- in SimulationView escaped. ?>
 					<div class="liw-iw__protocol" data-liw-iw-protocol hidden></div>

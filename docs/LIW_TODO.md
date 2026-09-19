@@ -22,8 +22,9 @@ der Reihe nach ab und befüllen sie mit Funktionalität), **B** = auf externe Fr
    `Admin\Pages\IntelligenceWorldBoardPage` (Menü „🪐 Intelligence World") pflegt Tarife/Budgets + Eintrittstexte
    (`liw_iw_world`) UND Katalog Navigation & Hotels (`liw_iw_catalog`: 13 Segmente + Lösungswelt + 6 Hotels,
    Platzhalter kuratierbar). Save via admin-post; `save_from_request()` testbar.
-2. **Intelligence World – Compute-Metering (Mock) + kostenpflichtige Module.** Modul-/Rechenlast-Ereignisse
-   als Ledger-Einträge (§6.4/§8); diese Ereignisse erscheinen anschließend im Nutzungs-/Kostenprotokoll.
+2. ~~**Intelligence World – Compute-Metering (Mock) + kostenpflichtige Module.**~~ **ERLEDIGT (alpha.63):**
+   `ModuleCatalog` (5 Aktionen) + REST `session/use` schreiben Kosten-Ereignisse ins Ledger; `ProtocolBuilder`
+   weist Posten + Modulsumme + Gesamtkosten aus; Frontend-Panel mit laufender Zusatzkosten-Anzeige.
 3. **Adventures – Detailseite.** Einzelansicht eines Beitrags (Titel, Story, Medien, Ort, Tokenwert, Status)
    – Voraussetzung für World Map/Detail-Verlinkung.
 4. **Adventures – Suche/Filter nach Maschine/Bauteil (§18).** Zusätzliche Facetten im Stream.
@@ -128,9 +129,11 @@ Produktsegmenten + Lösungswelt + 6 Hotel-Knoten (je Drei-Wörter-Ort, englisch)
   – **nur Dev-DB**, auf Staging/Live erneut hochladen/freigeben/zuweisen. GIF `Liebherr_Cockpit_Sprachzyklus`
   (#2838) liegt bereit, noch keinem Slot zugeordnet.
 - Nutzungs-/Kostenprotokoll (alpha.58, **geliefert**): `ProtocolBuilder` (rein) + REST `session/protocol` +
-  Frontend-Ansicht nach Sitzungsende (JSON-Download + Druck/PDF, Integritätsprüfung der Hash-Kette). Offen:
-  echte serverseitige PDF-Erzeugung (Prototyp nutzt Browser-Druck), Modul-/Compute-Ereignisse ins Protokoll.
-- Compute-Metering (Mock) + kostenpflichtige Module/Rechenlast als Ledger-Ereignisse (§6.4/§8).
+  Frontend-Ansicht nach Sitzungsende (JSON-Download + Druck/PDF, Integritätsprüfung der Hash-Kette). **alpha.63:**
+  Modul-/Compute-Ereignisse als Posten + Gesamtkosten im Protokoll. Offen: echte serverseitige PDF-Erzeugung
+  (Prototyp nutzt Browser-Druck).
+- Compute-Metering (Mock) + kostenpflichtige Module/Rechenlast als Ledger-Ereignisse (§6.4/§8):
+  **geliefert (alpha.63, `ModuleCatalog` + REST `session/use`).**
 - Pricing/Storage/Admin/Rollen/Audit (§14–§16, §19).
 - **Prototyp-Grenzen (§21):** kein echtes Payment/Produktivdaten; Produktivschaltung erst nach Freigabe.
 

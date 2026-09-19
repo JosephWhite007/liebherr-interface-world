@@ -65,6 +65,55 @@ final class Rest {
 			'callback'            => [ self::class, 'protocol' ],
 			'permission_callback' => $perm,
 		] );
+		register_rest_route( self::NAMESPACE, '/session/use', [
+			'methods'             => 'POST',
+			'callback'            => [ self::class, 'use_module' ],
+			'permission_callback' => $perm,
+		] );
+	}
+
+	/**
+	 * Kostenpflichtiges Modul / Rechenlast nutzen (§6.4/§8): schreibt ein Ereignis mit Kosten ins Ledger.
+	 * Die Kosten stammen aus {@see ModuleCatalog}; sie erscheinen anschließend als Posten im Protokoll.
+	 */
+	public static function use_module( \WP_REST_Request $req ): \WP_REST_Response {
+		$code = self::require_session( $req );
+		if ( null === $code ) {
+			return new \WP_REST_Response( [ 'ok' => false ], 200 );
+		}
+		$row = SessionService::get( $code );
+		if ( null === $row || 'active' !== (string) $row['status'] ) {
+			return new \WP_REST_Response( [ 'ok' => false, 'error' => 'session_not_active' ], 200 );
+		}
+		$action = (string) $req->get_param( 'action' );
+		if ( ! ModuleCatalog::is_valid( $action ) ) {
+			return new \WP_REST_Response( [ 'ok' => false, 'error' => 'unknown_module' ], 200 );
+		}
+		$cfg   = WorldContent::get();
+		$cur   = (string) $cfg['pricing']['currency'];
+		$units = max( 1, (int) $req->get_param( 'units' ) );
+		$def   = ModuleCatalog::get( $action );
+		$cost  = ModuleCatalog::cost_minor( $action, $units, $cur );
+
+		EventLog::append( $code, (string) $def['event'], [
+			'metadata' => [
+				'action'      => $action,
+				'label'       => ModuleCatalog::label( $action ),
+				'units'       => $units,
+				'cost_minor'  => $cost,
+				'currency'    => $cur,
+			],
+		] );
+
+		return new \WP_REST_Response( [
+			'ok'           => true,
+			'action'       => $action,
+			'label'        => ModuleCatalog::label( $action ),
+			'units'        => $units,
+			'cost_minor'   => $cost,
+			'cost_display' => Money::format( $cost, $cur ),
+			'status'       => self::status_for( $code, $cfg ),
+		], 200 );
 	}
 
 	public static function check_nonce( \WP_REST_Request $req ): bool {

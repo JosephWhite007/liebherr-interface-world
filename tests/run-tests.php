@@ -376,6 +376,23 @@ liw_assert( 'ProtocolBuilder: Kopf + aktive Zeit 00:01:40', 'S-TEST' === $pb['se
 liw_assert( 'ProtocolBuilder: Basiskosten 100s×0,09 = 9,00 EUR', 900 === $pb['billing']['base_cost_minor'] && '9,00 EUR' === $pb['billing']['base_cost_display'], $checks, $failures );
 liw_assert( 'ProtocolBuilder: 2 Ereignisse mit lesbaren Labels + Integritätsflag', 2 === $pb['event_count'] && 'Sitzung gestartet' === $pb['events'][0]['label'] && 'Sitzung beendet' === $pb['events'][1]['label'] && true === $pb['integrity_ok'] && true === $pb['prototype'], $checks, $failures );
 
+// 2v. Compute-Metering + kostenpflichtige Module (§6.4/§8, alpha.63).
+echo "-- Intelligence World – Compute-Metering / Module (alpha.63) --\n";
+require_once $root . '/src/IntelligenceWorld/ModuleCatalog.php';
+$MC = '\Liebherr\InterfaceWorld\IntelligenceWorld\ModuleCatalog';
+liw_assert( 'ModuleCatalog: 5 Aktionen + is_valid', 5 === count( $MC::actions() ) && $MC::is_valid( 'data_query' ) && ! $MC::is_valid( 'nope' ), $checks, $failures );
+liw_assert( 'ModuleCatalog: cost_minor data_query×1=15, compute×3=360 (per unit)', 15 === $MC::cost_minor( 'data_query', 1 ) && 360 === $MC::cost_minor( 'compute', 3 ), $checks, $failures );
+liw_assert( 'ModuleCatalog: public_list liefert price_display', ( function () use ( $MC ): bool { $l = $MC::public_list( 'EUR' ); return isset( $l[0]['price_display'], $l[0]['key'] ); } )(), $checks, $failures );
+// Protokoll mit Modul-Posten: Basis + Module summieren.
+$pb_ev2 = [
+	[ 'seq' => 1, 'type' => 'session_started', 'occurred_at' => '2026-01-01T00:00:00Z' ],
+	[ 'seq' => 2, 'type' => 'query_executed', 'occurred_at' => '2026-01-01T00:00:10Z', 'metadata' => wp_json_encode( [ 'action' => 'data_query', 'label' => 'Datenabfrage', 'units' => 2, 'cost_minor' => 30 ] ) ],
+	[ 'seq' => 3, 'type' => 'compute_job_completed', 'occurred_at' => '2026-01-01T00:00:20Z', 'metadata' => [ 'action' => 'simulation', 'label' => 'Simulation ausführen', 'units' => 1, 'cost_minor' => 500 ] ],
+];
+$pb2 = \Liebherr\InterfaceWorld\IntelligenceWorld\ProtocolBuilder::build( $pb_session, $pb_ev2, $pb_billing, 'EUR', true, '2026-01-01T00:02:00Z' );
+liw_assert( 'ProtocolBuilder: 2 Modul-Posten + Modulsumme 5,30 EUR (530)', 2 === count( $pb2['line_items'] ) && 530 === $pb2['billing']['modules_cost_minor'] && '5,30 EUR' === $pb2['billing']['modules_display'], $checks, $failures );
+liw_assert( 'ProtocolBuilder: Gesamt = Basis (900) + Module (530) = 1430 (14,30 EUR)', 1430 === $pb2['billing']['total_cost_minor'] && '14,30 EUR' === $pb2['billing']['total_display'], $checks, $failures );
+
 // 2p. Liebherr Adventures – Fundament (vierte Insel, §3/§4/§9, alpha.51) – reine Logik ohne WP.
 echo "-- Liebherr Adventures (alpha.51) --\n";
 require_once $root . '/src/Adventures/Taxonomy.php';

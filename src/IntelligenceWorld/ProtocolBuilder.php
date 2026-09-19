@@ -35,9 +35,14 @@ final class ProtocolBuilder {
 		$active = (int) ( $billing['active_seconds'] ?? ( $session['active_seconds'] ?? 0 ) );
 
 		$event_list = [];
+		$line_items = [];
+		$modules_cost = 0;
 		foreach ( $events as $row ) {
 			if ( ! is_array( $row ) ) { continue; }
 			$type = (string) ( $row['type'] ?? '' );
+			$meta = $row['metadata'] ?? [];
+			if ( is_string( $meta ) ) { $meta = (array) json_decode( $meta, true ); }
+			if ( ! is_array( $meta ) ) { $meta = []; }
 			$event_list[] = [
 				'seq'         => (int) ( $row['seq'] ?? 0 ),
 				'type'        => $type,
@@ -45,7 +50,22 @@ final class ProtocolBuilder {
 				'occurred_at' => (string) ( $row['occurred_at'] ?? '' ),
 				'module'      => (string) ( $row['module'] ?? '' ),
 			];
+			// Kostenpflichtige Module/Rechenlasten (§6.4/§8): Posten mit Kosten aus den Metadaten.
+			$cost = isset( $meta['cost_minor'] ) ? (int) $meta['cost_minor'] : 0;
+			if ( $cost > 0 ) {
+				$line_items[] = [
+					'seq'          => (int) ( $row['seq'] ?? 0 ),
+					'action'       => (string) ( $meta['action'] ?? '' ),
+					'label'        => (string) ( $meta['label'] ?? EventTypes::label( $type ) ),
+					'units'        => (int) ( $meta['units'] ?? 1 ),
+					'cost_minor'   => $cost,
+					'cost_display' => Money::format( $cost, $currency ),
+				];
+				$modules_cost += $cost;
+			}
 		}
+		$base_cost  = (int) ( $billing['base_cost_minor'] ?? 0 );
+		$total_cost = $base_cost + $modules_cost;
 
 		return [
 			'session_code'   => (string) ( $session['session_code'] ?? '' ),
@@ -55,14 +75,19 @@ final class ProtocolBuilder {
 			'active_seconds' => $active,
 			'active_display' => self::hms( $active ),
 			'billing'        => [
-				'currency'          => $currency,
-				'base_cost_minor'   => (int) ( $billing['base_cost_minor'] ?? 0 ),
-				'base_cost_display' => Money::format( (int) ( $billing['base_cost_minor'] ?? 0 ), $currency ),
-				'budget_minor'      => (int) ( $billing['budget_minor'] ?? 0 ),
-				'budget_display'    => Money::format( (int) ( $billing['budget_minor'] ?? 0 ), $currency ),
-				'budget_pct'        => (int) ( $billing['budget_pct'] ?? 0 ),
-				'level'             => (string) ( $billing['level'] ?? 'ok' ),
+				'currency'           => $currency,
+				'base_cost_minor'    => $base_cost,
+				'base_cost_display'  => Money::format( $base_cost, $currency ),
+				'modules_cost_minor' => $modules_cost,
+				'modules_display'    => Money::format( $modules_cost, $currency ),
+				'total_cost_minor'   => $total_cost,
+				'total_display'      => Money::format( $total_cost, $currency ),
+				'budget_minor'       => (int) ( $billing['budget_minor'] ?? 0 ),
+				'budget_display'     => Money::format( (int) ( $billing['budget_minor'] ?? 0 ), $currency ),
+				'budget_pct'         => (int) ( $billing['budget_pct'] ?? 0 ),
+				'level'              => (string) ( $billing['level'] ?? 'ok' ),
 			],
+			'line_items'     => $line_items,
 			'events'         => $event_list,
 			'event_count'    => count( $event_list ),
 			'integrity_ok'   => $integrity_ok,

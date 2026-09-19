@@ -184,3 +184,9 @@
 	.liw-iw__proto-table th, .liw-iw__proto-table td { border-bottom: 1px solid #999 !important; }
 	.liw-iw__proto-actions { display: none !important; }
 }
+
+/* ── Kostenpflichtige Module & Rechenlast (alpha.63) ── */
+.liw-iw__mod-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin: 0 0 1rem; }
+.liw-iw__mod-btn { font-variant-numeric: tabular-nums; }
+.liw-iw__mod-total { font-variant-numeric: tabular-nums; color: var(--iw-ice); }
+.liw-iw__mod-total strong { color: var(--iw-yellow); }

@@ -12,6 +12,21 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.63 – Intelligence World: Compute-Metering + kostenpflichtige Module [Backlog A2]
+
+**Neu:** `src/IntelligenceWorld/ModuleCatalog.php` (reine 5-Aktionen-Katalog: `actions/is_valid/get/label/
+cost_minor/public_list`; Preis über `PriceRule`). `Rest::use_module()` + Route `POST session/use` (Ereignis mit
+Kosten ins Ledger bei aktiver Sitzung). `assets/js/liw-intelligence-world.js` – Modul-Buttons (`data-liw-iw-use`)
+→ `session/use`, laufende Zusatzkosten (`data-liw-iw-modtotal`); `renderProtocol` um Posten-Tabelle + Basis/
+Module/Gesamt erweitert. `assets/css/liw-intelligence-world.css` – `.liw-iw__mod-*`.
+
+**Geändert:** `src/IntelligenceWorld/ProtocolBuilder.php` – Metadaten je Ereignis dekodiert; `line_items` +
+`billing.modules_cost_minor`/`modules_display`/`total_cost_minor`/`total_display`. `src/IntelligenceWorld/WorldView.php`
+– Modul-Panel im Weltraum, `modules` (ModuleCatalog::public_list) + i18n in localize. Tests/Selftest ergänzt.
+Bump alpha.62 → alpha.63.
+
+**Ergebnis:** Backlog-A2 erledigt. Nächster Bau laut Reihenfolge: **A3 – Adventures-Detailseite (Einzelansicht).**
+
 ## 0.1.0-alpha.62 – Intelligence World: Backoffice-Pflege-Board (Tarife + Navigation/Hotels) [Backlog A1]
 
 **Neu:** `src/Admin/Pages/IntelligenceWorldBoardPage.php` (MENU_SLUG `liw-iw-board`; `render()` = Formular für

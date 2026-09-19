@@ -158,6 +158,15 @@
 			var integrity = p.integrity_ok
 				? '<span class="liw-iw__proto-badge liw-iw__proto-badge--ok">' + escHtml( t.proto_intact ) + '</span>'
 				: '<span class="liw-iw__proto-badge liw-iw__proto-badge--bad">' + escHtml( t.proto_broken ) + '</span>';
+			var itemsHtml = '';
+			if ( p.line_items && p.line_items.length ) {
+				var lrows = p.line_items.map( function ( it ) {
+					return '<tr><td>' + escHtml( it.label ) + '</td><td>' + ( it.units | 0 ) + '</td><td>' + escHtml( it.cost_display ) + '</td></tr>';
+				} ).join( '' );
+				itemsHtml = '<h4 class="liw-iw__proto-subtitle">' + escHtml( t.proto_items ) + ' (' + p.line_items.length + ')</h4>' +
+					'<table class="liw-iw__proto-table"><thead><tr><th>' + escHtml( t.proto_event ) + '</th><th>' + escHtml( t.mod_used ) + '</th><th>' + escHtml( t.proto_cost ) + '</th></tr></thead><tbody>' + lrows + '</tbody></table>';
+			}
+			var modulesLine = b.modules_cost_minor ? ( '<dt>' + escHtml( t.mod_extra ) + '</dt><dd>' + escHtml( b.modules_display ) + '</dd>' ) : '';
 			proto.innerHTML =
 				'<div class="liw-iw__proto-doc">' +
 				'<h3 class="liw-iw__proto-title">' + escHtml( t.proto_title ) + '</h3>' +
@@ -169,8 +178,11 @@
 				'<dt>' + escHtml( t.proto_end ) + '</dt><dd>' + escHtml( p.ended_at ) + '</dd>' +
 				'<dt>' + escHtml( t.proto_active ) + '</dt><dd>' + escHtml( p.active_display ) + '</dd>' +
 				'<dt>' + escHtml( t.proto_base ) + '</dt><dd>' + escHtml( b.base_cost_display ) + '</dd>' +
+				modulesLine +
+				'<dt>' + escHtml( t.mod_total ) + '</dt><dd><strong>' + escHtml( b.total_display || b.base_cost_display ) + '</strong></dd>' +
 				'<dt>' + escHtml( t.proto_budget ) + '</dt><dd>' + escHtml( b.budget_display ) + ' · ' + ( b.budget_pct | 0 ) + ' %</dd>' +
 				'</dl>' +
+				itemsHtml +
 				'<h4 class="liw-iw__proto-subtitle">' + escHtml( t.proto_events ) + ' (' + ( p.event_count | 0 ) + ')</h4>' +
 				'<table class="liw-iw__proto-table"><thead><tr><th>' + escHtml( t.proto_seq ) + '</th><th>' +
 				escHtml( t.proto_time ) + '</th><th>' + escHtml( t.proto_event ) + '</th></tr></thead><tbody>' + rows + '</tbody></table>' +
@@ -214,6 +226,24 @@
 			} ).then( function ( res ) {
 				if ( res && res.ok && res.protocol ) { renderProtocol( res.protocol ); }
 			} ).catch( function () {} );
+		} );
+
+		// Kostenpflichtige Module/Rechenlast nutzen (§6.4/§8): Ereignis + Kosten, Zusatzkosten mitzählen.
+		var modTotalEl = $( '[data-liw-iw-modtotal]', root );
+		var modulesTotal = 0;
+		[].forEach.call( root.querySelectorAll( '[data-liw-iw-use]' ), function ( btn ) {
+			btn.addEventListener( 'click', function () {
+				if ( ! sessionCode ) { return; }
+				btn.disabled = true;
+				post( 'session/use', { session_code: sessionCode, action: btn.getAttribute( 'data-liw-iw-use' ) } ).then( function ( res ) {
+					if ( res && res.ok ) {
+						modulesTotal += ( res.cost_minor | 0 );
+						if ( modTotalEl ) { modTotalEl.textContent = money( modulesTotal, cur ); }
+						if ( res.status ) { syncFromStatus( res.status ); }
+					}
+					btn.disabled = false;
+				} ).catch( function () { btn.disabled = false; } );
+			} );
 		} );
 	}
 
