@@ -191,3 +191,12 @@
 	.liw-myl__moderation { border-color: #2a2f3a; }
 	.liw-myl__reportform select, .liw-myl__reportform input { background: #12141b; border-color: #2a2f3a; color: #eef1f6; }
 }
+
+/* Medien-Pipeline (§14/§16, alpha.133). */
+.liw-myl__media-hold { background: #fff5e6; color: #a85a12; border: 1px dashed #f0c98a; }
+.liw-myl__media-bad { background: #fdecea; color: #c0392b; border: 1px dashed #e6a6a0; }
+.liw-myl__privacyhint { font-size: 12px; color: #8a90a0; margin: 0 0 8px; }
+@media ( prefers-color-scheme: dark ) {
+	.liw-myl__media-hold { background: #241d10; color: #e0a758; border-color: #4a3d1c; }
+	.liw-myl__media-bad { background: #241413; color: #e08a80; border-color: #5a2a26; }
+}

@@ -1,5 +1,27 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.133] – 2026-09-19 – Medien-Pipeline für Dreams/Gallery (§14/§16)
+
+### Hinzugefügt
+- `MyLiebherr\MediaPipeline`: prüft in Dreams/Gallery referenzierte Mediathek-Anhänge – **erlaubte MIME-Typen**
+  (jpeg/png/webp/gif), **Größenlimit** (`liw_myl_media_max_bytes`, Standard 8 MB), **Virenscan-Naht** (Filter
+  `liw_media_scan_passed`) und **Freigabestatus** (CI-005 via `CoreBridge\MediaBridge`). Zustände: none/invalid/
+  quarantine/approved; reine Regeln (mime_allowed/size_ok/classify) testbar.
+- **Quarantäne (§16):** nicht freigegebene/ungeprüfte Bilder werden nicht angezeigt (`thumb()` → „Bild in Prüfung"
+  bzw. „ungültig"); Dreams/Gallery/Shared nutzen `thumb()`. Prüfer können in der Galerie „Bild freigeben"
+  (REST `POST /moderation/media/{id}/approve`, `liw_myl_moderate`).
+- **Validierung beim Anlegen/Ändern:** Gallery/Dreams-REST lehnt unzulässige Medien ab (`media_mime_not_allowed`/
+  `media_too_large`/`media_not_attachment`).
+- **Datenschutz-Hinweis (§14)** im Galerie-Formular (Gesichter/Kennzeichen/Kundendaten prüfen).
+
+### Behoben
+- Selbsttest „CAPDB Startkonfig" setzt den geteilten Board-Entwurf nun deterministisch zurück (clear + seed),
+  robust gegen den opt-in-Seeder `liw-seed-cvf-6cards.php`.
+
+### Verifikation
+- `tests/run-tests.php` **655/655** (MIME/Größe/Klassifikation), `scripts/liw-selftest.php` **424/424** (PDF abgelehnt;
+  Bild quarantine→Freigabe→approved). `LIW_VERSION` .132→.133.
+
 ## [0.1.0-alpha.132] – 2026-09-19 – CVF-Simulation der zwei neuen Karten (§36, MYL 013)
 
 ### Hinzugefügt

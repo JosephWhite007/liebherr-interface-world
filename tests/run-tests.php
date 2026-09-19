@@ -670,6 +670,14 @@ liw_assert( 'PTime SessionClock: now <= last_seen → keine Änderung', 10 === $
 liw_assert( 'PTime WalletBridge: ohne Core nicht verfügbar; balance_cents(0)=null (Gast-Guard)', false === $WB::available() && null === $WB::balance_cents( 0 ), $checks, $failures );
 liw_assert( 'MyL WalletBridge: source_label bekannt (booking_debit→Buchung), unbekannt→Rohwert; status_label pending→ausstehend', 'Buchung' === $WB::source_label( 'booking_debit' ) && 'nope' === $WB::source_label( 'nope' ) && 'ausstehend' === $WB::status_label( 'pending' ), $checks, $failures );
 
+// My Liebherr Medien-Pipeline (ADR-LIW-MYL-001 §14/§16): reine MIME-/Größen-/Klassifikationslogik.
+echo "-- My Liebherr Medien-Pipeline --\n";
+require_once $root . '/src/MyLiebherr/MediaPipeline.php';
+$MP = '\Liebherr\InterfaceWorld\MyLiebherr\MediaPipeline';
+liw_assert( 'MediaPipeline: erlaubte MIME (jpeg/png/webp/gif), abgelehnt application/pdf', $MP::mime_allowed( 'image/jpeg' ) && $MP::mime_allowed( 'image/webp' ) && ! $MP::mime_allowed( 'application/pdf' ), $checks, $failures );
+liw_assert( 'MediaPipeline: size_ok nur >0 und <= Max', $MP::size_ok( 1000, 8388608 ) && ! $MP::size_ok( 0, 8388608 ) && ! $MP::size_ok( 9000000, 8388608 ), $checks, $failures );
+liw_assert( 'MediaPipeline: classify invalid/quarantine/approved', $MP::S_INVALID === $MP::classify( false, true, true, true, true ) && $MP::S_INVALID === $MP::classify( true, false, true, true, true ) && $MP::S_QUARANTINE === $MP::classify( true, true, true, true, false ) && $MP::S_QUARANTINE === $MP::classify( true, true, true, false, true ) && $MP::S_APPROVED === $MP::classify( true, true, true, true, true ), $checks, $failures );
+
 // My Liebherr Moderation (ADR-LIW-MYL-001 §11/§31): reine Übergangsregeln + Prüfer-Rollenmapping.
 echo "-- My Liebherr Moderation --\n";
 require_once $root . '/src/MyLiebherr/ModerationService.php';

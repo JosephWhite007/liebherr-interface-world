@@ -62,9 +62,7 @@ final class DreamsView {
 		$cards = '';
 		foreach ( $items as $it ) {
 			$id  = (int) $it['id'];
-			$img = (int) $it['media_id'] > 0
-				? wp_get_attachment_image( (int) $it['media_id'], 'medium', false, [ 'class' => 'liw-myl__dream-img' ] )
-				: '<span class="liw-myl__dream-ref">' . esc_html( (string) $it['machine_ref'] ) . '</span>';
+			$img = MediaPipeline::thumb( (int) $it['media_id'], 'medium', (string) $it['machine_ref'] );
 			$cards .= '<figure class="liw-myl__dream' . ( $it['cover'] ? ' is-cover' : '' ) . '">'
 				. $img
 				. '<figcaption>'

@@ -21,6 +21,15 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.133 – Medien-Pipeline Dreams/Gallery (§14/§16)
+
+- `src/MyLiebherr/MediaPipeline.php` (NEU): ALLOWED_MIME, max_bytes/size_ok, classify (rein) + validate/state/scan_ok/thumb/approve (nutzt MediaBridge::is_approved/META_APPROVED).
+- `src/MyLiebherr/ContentRest.php`: media_guard() bei gallery/dreams create+update; Route `moderation/media/{id}/approve` (require_moderate).
+- `src/MyLiebherr/DreamsView.php`/`GalleryView.php`/`SharedView.php`: Bild über `MediaPipeline::thumb()` (Quarantäne-Platzhalter); Galerie: Prüfer-Button „Bild freigeben" + Datenschutz-Hinweis (§14).
+- `assets/css`: media-hold/media-bad/privacyhint. `liebherr-interface-world.php` LIW_VERSION .132→.133.
+- Selbsttest CAPDB-Startkonfig deterministisch (clear_board+seed_start_config) → robust gegen liw-seed-cvf-6cards.php.
+- Tests: WP-frei MediaPipeline-Regeln; Docker PDF-Ablehnung + quarantine→approve. WP-frei 655/0, Docker 424/0.
+
 ## 0.1.0-alpha.132 – CVF-Simulation der zwei neuen Karten (§36, MYL 013)
 
 - `src/Cvf/BoardRepository.php`: `wire_module_card()` (Bereich aktiv + Route/Return-Route, Übergang vom Einstieg `world_granted`, First-Entry-Text; idempotent) + `module_route()`.

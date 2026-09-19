@@ -80,9 +80,7 @@ final class SharedView {
 			if ( null === $item ) {
 				continue;
 			}
-			$img = (int) $item['media_id'] > 0
-				? wp_get_attachment_image( (int) $item['media_id'], 'medium', false, [ 'class' => 'liw-myl__dream-img' ] )
-				: '<span class="liw-myl__dream-ref">#' . (int) $item['media_id'] . '</span>';
+			$img = MediaPipeline::thumb( (int) $item['media_id'], 'medium', '#' . (int) $item['media_id'] );
 			$meta = $show_scope
 				? esc_html( (string) $s['scope'] )
 				: esc_html( (string) $s['status'] );

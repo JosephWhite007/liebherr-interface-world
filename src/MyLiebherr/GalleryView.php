@@ -58,13 +58,15 @@ final class GalleryView {
 		$cards = '';
 		foreach ( $items as $it ) {
 			$id  = (int) $it['id'];
-			$img = (int) $it['media_id'] > 0
-				? wp_get_attachment_image( (int) $it['media_id'], 'medium', false, [ 'class' => 'liw-myl__dream-img' ] )
-				: '<span class="liw-myl__dream-ref">#' . (int) $it['media_id'] . '</span>';
+			$mid = (int) $it['media_id'];
+			$img = MediaPipeline::thumb( $mid, 'medium', '#' . $mid );
+			$approve = ( $mid > 0 && MediaPipeline::S_APPROVED !== MediaPipeline::state( $mid ) && current_user_can( Roles::CAP_MODERATE ) )
+				? '<button type="button" class="liw-myl__wbtn" data-liw-act="moderation/media/' . $mid . '/approve">' . esc_html__( 'Bild freigeben', 'liebherr-interface-world' ) . '</button>'
+				: '';
 			$cards .= '<figure class="liw-myl__dream">'
 				. $img
 				. '<figcaption>'
-				. '<strong class="liw-myl__dream-title">' . esc_html( (string) $it['title'] ) . '</strong>'
+				. '<strong class="liw-myl__dream-title">' . esc_html( (string) $it['title'] ) . '</strong>' . $approve
 				. ( '' !== (string) $it['album'] ? ' <span class="liw-myl__dream-tags">' . esc_html( (string) $it['album'] ) . '</span>' : '' )
 				. ( '' !== (string) $it['description'] ? '<p class="liw-myl__dream-note">' . esc_html( (string) $it['description'] ) . '</p>' : '' )
 				. self::shares_html( $id )
@@ -105,7 +107,8 @@ final class GalleryView {
 	}
 
 	private static function add_form_html(): string {
-		return '<form class="liw-myl__form" data-liw-post="gallery">'
+		return '<p class="liw-myl__privacyhint">' . esc_html__( 'Hinweis: Nur freigegebene Mediathek-Bilder erscheinen; ungeprüfte landen in Prüfung. Vor Freigabe Gesichter, Kennzeichen, Kundendaten und Betriebsgeheimnisse prüfen (§14).', 'liebherr-interface-world' ) . '</p>'
+			. '<form class="liw-myl__form" data-liw-post="gallery">'
 			. '<label class="liw-myl__field"><span>' . esc_html__( 'Bild-ID (Mediathek)', 'liebherr-interface-world' ) . '</span><input type="number" name="media_id" min="0" value="0"></label>'
 			. '<label class="liw-myl__field"><span>' . esc_html__( 'Titel', 'liebherr-interface-world' ) . '</span><input type="text" name="title" maxlength="160"></label>'
 			. '<label class="liw-myl__field"><span>' . esc_html__( 'Album', 'liebherr-interface-world' ) . '</span><input type="text" name="album" maxlength="80"></label>'

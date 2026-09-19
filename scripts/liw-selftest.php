@@ -1283,6 +1283,23 @@ try {
 		$wpdb->delete( \Liebherr\InterfaceWorld\MyLiebherr\Schema::share_table(), [ 'id' => (int) ( $__mod_sh['id'] ?? 0 ) ] );
 		$wpdb->delete( \Liebherr\InterfaceWorld\MyLiebherr\Schema::gallery_table(), [ 'id' => $__mod_gid ] );
 
+		// Medien-Pipeline (§14/§16): PDF abgelehnt (validate + REST), Bild quarantine → Prüfer-Freigabe → approved.
+		$__pdf = (int) wp_insert_post( [ 'post_type' => 'attachment', 'post_mime_type' => 'application/pdf', 'post_status' => 'inherit', 'post_title' => 'SELFTEST-PDF' ] );
+		$__png = (int) wp_insert_post( [ 'post_type' => 'attachment', 'post_mime_type' => 'image/png', 'post_status' => 'inherit', 'post_title' => 'SELFTEST-PNG' ] );
+		$__mp_pdf   = \Liebherr\InterfaceWorld\MyLiebherr\MediaPipeline::validate( $__pdf );
+		$__mp_bef   = \Liebherr\InterfaceWorld\MyLiebherr\MediaPipeline::state( $__png );
+		\Liebherr\InterfaceWorld\MyLiebherr\MediaPipeline::approve( $__png );
+		$__mp_aft   = \Liebherr\InterfaceWorld\MyLiebherr\MediaPipeline::state( $__png );
+		$__mp_gc    = $__cr( 'gallery', 'POST', [ 'title' => 'SELFTEST-MP', 'media_id' => $__pdf ] );
+		liw_st_check(
+			'Medien-Pipeline: PDF abgelehnt (validate + REST); Bild quarantine → Freigabe → approved',
+			empty( $__mp_pdf['ok'] ) && 'mime_not_allowed' === $__mp_pdf['reason']
+			&& 'quarantine' === $__mp_bef && 'approved' === $__mp_aft
+			&& empty( $__mp_gc['ok'] ) && 'media_mime_not_allowed' === (string) ( $__mp_gc['reason'] ?? '' )
+		);
+		wp_delete_post( $__pdf, true );
+		wp_delete_post( $__png, true );
+
 		// Nav: Pocket-Reiter aktiv, sobald Pocket scharf + Seite vorhanden.
 		$__prev_pocket_page = (int) get_option( 'liw_pocket_page_id', 0 );
 		update_option( 'liw_pocket_page_id', (int) get_option( 'liw_my_liebherr_page_id', 0 ) );
@@ -1364,6 +1381,10 @@ try {
 	liw_st_check( 'CAPDB-Board: visuelle Board-Assets vorhanden (JS/CSS)', is_readable( LIW_PATH . 'assets/js/liw-cvf-board.js' ) && is_readable( LIW_PATH . 'assets/css/liw-cvf-board.css' ) );
 	// CAPDB Board-Datenmodell (alpha.89): Entwurf/Seed/Publish/Rollback (mit Cleanup).
 	$__bd = \Liebherr\InterfaceWorld\Cvf\BoardRepository::ensure_draft( 1 );
+	// Deterministische Vorbedingung: Entwurf auf die reine Startkonfig zurücksetzen (der opt-in-Seeder
+	// liw-seed-cvf-6cards.php oder frühere Läufe könnten den geteilten Entwurf verdrahtet haben).
+	\Liebherr\InterfaceWorld\Cvf\BoardRepository::clear_board( $__bd );
+	\Liebherr\InterfaceWorld\Cvf\BoardRepository::seed_start_config( $__bd );
 	$__bd_inst = \Liebherr\InterfaceWorld\Cvf\BoardRepository::instances( $__bd );
 	liw_st_check( 'CAPDB: Startkonfig seedet Plugin-Instanzen (Challenge auf Uebergaengen + First-Entry auf Seiten)', count( $__bd_inst ) >= 3 );
 	// Simulation (alpha.94): Schedule → Marker-Plan (open+close) über den Snapshot.

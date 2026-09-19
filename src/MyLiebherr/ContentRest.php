@@ -66,6 +66,13 @@ final class ContentRest {
 		register_rest_route( self::NAMESPACE, '/moderation/queue', [ [ 'methods' => 'GET', 'callback' => [ self::class, 'mod_queue' ] ] + $mod ] );
 		register_rest_route( self::NAMESPACE, '/moderation/shares/' . $id . '/review', [ [ 'methods' => 'POST', 'callback' => [ self::class, 'mod_review_share' ] ] + $mod ] );
 		register_rest_route( self::NAMESPACE, '/moderation/reports/' . $id . '/resolve', [ [ 'methods' => 'POST', 'callback' => [ self::class, 'mod_resolve_report' ] ] + $mod ] );
+		register_rest_route( self::NAMESPACE, '/moderation/media/' . $id . '/approve', [ [ 'methods' => 'POST', 'callback' => [ self::class, 'mod_media_approve' ] ] + $mod ] );
+	}
+
+	/** Formal-Validierung eines optionalen media_id-Parameters (Typ/Größe). @return \WP_REST_Response|null */
+	private static function media_guard( \WP_REST_Request $r ): ?\WP_REST_Response {
+		$mv = MediaPipeline::validate( (int) $r->get_param( 'media_id' ) );
+		return $mv['ok'] ? null : new \WP_REST_Response( [ 'ok' => false, 'reason' => 'media_' . $mv['reason'] ], 200 );
 	}
 
 	public static function require_moderate(): bool {
@@ -95,12 +102,14 @@ final class ContentRest {
 
 	public static function dreams_create( \WP_REST_Request $r ): \WP_REST_Response {
 		$g = self::gate(); if ( $g ) { return $g; }
+		$m = self::media_guard( $r ); if ( $m ) { return $m; }
 		$item = DreamRepository::add( self::uid(), (array) $r->get_params() );
 		return new \WP_REST_Response( [ 'ok' => null !== $item, 'dream' => $item ], 200 );
 	}
 
 	public static function dreams_update( \WP_REST_Request $r ): \WP_REST_Response {
 		$g = self::gate(); if ( $g ) { return $g; }
+		$m = self::media_guard( $r ); if ( $m ) { return $m; }
 		$item = DreamRepository::update( self::uid(), (int) $r['id'], (array) $r->get_params() );
 		return new \WP_REST_Response( [ 'ok' => null !== $item, 'dream' => $item ], 200 );
 	}
@@ -124,12 +133,14 @@ final class ContentRest {
 
 	public static function gallery_create( \WP_REST_Request $r ): \WP_REST_Response {
 		$g = self::gate(); if ( $g ) { return $g; }
+		$m = self::media_guard( $r ); if ( $m ) { return $m; }
 		$item = GalleryRepository::add( self::uid(), (array) $r->get_params() );
 		return new \WP_REST_Response( [ 'ok' => null !== $item, 'item' => $item ], 200 );
 	}
 
 	public static function gallery_update( \WP_REST_Request $r ): \WP_REST_Response {
 		$g = self::gate(); if ( $g ) { return $g; }
+		$m = self::media_guard( $r ); if ( $m ) { return $m; }
 		$item = GalleryRepository::update( self::uid(), (int) $r['id'], (array) $r->get_params() );
 		return new \WP_REST_Response( [ 'ok' => null !== $item, 'item' => $item ], 200 );
 	}
@@ -227,5 +238,10 @@ final class ContentRest {
 	public static function mod_resolve_report( \WP_REST_Request $r ): \WP_REST_Response {
 		$g = self::gate(); if ( $g ) { return $g; }
 		return new \WP_REST_Response( ModerationService::resolve_report( (int) $r['id'], (string) $r->get_param( 'action' ), self::uid() ), 200 );
+	}
+
+	public static function mod_media_approve( \WP_REST_Request $r ): \WP_REST_Response {
+		$g = self::gate(); if ( $g ) { return $g; }
+		return new \WP_REST_Response( [ 'ok' => MediaPipeline::approve( (int) $r['id'] ) ], 200 );
 	}
 }
