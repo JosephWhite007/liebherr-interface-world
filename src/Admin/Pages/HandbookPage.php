@@ -115,6 +115,8 @@ final class HandbookPage {
 
 			<p><?php esc_html_e( 'Adventures – Tokenkonto (seit alpha.66): Jeder Nutzer hat ein persistentes Tokenguthaben (Startguthaben standardmäßig 1000). Beim bestätigten Zugriff auf einen kostenpflichtigen Beitrag wird der Tokenwert tatsächlich vom Konto abgebucht; reicht das Guthaben nicht, wird der Zugriff abgelehnt. Der Bestätigungsdialog zeigt das aktuelle Guthaben und aktualisiert es nach der Buchung. Im Backoffice („🗺 Adventures") können berechtigte Personen unter „Tokenkonto aufladen" das Guthaben einer Nutzer-ID erhöhen.', 'liebherr-interface-world' ); ?></p>
 
+			<p><?php esc_html_e( 'Adventures – Bild-Upload (seit alpha.67): In der Eingabemaske kann statt einer Bild-URL ein Bild direkt hochgeladen werden (JPG/PNG/WebP/GIF). Es wird als Beitragsbild gesetzt und im Stream und auf der Detailseite angezeigt. Video-Upload und Transcoding sind bewusst eine spätere Etappe.', 'liebherr-interface-world' ); ?></p>
+
 			<h2><?php esc_html_e( 'Nachvollziehbarkeit: Programmierlogbuch und To-Dos', 'liebherr-interface-world' ); ?></h2>
 			<p><?php esc_html_e( 'Der Reiter „🧾 Programmierlogbuch" listet jede Quellcodeänderung auf Datei-/Klassenebene (was wurde wann geändert). Der Reiter „📋 To-Dos" listet offene bzw. bewusst zurückgestellte Punkte mit Quellenangabe (z. B. Content Board §19, echte Karte für die World Connections Map, Docker-Praxistest). Beide werden bei jeder Aufgabe gepflegt, in der sich etwas ändert.', 'liebherr-interface-world' ); ?></p>
 

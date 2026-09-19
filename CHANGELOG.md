@@ -1,5 +1,22 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.67] – 2026-09-19 – Adventures: Medien-Upload [Job A6]
+
+### Hinzugefügt
+- **Bild-Upload** `Adventures\UploadService` + REST `POST liw-adv/v1/upload` (nur mit Zugang): legt aus einem
+  hochgeladenen Bild (JPG/PNG/WebP/GIF) einen WordPress-Anhang über die Core-Medienpipeline an und liefert
+  Attachment-ID + URL. Die Eingabemaske erhält ein Datei-Feld (mit Status); das hochgeladene Bild wird als
+  Beitragsbild gesetzt und im Stream/Detail angezeigt. Externe Bild-URL bleibt als Alternative.
+- Typprüfung serverseitig (`is_allowed_ext`, `mimes`-Override) – nur Bildtypen im MVP.
+
+### Erledigt (Backlog Gruppe A, Punkt 6)
+- Bild-Upload umgesetzt. **Offen (bewusst, §14):** Video-Upload + Transcoding (spätere Etappe).
+
+### Verifikation
+- `tests/run-tests.php` **389/389** (`is_allowed_ext` akzeptiert Bilder, lehnt exe/pdf ab),
+  `scripts/liw-selftest.php` **337/337** (Route `/upload` registriert; `handle()` lehnt fehlende Datei/falschen
+  Typ ab). Der eigentliche Upload läuft über die WP-Core-Medienpipeline (Browser/HTTP).
+
 ## [0.1.0-alpha.66] – 2026-09-19 – Adventures: echtes Tokenbudget-Konto [Job A5]
 
 ### Hinzugefügt

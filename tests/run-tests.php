@@ -439,6 +439,9 @@ liw_assert( 'TokenLedger: Hash verkettet (prev_hash geht ein) + Manipulation än
 liw_assert( 'TokenLedger: gültige Vorgangsarten (access/registered/…)', $TL::is_valid_kind( 'access' ) && $TL::is_valid_kind( 'registered' ) && ! $TL::is_valid_kind( 'quatsch' ) && 9 === count( $TL::kinds() ), $checks, $failures );
 require_once $root . '/src/Adventures/DetailView.php';
 liw_assert( 'DetailView: Shortcode-Konstante + QUERY_VAR + render()', 'liw_adventure_detail' === \Liebherr\InterfaceWorld\Adventures\DetailView::SHORTCODE && 'adv' === \Liebherr\InterfaceWorld\Adventures\DetailView::QUERY_VAR && method_exists( \Liebherr\InterfaceWorld\Adventures\DetailView::class, 'render' ), $checks, $failures );
+require_once $root . '/src/Adventures/UploadService.php';
+$US = '\Liebherr\InterfaceWorld\Adventures\UploadService';
+liw_assert( 'UploadService: is_allowed_ext akzeptiert Bilder, lehnt exe/pdf ab', $US::is_allowed_ext( 'foto.JPG' ) && $US::is_allowed_ext( 'bild.webp' ) && ! $US::is_allowed_ext( 'schad.exe' ) && ! $US::is_allowed_ext( 'doku.pdf' ) && ! $US::is_allowed_ext( 'ohneendung' ), $checks, $failures );
 
 // 3. strict_types=1 in jeder src/-Datei (Coding Standard, CLAUDE.md Abschnitt 5).
 echo "-- Coding Standard --\n";

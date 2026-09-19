@@ -55,7 +55,12 @@ final class SubmissionForm {
 			<label class="liw-wb__field"><span class="liw-wb__label"><?php echo esc_html__( 'Beschreibung / Kurzgeschichte', 'liebherr-interface-world' ); ?></span>
 				<textarea data-liw-adv-story rows="4" class="liw-wb__input"></textarea>
 			</label>
-			<label class="liw-wb__field"><span class="liw-wb__label"><?php echo esc_html__( 'Bild-URL (optional, Demo)', 'liebherr-interface-world' ); ?></span>
+			<label class="liw-wb__field"><span class="liw-wb__label"><?php echo esc_html__( 'Bild hochladen (JPG/PNG/WebP/GIF)', 'liebherr-interface-world' ); ?></span>
+				<input type="file" accept="image/*" data-liw-adv-file class="liw-wb__input" />
+				<span class="liw-wb__hint" data-liw-adv-file-status></span>
+				<input type="hidden" data-liw-adv-media-id value="" />
+			</label>
+			<label class="liw-wb__field"><span class="liw-wb__label"><?php echo esc_html__( 'oder Bild-URL (optional, Demo)', 'liebherr-interface-world' ); ?></span>
 				<input type="url" data-liw-adv-image placeholder="https://…" class="liw-wb__input" />
 			</label>
 

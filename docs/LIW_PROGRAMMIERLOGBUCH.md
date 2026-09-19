@@ -12,6 +12,15 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.67 – Adventures: Medien-Upload [Backlog A6]
+
+**Neu:** `src/Adventures/UploadService.php` (`allowed_exts`/`is_allowed_ext` [rein], `handle()` via
+`media_handle_upload`, mimes-Override, nur Bilder). `Rest::upload` + Route `POST /upload` (Policy::can_create,
+`get_file_params()`). **Geändert:** `SubmissionForm` (Datei-Feld + Status + Hidden `media_id`).
+`assets/js/liw-adventures.js` (FormData-Upload → `media_id`; Submit sendet `media_id`). i18n uploading/uploaded/
+uploadErr. `AdventureService::create` nutzt media_id bereits (Beitragsbild). Tests/Selftest. Bump → alpha.67.
+Video/Transcoding bewusst später (§14). **Nächster Bau:** A7 – Get-Help-Assistent (Phase 3).
+
 ## 0.1.0-alpha.66 – Adventures: echtes Tokenbudget-Konto [Backlog A5]
 
 **Neu:** `src/Adventures/TokenAccount.php` (User-Meta `_liw_adv_token_balance`; `default_balance`/`balance`/

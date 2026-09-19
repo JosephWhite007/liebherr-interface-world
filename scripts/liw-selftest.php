@@ -815,6 +815,11 @@ try {
 	$wpdb->query( $wpdb->prepare( "DELETE FROM {$__lt2} WHERE contribution_id = %d", $__ppid ) ); // phpcs:ignore WordPress.DB
 	wp_delete_post( $__ppid, true );
 
+	// A6 – Medien-Upload (§14, alpha.67): Route + Guards (echter Upload = Core-Pipeline/Browser).
+	$US = '\Liebherr\InterfaceWorld\Adventures\UploadService';
+	liw_st_check( 'ADV-Upload: REST-Route /upload registriert', array_key_exists( '/' . \Liebherr\InterfaceWorld\Adventures\Rest::NAMESPACE . '/upload', rest_get_server()->get_routes() ) );
+	liw_st_check( 'ADV-Upload: handle() lehnt fehlende Datei + falschen Typ ab', empty( $US::handle( [] )['ok'] ) && 'type_not_allowed' === (string) $US::handle( [ 'name' => 'schad.exe', 'tmp_name' => '/tmp/x' ] )['error'] && $US::is_allowed_ext( 'a.png' ) );
+
 	// Aufräumen (Testdaten inkl. Ledger).
 	global $wpdb; $__lt = \Liebherr\InterfaceWorld\Adventures\TokenSchema::table();
 	foreach ( [ $__a1['id'], $__a2['id'], $__d['id'] ] as $__id ) {

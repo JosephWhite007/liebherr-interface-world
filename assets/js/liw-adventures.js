@@ -96,6 +96,32 @@
 			} );
 		} );
 
+		// Bild-Upload (§14): Datei wählen → Anhang anlegen → media_id setzen.
+		var fileEl = $( '[data-liw-adv-file]', root );
+		var mediaIdEl = $( '[data-liw-adv-media-id]', root );
+		var fileStatus = $( '[data-liw-adv-file-status]', root );
+		if ( fileEl && mediaIdEl ) {
+			fileEl.addEventListener( 'change', function () {
+				var f = fileEl.files && fileEl.files[0];
+				if ( ! f ) { return; }
+				if ( fileStatus ) { fileStatus.textContent = cfg.i18n.uploading || 'Wird hochgeladen …'; }
+				var fd = new FormData();
+				fd.append( 'file', f );
+				fetch( cfg.rest + 'upload', { method: 'POST', headers: { 'X-WP-Nonce': cfg.nonce }, credentials: 'same-origin', body: fd } )
+					.then( function ( r ) { return r.json(); } )
+					.then( function ( res ) {
+						if ( res && res.ok && res.id ) {
+							mediaIdEl.value = res.id;
+							if ( fileStatus ) { fileStatus.textContent = ( cfg.i18n.uploaded || 'Bild hochgeladen' ) + ' (#' + res.id + ')'; }
+						} else {
+							mediaIdEl.value = '';
+							if ( fileStatus ) { fileStatus.textContent = ( cfg.i18n.uploadErr || 'Upload fehlgeschlagen' ) + ( res && res.error ? ' – ' + res.error : '' ); }
+						}
+					} )
+					.catch( function () { if ( fileStatus ) { fileStatus.textContent = cfg.i18n.uploadErr || 'Upload fehlgeschlagen'; } } );
+			} );
+		}
+
 		var rightsEl = $( '[data-liw-adv-rights]', root );
 		[].forEach.call( root.querySelectorAll( '[data-liw-adv-submit]' ), function ( btn ) {
 			btn.addEventListener( 'click', function () {
@@ -110,6 +136,7 @@
 					title: title,
 					story: ( $( '[data-liw-adv-story]', root ) || {} ).value || '',
 					image_url: ( $( '[data-liw-adv-image]', root ) || {} ).value || '',
+					media_id: parseInt( ( $( '[data-liw-adv-media-id]', root ) || {} ).value, 10 ) || 0,
 					type: ( $( '[data-liw-adv-type]', root ) || {} ).value || '',
 					urgency: ( $( '[data-liw-adv-urgency]', root ) || {} ).value || '',
 					visibility: ( $( '[data-liw-adv-visibility]', root ) || {} ).value || '',

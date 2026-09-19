@@ -71,6 +71,25 @@ final class Rest {
 			'callback'            => [ self::class, 'moderate' ],
 			'permission_callback' => static function (): bool { return Policy::can_moderate(); },
 		] );
+		register_rest_route( self::NAMESPACE, '/upload', [
+			'methods'             => 'POST',
+			'callback'            => [ self::class, 'upload' ],
+			'permission_callback' => static function (): bool { return Policy::can_create(); },
+		] );
+	}
+
+	/** Bild-Upload (§14): legt einen Anhang an und liefert Attachment-ID + URL für die Eingabemaske. */
+	public static function upload( \WP_REST_Request $req ): \WP_REST_Response {
+		if ( ! Policy::can_create() ) {
+			return new \WP_REST_Response( [ 'ok' => false, 'error' => __( 'Nicht berechtigt.', 'liebherr-interface-world' ) ], 200 );
+		}
+		$files = $req->get_file_params();
+		$file  = $files['file'] ?? null;
+		if ( ! is_array( $file ) ) {
+			return new \WP_REST_Response( [ 'ok' => false, 'error' => 'no_file' ], 200 );
+		}
+		$res = UploadService::handle( $file );
+		return new \WP_REST_Response( $res, 200 );
 	}
 
 	/** Registriert einen (eigenen) Beitrag mit frei festgelegtem Tokenwert; Rechte-Zusicherung Pflicht (§1/§3). */
