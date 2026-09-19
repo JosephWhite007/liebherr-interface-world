@@ -1,5 +1,20 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.65] – 2026-09-19 – Adventures: Suche & Filter nach Maschine/Bauteil [Job A4]
+
+### Hinzugefügt
+- **Freitextsuche** (Titel/Beschreibung) und **Facetten Maschine/Modell + Bauteil/Komponente** im Adventures-
+  Stream (Filterleiste). Neue Meta-Felder `_liw_adv_machine`/`_liw_adv_component`; in der Eingabemaske
+  (`SubmissionForm`) erfassbar, im View-Modell + auf der Detailseite ausgewiesen.
+- `AdventureService::query()` unterstützt `search` (WP-`s`) + `machine`/`component` (Teilstring, `LIKE`);
+  REST `liw-adv/v1/stream` reicht die Parameter durch; das Frontend filtert live (Debounce bei Texteingabe).
+
+### Erledigt (Backlog Gruppe A, Punkt 4)
+
+### Verifikation
+- `tests/run-tests.php` **384/384**, `scripts/liw-selftest.php` **332/332** (Maschine „9200" trifft nur den
+  Bagger, Bauteil „Getriebe" nur den Kran, Freitextsuche nach Titel, `to_view` trägt Maschine/Bauteil).
+
 ## [0.1.0-alpha.64] – 2026-09-19 – Adventures: Detailseite eines Beitrags [Job A3]
 
 ### Hinzugefügt

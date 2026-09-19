@@ -12,6 +12,17 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.65 – Adventures: Suche & Filter nach Maschine/Bauteil [Backlog A4]
+
+**Geändert:** `AdventureCpt` (Meta `M_MACHINE`/`M_COMPONENT`). `AdventureService::create` speichert Maschine/
+Bauteil; `query()` um `search` (WP-`s`) + `machine`/`component` (`LIKE`) erweitert; `to_view` trägt beide.
+`SubmissionForm` (Maschine-/Bauteil-Felder). `AdventuresView` (Filterleiste: Suche + Maschine + Bauteil).
+`assets/js/liw-adventures.js` (`refreshStream` liest alle Filter, Debounce für Textfelder; Submit sendet
+machine/component). `Adventures\Rest` (`stream` + `create` reichen die Parameter durch). `DetailView` (Meta
+Maschine/Bauteil). Tests/Selftest. Bump alpha.64 → alpha.65.
+
+**Nächster Bau:** A5 – Adventures echtes Tokenbudget-Konto.
+
 ## 0.1.0-alpha.64 – Adventures: Detailseite eines Beitrags [Backlog A3]
 
 **Neu:** `src/Adventures/DetailView.php` (Shortcode `[liw_adventure_detail]`, `?adv=<ID>`; `render(id)` =

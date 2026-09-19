@@ -111,6 +111,8 @@ final class HandbookPage {
 
 			<p><?php esc_html_e( 'Adventures – Detailseite (seit alpha.64): Jeder Beitrag hat eine eigene Detailansicht (über „Details ansehen" auf der Karte, Adresse …/liebherr-adventures/?adv=ID). Sie zeigt Titel, Klassifikation, Ort (drei Wörter) und Region, den Registrierungsstatus, den Tokenwert samt erlaubtem Nutzungsumfang, die Artikelbook-Referenz und das Bild. Bei kostenpflichtigen Beiträgen erscheint zunächst nur diese Vorschau mit einem Knopf „Zugriff bestätigen"; der eigentliche Inhalt wird erst nach der Token-Bestätigung angezeigt und ist vorher bewusst nicht in der Seite enthalten. Eigene Beiträge und bereits bezahlte Beiträge werden direkt vollständig gezeigt (kein erneuter Token-Abzug).', 'liebherr-interface-world' ); ?></p>
 
+			<p><?php esc_html_e( 'Adventures – Suche & Filter (seit alpha.65): Der Adventures-Stream lässt sich über eine Freitextsuche (Titel/Beschreibung) sowie über die Felder „Maschine/Modell" und „Bauteil/Komponente" filtern. Diese beiden Angaben werden beim Erstellen im Formular erfasst und auf der Detailseite angezeigt. Die Filter greifen sofort (Teilstring-Treffer).', 'liebherr-interface-world' ); ?></p>
+
 			<h2><?php esc_html_e( 'Nachvollziehbarkeit: Programmierlogbuch und To-Dos', 'liebherr-interface-world' ); ?></h2>
 			<p><?php esc_html_e( 'Der Reiter „🧾 Programmierlogbuch" listet jede Quellcodeänderung auf Datei-/Klassenebene (was wurde wann geändert). Der Reiter „📋 To-Dos" listet offene bzw. bewusst zurückgestellte Punkte mit Quellenangabe (z. B. Content Board §19, echte Karte für die World Connections Map, Docker-Praxistest). Beide werden bei jeder Aufgabe gepflegt, in der sich etwas ändert.', 'liebherr-interface-world' ); ?></p>
 

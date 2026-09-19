@@ -38,6 +38,8 @@ final class AdventureCpt {
 	public const M_MEDIA_ID   = '_liw_adv_media_id';
 	public const M_MEDIA_URL  = '_liw_adv_media_url'; // MVP-Fallback: externe Bild-URL (bis Upload-Backend, §14/§21).
 	public const M_SOLVED     = '_liw_adv_solved';     // open | in_progress | solved
+	public const M_MACHINE    = '_liw_adv_machine';    // Maschine/Modell (Freitext, §18 Suche/Filter)
+	public const M_COMPONENT  = '_liw_adv_component';  // Bauteil/Komponente (Freitext, §18 Suche/Filter)
 
 	// Basislogik „Adventure Area" (Registrierung, Tokenwert, Veröffentlichung §1–§9).
 	public const M_TOKEN_VALUE     = '_liw_adv_token_value';      // vom Ersteller festgelegte Tokenanzahl (int >= 0)

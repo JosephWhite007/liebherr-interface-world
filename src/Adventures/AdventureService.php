@@ -85,6 +85,10 @@ final class AdventureService {
 		if ( '' !== $media_url ) {
 			update_post_meta( $post_id, AdventureCpt::M_MEDIA_URL, $media_url );
 		}
+		$machine = sanitize_text_field( (string) ( $data['machine'] ?? '' ) );
+		if ( '' !== $machine ) { update_post_meta( $post_id, AdventureCpt::M_MACHINE, $machine ); }
+		$component = sanitize_text_field( (string) ( $data['component'] ?? '' ) );
+		if ( '' !== $component ) { update_post_meta( $post_id, AdventureCpt::M_COMPONENT, $component ); }
 
 		return [ 'id' => $post_id, 'uuid' => $uuid, 'status' => (string) get_post_status( $post_id ), 'words' => null !== $loc ? $loc['words'] : '' ];
 	}
@@ -92,7 +96,7 @@ final class AdventureService {
 	/**
 	 * Sichtbare Adventures für den aktuellen Betrachter (Stream/Karte).
 	 *
-	 * @param array<string,mixed> $args type, urgency, limit
+	 * @param array<string,mixed> $args type, urgency, limit, search, machine, component
 	 * @return array<int,array<string,mixed>>
 	 */
 	public static function query( array $args = [] ): array {
@@ -103,6 +107,16 @@ final class AdventureService {
 		if ( Taxonomy::is_valid_urgency( (string) ( $args['urgency'] ?? '' ) ) ) {
 			$meta[] = [ 'key' => AdventureCpt::M_URGENCY, 'value' => (string) $args['urgency'] ];
 		}
+		// §18 – Maschine/Bauteil als Facetten (Teilstring-Treffer, case-insensitive).
+		$machine = sanitize_text_field( (string) ( $args['machine'] ?? '' ) );
+		if ( '' !== $machine ) {
+			$meta[] = [ 'key' => AdventureCpt::M_MACHINE, 'value' => $machine, 'compare' => 'LIKE' ];
+		}
+		$component = sanitize_text_field( (string) ( $args['component'] ?? '' ) );
+		if ( '' !== $component ) {
+			$meta[] = [ 'key' => AdventureCpt::M_COMPONENT, 'value' => $component, 'compare' => 'LIKE' ];
+		}
+		$search = sanitize_text_field( (string) ( $args['search'] ?? '' ) );
 
 		$posts = get_posts( [
 			'post_type'      => AdventureCpt::POST_TYPE,
@@ -110,6 +124,7 @@ final class AdventureService {
 			'posts_per_page' => min( 60, max( 1, (int) ( $args['limit'] ?? 24 ) ) ),
 			'orderby'        => 'date',
 			'order'          => 'DESC',
+			's'              => $search, // Freitext über Titel/Inhalt (§18).
 			// phpcs:ignore WordPress.DB.SlowDBQuery
 			'meta_query'     => [] !== $meta ? array_merge( [ 'relation' => 'AND' ], $meta ) : [],
 		] );
@@ -176,6 +191,8 @@ final class AdventureService {
 			'map_lng'       => $map_lng,
 			'token_value'   => TokenPolicy::sanitize_value( get_post_meta( $p->ID, AdventureCpt::M_TOKEN_VALUE, true ) ),
 			'reg_status'    => (string) get_post_meta( $p->ID, AdventureCpt::M_REG_STATUS, true ),
+			'machine'       => (string) get_post_meta( $p->ID, AdventureCpt::M_MACHINE, true ),
+			'component'     => (string) get_post_meta( $p->ID, AdventureCpt::M_COMPONENT, true ),
 		];
 	}
 

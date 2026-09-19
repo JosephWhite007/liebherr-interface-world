@@ -54,9 +54,11 @@
 	function refreshStream( root ) {
 		var stream = $( '[data-liw-adv-stream]', root );
 		if ( ! stream ) { return; }
-		var type = ( $( '[data-liw-adv-filter="type"]', root ) || {} ).value || '';
-		var urg = ( $( '[data-liw-adv-filter="urgency"]', root ) || {} ).value || '';
-		var q = 'stream?limit=24' + ( type ? '&type=' + encodeURIComponent( type ) : '' ) + ( urg ? '&urgency=' + encodeURIComponent( urg ) : '' );
+		var q = 'stream?limit=24';
+		[ 'type', 'urgency', 'search', 'machine', 'component' ].forEach( function ( key ) {
+			var v = ( $( '[data-liw-adv-filter="' + key + '"]', root ) || {} ).value || '';
+			if ( v ) { q += '&' + key + '=' + encodeURIComponent( v ); }
+		} );
 		api( q ).then( function ( res ) {
 			stream.innerHTML = '';
 			if ( ! res || ! res.ok || ! res.items || ! res.items.length ) {
@@ -112,6 +114,8 @@
 					urgency: ( $( '[data-liw-adv-urgency]', root ) || {} ).value || '',
 					visibility: ( $( '[data-liw-adv-visibility]', root ) || {} ).value || '',
 					protection: ( $( '[data-liw-adv-protection]', root ) || {} ).value || 'region',
+					machine: ( $( '[data-liw-adv-machine]', root ) || {} ).value || '',
+					component: ( $( '[data-liw-adv-component]', root ) || {} ).value || '',
 					token_value: parseInt( ( $( '[data-liw-adv-token]', root ) || {} ).value, 10 ) || 0,
 					usage_scope: ( $( '[data-liw-adv-usage]', root ) || {} ).value || '',
 					rights_confirmed: wantsRegister && rights,
@@ -131,8 +135,12 @@
 	}
 
 	function init( root ) {
+		var deb = null;
 		[].forEach.call( root.querySelectorAll( '[data-liw-adv-filter]' ), function ( sel ) {
 			sel.addEventListener( 'change', function () { refreshStream( root ); } );
+			if ( 'text' === sel.type || 'search' === sel.type ) {
+				sel.addEventListener( 'input', function () { window.clearTimeout( deb ); deb = window.setTimeout( function () { refreshStream( root ); }, 350 ); } );
+			}
 		} );
 		initCreate( root );
 	}

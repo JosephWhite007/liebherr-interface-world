@@ -28,7 +28,9 @@ der Reihe nach ab und befüllen sie mit Funktionalität), **B** = auf externe Fr
 3. ~~**Adventures – Detailseite.**~~ **ERLEDIGT (alpha.64):** `Adventures\DetailView` (`[liw_adventure_detail]`,
    `?adv=ID`) mit Kopf (Titel/Ort/Status/Tokenwert/Artikelbook/Medium) + Inhalts-Gate (§5, Inhalt erst nach
    Tokenakzeptanz, nicht vorab im DOM); `TokenLedger::has_access()` verhindert Doppelbelastung.
-4. **Adventures – Suche/Filter nach Maschine/Bauteil (§18).** Zusätzliche Facetten im Stream.
+4. ~~**Adventures – Suche/Filter nach Maschine/Bauteil (§18).**~~ **ERLEDIGT (alpha.65):** Freitextsuche +
+   Facetten Maschine/Bauteil (Meta `_liw_adv_machine`/`_liw_adv_component`), `query()` search/machine/component,
+   Filterleiste + Erfassung in der Maske + Anzeige auf der Detailseite.
 5. **Adventures – echtes Tokenbudget-Konto.** Persistiertes Budget je Nutzer/Org statt Filter-Default 1000;
    Buchung beim Zugriff, Anzeige des Kontostands.
 6. **Adventures – Medien-Upload/Transcoding (§14).** Bild/Kurzvideo-Upload statt externer Bild-URL.

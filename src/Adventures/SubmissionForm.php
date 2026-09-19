@@ -60,6 +60,15 @@ final class SubmissionForm {
 			</label>
 
 			<div class="liw-wb__row">
+				<label class="liw-wb__field"><span class="liw-wb__label"><?php echo esc_html__( 'Maschine / Modell', 'liebherr-interface-world' ); ?></span>
+					<input type="text" data-liw-adv-machine class="liw-wb__input" placeholder="<?php echo esc_attr__( 'z. B. R 9200', 'liebherr-interface-world' ); ?>" />
+				</label>
+				<label class="liw-wb__field"><span class="liw-wb__label"><?php echo esc_html__( 'Bauteil / Komponente', 'liebherr-interface-world' ); ?></span>
+					<input type="text" data-liw-adv-component class="liw-wb__input" placeholder="<?php echo esc_attr__( 'z. B. Hydraulikpumpe', 'liebherr-interface-world' ); ?>" />
+				</label>
+			</div>
+
+			<div class="liw-wb__row">
 				<label class="liw-wb__field"><span class="liw-wb__label"><?php echo esc_html__( 'Sichtbarkeit', 'liebherr-interface-world' ); ?></span>
 					<select data-liw-adv-visibility class="liw-wb__input"><?php foreach ( Policy::visibilities() as $code => $label ) : ?><option value="<?php echo esc_attr( $code ); ?>"<?php echo 'organization' === $code ? ' selected' : ''; ?>><?php echo esc_html( $label ); ?></option><?php endforeach; ?></select>
 				</label>

@@ -776,6 +776,20 @@ try {
 	liw_st_check( 'ADV-Detail: Nicht-Ersteller ohne Zugriff → Token-Gate, Inhalt verborgen (§5)', str_contains( $__det_anon, 'data-liw-adv-detail-gate' ) && ! str_contains( $__det_anon, 'liw-advdetail__content' ) );
 	wp_set_current_user( (int) $__prev_user );
 
+	// A4 – Suche/Filter nach Maschine/Bauteil (§18, alpha.65).
+	$__f1 = $ADV::create( [ 'title' => 'SELFTEST-FILTER-BAGGER', 'story' => 'Baggerthema', 'type' => 'field_experience', 'urgency' => 'informative', 'visibility' => 'public_approved', 'intent' => 'submit', 'lat' => 48.0, 'lng' => 10.0, 'author_id' => 1, 'machine' => 'R 9200', 'component' => 'Hydraulikpumpe' ] );
+	$__f2 = $ADV::create( [ 'title' => 'SELFTEST-FILTER-KRAN', 'story' => 'Kranthema', 'type' => 'field_experience', 'urgency' => 'informative', 'visibility' => 'public_approved', 'intent' => 'submit', 'lat' => 48.0, 'lng' => 10.0, 'author_id' => 1, 'machine' => 'LTM 1300', 'component' => 'Getriebe' ] );
+	foreach ( [ $__f1['id'], $__f2['id'] ] as $__fid ) { wp_update_post( [ 'ID' => (int) $__fid, 'post_status' => 'publish' ] ); }
+	$__titles_of = static function ( array $rows ): array { return array_map( static fn( $x ) => (string) $x['title'], $rows ); };
+	$__by_machine = $__titles_of( $ADV::query( [ 'machine' => '9200', 'limit' => 50 ] ) );
+	liw_st_check( 'ADV-Filter: Maschine „9200" trifft Bagger, nicht Kran', in_array( 'SELFTEST-FILTER-BAGGER', $__by_machine, true ) && ! in_array( 'SELFTEST-FILTER-KRAN', $__by_machine, true ) );
+	$__by_comp = $__titles_of( $ADV::query( [ 'component' => 'Getriebe', 'limit' => 50 ] ) );
+	liw_st_check( 'ADV-Filter: Bauteil „Getriebe" trifft Kran, nicht Bagger', in_array( 'SELFTEST-FILTER-KRAN', $__by_comp, true ) && ! in_array( 'SELFTEST-FILTER-BAGGER', $__by_comp, true ) );
+	$__by_search = $__titles_of( $ADV::query( [ 'search' => 'SELFTEST-FILTER-BAGGER', 'limit' => 50 ] ) );
+	liw_st_check( 'ADV-Filter: Freitextsuche trifft nach Titel', in_array( 'SELFTEST-FILTER-BAGGER', $__by_search, true ) );
+	liw_st_check( 'ADV-Filter: to_view trägt Maschine/Bauteil', 'R 9200' === (string) $ADV::to_view( get_post( (int) $__f1['id'] ) )['machine'] && 'Hydraulikpumpe' === (string) $ADV::to_view( get_post( (int) $__f1['id'] ) )['component'] );
+	foreach ( [ $__f1['id'], $__f2['id'] ] as $__fid ) { wp_delete_post( (int) $__fid, true ); }
+
 	// Aufräumen (Testdaten inkl. Ledger).
 	global $wpdb; $__lt = \Liebherr\InterfaceWorld\Adventures\TokenSchema::table();
 	foreach ( [ $__a1['id'], $__a2['id'], $__d['id'] ] as $__id ) {

@@ -96,6 +96,10 @@ final class DetailView {
 				<?php if ( '' !== (string) $vm['words'] ) : ?>
 					<dt><?php echo esc_html__( 'Ort (three words)', 'liebherr-interface-world' ); ?></dt><dd><code>/// <?php echo esc_html( (string) $vm['words'] ); ?></code><?php echo '' !== (string) $vm['region'] ? ' · ' . esc_html( (string) $vm['region'] ) : ''; ?></dd>
 				<?php endif; ?>
+				<?php if ( '' !== (string) ( $vm['machine'] ?? '' ) || '' !== (string) ( $vm['component'] ?? '' ) ) : ?>
+					<dt><?php echo esc_html__( 'Maschine / Bauteil', 'liebherr-interface-world' ); ?></dt>
+					<dd><?php echo esc_html( trim( (string) ( $vm['machine'] ?? '' ) . ' · ' . (string) ( $vm['component'] ?? '' ), ' ·' ) ); ?></dd>
+				<?php endif; ?>
 				<dt><?php echo esc_html__( 'Tokenwert', 'liebherr-interface-world' ); ?></dt>
 				<dd><?php echo $is_author ? esc_html__( 'kostenfrei (eigener Beitrag)', 'liebherr-interface-world' ) : esc_html( $token . ' ' . __( 'Tokens', 'liebherr-interface-world' ) ); ?><?php echo '' !== (string) $reg['usage_scope'] ? ' · ' . esc_html( RegistrationService::usage_label( (string) $reg['usage_scope'] ) ) : ''; ?></dd>
 				<?php if ( '' !== (string) $reg['articlebook_ref'] ) : ?>

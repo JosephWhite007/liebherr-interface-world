@@ -154,9 +154,12 @@ final class Rest {
 
 	public static function stream( \WP_REST_Request $req ): \WP_REST_Response {
 		$items = AdventureService::query( [
-			'type'    => (string) $req->get_param( 'type' ),
-			'urgency' => (string) $req->get_param( 'urgency' ),
-			'limit'   => (int) $req->get_param( 'limit' ),
+			'type'      => (string) $req->get_param( 'type' ),
+			'urgency'   => (string) $req->get_param( 'urgency' ),
+			'search'    => (string) $req->get_param( 'search' ),
+			'machine'   => (string) $req->get_param( 'machine' ),
+			'component' => (string) $req->get_param( 'component' ),
+			'limit'     => (int) $req->get_param( 'limit' ),
 		] );
 		return new \WP_REST_Response( [ 'ok' => true, 'items' => $items ], 200 );
 	}
@@ -194,6 +197,8 @@ final class Rest {
 			'lng'        => $req->get_param( 'lng' ),
 			'words'      => (string) $req->get_param( 'words' ),
 			'image_url'  => (string) $req->get_param( 'image_url' ),
+			'machine'    => (string) $req->get_param( 'machine' ),
+			'component'  => (string) $req->get_param( 'component' ),
 			'author_id'  => get_current_user_id(),
 		] );
 		if ( 0 === $res['id'] ) {

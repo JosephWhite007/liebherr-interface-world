@@ -120,6 +120,15 @@ final class AdventuresView {
 			</section>
 
 			<section class="liw-adv__filters" data-liw-adv-filters aria-label="<?php echo esc_attr__( 'Adventures filtern', 'liebherr-interface-world' ); ?>">
+				<label class="liw-adv__filter liw-adv__filter--search"><span><?php echo esc_html__( 'Suche', 'liebherr-interface-world' ); ?></span>
+					<input type="search" data-liw-adv-filter="search" placeholder="<?php echo esc_attr__( 'Titel / Beschreibung …', 'liebherr-interface-world' ); ?>" />
+				</label>
+				<label class="liw-adv__filter"><span><?php echo esc_html__( 'Maschine / Modell', 'liebherr-interface-world' ); ?></span>
+					<input type="text" data-liw-adv-filter="machine" placeholder="<?php echo esc_attr__( 'z. B. R 9200', 'liebherr-interface-world' ); ?>" />
+				</label>
+				<label class="liw-adv__filter"><span><?php echo esc_html__( 'Bauteil / Komponente', 'liebherr-interface-world' ); ?></span>
+					<input type="text" data-liw-adv-filter="component" placeholder="<?php echo esc_attr__( 'z. B. Hydraulikpumpe', 'liebherr-interface-world' ); ?>" />
+				</label>
 				<label class="liw-adv__filter"><span><?php echo esc_html__( 'Inhaltstyp', 'liebherr-interface-world' ); ?></span>
 					<select data-liw-adv-filter="type">
 						<option value="">— <?php echo esc_html__( 'Alle', 'liebherr-interface-world' ); ?> —</option>
