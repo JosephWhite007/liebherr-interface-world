@@ -12,6 +12,17 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.91 – CAPDB Etappe 4: Tabellenansicht/Editor (Pflicht §6)
+
+**Neu:** `src/Admin/Pages/CvfBoardEditorPage.php` – Menüpunkt „🧭 CVF Board" (Untermenü). Verpflichtende
+Tabellenansicht: Entwurf erzeugen/verwerfen, Bereiche/Übergänge/Plugin-Instanzen (+ Zeit-Schedule) als
+Tabellen pflegen, Live-Validierung (`BoardValidator`), unveränderlich veröffentlichen, auf frühere Version
+zurückrollen. Ein admin-post-Dispatcher (`op`) mit Nonce; Bearbeiten `CAP_EDIT_WORKFLOW`, Publish/Rollback
+zusätzlich `CAP_PUBLISH`. Plugin-Config als JSON gegen `PluginRegistry::validate_config` geprüft; Zeiten in
+Sekunden ↔ ms. **Geändert:** `src/Admin/AdminMenu.php` (Submenu), `src/Bootstrap.php` (Registrierung),
+`scripts/liw-selftest.php` (+1). Headless als Admin gerendert (alle Zonen + Formulare). Baut auf denselben
+Repository-/Validierungs-Operationen wie das kommende visuelle Board. Tests WP-frei 496 / Docker 382. Bump alpha.90 -> alpha.91.
+
 ## 0.1.0-alpha.90 – CAPDB Etappe 3: Plugin-Registry
 
 **Neu:** `src/Cvf/PluginRegistry.php` – zentrale, im Code gepflegte Bibliothek von 8 Plugin-Typen (alle 7

@@ -21,6 +21,7 @@ use Liebherr\InterfaceWorld\Admin\Pages\ConnectionBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\ContactBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\ContentBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\CvfBoardPage;
+use Liebherr\InterfaceWorld\Admin\Pages\CvfBoardEditorPage;
 use Liebherr\InterfaceWorld\Admin\Pages\HandbookPage;
 use Liebherr\InterfaceWorld\Admin\Pages\HeaderBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\IntelligenceWorldBoardPage;
@@ -160,6 +161,15 @@ final class AdminMenu {
 			CvfRoles::CAP_ADMINISTER,
 			CvfBoardPage::MENU_SLUG,
 			[ CvfBoardPage::class, 'render' ]
+		);
+
+		add_submenu_page(
+			'liw-interface-board',
+			__( 'CVF Board (Tabellenansicht)', 'liebherr-interface-world' ),
+			__( '🧭 CVF Board', 'liebherr-interface-world' ),
+			CvfRoles::CAP_EDIT_WORKFLOW,
+			CvfBoardEditorPage::MENU_SLUG,
+			[ CvfBoardEditorPage::class, 'render' ]
 		);
 
 		add_submenu_page(

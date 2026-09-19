@@ -92,6 +92,7 @@ final class Bootstrap {
 			Admin\Pages\AdventureBoardPage::register(); // Adventures-Board & Registrierung (Basislogik §7/§8).
 			Admin\Pages\IntelligenceWorldBoardPage::register(); // IW-Pflege-Board: Tarife + Navigation/Hotels (§19).
 			Admin\Pages\CvfBoardPage::register(); // Customer View Flow – Backoffice-Board (Flags/Code/Version/Log, ADR-LIW-CVF-001).
+			Admin\Pages\CvfBoardEditorPage::register(); // CAPDB Tabellenansicht/Editor (Pflicht §6).
 			Admin\ApprovedMediaFilter::register(); // Medien-Picker auf freigegebene Bibliothek beschränken (CI-005, A11).
 			Admin\SectionScheduleMetabox::register();  // Sichtbarkeits-Zeitfenster (§19).
 		}
