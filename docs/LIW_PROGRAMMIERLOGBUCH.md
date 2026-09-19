@@ -21,6 +21,11 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.136 – Navigationsleiste bleibt über dem Intro-Gate sichtbar (Local Intelligence)
+
+- `assets/css/liebherr-frontend.css`: `html.liw-intro-lock .liw-switcher { position:fixed; top:0; z-index:2147483601 }` → „Liebherr World"-Leiste schwebt über dem Intro-Overlay (2147483000), immer sichtbar/klickbar; nur LI-Inhalt bleibt gated. Bündig, gleiche Höhe 44px (kein Schlagschatten). `liebherr-interface-world.php` LIW_VERSION .135→.136.
+- Browser verifiziert (elementFromPoint auf Reiter = Nav-Link; Höhe 44px wie Intelligence World). FALLE: WP-Rocket-Cache leeren.
+
 ## 0.1.0-alpha.135 – „Liebherr World"-Kopfleiste auf My Liebherr/Pocket + Wallet-Pflichtenheft
 
 - `src/Frontend/FrontendAssets.php`: `liw_my_liebherr` + `liw_pocket` in SHORTCODES → `liebherr-frontend.css` (mit `.liw-switcher`) lädt dort → WorldSwitcher-Kopfleiste gestylt wie Intelligence World. FALLE: WP-Rocket-Frontend-Cache nach Änderung leeren (`rocket_clean_domain`), sonst altes HTML.

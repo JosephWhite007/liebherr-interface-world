@@ -1,5 +1,20 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.136] – 2026-09-19 – Navigationsleiste bleibt über dem Intro-Gate sichtbar (Local Intelligence)
+
+### Geändert
+- Beim aktiven Intro-Gate (`IntroOverlay`, „geschützter Entscheidungsraum") bleibt die **„Liebherr World"-
+  Navigationsleiste oben sichtbar und klickbar** – sie schwebt über dem Overlay (`html.liw-intro-lock .liw-switcher`
+  → `position:fixed; top:0; z-index:2147483601` > Overlay 2147483000). Man kann jederzeit in einen anderen Bereich
+  wechseln, statt nur „zurück" zu müssen; nur der abgesicherte Local-Intelligence-Inhalt bleibt bis zum Lösen der
+  Rechenmaske gesperrt. Reiner CSS-Eingriff, keine Strukturänderung – die Leiste sitzt **bündig, gleiche Höhe (44 px)
+  wie auf den anderen Seiten** (ohne Schlagschatten).
+
+### Verifikation
+- Browser (`/liebherr-local-intelligence/`): Leiste fix oben, `elementFromPoint` auf einem Reiter trifft den Nav-Link
+  (über dem Overlay, klickbar); Gate weiterhin aktiv. `tests/run-tests.php` **657/657**. `LIW_VERSION` .135→.136.
+  (Nach Live-Deploy WP-Rocket-Cache leeren.)
+
 ## [0.1.0-alpha.135] – 2026-09-19 – „Liebherr World"-Kopfleiste auf My Liebherr/Pocket + Wallet-Pflichtenheft
 
 ### Behoben

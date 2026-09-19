@@ -958,6 +958,17 @@ html.liw-intro-lock { overflow: hidden; }
 	overflow: hidden;
 }
 .liw-intro[hidden] { display: none; }
+/* Bei aktivem Intro-Gate bleibt die „Liebherr World"-Navigationsleiste oben sichtbar und klickbar
+   (schwebt über dem Overlay) – man kann jederzeit in einen anderen Bereich wechseln, statt nur „zurück".
+   Nur der abgesicherte Inhalt (Local Intelligence) bleibt hinter dem Gate. */
+html.liw-intro-lock .liw-switcher {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 2147483601; /* über dem Intro-Overlay (2147483000) */
+}
+.liw-intro { top: 0; }
 
 /* Dunkle Grundebene – blendet beim Soft-In langsam aus (Plattform scheint durch). */
 .liw-intro__backdrop {
