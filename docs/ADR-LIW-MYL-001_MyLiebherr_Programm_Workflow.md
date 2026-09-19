@@ -212,7 +212,7 @@ Alle Kriterien werden in `docs/LIW_ABNAHME.md` je Stufe fortgeschrieben: **MYL 0
 
 - Tokencharakter, Preisrecht, Verteilungsregel, Wartefrist, Arbeitgeberwechsel, Anonymität, Bewertung, KI-Funktionen (§26).
 - **§41:** Höhe/Version der Zeit-Tokenregel; Zeitpunkt der Aktivierung von `liw_ptime_charge_live`; Geltungsbereich der Uhr; Datenschutzfreigabe, dass Plattformzeit **nicht** zur Personalbewertung genutzt wird.
-- **Wallet (Core-Kategorie A, gehört ins kommende Wallet-Pflichtenheft):** Mehrwährungsfähigkeit der Plattform Health Wallet (echte Token-Währung neben EUR je Nutzer, eigener Token-Ledger-Zweig, Idempotenz + Reservieren→Bestätigen + Audit); `rule_version` auf Buchungen; Buckets ausstehend/gesperrt; vier-Augen-Korrektur; Migration/Ablösung von `Adventures\TokenAccount` auf den Token-Zweig der Plattform-Wallet (verlustfrei, idempotentes CLI-Skript, Terminal-Regel). **Bis zur Freigabe dieses Pflichtenhefts bleibt `liw_myl_wallet_live`/`liw_ptime_charge_live` = OFF.**
+- **Wallet (Core-Kategorie A) — jetzt spezifiziert:** `…/Pflichtenheft/Programmierpflichtenheft_Wallet_Mehrwaehrung_Token.md` (v1.0, 19.09.2026). Mehrwährungsfähigkeit der Plattform Health Wallet (echte Token-Währung neben EUR je Nutzer, eigener Token-Ledger-Zweig, Idempotenz + Reservieren→Bestätigen + Audit); `rule_version` auf Buchungen; Buckets ausstehend/gesperrt; vier-Augen-Korrektur; Migration/Ablösung von `Adventures\TokenAccount` auf den Token-Zweig der Plattform-Wallet (verlustfrei, idempotentes CLI-Skript, Terminal-Regel). **Bis zur Freigabe dieses Pflichtenhefts bleibt `liw_myl_wallet_live`/`liw_ptime_charge_live` = OFF.**
 - Recht/Steuer/Betriebsrat/Exportkontrolle/Produkthaftung vor R6 dokumentiert und freigegeben.
 
 ---

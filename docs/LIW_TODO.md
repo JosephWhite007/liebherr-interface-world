@@ -41,9 +41,14 @@ Session-Uhr/Token-Schachuhr** erweitert. Vollständiger Arbeits-Workflow (alle M
   Anfrage→Connection→Service-Exchange, Buchung als Hook), My Machines (`[liw_my_machines]`, CRUD), Pocket Information
   (`src/Pocket/`, `[liw_pocket]`, `pocket/v1`, Feed+Pflichtquittierung, eigener Reiter). WP-frei 625 / Docker 418.
   **Damit sind alle funktionalen My-Liebherr-Reiter 01–11 umgesetzt (12 = Platzhalter).**
-- **Als Nächstes (offen):** Meldungen/Sperren/Erstattung (§11/§13) + World-Review der Freigaben; CVF-Simulation/
-  Vollabnahme der zwei neuen Karten (MYL 013 voll); Drei-Wort-Label-Vollsystem (S14); Wallet-Buckets +
-  Mehrwährung/Token-Buchung + `liw_ptime_charge_live`/`liw_myl_service_charge` = Core-Kategorie A + Wallet-Pflichtenheft.
+- **Backlog abgearbeitet (alpha.125–134):** Backoffice-Menü + Übersichts-Linkliste + Theme-Frontend-Menü;
+  Pocket-Auto-Content (regelbasiert); Dashboard-Widgets mit echten Daten; Drei-Wort-Label-Vollsystem (S14, MYL 017);
+  Moderation (World-Review/Meldungen/Sperren/Erstattung §11/§13/§31); CVF-Simulation der neuen Karten (MYL 013);
+  Medien-Pipeline (§14/§16). WP-frei 657 / Docker 425.
+- **Nur noch offen (kein Satelliten-Code):** **Wallet-Mehrwährung/Token** = Core-Kategorie A im Plugin
+  `araliya-platform-core`. Spezifiziert in `…/Pflichtenheft/Programmierpflichtenheft_Wallet_Mehrwaehrung_Token.md`
+  (v1.0). Schaltet die vorbereiteten Nähte scharf: `liw_ptime_charge_live`, `liw_myl_service_charge`, `liw_myl_refund`,
+  `liw_myl_wallet_live` + Migration `Adventures\TokenAccount`.
 - Reihenfolge: R0 Verträge → R1 Fundament (Kontext/Nav/Dashboard/Overview/Profile) → R2 Wallet-Adapter +
   **Plattformzeit-Schachuhr** → R3 Adventures/Dreams/Gallery + CVF-4→6-Karten → R4 Qualität/Sharing/Kontakte →
   R5 Pocket/Machines/CVF-Simulation → R6 Pilot.

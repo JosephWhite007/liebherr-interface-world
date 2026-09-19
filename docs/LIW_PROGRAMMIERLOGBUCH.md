@@ -21,6 +21,13 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.135 – „Liebherr World"-Kopfleiste auf My Liebherr/Pocket + Wallet-Pflichtenheft
+
+- `src/Frontend/FrontendAssets.php`: `liw_my_liebherr` + `liw_pocket` in SHORTCODES → `liebherr-frontend.css` (mit `.liw-switcher`) lädt dort → WorldSwitcher-Kopfleiste gestylt wie Intelligence World. FALLE: WP-Rocket-Frontend-Cache nach Änderung leeren (`rocket_clean_domain`), sonst altes HTML.
+- `liebherr-interface-world.php` LIW_VERSION .134→.135.
+- Wallet-Pflichtenheft `…/Pflichtenheft/Programmierpflichtenheft_Wallet_Mehrwaehrung_Token.md` (v1.0, AUSSERHALB des Repos) erstellt — Token-Mehrwährung im Core-Wallet, schaltet die Nähte scharf. Kein Code hier.
+- Browser verifiziert; WP-frei 657/0.
+
 ## 0.1.0-alpha.134 – My Liebherr/Pocket im Theme-Frontend-Menü
 
 - `src/Frontend/ThemeMenu.php` (NEU): `wp_nav_menu_items`-Filter, hängt My Liebherr/Pocket am Standort `target_location()` (Filter `liw_myl_theme_menu_location`, Std `primary`) an; `should_show()` = Flag + angemeldet + `liw_myl_access`; Pocket zusätzlich `liw_pocket_enabled` + Seite. Abschaltbar via `liw_myl_theme_menu`.

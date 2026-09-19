@@ -1,5 +1,23 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.135] – 2026-09-19 – „Liebherr World"-Kopfleiste auf My Liebherr/Pocket + Wallet-Pflichtenheft
+
+### Behoben
+- Die gestaltete **„Liebherr World"-Kopfleiste** (WorldSwitcher, dunkle Bar mit Wortmarke + horizontalen Reitern)
+  erscheint jetzt auch auf den Seiten **My Liebherr** und **Pocket Information** – wie auf der Intelligence World.
+  Ursache: das Frontend-CSS (`liebherr-frontend.css` mit `.liw-switcher`) wurde dort nicht geladen; `[liw_my_liebherr]`
+  und `[liw_pocket]` sind nun Auslöser in `FrontendAssets`. (Nach Auslieferung WP-Rocket-Cache leeren – Frontend-HTML-Cache.)
+
+### Dokumentation
+- **Wallet-Pflichtenheft** `…/Pflichtenheft/Programmierpflichtenheft_Wallet_Mehrwaehrung_Token.md` (v1.0) erstellt:
+  Erweiterung der Plattform-Wallet (araliya-platform-core) um eine echte **Token-Währung** neben EUR (eine Saldenquelle,
+  mehrwährungsfähig), Buckets, `rule_version`, Vier-Augen, Adapter-Vertrag, `TokenAccount`-Migration und die Aktivierung
+  der Nähte `liw_ptime_charge_live`/`liw_myl_service_charge`/`liw_myl_refund`/`liw_myl_wallet_live`. Core-Kategorie A, kein Satelliten-Code.
+
+### Verifikation
+- Browser: dunkle Kopfleiste auf `/my-liebherr/` (Bar `rgb(32,35,38)`, horizontale Reiter). `tests/run-tests.php` **657/657**.
+  `LIW_VERSION` .134→.135.
+
 ## [0.1.0-alpha.134] – 2026-09-19 – My Liebherr/Pocket im Theme-Frontend-Menü der Website
 
 ### Hinzugefügt
