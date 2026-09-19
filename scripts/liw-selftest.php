@@ -952,6 +952,11 @@ try {
 	// Einheitlicher ChallengeService (ADR-LIW-CVF-001 §5, alpha.81) – SSOT der Rechenaufgabe.
 	$__cs = \Liebherr\InterfaceWorld\Cvf\ChallengeService::create( 'st-cvf', time(), 'double' );
 	liw_st_check( 'CVF-ChallengeService: double zweistellig + Roundtrip; Koffer nutzt ihn (single)', $__cs['a'] >= 10 && $__cs['b'] <= 99 && true === \Liebherr\InterfaceWorld\Cvf\ChallengeService::verify( $__cs['token'], $__cs['a'] + $__cs['b'], 'st-cvf', time() )['ok'] && $__emg_c['a'] <= 9 );
+	// CVF Durchstich-Runtime (alpha.82): Default-Config gültig + Happy-Path erreicht in_module.
+	$__cvf_cfg = \Liebherr\InterfaceWorld\Cvf\WorkflowVersion::default_config();
+	$__cvf_a = \Liebherr\InterfaceWorld\Cvf\Runtime::next( \Liebherr\InterfaceWorld\Cvf\VisitorState::AT_ENTRY, \Liebherr\InterfaceWorld\Cvf\Runtime::EV_CODE_OK, $__cvf_cfg );
+	$__cvf_e = \Liebherr\InterfaceWorld\Cvf\Runtime::next( \Liebherr\InterfaceWorld\Cvf\VisitorState::AT_FIRST_ENTRY, \Liebherr\InterfaceWorld\Cvf\Runtime::EV_FIRST_ENTRY_DONE, $__cvf_cfg );
+	liw_st_check( 'CVF-Runtime: Default-Config gültig; code_ok→Challenge(double); first_entry_done→in_module', \Liebherr\InterfaceWorld\Cvf\WorkflowVersion::is_valid( $__cvf_cfg ) && 'double' === $__cvf_a['params']['difficulty'] && \Liebherr\InterfaceWorld\Cvf\VisitorState::is_admitted( $__cvf_e['state'] ) );
 	// JS-freier Fallback (alpha.79).
 	liw_st_check( 'Emergency: Koffer-Button ist Link auf JS-freien Fallback (?liw_help=1)', str_contains( $__emg_sc, '<a ' ) && str_contains( $__emg_sc, 'liw_help=1' ) );
 	$__emg_ch = \Liebherr\InterfaceWorld\Emergency\EmergencyChallenge::create( 'st-secret', time() );

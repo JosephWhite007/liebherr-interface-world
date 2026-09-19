@@ -12,6 +12,19 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.82 – CVF Phase 2: Durchstich-Runtime (Config + Zustandsmaschine)
+
+**Neu (rein/testbar, `src/Cvf/`):** `StageType` (entry/challenge/module_select/first_entry),
+`VisitorState` (new→at_entry→at_challenge→at_module_select→at_first_entry→in_module, plus blocked;
+`is_admitted()`), `WorkflowVersion` (`default_config()` = 4-Stufen-Durchstich, `stages()`, `validate()`
+mit Problemliste, `canonical()` = rekursiv sortierte Serialisierung, `checksum()` = SHA-256), `Runtime`
+(deterministisch: `start()`/`next(state,event,config)` → {state,action,reason,params}; `block` aus jedem
+Zustand; Challenge-Schwierigkeit aus der Config gelesen). Grundlage des vertikalen Durchstichs (JW-Entscheid
+§9). **Geändert:** `tests/run-tests.php` (+~8 Asserts: Config gültig/Prüfsumme/Validierung + Happy-Path +
+invalider Übergang + block), `scripts/liw-selftest.php` (+1), `docs/ADR-LIW-CVF-001…md` (§9 Freigabe +
+5 Entscheidungen dokumentiert). Persistenz/AccessService/Frontend folgen. Tests WP-frei 447 / Docker 364.
+Bump alpha.81 -> alpha.82.
+
 ## 0.1.0-alpha.81 – CVF Phase 2 (Start): einheitlicher ChallengeService
 
 **Neu:** `src/Cvf/ChallengeService.php` (ADR-LIW-CVF-001 §5) – EINE reine, testbare Quelle für die

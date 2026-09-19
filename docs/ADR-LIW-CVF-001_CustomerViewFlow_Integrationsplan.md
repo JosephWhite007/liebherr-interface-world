@@ -128,3 +128,21 @@ Service darauf umgestellt; danach wird der jeweils alte Pfad entfernt (Plattform
 
 *Nach Freigabe dieses Plans beginnt Phase 2. Bis dahin: kein Code, keine Schemaänderung. Bestehende Funktionen
 (Islands, Adventures-Basislogik, IW-Protokoll etc.) bleiben unverändert.*
+
+---
+
+## 9 Freigabe & Entscheidungen (19.09.2026)
+
+Joseph hat den Plan freigegeben und die 5 offenen Punkte entschieden:
+
+1. **Rollen:** auf die 7 ARALIYA-Rollen mappen (über CoreBridge/RoleBridge), keine neuen CVF-Rollen.
+2. **Zugangscode:** jetzt auf Hash/Secret härten (§5.1), **hinter Feature-Flag**; Klartext-Prototyp bleibt Default bis zur Umschaltung.
+3. **Parallelbetrieb:** neue Runtime hinter Flag (Default AUS), heutiger IW-Eintritt bleibt bis zur CVF-Freigabe.
+4. **Vier-Augen-Freigabe:** optional/konfigurierbar je Mandant/Workflow (Default aus im Prototyp).
+5. **Startumfang:** **vertikaler Durchstich zuerst** (Eingang → Challenge → Modulauswahl → First-Entry als versionierte Config über eine minimale Runtime), das volle Timeline-/CAPDB-Board danach.
+
+**Umsetzung Phase 2 (laufend):**
+- alpha.81 — `Cvf\ChallengeService` (§5): eine wiederverwendbare, signierte Rechenaufgabe (single/double); `Emergency\EmergencyChallenge` ist jetzt ein Adapter darauf.
+- alpha.82 — Durchstich-Runtime (rein/testbar): `Cvf\StageType`, `Cvf\VisitorState`, `Cvf\WorkflowVersion` (Default-Config + kanonische Prüfsumme + Validierung), `Cvf\Runtime` (deterministische Übergänge, Challenge-Schwierigkeit aus Config).
+
+**Nächste Schritte:** Persistenz der veröffentlichten Version (`liw_cvf_workflow_version` + Session/Execution-Log), `Cvf\AccessService` (Zugangscode-Härtung hinter Flag), Rollen-Mapping, Frontend-Wiring des Durchstichs hinter `liw_cvf_enabled`.

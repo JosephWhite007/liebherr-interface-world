@@ -480,6 +480,33 @@ liw_assert( 'ChallengeService: double → zwei ZWEISTELLIGE Zahlen (10..99) + St
 liw_assert( 'ChallengeService: single → einstellig; unbekannte Stufe fällt auf single', 'single' === $CS::create( 'x', $__cs_now, 'single' )['difficulty'] && 'single' === $CS::create( 'x', $__cs_now, 'quatsch' )['difficulty'] && $CS::create( 'x', $__cs_now, 'single' )['a'] <= 9, $checks, $failures );
 liw_assert( 'ChallengeService: Roundtrip richtig=ok, falsch=wrong, abgelaufen=expired, Fremdsecret=invalid', true === $CS::verify( $__cs_s['token'], $__cs_s['a'] + $__cs_s['b'], 'cvf-secret', $__cs_now )['ok'] && 'wrong' === $CS::verify( $__cs_s['token'], 0, 'cvf-secret', $__cs_now )['reason'] && 'expired' === $CS::verify( $__cs_s['token'], $__cs_s['a'] + $__cs_s['b'], 'cvf-secret', $__cs_s['expires'] + 1 )['reason'] && 'invalid' === $CS::verify( $__cs_s['token'], $__cs_s['a'] + $__cs_s['b'], 'anders', $__cs_now )['reason'], $checks, $failures );
 
+// CVF – Durchstich-Runtime: Enums, versionierte Config, deterministische Zustandsmaschine (alpha.82).
+require_once $root . '/src/Cvf/StageType.php';
+require_once $root . '/src/Cvf/VisitorState.php';
+require_once $root . '/src/Cvf/WorkflowVersion.php';
+require_once $root . '/src/Cvf/Runtime.php';
+$WV = '\Liebherr\InterfaceWorld\Cvf\WorkflowVersion';
+$RT = '\Liebherr\InterfaceWorld\Cvf\Runtime';
+$VS = '\Liebherr\InterfaceWorld\Cvf\VisitorState';
+$cfg = $WV::default_config();
+liw_assert( 'WorkflowVersion: Default-Config gültig (Eingang→Challenge→Modulwahl→First-Entry)', $WV::is_valid( $cfg ) && 4 === count( $WV::stages( $cfg ) ), $checks, $failures );
+liw_assert( 'WorkflowVersion: Prüfsumme stabil + reihenfolge-/formatunabhängig kanonisch', $WV::checksum( $cfg ) === $WV::checksum( $WV::default_config() ) && 64 === strlen( $WV::checksum( $cfg ) ), $checks, $failures );
+$__v_empty = $WV::validate( [ 'stages' => [] ] );
+$__v_nochal = $WV::validate( [ 'stages' => [ [ 'key' => 'e', 'type' => 'entry' ] ] ] );
+$__v_chalfirst = $WV::validate( [ 'stages' => [ [ 'key' => 'c', 'type' => 'challenge' ] ] ] );
+liw_assert( 'WorkflowVersion: leere Config -> no_stages; nur-Entry -> missing_challenge; Challenge-first -> first_stage_not_entry', in_array( 'no_stages', $__v_empty, true ) && in_array( 'missing_challenge', $__v_nochal, true ) && in_array( 'first_stage_not_entry', $__v_chalfirst, true ), $checks, $failures );
+// Happy Path des Durchstichs.
+$st = $RT::start();
+liw_assert( 'Runtime: Start = new', $VS::NEW === $st, $checks, $failures );
+$r1 = $RT::next( $st, $RT::EV_BEGIN, $cfg );
+$r2 = $RT::next( $r1['state'], $RT::EV_CODE_OK, $cfg );
+$r3 = $RT::next( $r2['state'], $RT::EV_CHALLENGE_OK, $cfg );
+$r4 = $RT::next( $r3['state'], $RT::EV_MODULE_SELECTED, $cfg );
+$r5 = $RT::next( $r4['state'], $RT::EV_FIRST_ENTRY_DONE, $cfg );
+liw_assert( 'Runtime: Happy Path new→…→in_module (Challenge zweistellig aus Config)', 'at_entry' === $r1['state'] && 'at_challenge' === $r2['state'] && 'issue_challenge' === $r2['action'] && 'double' === $r2['params']['difficulty'] && 'at_module_select' === $r3['state'] && 'at_first_entry' === $r4['state'] && $VS::is_admitted( $r5['state'] ), $checks, $failures );
+liw_assert( 'Runtime: ungültiger Übergang lässt Zustand unverändert (reason=invalid_transition)', 'new' === $RT::next( $VS::NEW, $RT::EV_CHALLENGE_OK, $cfg )['state'] && 'invalid_transition' === $RT::next( $VS::NEW, $RT::EV_CHALLENGE_OK, $cfg )['reason'], $checks, $failures );
+liw_assert( 'Runtime: block aus jedem Zustand → blocked (und bleibt blockiert)', 'blocked' === $RT::next( $VS::AT_CHALLENGE, $RT::EV_BLOCK, $cfg )['state'] && 'is_blocked' === $RT::next( $VS::BLOCKED, $RT::EV_CODE_OK, $cfg )['reason'], $checks, $failures );
+
 // Emergency – Hilfe-Koffer (einstellige Rechenaufgabe) + kontextbezogene Emergency-Area (alpha.78).
 require_once $root . '/src/Emergency/EmergencyChallenge.php';
 require_once $root . '/src/Emergency/HelpTopicCatalog.php';
