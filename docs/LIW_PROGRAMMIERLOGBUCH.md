@@ -21,6 +21,14 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.128 – Pocket Information regelbasiert (Auto-Content)
+
+- `src/Pocket/PocketRules.php` (NEU): `derive(uid)` → abgeleitete, nicht-persistierte, erklärbare Items (Briefing/Tasks/Machine/Adventure) aus MachineRepository/ContactRepository/eigene Adventures; guarded; via `Flags::rules_enabled()` (NEU, Default AN) abschaltbar.
+- `src/Pocket/FeedService.php` (NEU): `feed(uid)` = merge(stored, derived); reine `merge()` (Priorität critical→low, gespeichert vor abgeleitet, stabil).
+- `src/Pocket/Rest.php` feed → FeedService; `src/Pocket/PocketView.php` rendert abgeleitete Items ohne Quittieren/Löschen + Badge „automatisch" + Begründung.
+- `src/Pocket/Flags.php`: `rules_enabled()`. `liebherr-interface-world.php` LIW_VERSION .127→.128.
+- Tests: WP-frei Feed-Merge-Assert; Docker Pocket-Regeln-Assert (self-contained). WP-frei 630/0, Docker 419/0.
+
 ## 0.1.0-alpha.127 – Demo-Seeder My Liebherr + Pocket (Dev-Vorschau)
 
 - `scripts/liw-seed-demo-my-liebherr.php` (NEU, nur development): setzt Flags liw_myl_enabled/liw_pocket_enabled/liw_ptime_enabled=1 und legt DEMO-Inhalte für den ersten Admin an (Dreams/Machines/Gallery/Pocket); idempotent via Option `liw_demo_myl_seeded_uid`; `--reset` räumt auf. LIW_VERSION .126→.127.

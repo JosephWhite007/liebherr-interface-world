@@ -1,5 +1,21 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.128] – 2026-09-19 – Pocket Information regelbasiert (automatische, erklärbare Infos)
+
+### Hinzugefügt
+- `Pocket\PocketRules`: erzeugt aus den **eigenen** Daten abgeleitete, **erklärbare** Pocket-Infos (§34) – **My Briefing**
+  (Zusammenfassung), **Pocket Tasks** (offene Kontaktanfragen + zu bestätigende Leistungen, hoch), **Machine Pocket**
+  (je Maschine), **Adventure Pocket** (eigene veröffentlichte Beiträge). Nicht persistiert (keine zweite Wahrheitsquelle),
+  je Item Rücksprungziel + Begründung („weshalb angezeigt"). Über `liw_pocket_rules_enabled` (Default AN) abschaltbar (§5).
+- `Pocket\FeedService`: merged gespeicherte + abgeleitete Items **priorisiert** (critical→low; gespeicherte vor
+  abgeleiteten) – Sicherheits-/Pflichtmeldungen werden nicht durch Empfehlungen verdrängt (§34). Reine `merge()`-Logik testbar.
+- `Pocket\Rest::feed` und `PocketView` nutzen jetzt den `FeedService`; abgeleitete Items werden ohne Quittieren/Löschen,
+  mit Badge „automatisch" + Begründung dargestellt.
+
+### Verifikation
+- `tests/run-tests.php` **630/630** (Feed-Merge-Reihenfolge + derived-Flag), `scripts/liw-selftest.php` **419/419**
+  (Feed enthält abgeleitetes My Briefing + Machine Pocket). Dev-Vorschau: kritische Meldung bleibt oben. `LIW_VERSION` .127→.128.
+
 ## [0.1.0-alpha.127] – 2026-09-19 – Demo-Seeder My Liebherr + Pocket (Dev-Vorschau)
 
 ### Hinzugefügt

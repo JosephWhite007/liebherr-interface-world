@@ -46,7 +46,7 @@ final class PocketView {
 		$root = esc_url( rest_url( Rest::NAMESPACE . '/' ) );
 		return '<div class="liw-myl"><section class="liw-myl__pocket" id="liw-pocket" data-liw-root="' . $root . '">'
 			. '<h2 class="liw-myl__tile-title">' . esc_html__( 'Pocket Information', 'liebherr-interface-world' ) . '</h2>'
-			. self::feed_html( PocketRepository::feed( $uid ) )
+			. self::feed_html( FeedService::feed( $uid ) )
 			. self::add_form_html()
 			. '</section></div>';
 	}
@@ -58,21 +58,36 @@ final class PocketView {
 		}
 		$out = '<ul class="liw-myl__pocket-list">';
 		foreach ( $items as $it ) {
-			$id   = (int) $it['id'];
-			$prio = (string) $it['priority'];
-			$ack  = ( (int) $it['requires_ack'] === 1 && null === $it['acknowledged_at'] );
-			$out .= '<li class="liw-myl__pocket-item liw-myl__pocket-item--' . esc_attr( $prio ) . '">'
+			$prio    = (string) $it['priority'];
+			$derived = ! empty( $it['derived'] );
+			$route   = (string) ( $it['return_route'] ?? '' );
+
+			$actions = '';
+			if ( '' !== $route ) {
+				$actions .= '<a class="liw-myl__wbtn" href="' . esc_url( $route ) . '">' . esc_html__( 'Zur Quelle', 'liebherr-interface-world' ) . '</a> ';
+			}
+			if ( $derived ) {
+				// Abgeleitetes Item (§34): erklärbar, nicht speicherbar/quittierbar – nur Anzeige + Rücksprung.
+				$badge = ' <span class="liw-myl__dream-wish">' . esc_html__( 'automatisch', 'liebherr-interface-world' ) . '</span>';
+				$note  = '' !== (string) ( $it['reason'] ?? '' ) ? '<p class="liw-myl__pocket-reason">' . esc_html( (string) $it['reason'] ) . '</p>' : '';
+			} else {
+				$badge = '';
+				$note  = '';
+				$id    = (int) $it['id'];
+				$ack   = ( (int) $it['requires_ack'] === 1 && null === $it['acknowledged_at'] );
+				$actions .= ( $ack ? '<button type="button" class="liw-myl__action" data-liw-act="items/' . $id . '/ack">' . esc_html__( 'Quittieren', 'liebherr-interface-world' ) . '</button> ' : ( (int) $it['requires_ack'] === 1 ? '<span class="liw-myl__status">' . esc_html__( 'quittiert', 'liebherr-interface-world' ) . '</span> ' : '' ) )
+					. '<button type="button" class="liw-myl__wbtn" data-liw-act="items/' . $id . '" data-liw-method="DELETE" aria-label="' . esc_attr__( 'Entfernen', 'liebherr-interface-world' ) . '">✕</button>';
+			}
+			$out .= '<li class="liw-myl__pocket-item liw-myl__pocket-item--' . esc_attr( $prio ) . ( $derived ? ' is-auto' : '' ) . '">'
 				. '<div class="liw-myl__pocket-head">'
 				. '<strong>' . esc_html( (string) $it['title'] ) . '</strong>'
 				. ' <span class="liw-myl__dream-wish liw-myl__pocket-prio--' . esc_attr( $prio ) . '">' . esc_html( self::prio_label( $prio ) ) . '</span>'
 				. ( '' !== (string) $it['source'] ? ' <span class="liw-myl__dream-tags">' . esc_html( (string) $it['source'] ) . '</span>' : '' )
+				. $badge
 				. '</div>'
 				. ( '' !== (string) $it['body'] ? '<p class="liw-myl__dream-note">' . esc_html( (string) $it['body'] ) . '</p>' : '' )
-				. '<div class="liw-myl__pocket-actions">'
-				. ( '' !== (string) $it['return_route'] ? '<a class="liw-myl__wbtn" href="' . esc_url( (string) $it['return_route'] ) . '">' . esc_html__( 'Zur Quelle', 'liebherr-interface-world' ) . '</a> ' : '' )
-				. ( $ack ? '<button type="button" class="liw-myl__action" data-liw-act="items/' . $id . '/ack">' . esc_html__( 'Quittieren', 'liebherr-interface-world' ) . '</button> ' : ( (int) $it['requires_ack'] === 1 ? '<span class="liw-myl__status">' . esc_html__( 'quittiert', 'liebherr-interface-world' ) . '</span> ' : '' ) )
-				. '<button type="button" class="liw-myl__wbtn" data-liw-act="items/' . $id . '" data-liw-method="DELETE" aria-label="' . esc_attr__( 'Entfernen', 'liebherr-interface-world' ) . '">✕</button>'
-				. '</div></li>';
+				. $note
+				. '<div class="liw-myl__pocket-actions">' . $actions . '</div></li>';
 		}
 		return $out . '</ul>';
 	}

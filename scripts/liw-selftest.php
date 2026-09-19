@@ -1228,6 +1228,18 @@ try {
 			&& ! empty( $__pk_ack['ok'] ) && null !== $__pk_ack['item']['acknowledged_at'] && ! empty( $__pk_del['ok'] )
 			&& is_string( $__pk_view ) && false !== strpos( $__pk_view, 'liw-myl__pocket' )
 		);
+		// R5 Pocket regelbasiert: abgeleitete, erklärbare Items (My Briefing + Machine Pocket) im Feed.
+		$__pr_mac  = \Liebherr\InterfaceWorld\MyLiebherr\MachineRepository::add( $__myl_admin_id, [ 'name' => 'SELFTEST-Ableit-Bagger', 'serial' => 'SN-PR' ] );
+		$__pr_feed = \Liebherr\InterfaceWorld\Pocket\FeedService::feed( $__myl_admin_id );
+		$__pr_titles  = array_column( $__pr_feed, 'title' );
+		$__pr_derived = array_values( array_filter( $__pr_feed, static fn( $i ) => ! empty( $i['derived'] ) ) );
+		liw_st_check(
+			'R5 Pocket-Regeln: Feed enthält abgeleitetes My Briefing + Machine Pocket (erklärbar, nicht persistiert)',
+			in_array( 'My Briefing', $__pr_titles, true ) && count( $__pr_derived ) >= 2
+			&& '' !== (string) ( $__pr_derived[0]['reason'] ?? '' ) && true === $__pr_derived[0]['derived']
+		);
+		$wpdb->delete( \Liebherr\InterfaceWorld\MyLiebherr\Schema::machine_table(), [ 'id' => (int) ( $__pr_mac['id'] ?? 0 ) ] );
+
 		// Nav: Pocket-Reiter aktiv, sobald Pocket scharf + Seite vorhanden.
 		$__prev_pocket_page = (int) get_option( 'liw_pocket_page_id', 0 );
 		update_option( 'liw_pocket_page_id', (int) get_option( 'liw_my_liebherr_page_id', 0 ) );

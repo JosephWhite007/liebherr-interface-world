@@ -670,6 +670,22 @@ liw_assert( 'PTime SessionClock: now <= last_seen → keine Änderung', 10 === $
 liw_assert( 'PTime WalletBridge: ohne Core nicht verfügbar; balance_cents(0)=null (Gast-Guard)', false === $WB::available() && null === $WB::balance_cents( 0 ), $checks, $failures );
 liw_assert( 'MyL WalletBridge: source_label bekannt (booking_debit→Buchung), unbekannt→Rohwert; status_label pending→ausstehend', 'Buchung' === $WB::source_label( 'booking_debit' ) && 'nope' === $WB::source_label( 'nope' ) && 'ausstehend' === $WB::status_label( 'pending' ), $checks, $failures );
 
+// Pocket regelbasiert (ADR-LIW-MYL-001 §34): reine Feed-Merge-/Sortierlogik (Priorität, gespeicherte vor abgeleiteten).
+echo "-- Pocket Feed-Merge --\n";
+require_once $root . '/src/Pocket/FeedService.php';
+$FS = '\Liebherr\InterfaceWorld\Pocket\FeedService';
+$__fs_m = $FS::merge(
+	[ [ 'priority' => 'normal', 'title' => 'S1' ], [ 'priority' => 'critical', 'title' => 'S2' ] ],
+	[ [ 'priority' => 'high', 'title' => 'D1' ], [ 'priority' => 'normal', 'title' => 'D2' ] ]
+);
+liw_assert(
+	'Pocket Feed: critical zuerst, dann high; gleiche Prio → gespeichert vor abgeleitet; derived-Flag gesetzt',
+	'S2' === $__fs_m[0]['title'] && false === $__fs_m[0]['derived']
+	&& 'D1' === $__fs_m[1]['title'] && true === $__fs_m[1]['derived']
+	&& 'S1' === $__fs_m[2]['title'] && 'D2' === $__fs_m[3]['title'] && true === $__fs_m[3]['derived'],
+	$checks, $failures
+);
+
 // 3. strict_types=1 in jeder src/-Datei (Coding Standard, CLAUDE.md Abschnitt 5).
 echo "-- Coding Standard --\n";
 $iterator2 = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $root . '/src', FilesystemIterator::SKIP_DOTS ) );

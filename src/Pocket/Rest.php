@@ -49,7 +49,7 @@ final class Rest {
 
 	public static function feed( \WP_REST_Request $r ): \WP_REST_Response {
 		unset( $r );
-		return self::gate() ?? new \WP_REST_Response( [ 'ok' => true, 'feed' => PocketRepository::feed( get_current_user_id() ) ], 200 );
+		return self::gate() ?? new \WP_REST_Response( [ 'ok' => true, 'feed' => FeedService::feed( get_current_user_id() ) ], 200 );
 	}
 
 	public static function create( \WP_REST_Request $r ): \WP_REST_Response {
