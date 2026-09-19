@@ -41,6 +41,18 @@ final class Rest {
 				'permission_callback' => [ self::class, 'require_login' ],
 			],
 		] );
+		register_rest_route( self::NAMESPACE, '/dashboard', [
+			[
+				'methods'             => 'GET',
+				'callback'            => [ self::class, 'get_dashboard' ],
+				'permission_callback' => [ self::class, 'require_login' ],
+			],
+			[
+				'methods'             => 'PUT',
+				'callback'            => [ self::class, 'put_dashboard' ],
+				'permission_callback' => [ self::class, 'require_login' ],
+			],
+		] );
 	}
 
 	/** Angemeldet erforderlich (WP prüft bei Cookie-Auth zusätzlich den REST-Nonce). */
@@ -79,6 +91,41 @@ final class Rest {
 			'me'      => Context::for_user( $uid ),
 			'applied' => array_keys( $patch ),
 		], 200 );
+	}
+
+	public static function get_dashboard( \WP_REST_Request $req ): \WP_REST_Response {
+		unset( $req );
+		if ( ! Flags::enabled() ) {
+			return self::disabled();
+		}
+		$uid = get_current_user_id();
+		if ( $uid <= 0 || ! current_user_can( Roles::CAP_ACCESS ) ) {
+			return new \WP_REST_Response( [ 'ok' => false, 'reason' => 'forbidden' ], 403 );
+		}
+		$caps   = EntitlementService::granted_for( $uid );
+		$layout = DashboardService::resolve( $caps, DashboardRepository::get( $uid ) );
+		return new \WP_REST_Response( [ 'ok' => true, 'layout' => $layout ], 200 );
+	}
+
+	public static function put_dashboard( \WP_REST_Request $req ): \WP_REST_Response {
+		if ( ! Flags::enabled() ) {
+			return self::disabled();
+		}
+		$uid = get_current_user_id();
+		if ( $uid <= 0 || ! current_user_can( Roles::CAP_ACCESS ) ) {
+			return new \WP_REST_Response( [ 'ok' => false, 'reason' => 'forbidden' ], 403 );
+		}
+		$caps  = EntitlementService::granted_for( $uid );
+		$reset = (bool) $req->get_param( 'reset' );
+		if ( $reset ) {
+			DashboardRepository::reset( $uid );
+			$layout = DashboardService::default_layout( $caps );
+		} else {
+			$input  = $req->get_param( 'layout' );
+			$layout = DashboardService::sanitize( $caps, $input );
+			DashboardRepository::save( $uid, $layout );
+		}
+		return new \WP_REST_Response( [ 'ok' => true, 'layout' => $layout ], 200 );
 	}
 
 	private static function disabled(): \WP_REST_Response {

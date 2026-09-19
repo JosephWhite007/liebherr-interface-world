@@ -21,6 +21,22 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.116 – My Liebherr R1-Breite: Dashboard S3, Profil S5, R1-Abnahme S6
+
+- `src/MyLiebherr/WidgetCatalog.php` (NEU, rein): Widgets je Cap (`permitted_for`).
+- `src/MyLiebherr/DashboardService.php` (NEU, rein): `default_layout`/`resolve`/`sanitize`.
+- `src/MyLiebherr/DashboardRepository.php` (NEU): get/save/reset, Tabelle `ary_liw_myl_dashboard_layout`.
+- `src/MyLiebherr/Schema.php`: 3. Tabelle `dashboard_layout` (UNIQUE user_id+device).
+- `src/MyLiebherr/Rest.php`: Routen `GET/PUT /dashboard` (require_login + `liw_myl_access`, self-gating, `reset`).
+- `src/MyLiebherr/OverviewView.php`: rendert Widgets nach Layout mit Bedienelementen + „Ausgeblendet"-Tray + Reset; `assets_for_shortcode()` (CSS+JS+Localize) geteilt; bettet ProfileView ein.
+- `src/MyLiebherr/ProfileView.php` (NEU): `[liw_my_profile]` — Identität/Rollen/Orgs lesbar + Formular (PATCH /me) + Datenschutz-Hinweis.
+- `assets/js/liw-my-liebherr.js` (NEU): Dashboard-Controls (ordnen/aus-/einblenden/reset, PUT + reload) + Profil-Formular (PATCH /me).
+- `assets/css/liw-my-liebherr.css`: Stile für Dashboard-Controls + Profil.
+- `src/Bootstrap.php`: `MyLiebherr\ProfileView::register()`.
+- `liebherr-interface-world.php`: `LIW_VERSION` .113→.116.
+- `tests/run-tests.php`: Dashboard-Unit-Block (WidgetCatalog/DashboardService). `scripts/liw-selftest.php`: Dashboard-REST + Profil-Shortcode + Subscriber-Negativtest (selbst-bereinigt). `docs/LIW_ABNAHME.md §9` neu.
+- Tests: WP-frei 576/0, Docker 408/0.
+
 ## 0.1.0-alpha.113 – My Liebherr Durchstich S2–S11 (Navigation, Overview, Plattformzeit)
 
 Alles hinter Flags (`liw_myl_enabled`/`liw_ptime_enabled`, Default AUS).

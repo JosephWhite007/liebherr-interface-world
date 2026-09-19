@@ -30,6 +30,11 @@ final class Schema {
 		return $wpdb->prefix . 'liw_myl_membership';
 	}
 
+	public static function dashboard_table(): string {
+		global $wpdb;
+		return $wpdb->prefix . 'liw_myl_dashboard_layout';
+	}
+
 	public static function create_tables(): void {
 		global $wpdb;
 		$charset = $wpdb->get_charset_collate();
@@ -66,5 +71,17 @@ final class Schema {
 			KEY idx_user (user_id),
 			KEY idx_status (status)
 		) {$charset} COMMENT='Liebherr My Liebherr – Mitgliedschaften Nutzer Organisation Rolle';" );
+
+		$d = self::dashboard_table();
+		dbDelta( "CREATE TABLE {$d} (
+			id          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+			user_id     BIGINT UNSIGNED NOT NULL,
+			device      VARCHAR(16)  NOT NULL DEFAULT 'default',
+			layout_json LONGTEXT      NOT NULL,
+			version     INT UNSIGNED  NOT NULL DEFAULT 1,
+			updated_at  DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY (id),
+			UNIQUE KEY uniq_user_device (user_id, device)
+		) {$charset} COMMENT='Liebherr My Liebherr – persoenliches Dashboard-Layout je Nutzer und Geraetetyp';" );
 	}
 }

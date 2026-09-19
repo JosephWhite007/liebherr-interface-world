@@ -29,16 +29,30 @@ final class OverviewView {
 		add_action( 'wp_enqueue_scripts', [ self::class, 'assets' ] );
 	}
 
-	/** CSS nur auf der My-Liebherr-Seite laden (filemtime-Cache-Buster, da ?ver von WP Rocket entfernt werden kann). */
+	/** Assets nur auf der My-Liebherr-Seite laden (filemtime-Cache-Buster, da ?ver von WP Rocket entfernt werden kann). */
 	public static function assets(): void {
 		$page_id = (int) get_option( 'liw_my_liebherr_page_id', 0 );
 		if ( $page_id <= 0 || ! is_page( $page_id ) ) {
 			return;
 		}
-		$rel  = 'assets/css/liw-my-liebherr.css';
+		self::assets_for_shortcode();
+	}
+
+	/** Enqueue der My-Liebherr-Assets (CSS/JS + REST-Localize) – auch von {@see ProfileView} genutzt. */
+	public static function assets_for_shortcode(): void {
+		$css = 'assets/css/liw-my-liebherr.css';
+		$js  = 'assets/js/liw-my-liebherr.js';
+		wp_enqueue_style( 'liw-my-liebherr', LIW_URL . $css . '?v=' . self::bust( $css ), [], null );
+		wp_enqueue_script( 'liw-my-liebherr', LIW_URL . $js . '?v=' . self::bust( $js ), [], null, true );
+		wp_localize_script( 'liw-my-liebherr', 'liwMyl', [
+			'root'  => esc_url_raw( rest_url( Rest::NAMESPACE . '/' ) ),
+			'nonce' => wp_create_nonce( 'wp_rest' ),
+		] );
+	}
+
+	private static function bust( string $rel ): string {
 		$path = LIW_PATH . $rel;
-		$ver  = is_readable( $path ) ? (string) filemtime( $path ) : LIW_VERSION;
-		wp_enqueue_style( 'liw-my-liebherr', LIW_URL . $rel . '?v=' . $ver, [], null );
+		return is_readable( $path ) ? (string) filemtime( $path ) : LIW_VERSION;
 	}
 
 	public static function shortcode(): string {
@@ -52,20 +66,81 @@ final class OverviewView {
 			return '<div class="liw-myl liw-myl--notice">' . esc_html__( 'Ihr Konto ist für My Liebherr noch nicht freigeschaltet.', 'liebherr-interface-world' ) . '</div>';
 		}
 
-		$uid = get_current_user_id();
-		$ctx = Context::for_user( $uid );
+		$uid  = get_current_user_id();
+		$ctx  = Context::for_user( $uid );
+		$caps = EntitlementService::granted_for( $uid );
 
 		return '<div class="liw-myl">'
 			. self::header_html( (string) $ctx['display_name'] )
-			. '<div class="liw-myl__grid">'
-			. self::tile_wallet( $uid )
-			. self::tile( __( 'Was ist neu', 'liebherr-interface-world' ), esc_html__( 'Neue relevante Updates erscheinen hier, sobald sie verfügbar sind.', 'liebherr-interface-world' ) )
-			. self::tile( __( 'Was muss ich tun', 'liebherr-interface-world' ), esc_html__( 'Offene Aufgaben und Freigaben werden hier gebündelt.', 'liebherr-interface-world' ) )
-			. self::tile( __( 'Gebuchte Leistung', 'liebherr-interface-world' ), esc_html__( 'Zuletzt gebuchte Leistungen und Belege erscheinen hier.', 'liebherr-interface-world' ) )
-			. '</div>'
+			. self::widgets_html( $uid, $caps )
 			. self::quick_actions_html()
+			. ProfileView::render( $uid )
 			. '<p class="liw-myl__clockhint">' . esc_html__( 'Ihre Plattformzeit läuft als Session-Uhr unten links mit.', 'liebherr-interface-world' ) . '</p>'
 			. '</div>';
+	}
+
+	/**
+	 * Rendert die berechtigten Dashboard-Widgets in der persönlich gespeicherten Reihenfolge/Sichtbarkeit (§5),
+	 * mit Bedienelementen zum Umsortieren/Aus- und Einblenden (serverseitig via PUT /dashboard gespeichert) und
+	 * einer Rollen-Reset-Aktion.
+	 *
+	 * @param array<int,string> $caps
+	 */
+	private static function widgets_html( int $uid, array $caps ): string {
+		$layout = DashboardService::resolve( $caps, DashboardRepository::get( $uid ) );
+		$grid   = '';
+		$hidden = '';
+		foreach ( $layout as $entry ) {
+			$key  = (string) $entry['key'];
+			$meta = self::widget_meta( $key, $uid );
+			if ( null === $meta ) {
+				continue;
+			}
+			if ( empty( $entry['visible'] ) ) {
+				$hidden .= '<li class="liw-myl__hidden-item" data-liw-widget="' . esc_attr( $key ) . '">'
+					. '<span>' . esc_html( $meta['title'] ) . '</span> '
+					. '<button type="button" class="liw-myl__wbtn" data-liw-show>' . esc_html__( 'einblenden', 'liebherr-interface-world' ) . '</button></li>';
+				continue;
+			}
+			$grid .= '<section class="liw-myl__tile" data-liw-widget="' . esc_attr( $key ) . '">'
+				. '<div class="liw-myl__wctl">'
+				. '<button type="button" class="liw-myl__wbtn" data-liw-move="up" aria-label="' . esc_attr__( 'Nach oben', 'liebherr-interface-world' ) . '">▲</button>'
+				. '<button type="button" class="liw-myl__wbtn" data-liw-move="down" aria-label="' . esc_attr__( 'Nach unten', 'liebherr-interface-world' ) . '">▼</button>'
+				. '<button type="button" class="liw-myl__wbtn" data-liw-hide aria-label="' . esc_attr__( 'Ausblenden', 'liebherr-interface-world' ) . '">✕</button>'
+				. '</div>'
+				. '<h2 class="liw-myl__tile-title">' . esc_html( $meta['title'] ) . '</h2>'
+				. '<div class="liw-myl__tile-body">' . $meta['body'] . '</div>'
+				. '</section>';
+		}
+
+		$tray = '' !== $hidden
+			? '<div class="liw-myl__hidden"><span class="liw-myl__hidden-title">' . esc_html__( 'Ausgeblendet:', 'liebherr-interface-world' ) . '</span><ul class="liw-myl__hidden-list">' . $hidden . '</ul></div>'
+			: '';
+
+		return '<div class="liw-myl__dashboard" data-liw-dashboard>'
+			. '<div class="liw-myl__grid">' . $grid . '</div>'
+			. $tray
+			. '<button type="button" class="liw-myl__reset" data-liw-reset>' . esc_html__( 'Dashboard zurücksetzen', 'liebherr-interface-world' ) . '</button>'
+			. '</div>';
+	}
+
+	/**
+	 * Titel + Rumpf eines Widgets nach Key (nur berechtigte Keys erreichen dies über DashboardService).
+	 *
+	 * @return array{title:string,body:string}|null
+	 */
+	private static function widget_meta( string $key, int $uid ): ?array {
+		switch ( $key ) {
+			case 'wallet':
+				return [ 'title' => __( 'Was besitze ich', 'liebherr-interface-world' ), 'body' => self::wallet_body( $uid ) ];
+			case 'updates':
+				return [ 'title' => __( 'Was ist neu', 'liebherr-interface-world' ), 'body' => esc_html__( 'Neue relevante Updates erscheinen hier, sobald sie verfügbar sind.', 'liebherr-interface-world' ) ];
+			case 'tasks':
+				return [ 'title' => __( 'Was muss ich tun', 'liebherr-interface-world' ), 'body' => esc_html__( 'Offene Aufgaben und Freigaben werden hier gebündelt.', 'liebherr-interface-world' ) ];
+			case 'bookings':
+				return [ 'title' => __( 'Gebuchte Leistung', 'liebherr-interface-world' ), 'body' => esc_html__( 'Zuletzt gebuchte Leistungen und Belege erscheinen hier.', 'liebherr-interface-world' ) ];
+		}
+		return null;
 	}
 
 	private static function header_html( string $name ): string {
@@ -78,19 +153,14 @@ final class OverviewView {
 			. '</header>';
 	}
 
-	/** Wallet-Kachel mit echtem, aber read-only Saldo aus der Plattform-Wallet (falls verfügbar). */
-	private static function tile_wallet( int $uid ): string {
-		$body = esc_html__( 'Die Plattform-Wallet ist derzeit nicht erreichbar.', 'liebherr-interface-world' );
+	/** Rumpf des Wallet-Widgets mit echtem, aber read-only Saldo aus der Plattform-Wallet (falls verfügbar). */
+	private static function wallet_body( int $uid ): string {
 		$cents = WalletBridge::balance_cents( $uid );
 		if ( null !== $cents ) {
-			$body = '<span class="liw-myl__balance">' . esc_html( WalletBridge::format_cents( $cents ) ) . '</span>'
+			return '<span class="liw-myl__balance">' . esc_html( WalletBridge::format_cents( $cents ) ) . '</span>'
 				. '<span class="liw-myl__balance-label">' . esc_html__( 'verfügbarer Saldo', 'liebherr-interface-world' ) . '</span>';
 		}
-		return '<section class="liw-myl__tile liw-myl__tile--wallet"><h2 class="liw-myl__tile-title">' . esc_html__( 'Was besitze ich', 'liebherr-interface-world' ) . '</h2><div class="liw-myl__tile-body">' . $body . '</div></section>';
-	}
-
-	private static function tile( string $title, string $body_html ): string {
-		return '<section class="liw-myl__tile"><h2 class="liw-myl__tile-title">' . esc_html( $title ) . '</h2><div class="liw-myl__tile-body">' . $body_html . '</div></section>';
+		return esc_html__( 'Die Plattform-Wallet ist derzeit nicht erreichbar.', 'liebherr-interface-world' );
 	}
 
 	private static function quick_actions_html(): string {

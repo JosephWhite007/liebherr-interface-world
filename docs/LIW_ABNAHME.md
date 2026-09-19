@@ -132,3 +132,24 @@ Markenfreigabe dokumentieren.
 
 Vollständige EN-Fassung + weitere Sprachen (§12.4), Analytik-Events (§14), Szenario-Editor im Board,
 Performance-/A11y-Vollmessung auf Staging, redaktionelle + markenrechtliche Freigabe.
+
+## 9. My Liebherr – R1-Durchstich (Pflichtenheft My Liebherr, ADR-LIW-MYL-001)
+
+**Stand:** 19.09.2026 · **Version:** 0.1.0-alpha.116 · alles hinter Flags `liw_myl_enabled`/`liw_ptime_enabled` (Default AUS).
+Verifikation: `tests/run-tests.php` 576/0, `scripts/liw-selftest.php` 408/0 (echtes WP).
+
+| ID | Szenario | Status | Nachweis |
+|----|----------|--------|----------|
+| MYL 001 | Persönliche My-Liebherr-Startseite mit korrektem Kontext | ✅ (Durchstich) | `[liw_my_liebherr]` rendert für angemeldeten Nutzer mit `liw_myl_access`; Context::for_user |
+| MYL 002 | Berechtigte Widgets anordnen/aus- und einblenden, bleibt erhalten | ✅ | Dashboard S3: WidgetCatalog+DashboardService+`ary_liw_myl_dashboard_layout`, REST GET/PUT, Selftest-Round-Trip |
+| MYL 003 | Mehrfachrollen/Organisationen, Kontextwechsel | ⚠️ Teil | Kontext + Mitgliedschaften lesbar, aktive Org/Rolle im Profil setzbar (PATCH /me); Org-Pflege/Onboarding folgt R1-Breite |
+| MYL 012 | Mobil + Tastatur bedienbar | ✅ (Durchstich) | responsive CSS, Buttons/Formfelder tastaturbedienbar, `prefers-reduced-motion` (Uhr) |
+| MYL 025 | Session-Uhr jederzeit ein-/ausblendbar, Zeit+Token | ✅ | ClockWidget unten links, Toggle, `platform-time/status` |
+| MYL 026 | Serverautoritäre Zeit (Idle/Abbruch pausiert) | ✅ | SessionClock (Gap > Timeout zählt nicht), Heartbeat; Unit+Selftest |
+| MYL 027 | Genau eine Abrechnung je Abschnitt (Idempotenz) | ✅ | ChargeService UNIQUE `ptime-<session>`; zweiter Stop = no_session |
+| MYL 028 | Wallet-Naht (deaktiviert → nur ausstehend protokolliert) | ✅ | `liw_ptime_charge_live` Default AUS → Satz `pending`; Hook `liw_ptime_charge` |
+| SEC 01 | Autorisierung serverseitig, nur eigenes Objekt | ✅ | EntitlementService (fremdes Objekt/Org nur mit Administer); Negativtest Subscriber |
+
+**Offen (Breite R1 ff.):** S5-Profil-Datenschutz-Export als echte Funktion, Org-/Onboarding-Pflege (MYL 003 voll),
+R2 Wallet-UI + Mehrwährung/Token-Buchung (Core-Kategorie A / Wallet-Pflichtenheft), Staging-Perf/A11y-Vollmessung.
+**Staging/Live:** Seeder `liw-seed-my-liebherr.php`, Optionen/Flags neu setzen, Permalinks speichern.

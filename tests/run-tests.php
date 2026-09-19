@@ -622,6 +622,21 @@ liw_assert( 'MyL Entitlement: eigenes Objekt mit Cap → true', true === $ME::ca
 liw_assert( 'MyL Entitlement: fremdes Objekt ohne Administer → false, mit Administer → true', false === $ME::can( $__acc, $MR::CAP_ACCESS, [ 'owner_user_id' => 9, 'actor_user_id' => 5 ] ) && true === $ME::can( $__adm, $MR::CAP_ACCESS, [ 'owner_user_id' => 9, 'actor_user_id' => 5 ] ), $checks, $failures );
 liw_assert( 'MyL Entitlement: Org-Mismatch ohne Administer → false, passende Org → true', false === $ME::can( $__acc, $MR::CAP_ACCESS, [ 'required_org_id' => 3, 'active_org_id' => 1 ] ) && true === $ME::can( $__acc, $MR::CAP_ACCESS, [ 'required_org_id' => 3, 'active_org_id' => 3 ] ), $checks, $failures );
 
+// My Liebherr Dashboard S3 (ADR-LIW-MYL-001 §5): Widget-Katalog (Cap-Filter) + reine Layout-Logik.
+echo "-- My Liebherr Dashboard (S3) --\n";
+require_once $root . '/src/MyLiebherr/WidgetCatalog.php';
+require_once $root . '/src/MyLiebherr/DashboardService.php';
+$WC = '\Liebherr\InterfaceWorld\MyLiebherr\WidgetCatalog';
+$DS = '\Liebherr\InterfaceWorld\MyLiebherr\DashboardService';
+$__caps = [ $MR::CAP_ACCESS ];
+liw_assert( 'MyL Dashboard: WidgetCatalog liefert 4 berechtigte Widgets (mit access)', 4 === count( $WC::permitted_for( $__caps ) ) && [] === $WC::permitted_for( [] ), $checks, $failures );
+$__def = $DS::default_layout( $__caps );
+liw_assert( 'MyL Dashboard: default_layout = alle berechtigten sichtbar, Reihenfolge wallet zuerst', 4 === count( $__def ) && 'wallet' === $__def[0]['key'] && true === $__def[0]['visible'], $checks, $failures );
+$__stored = [ [ 'key' => 'tasks', 'visible' => true ], [ 'key' => 'wallet', 'visible' => false ], [ 'key' => 'unknown', 'visible' => true ] ];
+$__res = $DS::resolve( $__caps, $__stored );
+liw_assert( 'MyL Dashboard: resolve wahrt gespeicherte Reihenfolge/Sichtbarkeit, verwirft Unbekanntes, ergaenzt Rest', 'tasks' === $__res[0]['key'] && 'wallet' === $__res[1]['key'] && false === $__res[1]['visible'] && 4 === count( $__res ) && ! in_array( 'unknown', array_column( $__res, 'key' ), true ), $checks, $failures );
+liw_assert( 'MyL Dashboard: nicht berechtigte Caps → leeres Layout', [] === $DS::resolve( [], $__stored ), $checks, $failures );
+
 // Plattformzeit S9/S10 (ADR-LIW-MYL-001, §41): Tokenregel, serverautoritäre Zeitlogik, Wallet-Guard.
 echo "-- Plattformzeit (S9/S10) --\n";
 require_once $root . '/src/PlatformTime/TokenRule.php';

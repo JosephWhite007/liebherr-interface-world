@@ -1094,6 +1094,49 @@ try {
 		);
 		$wpdb->delete( $__pt_c, [ 'user_id' => $__myl_admin_id ] );
 		$wpdb->delete( $__pt_s, [ 'user_id' => $__myl_admin_id ] );
+
+		// Dashboard S3: REST GET/PUT-Round-Trip (Reihenfolge + Sichtbarkeit persistiert).
+		$__dash_tbl = \Liebherr\InterfaceWorld\MyLiebherr\Schema::dashboard_table();
+		$__dash_get = rest_do_request( new \WP_REST_Request( 'GET', '/my-liebherr/v1/dashboard' ) )->get_data();
+		$__dash_put_req = new \WP_REST_Request( 'PUT', '/my-liebherr/v1/dashboard' );
+		$__dash_put_req->set_param( 'layout', [ [ 'key' => 'tasks', 'visible' => true ], [ 'key' => 'wallet', 'visible' => false ] ] );
+		$__dash_put = rest_do_request( $__dash_put_req )->get_data();
+		$__dash_get2 = rest_do_request( new \WP_REST_Request( 'GET', '/my-liebherr/v1/dashboard' ) )->get_data();
+		liw_st_check(
+			'Dashboard S3: GET 4 Widgets; PUT (tasks zuerst, wallet ausgeblendet) persistiert serverseitig',
+			! empty( $__dash_get['ok'] ) && 4 === count( $__dash_get['layout'] ) && ! empty( $__dash_put['ok'] )
+			&& 'tasks' === $__dash_get2['layout'][0]['key'] && false === $__dash_get2['layout'][1]['visible']
+		);
+		$__dash_reset_req = new \WP_REST_Request( 'PUT', '/my-liebherr/v1/dashboard' );
+		$__dash_reset_req->set_param( 'reset', true );
+		$__dash_reset = rest_do_request( $__dash_reset_req )->get_data();
+		liw_st_check( 'Dashboard S3: reset liefert Rollenvorlage (wallet zuerst, sichtbar)', ! empty( $__dash_reset['ok'] ) && 'wallet' === $__dash_reset['layout'][0]['key'] && true === $__dash_reset['layout'][0]['visible'] );
+		$wpdb->delete( $__dash_tbl, [ 'user_id' => $__myl_admin_id ] );
+
+		// Profil S5: Shortcode rendert Formular fuer den angemeldeten Admin.
+		$__prof = do_shortcode( '[liw_my_profile]' );
+		liw_st_check( 'Profil S5: [liw_my_profile] rendert Profilblock + Formular', is_string( $__prof ) && false !== strpos( $__prof, 'liw-myl__profile' ) && false !== strpos( $__prof, 'data-liw-profile-form' ) );
+
+		// R1-Abnahme S6: Objekt-/Rollenschutz mit echtem Subscriber (Negativtest, SEC 01).
+		require_once ABSPATH . 'wp-admin/includes/user.php';
+		$__sub_id = wp_insert_user( [ 'user_login' => 'liw_st_sub_' . wp_generate_password( 5, false ), 'user_pass' => wp_generate_password( 12 ), 'user_email' => 'liw_st_' . wp_generate_password( 6, false ) . '@example.test', 'role' => 'subscriber' ] );
+		if ( is_int( $__sub_id ) && $__sub_id > 0 ) {
+			wp_set_current_user( $__sub_id );
+			$__sub_me   = rest_do_request( new \WP_REST_Request( 'GET', '/my-liebherr/v1/me' ) )->get_data();
+			$__sub_caps = \Liebherr\InterfaceWorld\MyLiebherr\EntitlementService::granted_for( $__sub_id );
+			liw_st_check(
+				'R1-Abnahme S6: /me nur eigener Nutzer; Subscriber hat access ohne administer; fremdes Objekt verboten',
+				! empty( $__sub_me['ok'] ) && (int) $__sub_me['me']['user_id'] === (int) $__sub_id
+				&& in_array( \Liebherr\InterfaceWorld\MyLiebherr\Roles::CAP_ACCESS, $__sub_caps, true )
+				&& ! in_array( \Liebherr\InterfaceWorld\MyLiebherr\Roles::CAP_ADMINISTER, $__sub_caps, true )
+				&& false === \Liebherr\InterfaceWorld\MyLiebherr\EntitlementService::can( $__sub_caps, \Liebherr\InterfaceWorld\MyLiebherr\Roles::CAP_ACCESS, [ 'owner_user_id' => $__myl_admin_id, 'actor_user_id' => $__sub_id ] )
+			);
+			wp_set_current_user( $__myl_admin_id );
+			$wpdb->delete( $__myl_prof, [ 'user_id' => $__sub_id ] );
+			$wpdb->delete( $__dash_tbl, [ 'user_id' => $__sub_id ] );
+			wp_delete_user( $__sub_id );
+		}
+
 		$wpdb->delete( $__myl_prof, [ 'user_id' => $__myl_admin_id ] );
 		wp_set_current_user( $__ov_prev );
 	}

@@ -29,8 +29,12 @@ Session-Uhr/Token-Schachuhr** erweitert. Vollständiger Arbeits-Workflow (alle M
   Session-Uhr unten links). Alles hinter `liw_myl_enabled`/`liw_ptime_enabled` (Default AUS). WP-frei 564 / Docker 404.
 - **Auf Staging/Live nachziehen:** Seeder `liw-seed-my-liebherr.php --confirm`, Optionen `liw_my_liebherr_page_id`,
   ggf. `liw_myl_enabled`/`liw_ptime_enabled`/`liw_ptime_token_per_min`; Permalinks neu speichern.
-- **Als Nächstes (Breite):** S3 Dashboard, S5 Profile, S6 R1-Abnahme; dann R2-Wallet-UI (S7/S8), R3 ff. Wallet-Mehrwährung/
-  Token-Buchung = Core-Kategorie A + kommendes Wallet-Pflichtenheft (Buchungsnaht bleibt bis dahin Flag AUS).
+- **R1-Breite S3/S5/S6 ✅ umgesetzt (alpha.114–116):** S3 Dashboard (WidgetCatalog/DashboardService, Tabelle
+  `ary_liw_myl_dashboard_layout`, REST GET/PUT/reset, Overview-Controls) · S5 Profil (`[liw_my_profile]` → PATCH /me,
+  Datenschutz-Hinweis) · S6 R1-Abnahme (Subscriber-Negativtest, `docs/LIW_ABNAHME.md §9`). WP-frei 576 / Docker 408.
+- **Als Nächstes (R2 ff.):** S7/S8 Wallet-UI (Salden/Transaktionen/Belege) über `CoreBridge\WalletBridge`; danach
+  R3 (Adventures/Dreams/Gallery + CVF-4→6-Karten), R4, R5. Wallet-Mehrwährung/Token-Buchung + Aktivierung
+  `liw_ptime_charge_live` = Core-Kategorie A + kommendes Wallet-Pflichtenheft.
 - Reihenfolge: R0 Verträge → R1 Fundament (Kontext/Nav/Dashboard/Overview/Profile) → R2 Wallet-Adapter +
   **Plattformzeit-Schachuhr** → R3 Adventures/Dreams/Gallery + CVF-4→6-Karten → R4 Qualität/Sharing/Kontakte →
   R5 Pocket/Machines/CVF-Simulation → R6 Pilot.

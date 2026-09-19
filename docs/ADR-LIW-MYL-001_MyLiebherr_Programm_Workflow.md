@@ -142,10 +142,10 @@ Jede Stufe: **Ziel · Dateien/Klassen · DB/Migration · REST · Tests · Abnahm
 
 - **S1 · MYL-CORE Kontext & Entitlements. ✅ UMGESETZT (alpha.108).** `MyLiebherr\Context`, `EntitlementService` (Schnittmenge Konto/Org/Rolle/Objekt/Region/Produkt/Freigabe, §3/§35), `Roles`, `ProfileRepository`, `MembershipRepository`, `Flags`, `Rest`. *DB:* `ary_liw_myl_profile`, `ary_liw_myl_membership` (angelegt). *REST:* `GET/PATCH /my-liebherr/v1/me` (self-gating). *Abnahme:* MYL 001 (Teil), MYL 003 (Kontext), SEC 01 (Objektfilter) — grün. *Flag:* `liw_myl_enabled` (Default AUS). Tests WP-frei 537 / Docker 398.
 - **S2 · MYL-NAV Sechs-Reiter-Navigation. ✅ UMGESETZT (alpha.113).** Reiter Intelligence/Local/Interface/Adventures/My Liebherr/Pocket in verbindlicher Reihenfolge; rollenabhängige Sichtbarkeit; Platzhalter unsichtbar. *Datei:* `src/Admin/AdminMenu.php` + Frontend-Nav. *Abnahme:* MYL 013 (Teil), Direktlink-Schutz SEC 01.
-- **S3 · MYL-DASH Dashboard.** Widget-Katalog (nur berechtigte Widgets), DnD, Größen, Persistenz je Gerätetyp. *DB:* `ary_liw_myl_dashboard_layout`. *REST:* `GET/PUT /dashboard` (ETag). *Abnahme:* MYL 002, MYL 012.
+- **S3 · MYL-DASH Dashboard. ✅ UMGESETZT (alpha.116)** — WidgetCatalog + DashboardService + `ary_liw_myl_dashboard_layout` + REST GET/PUT/reset + Overview-Controls. Widget-Katalog (nur berechtigte Widgets), DnD, Größen, Persistenz je Gerätetyp. *DB:* `ary_liw_myl_dashboard_layout`. *REST:* `GET/PUT /dashboard` (ETag). *Abnahme:* MYL 002, MYL 012.
 - **S4 · MYL-OVERVIEW. ✅ UMGESETZT (alpha.113)** (inkl. vorgezogenem read-only `CoreBridge\WalletBridge`). Bankkonto-Startseite: Saldo/Aufgaben/Aktivität/Schnellaktionen (§30). *Abnahme:* MYL 001, A11y-Stichprobe.
-- **S5 · MYL-PROFILE.** Stammdaten, Rollen/Org-Wechsel sichtbar, Sicherheit/Datenschutz, Export/Löschung-Einstieg. *REST:* `PATCH /me` (Feldfreigabe). *Abnahme:* MYL 011 (Einstieg), SEC 06.
-- **S6 · R1-Abnahme.** Mandantensichere Navigation + API; Negativtests fremde Org/Rolle/Objekt. *Exit R1:* SEC 01 grün, MYL 001–003/012 grün.
+- **S5 · MYL-PROFILE. ✅ UMGESETZT (alpha.116).** Stammdaten, Rollen/Org sichtbar, Persona/Sprache/Zeitzone/aktive Org via `[liw_my_profile]`→PATCH /me; Datenschutz-Hinweis. *REST:* `PATCH /me` (Feldfreigabe). *Abnahme:* MYL 011 (Einstieg). *Offen:* echter Datenschutz-Export, Org-Wechsel-Vollpflege, Re-Auth (SEC 06).
+- **S6 · R1-Abnahme. ✅ UMGESETZT (alpha.116).** Mandantensichere Navigation + API; Negativtest fremde Org/Rolle/Objekt (Subscriber). *Exit R1:* SEC 01 grün, MYL 001/002/012 grün, MYL 003 teil (Org-Pflege folgt). Abnahme in `docs/LIW_ABNAHME.md §9`.
 
 ### R2 — Wallet & Plattformzeit (MYL-WALLET-ADP, MYL-WALLET, MYL-PTIME)
 

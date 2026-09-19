@@ -1,5 +1,28 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.116] – 2026-09-19 – My Liebherr R1-Breite: Dashboard (S3), Profil (S5), R1-Abnahme (S6)
+
+Alles hinter `liw_myl_enabled` (Default AUS). Abnahme in `docs/LIW_ABNAHME.md §9`.
+
+### S3 – Dashboard
+- `MyLiebherr\WidgetCatalog` (berechtigte Widgets je Cap), `DashboardService` (reine Merge-/Sanitize-/Reset-Logik:
+  nur berechtigte Widgets, gespeicherte Reihenfolge/Sichtbarkeit gewinnen, Unbekanntes fällt weg), `DashboardRepository`
+  + Tabelle `ary_liw_myl_dashboard_layout` (je Nutzer/Gerätetyp), REST `GET/PUT my-liebherr/v1/dashboard` (inkl. `reset`).
+- My Overview rendert die Widgets in persönlicher Reihenfolge/Sichtbarkeit mit Bedienelementen (↑ ↓ ✕, „Ausgeblendet"-Tray,
+  Zurücksetzen); JS `liw-my-liebherr.js` speichert serverseitig (§5).
+
+### S5 – Profil & Rollen
+- `MyLiebherr\ProfileView` (`[liw_my_profile]`, auch in die Overview eingebettet): Stammdaten/Rollen/Organisationen lesbar,
+  Formular für Persona/Sprache/Zeitzone/aktive Organisation → PATCH /me (Feldfreigabe §18), Datenschutz-Hinweis (Einstieg §14).
+
+### S6 – R1-Abnahme
+- Negativtest mit echtem Subscriber: `/me` liefert nur den eigenen Nutzer; Subscriber hat `liw_myl_access` ohne
+  `liw_myl_administer`; Zugriff auf fremdes Objekt verboten (SEC 01). Abnahmematrix MYL 001–003/012/025–028 + SEC 01.
+
+### Verifikation
+- `tests/run-tests.php` **576/576**, `scripts/liw-selftest.php` **408/408** (Dashboard-REST-Round-Trip + reset,
+  Profil-Shortcode, Subscriber-Negativtest; selbst-bereinigt).
+
 ## [0.1.0-alpha.113] – 2026-09-19 – My Liebherr Durchstich S2–S11 (Navigation, Overview, Plattformzeit-Schachuhr)
 
 Vertikaler Durchstich nach ADR-LIW-MYL-001, alles hinter Flags (`liw_myl_enabled`/`liw_ptime_enabled`, Default AUS).
