@@ -30,9 +30,13 @@ nachgebaut.
 `Adventures\SubmissionForm` (Tokenwert + Nutzungsumfang + Rechte-Zusicherung; Aktionen Entwurf/Registrieren)
 im Frontend `[liw_adventures]` UND im Backoffice `Admin\Pages\AdventureBoardPage` (Menü „🗺 Adventures", Board
 über alle Beiträge + Moderation validieren/freigeben/sperren/archivieren via REST `moderate`). **Offen:**
-Tokenakzeptanz-UI beim Zugriff (access/accept serverseitig vorhanden, Frontend-Bestätigungsdialog fehlt); echte
-Artikelbook-Anbindung im Core an Filter `liw_articlebook_register`; Auto-Übersetzung der Adventure-Felder
+echte Artikelbook-Anbindung im Core an Filter `liw_articlebook_register`; Auto-Übersetzung der Adventure-Felder
 (TranslationBridge / Core save_post); echtes Tokenbudget-Konto (§21).
+
+**Geliefert (alpha.61) – Tokenakzeptanz-Dialog beim Zugriff (§5/§6):** Zugriff-Button je Karte; Modal zeigt vor
+der Bestätigung Tokenwert + Nutzungsumfang + Version + Nutzungsbedingungen; Zugriff erst nach Akzeptanz +
+ausdrücklicher Bestätigung → REST `accept` → revisionssichere Protokollierung (Belastung + Transaktions-ID).
+Eigene Beiträge frei, unzureichendes Budget wird gemeldet. Tokenbudget via Filter `liw_adv_token_budget`.
 
 **Offen / nächste Etappen:** World Map + Detailseite, Medien-Upload/Transcoding (§14; MVP: externe Bild-URL),
 Moderations-UI/Audit (§17/§12.3), Get-Help-Assistent (Phase 3), Suche/Filter Maschine/Bauteil (§18),

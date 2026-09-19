@@ -38,6 +38,16 @@
 		if ( a.words ) { var w = el( 'span', 'liw-adv__card-words' ); w.textContent = '/// ' + a.words; body.appendChild( w ); }
 		var meta = el( 'span', 'liw-adv__card-meta' ); meta.textContent = [ a.region, a.date ].filter( Boolean ).join( ' · ' ); body.appendChild( meta );
 		if ( a.story ) { var st = el( 'span', 'liw-adv__card-story' ); st.textContent = a.story; body.appendChild( st ); }
+		if ( a.id ) {
+			var open = el( 'button', 'liw-cta liw-cta--secondary liw-adv__open' );
+			open.type = 'button';
+			open.setAttribute( 'data-liw-adv-open', String( a.id ) );
+			var tv = parseInt( a.token_value, 10 ) || 0;
+			open.textContent = tv > 0
+				? ( ( cfg.i18n.openFor || 'Zugriff' ) + ' · ' + tv + ' ' + ( cfg.i18n.tokens || 'Tokens' ) )
+				: ( cfg.i18n.openFree || 'Ansehen (kostenfrei)' );
+			body.appendChild( open );
+		}
 		li.appendChild( body );
 		return li;
 	}
@@ -128,8 +138,103 @@
 		initCreate( root );
 	}
 
+	// ── Tokenakzeptanz-Dialog beim Zugriff (§5/§6) ──
+	var modal = null, modalPost = 0, modalDone = false;
+
+	function t( k, fb ) { return ( cfg.i18n && cfg.i18n[ k ] ) || fb; }
+
+	function getModal() {
+		if ( modal ) { return modal; }
+		modal = el( 'div', 'liw-advmodal' );
+		modal.setAttribute( 'hidden', 'hidden' );
+		modal.innerHTML =
+			'<div class="liw-advmodal__backdrop" data-am-close></div>' +
+			'<div class="liw-advmodal__box" role="dialog" aria-modal="true" aria-labelledby="liw-advmodal-title">' +
+			'<button type="button" class="liw-advmodal__x" data-am-close aria-label="' + escAttr( t( 'close', 'Schließen' ) ) + '">×</button>' +
+			'<h3 id="liw-advmodal-title" data-am-title></h3>' +
+			'<p class="liw-advmodal__status" data-am-status></p>' +
+			'<dl class="liw-advmodal__meta">' +
+			'<dt>' + esc( t( 'dlgToken', 'Tokenwert' ) ) + '</dt><dd data-am-token></dd>' +
+			'<dt>' + esc( t( 'dlgUsage', 'Nutzungsumfang' ) ) + '</dt><dd data-am-usage></dd>' +
+			'<dt>' + esc( t( 'dlgVersion', 'Version' ) ) + '</dt><dd data-am-version></dd>' +
+			'</dl>' +
+			'<div class="liw-advmodal__terms" data-am-terms></div>' +
+			'<label class="liw-advmodal__accept"><input type="checkbox" data-am-agree> <span>' + esc( t( 'dlgAgree', 'Ich habe den Tokenwert und die Nutzungsbedingungen gesehen und akzeptiere sie.' ) ) + '</span></label>' +
+			'<div class="liw-advmodal__actions"><button type="button" class="liw-cta liw-cta--primary" data-am-confirm disabled>' + esc( t( 'dlgConfirm', 'Tokenverwendung bestätigen' ) ) + '</button></div>' +
+			'<p class="liw-advmodal__msg" role="status" data-am-msg></p>' +
+			'</div>';
+		document.body.appendChild( modal );
+		[].forEach.call( modal.querySelectorAll( '[data-am-close]' ), function ( c ) { c.addEventListener( 'click', closeModal ); } );
+		document.addEventListener( 'keydown', function ( e ) { if ( 'Escape' === e.key && ! modal.hasAttribute( 'hidden' ) ) { closeModal(); } } );
+		var agree = modal.querySelector( '[data-am-agree]' ), confirmBtn = modal.querySelector( '[data-am-confirm]' );
+		agree.addEventListener( 'change', function () { confirmBtn.disabled = ! agree.checked; } );
+		confirmBtn.addEventListener( 'click', confirmAccess );
+		return modal;
+	}
+
+	function escAttr( s ) { return String( s == null ? '' : s ).replace( /"/g, '&quot;' ); }
+	function esc( s ) { return String( s == null ? '' : s ).replace( /[&<>]/g, function ( c ) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[ c ]; } ); }
+
+	function closeModal() { if ( modal ) { modal.setAttribute( 'hidden', 'hidden' ); } }
+
+	function openDialog( postId ) {
+		var m = getModal();
+		modalPost = postId; modalDone = false;
+		m.querySelector( '[data-am-msg]' ).textContent = '';
+		var agree = m.querySelector( '[data-am-agree]' ), confirmBtn = m.querySelector( '[data-am-confirm]' );
+		agree.checked = false; agree.disabled = false; confirmBtn.disabled = true;
+		confirmBtn.textContent = t( 'dlgConfirm', 'Tokenverwendung bestätigen' );
+		m.querySelector( '[data-am-title]' ).textContent = t( 'dlgLoading', 'Wird geladen …' );
+		m.querySelector( '[data-am-token]' ).textContent = '';
+		m.querySelector( '[data-am-usage]' ).textContent = '';
+		m.querySelector( '[data-am-version]' ).textContent = '';
+		m.querySelector( '[data-am-status]' ).textContent = '';
+		m.querySelector( '[data-am-terms]' ).textContent = t( 'dlgTerms', 'Mit der Bestätigung akzeptieren Sie den vom Ersteller festgelegten Tokenwert als Gegenleistung für den Zugriff. Bereits bestätigte Nutzungen werden nicht nachträglich durch Preisänderungen verändert. Der Vorgang wird protokolliert.' );
+		m.removeAttribute( 'hidden' );
+
+		api( 'access?post_id=' + encodeURIComponent( postId ), { auth: true } ).then( function ( res ) {
+			var p = res && res.preview ? res.preview : null;
+			if ( ! p ) { m.querySelector( '[data-am-msg]' ).textContent = t( 'dlgErr', 'Zugriffsdaten nicht verfügbar.' ); return; }
+			m.querySelector( '[data-am-title]' ).textContent = p.title || '';
+			m.querySelector( '[data-am-token]' ).textContent = p.is_author
+				? t( 'dlgFreeAuthor', 'kostenfrei (eigener Beitrag)' )
+				: ( ( parseInt( p.token_value, 10 ) || 0 ) + ' ' + t( 'tokens', 'Tokens' ) );
+			m.querySelector( '[data-am-usage]' ).textContent = p.usage_label || '—';
+			m.querySelector( '[data-am-version]' ).textContent = p.version || 1;
+			if ( ! p.usable ) {
+				m.querySelector( '[data-am-status]' ).textContent = t( 'dlgNotUsable', 'Dieser Beitrag ist (noch) nicht registriert/freigegeben.' );
+				agree.disabled = true; confirmBtn.disabled = true;
+			}
+		} ).catch( function () { m.querySelector( '[data-am-msg]' ).textContent = t( 'dlgErr', 'Zugriffsdaten nicht verfügbar.' ); } );
+	}
+
+	function confirmAccess() {
+		var m = getModal(), confirmBtn = m.querySelector( '[data-am-confirm]' ), msg = m.querySelector( '[data-am-msg]' );
+		if ( modalDone ) { closeModal(); return; }
+		confirmBtn.disabled = true; msg.textContent = t( 'saving', 'Wird gespeichert …' );
+		api( 'accept', { method: 'POST', auth: true, body: { post_id: modalPost } } ).then( function ( res ) {
+			if ( res && res.ok ) {
+				modalDone = true;
+				var charge = parseInt( res.charge, 10 ) || 0;
+				msg.textContent = t( 'dlgOk', 'Zugriff protokolliert.' ) + ' · ' +
+					( charge > 0 ? ( t( 'dlgCharged', 'belastet' ) + ': ' + charge + ' ' + t( 'tokens', 'Tokens' ) ) : t( 'dlgFree', 'ohne Belastung' ) ) +
+					( res.transaction_id ? ' · ' + res.transaction_id : '' );
+				confirmBtn.textContent = t( 'close', 'Schließen' ); confirmBtn.disabled = false;
+			} else {
+				msg.textContent = res && 'insufficient_budget' === res.error
+					? t( 'dlgNoBudget', 'Nicht genügend Tokenbudget.' )
+					: ( ( res && res.error ) || t( 'dlgErr', 'Zugriff fehlgeschlagen.' ) );
+				confirmBtn.disabled = false;
+			}
+		} ).catch( function () { msg.textContent = t( 'dlgErr', 'Zugriff fehlgeschlagen.' ); confirmBtn.disabled = false; } );
+	}
+
 	function boot() {
 		[].forEach.call( document.querySelectorAll( '[data-liw-adv]' ), init );
+		document.addEventListener( 'click', function ( e ) {
+			var b = e.target.closest( '[data-liw-adv-open]' );
+			if ( b ) { e.preventDefault(); openDialog( parseInt( b.getAttribute( 'data-liw-adv-open' ), 10 ) ); }
+		} );
 	}
 	if ( document.readyState === 'loading' ) { document.addEventListener( 'DOMContentLoaded', boot ); } else { boot(); }
 }() );

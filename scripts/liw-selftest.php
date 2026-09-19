@@ -739,6 +739,19 @@ try {
 	liw_st_check( 'ADV-Reg: Validierung → Veröffentlichungsfreigabe (published, §4/§7)', ! empty( $__val['ok'] ) && ! empty( $__pub['ok'] ) && 'published' === $RSVC::current_status( (int) $__a1['id'] ) );
 	liw_st_check( 'ADV-Reg: Ledger-Kette unverändert (revisionssicher, §9)', $TLED::verify_chain( (int) $__a1['id'] ) );
 
+	// Tokenakzeptanz-Dialog beim Zugriff (§5/§6, alpha.61): View-Modell + REST access/accept.
+	$__vm = $ADV::to_view( get_post( (int) $__a1['id'] ) );
+	liw_st_check( 'ADV-Zugriff: View-Modell trägt Tokenwert + Registrierungsstatus', 25 === (int) $__vm['token_value'] && '' !== (string) $__vm['reg_status'] );
+	$__prev_user = get_current_user_id();
+	wp_set_current_user( 2 ); // Nicht-Ersteller.
+	$__acReq = new WP_REST_Request( 'GET' ); $__acReq->set_param( 'post_id', (int) $__a1['id'] );
+	$__prev = \Liebherr\InterfaceWorld\Adventures\Rest::access( $__acReq )->get_data();
+	liw_st_check( 'ADV-Zugriff: Rest::access zeigt Tokenwert + Nutzungsumfang-Label vor Bestätigung', ! empty( $__prev['ok'] ) && isset( $__prev['preview']['token_value'], $__prev['preview']['usage_label'] ) && 25 === (int) $__prev['preview']['token_value'] && false === $__prev['preview']['is_author'] );
+	$__acpReq = new WP_REST_Request( 'POST' ); $__acpReq->set_param( 'post_id', (int) $__a1['id'] );
+	$__accd = \Liebherr\InterfaceWorld\Adventures\Rest::accept( $__acpReq )->get_data();
+	liw_st_check( 'ADV-Zugriff: Rest::accept protokolliert + Transaktions-ID (Budget-Filter)', ! empty( $__accd['ok'] ) && 25 === (int) $__accd['charge'] && '' !== (string) ( $__accd['transaction_id'] ?? '' ) );
+	wp_set_current_user( (int) $__prev_user );
+
 	// Aufräumen (Testdaten inkl. Ledger).
 	global $wpdb; $__lt = \Liebherr\InterfaceWorld\Adventures\TokenSchema::table();
 	foreach ( [ $__a1['id'], $__a2['id'], $__d['id'] ] as $__id ) {

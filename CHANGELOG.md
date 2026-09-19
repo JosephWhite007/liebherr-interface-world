@@ -1,5 +1,28 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.61] – 2026-09-19 – Adventures: Tokenakzeptanz-Dialog beim Zugriff (§5/§6)
+
+### Hinzugefügt
+- **Zugriff-Button** an jeder Adventure-Karte (Frontend, Server- und JS-Render): „Zugriff · N Tokens" bzw.
+  „Ansehen (kostenfrei)".
+- **Tokenakzeptanz-Dialog** (Modal, `liw-adventures.js`): zeigt **vor** der Bestätigung Tokenwert,
+  Nutzungsumfang, Version und die Nutzungsbedingungen (§6: Vorschau + Tokenwert sichtbar vor Bestätigung).
+  Zugriff erst nach Akzeptanz der Bedingungen (Checkbox) **und** ausdrücklicher Bestätigung der
+  Tokenverwendung → REST `accept` → revisionssichere Protokollierung; Ergebnis zeigt Belastung +
+  Transaktions-ID. Eigene Beiträge „kostenfrei", nicht registrierte Beiträge werden abgewiesen,
+  unzureichendes Budget wird gemeldet.
+- View-Modell (`AdventureService::to_view`) trägt jetzt `token_value` + `reg_status`;
+  `RegistrationService::access_preview` liefert `usage_label` + `status_label` (+ `RegistrationService::usage_label()`).
+
+### Verifikation
+- `tests/run-tests.php` **372/372**, `scripts/liw-selftest.php` **318/318** (View-Modell mit Tokenwert;
+  `Rest::access` zeigt Tokenwert + Nutzungsumfang-Label vor Bestätigung; `Rest::accept` belastet + Transaktions-ID).
+  Browser: Zugriff-Button „· 30 Tokens", Dialog mit Tokenwert/Umfang/Version + Bedingungen + Bestätigung
+  (der geladene Zustand erfordert Login; anonym greift korrekt das Login-Gate).
+
+### Hinweis
+- Prototyp (§21): Tokenbudget via Filter `liw_adv_token_budget` (Standard 1000); echtes Budget-Konto später.
+
 ## [0.1.0-alpha.60] – 2026-09-19 – Adventures: Workboard-Optik-Eingabemaske (Frontend + Backend) mit Token-Bewertung
 
 ### Hinzugefügt

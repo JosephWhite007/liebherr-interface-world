@@ -12,6 +12,20 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.61 – Adventures: Tokenakzeptanz-Dialog beim Zugriff
+
+**Geändert:** `assets/js/liw-adventures.js` – Zugriff-Button in `buildCard()`; Modal-Dialog (`getModal`/
+`openDialog`/`confirmAccess`): GET `access?post_id` → Vorschau (Tokenwert/Umfang/Version/Bedingungen), Akzeptanz-
+Checkbox aktiviert „bestätigen" → POST `accept` → Ergebnis (Belastung + Transaktions-ID); Delegated-Click in
+`boot()`. `src/Adventures/AdventuresView.php` – Server-Karten-Button `open_button()` + Dialog-i18n in localize.
+`src/Adventures/AdventureService.php` – `to_view()` um `token_value` + `reg_status` erweitert.
+`src/Adventures/RegistrationService.php` – `access_preview()` liefert `usage_label`/`status_label`; neue
+`usage_label()`. `assets/css/liw-adventures.css` – `.liw-advmodal*` + `.liw-adv__open` (Modal, Dark-Mode-fest).
+Selftest ergänzt (Rest::access/accept mit Nicht-Ersteller-Kontext). Bump alpha.60 → alpha.61.
+
+**Verifikation:** WP-frei 372 / Docker 318; Dialog im Browser gerendert (geladener Zustand + Belastung headless,
+da `access`/`accept` Login verlangen). §6 erfüllt: Tokenwert + Bedingungen sichtbar VOR der Bestätigung.
+
 ## 0.1.0-alpha.60 – Adventures: Workboard-Optik-Eingabemaske (Frontend + Backend)
 
 **Neu:** `src/Adventures/SubmissionForm.php` (gemeinsamer Masken-Renderer `render('frontend'|'admin')` in

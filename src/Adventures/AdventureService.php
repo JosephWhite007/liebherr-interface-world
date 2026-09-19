@@ -174,6 +174,8 @@ final class AdventureService {
 			'image'         => is_string( $img ) ? $img : '',
 			'map_lat'       => $map_lat,
 			'map_lng'       => $map_lng,
+			'token_value'   => TokenPolicy::sanitize_value( get_post_meta( $p->ID, AdventureCpt::M_TOKEN_VALUE, true ) ),
+			'reg_status'    => (string) get_post_meta( $p->ID, AdventureCpt::M_REG_STATUS, true ),
 		];
 	}
 

@@ -218,14 +218,27 @@ final class RegistrationService {
 			'title'           => get_the_title( $post_id ),
 			'version'         => $reg['version'],
 			'status'          => $reg['status'],
+			'status_label'    => $reg['status_label'],
 			'usable'          => $reg['usable_company'],
 			'is_author'       => $author,
 			'token_value'     => $reg['token_value'],
 			'usage_scope'     => $reg['usage_scope'],
+			'usage_label'     => self::usage_label( (string) $reg['usage_scope'] ),
 			'charge'          => (int) $access['charge'],
 			'allowed'         => (bool) $access['allowed'] && $reg['usable_company'],
 			'reason'          => (string) $access['reason'],
 		];
+	}
+
+	/** Menschlich lesbarer Nutzungsumfang (§5). */
+	public static function usage_label( string $scope ): string {
+		switch ( $scope ) {
+			case 'view':           return __( 'Nur ansehen', 'liebherr-interface-world' );
+			case 'reuse_internal': return __( 'Intern weiterverwenden', 'liebherr-interface-world' );
+			case 'reuse_world':    return __( 'Im Liebherr-World-Netz verwenden', 'liebherr-interface-world' );
+			case '':               return __( 'Nicht angegeben', 'liebherr-interface-world' );
+			default:               return $scope;
+		}
 	}
 
 	/**

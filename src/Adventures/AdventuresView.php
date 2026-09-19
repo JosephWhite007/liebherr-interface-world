@@ -70,6 +70,25 @@ final class AdventuresView {
 				'needTitle'  => __( 'Titel erforderlich.', 'liebherr-interface-world' ),
 				'needRights' => __( 'Bitte die Rechte-Zusicherung bestätigen.', 'liebherr-interface-world' ),
 				'articlebook' => __( 'Artikelbook', 'liebherr-interface-world' ),
+				// Tokenakzeptanz-Dialog (§5/§6).
+				'tokens'       => __( 'Tokens', 'liebherr-interface-world' ),
+				'openFor'      => __( 'Zugriff', 'liebherr-interface-world' ),
+				'openFree'     => __( 'Ansehen (kostenfrei)', 'liebherr-interface-world' ),
+				'close'        => __( 'Schließen', 'liebherr-interface-world' ),
+				'dlgToken'     => __( 'Tokenwert', 'liebherr-interface-world' ),
+				'dlgUsage'     => __( 'Nutzungsumfang', 'liebherr-interface-world' ),
+				'dlgVersion'   => __( 'Version', 'liebherr-interface-world' ),
+				'dlgAgree'     => __( 'Ich habe den Tokenwert und die Nutzungsbedingungen gesehen und akzeptiere sie.', 'liebherr-interface-world' ),
+				'dlgConfirm'   => __( 'Tokenverwendung bestätigen', 'liebherr-interface-world' ),
+				'dlgLoading'   => __( 'Wird geladen …', 'liebherr-interface-world' ),
+				'dlgTerms'     => __( 'Mit der Bestätigung akzeptieren Sie den vom Ersteller festgelegten Tokenwert als Gegenleistung für den Zugriff. Bereits bestätigte Nutzungen werden nicht nachträglich durch Preisänderungen verändert. Der Vorgang wird revisionssicher protokolliert.', 'liebherr-interface-world' ),
+				'dlgErr'       => __( 'Zugriff nicht möglich.', 'liebherr-interface-world' ),
+				'dlgFreeAuthor' => __( 'kostenfrei (eigener Beitrag)', 'liebherr-interface-world' ),
+				'dlgNotUsable' => __( 'Dieser Beitrag ist (noch) nicht registriert/freigegeben.', 'liebherr-interface-world' ),
+				'dlgOk'        => __( 'Zugriff protokolliert.', 'liebherr-interface-world' ),
+				'dlgCharged'   => __( 'belastet', 'liebherr-interface-world' ),
+				'dlgFree'      => __( 'ohne Belastung', 'liebherr-interface-world' ),
+				'dlgNoBudget'  => __( 'Nicht genügend Tokenbudget.', 'liebherr-interface-world' ),
 			],
 		] );
 	}
@@ -152,7 +171,22 @@ final class AdventuresView {
 			. ( '' !== (string) $a['words'] ? '<span class="liw-adv__card-words">/// ' . esc_html( (string) $a['words'] ) . '</span>' : '' )
 			. '<span class="liw-adv__card-meta">' . esc_html( trim( (string) $a['region'] . ' · ' . (string) $a['date'], ' ·' ) ) . '</span>'
 			. ( '' !== (string) $a['story'] ? '<span class="liw-adv__card-story">' . esc_html( (string) $a['story'] ) . '</span>' : '' )
+			. self::open_button( $a )
 			. '</span>'
 			. '</li>';
+	}
+
+	/** Zugriff-Button (öffnet den Tokenakzeptanz-Dialog, §5). */
+	private static function open_button( array $a ): string {
+		$id = (int) ( $a['id'] ?? 0 );
+		if ( $id <= 0 ) {
+			return '';
+		}
+		$token = isset( $a['token_value'] ) ? (int) $a['token_value'] : 0;
+		$label = $token > 0
+			/* translators: %d = token count */
+			? sprintf( esc_html__( 'Zugriff · %d Tokens', 'liebherr-interface-world' ), $token )
+			: esc_html__( 'Ansehen (kostenfrei)', 'liebherr-interface-world' );
+		return '<button type="button" class="liw-cta liw-cta--secondary liw-adv__open" data-liw-adv-open="' . esc_attr( (string) $id ) . '">' . $label . '</button>';
 	}
 }

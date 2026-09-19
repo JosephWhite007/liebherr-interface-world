@@ -90,3 +90,24 @@
 .liw-wb__row-actions { white-space: nowrap; }
 .liw-wb__act { margin: 0 .2rem .2rem 0; }
 .liw-wb__board-msg { font-weight: 600; }
+
+/* ── Tokenakzeptanz-Dialog beim Zugriff (alpha.61) ── */
+.liw-adv__open { margin-top: .6rem; align-self: flex-start; }
+.liw-advmodal { position: fixed; inset: 0; z-index: 100000; display: flex; align-items: center; justify-content: center; }
+.liw-advmodal[hidden] { display: none; }
+.liw-advmodal__backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.55); }
+.liw-advmodal__box { position: relative; z-index: 1; width: min(560px, 92vw); max-height: 88vh; overflow: auto; background: #fff; color: #14202b; border-radius: 12px; padding: 1.6rem 1.7rem; box-shadow: 0 20px 60px rgba(0,0,0,.4); }
+.liw-advmodal__x { position: absolute; top: .6rem; right: .8rem; border: 0; background: transparent; font-size: 1.6rem; line-height: 1; cursor: pointer; color: #555; }
+.liw-advmodal__box h3 { margin: 0 1.6rem .4rem 0; font-weight: 800; }
+.liw-advmodal__status { margin: 0 0 .8rem; color: #a5281b; font-weight: 600; }
+.liw-advmodal__status:empty { display: none; }
+.liw-advmodal__meta { display: grid; grid-template-columns: max-content 1fr; gap: .3rem 1rem; margin: 0 0 1rem; }
+.liw-advmodal__meta dt { color: #667; font-size: .9rem; }
+.liw-advmodal__meta dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; }
+.liw-advmodal__terms { font-size: .88rem; line-height: 1.5; color: #445; background: #f4f6f8; border: 1px solid #e0e4e8; border-radius: 8px; padding: .8rem .9rem; margin: 0 0 1rem; }
+.liw-advmodal__accept { display: flex; gap: .55rem; align-items: flex-start; font-size: .92rem; line-height: 1.45; margin: 0 0 1rem; }
+.liw-advmodal__accept input { margin-top: .25rem; }
+.liw-advmodal__actions { display: flex; gap: .6rem; }
+.liw-advmodal__msg { margin: .8rem 0 0; font-weight: 600; }
+.liw-advmodal__msg:empty { display: none; }
+@media (prefers-color-scheme: dark) { .liw-advmodal__box { background: #0f1a24; color: #eaf2f8; } .liw-advmodal__terms { background: #14202b; border-color: #26333f; color: #c4d2dd; } }
