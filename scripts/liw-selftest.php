@@ -654,6 +654,10 @@ try {
 	liw_st_check( 'IW: Pflichtfeld-Legende + 3 markierte Pflichtfelder (Sternchen erklärt)', str_contains( $__world, 'Pflichtfelder' ) && 3 === substr_count( $__world, 'class="liw-iw__req"' ) );
 	liw_st_check( 'IW: Nutzungsbedingungen (5.1–5.8) in der Schleuse eingebunden', str_contains( $__world, '5.1 Prototypstatus' ) && str_contains( $__world, '5.8 Rechtlicher Freigabevorbehalt' ) );
 	liw_st_check( 'IW: Sitzungs-/Kostenleiste + Beenden', str_contains( $__world, 'data-liw-iw-time' ) && str_contains( $__world, 'data-liw-iw-budgetfill' ) && str_contains( $__world, 'data-liw-iw-end' ) );
+	// Preismodell alpha.55: 0,09 EUR/Sek., 5.000,00 EUR/Monat, 1 TB (min.).
+	liw_st_check( 'IW: Preisanzeige 0,09 EUR / Sek. (Sekundentakt)', str_contains( $__world, '0,09' ) && str_contains( $__world, '/ Sek.' ) );
+	liw_st_check( 'IW: Sitzungsbudget 5.000,00 EUR / Monat', str_contains( $__world, '5.000,00' ) && str_contains( $__world, '/ Monat' ) );
+	liw_st_check( 'IW: Lokaler Speicher 1 TB (min.)', str_contains( $__world, '1 TB (min.)' ) );
 	liw_st_check( 'IW: Funktions-Hub verlinkt gebaute Bereiche (Local Intelligence + Interface Solutions)', str_contains( $__world, 'liw-iw__hub' ) && str_contains( $__world, 'Local Intelligence' ) && str_contains( $__world, 'Interface Solutions' ) && substr_count( $__world, 'liw-iw__tile--live' ) >= 2 );
 
 	// ── [8d2] Navigation & Hotels (13 Segmente + Lösungswelt + 6 Hotels, §3/§19, alpha.54) ──

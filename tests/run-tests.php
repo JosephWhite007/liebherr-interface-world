@@ -314,10 +314,20 @@ require_once $root . '/src/IntelligenceWorld/Rest.php';
 $iw_def = \Liebherr\InterfaceWorld\IntelligenceWorld\WorldContent::defaults();
 liw_assert( 'WorldContent: landing/gate/pricing + Demo-Code', isset( $iw_def['landing'], $iw_def['gate'], $iw_def['pricing'] ) && 'LIEBHERR-DEMO' === $iw_def['pricing']['access_code'], $checks, $failures );
 liw_assert( 'WorldContent: sanitize([]) == defaults()', \Liebherr\InterfaceWorld\IntelligenceWorld\WorldContent::sanitize( [] ) === $iw_def, $checks, $failures );
-$bs = \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::billing_status( 120, 250, 5000 );
-liw_assert( 'Rest::billing_status: 120s×2,50/min = 5,00 (500 Cent), 10 %', 500 === $bs['base_cost_minor'] && 10 === $bs['budget_pct'] && 'ok' === $bs['level'], $checks, $failures );
-$bs2 = \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::billing_status( 1000, 250, 5000 );
-liw_assert( 'Rest::billing_status: Warnstufe high ab 80 %', 'high' === $bs2['level'] && $bs2['budget_pct'] >= 80, $checks, $failures );
+// Preismodell (alpha.55): Sekundentakt 0,09 EUR/Sek., Monatsbudget 5.000,00 EUR, 1 TB (min.).
+$IWWC = '\Liebherr\InterfaceWorld\IntelligenceWorld\WorldContent';
+liw_assert( 'WorldContent: Preis 0,09/Sek. (9 Minor, unit=second)', 9 === $iw_def['pricing']['base_price_second_minor'] && 'second' === $iw_def['pricing']['price_unit'], $checks, $failures );
+liw_assert( 'WorldContent: Budget 5.000,00/Monat (500000 Minor, period=month)', 500000 === $iw_def['pricing']['session_budget_minor'] && 'month' === $iw_def['pricing']['budget_period'], $checks, $failures );
+liw_assert( 'WorldContent: Speicher 1 TB Mindestwert (1048576 MB, is_minimum)', 1048576 === $iw_def['pricing']['storage_budget_mb'] && true === $iw_def['pricing']['storage_is_minimum'], $checks, $failures );
+liw_assert( 'WorldContent: storage_label(1048576, true) == „1 TB (min.)"', '1 TB (min.)' === $IWWC::storage_label( 1048576, true ) && '1 TB' === $IWWC::storage_label( 1048576, false ), $checks, $failures );
+liw_assert( 'WorldContent: storage_label 2048 MB == 2 GB, 512 MB == 512 MB', '2 GB' === $IWWC::storage_label( 2048, false ) && '512 MB' === $IWWC::storage_label( 512, false ), $checks, $failures );
+liw_assert( 'WorldContent: unit_label(second)=Sek., period_label(month)=Monat', 'Sek.' === $IWWC::unit_label( 'second' ) && 'Monat' === $IWWC::period_label( 'month' ), $checks, $failures );
+$bs = \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::billing_status( 100, 9, 500000 );
+liw_assert( 'Rest::billing_status: 100s×0,09/Sek. = 9,00 (900 Cent), ok', 900 === $bs['base_cost_minor'] && 0 === $bs['budget_pct'] && 'ok' === $bs['level'], $checks, $failures );
+$bs2 = \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::billing_status( 100, 9, 1000 );
+liw_assert( 'Rest::billing_status: Warnstufe high bei 90 %', 900 === $bs2['base_cost_minor'] && 90 === $bs2['budget_pct'] && 'high' === $bs2['level'], $checks, $failures );
+$bs3 = \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::billing_status( 200, 9, 1000 );
+liw_assert( 'Rest::billing_status: Budget überschritten = limit', 'limit' === $bs3['level'] && $bs3['budget_pct'] >= 100, $checks, $failures );
 liw_assert( 'Rest::format_duration: §8-Beispiel 02:14:38', '02:14:38' === \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::format_duration( 8078 ) && '00:00:00' === \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::format_duration( 0 ), $checks, $failures );
 liw_assert( 'Favicon: goldenes Planet-SVG vorhanden + XML-wohlgeformt', is_readable( $root . '/assets/img/liw-planet-icon.svg' ) && false !== @simplexml_load_file( $root . '/assets/img/liw-planet-icon.svg' ), $checks, $failures );
 

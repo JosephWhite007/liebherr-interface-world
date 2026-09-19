@@ -68,7 +68,7 @@ final class WorldView {
 			'nonce'  => wp_create_nonce( Rest::NONCE_NAME ),
 			'config' => [
 				'currency'          => (string) $cfg['pricing']['currency'],
-				'price_minute'      => (int) $cfg['pricing']['base_price_minute_minor'],
+				'price_second'      => (int) $cfg['pricing']['base_price_second_minor'],
 				'session_budget'    => (int) $cfg['pricing']['session_budget_minor'],
 				'storage_budget_mb' => (int) $cfg['pricing']['storage_budget_mb'],
 			],
@@ -95,8 +95,9 @@ final class WorldView {
 	public static function render(): string {
 		$c   = WorldContent::get();
 		$cur = (string) $c['pricing']['currency'];
-		$price_display  = Money::format( (int) $c['pricing']['base_price_minute_minor'], $cur ) . ' / min';
-		$budget_display = Money::format( (int) $c['pricing']['session_budget_minor'], $cur );
+		$price_display  = Money::format( (int) $c['pricing']['base_price_second_minor'], $cur ) . ' / ' . WorldContent::unit_label( (string) ( $c['pricing']['price_unit'] ?? 'second' ) );
+		$budget_display = Money::format( (int) $c['pricing']['session_budget_minor'], $cur ) . ' / ' . WorldContent::period_label( (string) ( $c['pricing']['budget_period'] ?? 'month' ) );
+		$storage_display = WorldContent::storage_label( (int) $c['pricing']['storage_budget_mb'], (bool) ( $c['pricing']['storage_is_minimum'] ?? false ) );
 
 		ob_start();
 		?>
@@ -132,7 +133,7 @@ final class WorldView {
 						?>
 					</div>
 
-					<p class="liw-iw__price"><strong><?php echo esc_html__( 'Preis:', 'liebherr-interface-world' ); ?></strong> <?php echo esc_html( $price_display ); ?> · <strong><?php echo esc_html__( 'Sitzungsbudget:', 'liebherr-interface-world' ); ?></strong> <?php echo esc_html( $budget_display ); ?> · <strong><?php echo esc_html__( 'Lokaler Speicher:', 'liebherr-interface-world' ); ?></strong> <?php echo esc_html( (string) (int) $c['pricing']['storage_budget_mb'] ); ?> MB</p>
+					<p class="liw-iw__price"><strong><?php echo esc_html__( 'Preis:', 'liebherr-interface-world' ); ?></strong> <?php echo esc_html( $price_display ); ?> · <strong><?php echo esc_html__( 'Sitzungsbudget:', 'liebherr-interface-world' ); ?></strong> <?php echo esc_html( $budget_display ); ?> · <strong><?php echo esc_html__( 'Lokaler Speicher:', 'liebherr-interface-world' ); ?></strong> <?php echo esc_html( $storage_display ); ?></p>
 					<p class="liw-iw__price-info"><?php echo esc_html( (string) $c['gate']['price_info'] ); ?></p>
 
 					<label class="liw-iw__consent"><input type="checkbox" data-liw-iw-consent="terms" required /> <span><?php echo esc_html( (string) $c['gate']['consent_terms'] ); ?> <span class="liw-iw__req" aria-hidden="true">*</span></span></label>

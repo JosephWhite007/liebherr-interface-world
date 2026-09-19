@@ -46,9 +46,12 @@ final class WorldContent {
 			// Prototyp-Tarife/Budgets (Beispieldaten, administrierbar). Geld in Minor-Units (Cent).
 			'pricing' => [
 				'currency'                => 'EUR',
-				'base_price_minute_minor' => 250,   // 2,50 EUR/min (Beispiel)
-				'session_budget_minor'    => 5000,  // 50,00 EUR Beispiel-Sitzungsbudget (für Warnschwellen)
-				'storage_budget_mb'       => 5,     // lokales Speicher-Grundbudget (Anzeige, §14)
+				'price_unit'              => 'second',   // Abrechnungstakt der Basiskosten (Sekunde)
+				'base_price_second_minor' => 9,          // 0,09 EUR/Sek. (Beispiel)
+				'budget_period'           => 'month',    // Bezugszeitraum des Budgets (Monat)
+				'session_budget_minor'    => 500000,     // 5.000,00 EUR Budget pro Monat (für Warnschwellen)
+				'storage_budget_mb'       => 1048576,    // 1 TB lokaler Speicher (Mindestwert, Anzeige §14)
+				'storage_is_minimum'      => true,       // „min." – der angezeigte Speicher ist ein Mindestwert
 				'access_code'             => 'LIEBHERR-DEMO', // Demo-Code (kein echtes Login, §21)
 			],
 		];
@@ -105,8 +108,19 @@ final class WorldContent {
 				$cur = strtoupper( preg_replace( '/[^A-Za-z]/', '', (string) $raw['pricing']['currency'] ) ?? '' );
 				$out['pricing']['currency'] = '' !== $cur ? substr( $cur, 0, 3 ) : $def['pricing']['currency'];
 			}
-			foreach ( [ 'base_price_minute_minor', 'session_budget_minor', 'storage_budget_mb' ] as $k ) {
+			foreach ( [ 'base_price_second_minor', 'session_budget_minor', 'storage_budget_mb' ] as $k ) {
 				if ( isset( $raw['pricing'][ $k ] ) ) { $out['pricing'][ $k ] = max( 0, (int) $raw['pricing'][ $k ] ); }
+			}
+			if ( isset( $raw['pricing']['price_unit'] ) ) {
+				$u = sanitize_key( (string) $raw['pricing']['price_unit'] );
+				$out['pricing']['price_unit'] = in_array( $u, [ 'second', 'minute', 'hour' ], true ) ? $u : $def['pricing']['price_unit'];
+			}
+			if ( isset( $raw['pricing']['budget_period'] ) ) {
+				$p = sanitize_key( (string) $raw['pricing']['budget_period'] );
+				$out['pricing']['budget_period'] = in_array( $p, [ 'session', 'day', 'month', 'year' ], true ) ? $p : $def['pricing']['budget_period'];
+			}
+			if ( isset( $raw['pricing']['storage_is_minimum'] ) ) {
+				$out['pricing']['storage_is_minimum'] = (bool) $raw['pricing']['storage_is_minimum'];
 			}
 			if ( isset( $raw['pricing']['access_code'] ) ) {
 				$code = $scalar( $raw['pricing']['access_code'] );
@@ -115,6 +129,46 @@ final class WorldContent {
 		}
 
 		return $out;
+	}
+
+	/** Menschliche Bezeichnung des Abrechnungstakts (für „… / <Einheit>"). */
+	public static function unit_label( string $unit ): string {
+		switch ( $unit ) {
+			case 'second': return __( 'Sek.', 'liebherr-interface-world' );
+			case 'minute': return __( 'min', 'liebherr-interface-world' );
+			case 'hour':   return __( 'Std.', 'liebherr-interface-world' );
+			default:       return $unit;
+		}
+	}
+
+	/** Menschliche Bezeichnung des Budget-Zeitraums (für „… / <Zeitraum>"). */
+	public static function period_label( string $period ): string {
+		switch ( $period ) {
+			case 'session': return __( 'Sitzung', 'liebherr-interface-world' );
+			case 'day':     return __( 'Tag', 'liebherr-interface-world' );
+			case 'month':   return __( 'Monat', 'liebherr-interface-world' );
+			case 'year':    return __( 'Jahr', 'liebherr-interface-world' );
+			default:        return $period;
+		}
+	}
+
+	/**
+	 * Formatiert ein Speicher-Grundbudget aus Megabyte in eine lesbare Einheit (MB/GB/TB, 1024er-Schritte).
+	 * `$is_minimum` hängt „ (min.)" an. Rein und unit-testbar.
+	 */
+	public static function storage_label( int $mb, bool $is_minimum = false ): string {
+		$mb   = max( 0, $mb );
+		$fmt  = static function ( float $v ): string {
+			return rtrim( rtrim( number_format( $v, 2, ',', '.' ), '0' ), ',' );
+		};
+		if ( $mb >= 1048576 ) {
+			$out = $fmt( $mb / 1048576 ) . ' TB';
+		} elseif ( $mb >= 1024 ) {
+			$out = $fmt( $mb / 1024 ) . ' GB';
+		} else {
+			$out = $mb . ' MB';
+		}
+		return $is_minimum ? $out . ' ' . __( '(min.)', 'liebherr-interface-world' ) : $out;
 	}
 
 	public static function access_code(): string {

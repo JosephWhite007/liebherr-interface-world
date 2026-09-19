@@ -50,8 +50,9 @@ Produktsegmenten + Lösungswelt + 6 Hotel-Knoten (je Drei-Wörter-Ort, englisch)
 **Offen / nächste Etappen:**
 - Navigation & Hotels – Ausbau: Backoffice-Pflegemodul für Segmente/Hotels/Drei-Wörter-Orte, Untermenüs +
   Master-Linkmodell (§19.1), echte Verortung der Hotels über what3words, zwei Platzhalter-Hotels kuratieren.
-- Preismodell (alpha.55, angefragt): Sekundentakt 0,09 EUR/Sek., Monatsbudget 5.000,00 EUR, lokaler Speicher
-  1 TB (min.) – Anzeige **und** Ticker/Abrechnungslogik konsistent umstellen.
+- Preismodell (alpha.55, **geliefert**): Sekundentakt 0,09 EUR/Sek., Monatsbudget 5.000,00 EUR, lokaler
+  Speicher 1 TB (min.) – Anzeige, Ticker und `billing_status` konsistent umgestellt. Offen: Backoffice-Formular
+  zur Pflege der Tarife/Budgets (derzeit nur Option `liw_iw_world`).
 - Simulation & Protokoll: Simulation Builder (§6.4), Compute-Metering (Mock), Nutzungs-/Kostenprotokoll
   PDF+JSON (§5.5/§8).
 - Pricing/Storage/Admin/Rollen/Audit (§14–§16, §19).

@@ -1,5 +1,29 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.55] – 2026-09-19 – Intelligence World: Preismodell (Sekundentakt, Monatsbudget, 1 TB)
+
+### Geändert
+- **Preise/Vorstellungen der Eröffnungsseite** (auf Wunsch des Auftraggebers) umgestellt – Anzeige **und**
+  Abrechnungslogik konsistent:
+  - **Preis: 0,09 EUR / Sek.** (Sekundentakt statt bisher 2,50 EUR/min).
+  - **Sitzungsbudget: 5.000,00 EUR / Monat** (Monatsbezug statt Sitzungsbezug; für die Warnschwellen 50/80/100 %).
+  - **Lokaler Speicher: 1 TB (min.)** (Mindestwert; MB→GB→TB-Formatierung in 1024er-Schritten).
+- `WorldContent` (Option `liw_iw_world`): neue, administrierbare Felder `price_unit` (second/minute/hour),
+  `base_price_second_minor`, `budget_period` (session/day/month/year), `storage_is_minimum`; Speicherbudget
+  jetzt in MB mit lesbarer Einheit. Neue reine Helfer `unit_label()`, `period_label()`, `storage_label()`.
+- `Rest::billing_status()` rechnet nun im **Sekundentakt** (`base = aktive Sekunden × Preis/Sek.`, Integer-
+  Minor-Units); `status`/`config` liefern periode-/einheiten-/speicherbewusste Anzeige-Strings.
+- Frontend-Ticker (`assets/js/liw-intelligence-world.js`) rechnet pro Sekunde (Live-Check: 5 s → 0,45 EUR).
+
+### Verifikation
+- `tests/run-tests.php` **331/331** (Sekundentakt-Abrechnung + Warnstufen, Preis-/Budget-/Speicher-Defaults,
+  `storage_label` MB/GB/TB, `unit_label`/`period_label`), `scripts/liw-selftest.php` **294/294**
+  (Eröffnungsseite zeigt „0,09 EUR / Sek.", „5.000,00 EUR / Monat", „1 TB (min.)"). Browser end-to-end.
+
+### Hinweis
+- Weiterhin **Prototyp** (§21): Beispieltarife, keine echte Abrechnung. Werte sind über die Option
+  administrierbar; ein Backoffice-Formular dafür folgt mit dem Pflegemodul.
+
 ## [0.1.0-alpha.54] – 2026-09-19 – Intelligence World: Navigation & Hotels (13 Segmente + Lösungswelt + 6 Hotels)
 
 ### Hinzugefügt

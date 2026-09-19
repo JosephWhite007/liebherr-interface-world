@@ -50,7 +50,7 @@
 
 		var sessionCode = null;
 		var active = 0;          // Sekunden (lokal fortgeschrieben)
-		var priceMin = cfg.config.price_minute | 0;
+		var priceSec = cfg.config.price_second | 0;
 		var budget = cfg.config.session_budget | 0;
 		var cur = cfg.config.currency || 'EUR';
 		var running = false;
@@ -73,7 +73,7 @@
 		consents.forEach( function ( c ) { c.addEventListener( 'change', refreshConfirm ); } );
 
 		function paint() {
-			var base = Math.floor( active * priceMin / 60 );
+			var base = active * priceSec;
 			var pct  = budget > 0 ? Math.floor( base * 100 / budget ) : 0;
 			timeEl.textContent = dur( active );
 			baseEl.textContent = money( base, cur );
@@ -123,7 +123,7 @@
 					return;
 				}
 				sessionCode = res.session_code;
-				if ( res.config ) { priceMin = res.config.price_minute | 0; budget = res.config.session_budget | 0; cur = res.config.currency || cur; }
+				if ( res.config ) { priceSec = res.config.price_second | 0; budget = res.config.session_budget | 0; cur = res.config.currency || cur; }
 				gate.setAttribute( 'hidden', 'hidden' );
 				world.removeAttribute( 'hidden' );
 				syncFromStatus( res.status );

@@ -127,10 +127,10 @@ final class Rest {
 
 	// ---------------------------------------------------------------------
 
-	/** Reine Kost/Budget-Berechnung (Integer-Minor-Units) – unit-testbar. */
-	public static function billing_status( int $active_seconds, int $price_minute_minor, int $budget_minor ): array {
+	/** Reine Kost/Budget-Berechnung (Integer-Minor-Units, Sekundentakt) – unit-testbar. */
+	public static function billing_status( int $active_seconds, int $price_second_minor, int $budget_minor ): array {
 		$active = max( 0, $active_seconds );
-		$base   = intdiv( $active * max( 0, $price_minute_minor ), 60 ); // proportional pro Sekunde, ganzzahlig
+		$base   = $active * max( 0, $price_second_minor ); // Basiskosten pro Sekunde, ganzzahlig
 		$pct    = $budget_minor > 0 ? (int) floor( $base * 100 / $budget_minor ) : 0;
 		$level  = $pct >= 100 ? 'limit' : ( $pct >= 80 ? 'high' : ( $pct >= 50 ? 'mid' : 'ok' ) );
 		return [
@@ -153,9 +153,10 @@ final class Rest {
 		$row     = SessionService::get( $session_code );
 		$active  = null !== $row ? (int) $row['active_seconds'] : 0;
 		$status  = null !== $row ? (string) $row['status'] : 'unknown';
-		$price   = (int) $cfg['pricing']['base_price_minute_minor'];
+		$price   = (int) $cfg['pricing']['base_price_second_minor'];
 		$budget  = (int) $cfg['pricing']['session_budget_minor'];
 		$cur     = (string) $cfg['pricing']['currency'];
+		$period  = (string) ( $cfg['pricing']['budget_period'] ?? 'month' );
 		$b       = self::billing_status( $active, $price, $budget );
 
 		return array_merge( $b, [
@@ -163,19 +164,26 @@ final class Rest {
 			'session_status'       => $status,
 			'active_display'       => self::format_duration( $active ),
 			'base_cost_display'    => Money::format( $b['base_cost_minor'], $cur ),
-			'budget_display'       => Money::format( $budget, $cur ),
+			'budget_display'       => Money::format( $budget, $cur ) . ' / ' . WorldContent::period_label( $period ),
 			'currency'             => $cur,
 		] );
 	}
 
 	/** @param array<string,mixed> $cfg @return array<string,mixed> */
 	private static function public_config( array $cfg ): array {
+		$cur    = (string) $cfg['pricing']['currency'];
+		$unit   = (string) ( $cfg['pricing']['price_unit'] ?? 'second' );
+		$period = (string) ( $cfg['pricing']['budget_period'] ?? 'month' );
+		$mb     = (int) $cfg['pricing']['storage_budget_mb'];
+		$is_min = (bool) ( $cfg['pricing']['storage_is_minimum'] ?? false );
 		return [
-			'currency'          => (string) $cfg['pricing']['currency'],
-			'price_minute'      => (int) $cfg['pricing']['base_price_minute_minor'],
-			'price_display'     => Money::format( (int) $cfg['pricing']['base_price_minute_minor'], (string) $cfg['pricing']['currency'] ) . ' / min',
+			'currency'          => $cur,
+			'price_second'      => (int) $cfg['pricing']['base_price_second_minor'],
+			'price_display'     => Money::format( (int) $cfg['pricing']['base_price_second_minor'], $cur ) . ' / ' . WorldContent::unit_label( $unit ),
 			'session_budget'    => (int) $cfg['pricing']['session_budget_minor'],
-			'storage_budget_mb' => (int) $cfg['pricing']['storage_budget_mb'],
+			'budget_display'    => Money::format( (int) $cfg['pricing']['session_budget_minor'], $cur ) . ' / ' . WorldContent::period_label( $period ),
+			'storage_budget_mb' => $mb,
+			'storage_display'   => WorldContent::storage_label( $mb, $is_min ),
 		];
 	}
 

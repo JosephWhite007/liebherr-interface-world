@@ -12,6 +12,21 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.55 – Intelligence World: Preismodell (Sekundentakt/Monat/TB)
+
+**Geändert:** `src/IntelligenceWorld/WorldContent.php` – Pricing-Defaults auf `price_unit=second`,
+`base_price_second_minor=9`, `budget_period=month`, `session_budget_minor=500000`, `storage_budget_mb=1048576`,
+`storage_is_minimum=true`; `sanitize()` um die neuen Felder erweitert (Whitelists für unit/period, bool für
+is_minimum); neue reine Helfer `unit_label()`, `period_label()`, `storage_label()` (MB→GB→TB, 1024er).
+`src/IntelligenceWorld/Rest.php` – `billing_status($active, $price_second_minor, $budget)` rechnet pro Sekunde
+(`base = active × price`); `status_for()` nutzt `base_price_second_minor` + `budget_display` mit Periode;
+`public_config()` liefert `price_second`, `price_display` „… / Sek.", `budget_display` „… / Monat",
+`storage_display`. `src/IntelligenceWorld/WorldView.php` – Anzeige-Strings (Preis/Budget/Speicher) über die
+neuen Helfer; localize-`config` gibt `price_second`. `assets/js/liw-intelligence-world.js` – `priceSec` statt
+`priceMin`, `base = active * priceSec` (kein `/60` mehr). Tests/Selftest angepasst. Bump alpha.54 → alpha.55.
+
+**Hintergrund:** Auftraggeber-Vorgabe „0,09 EUR/Sek. · 5.000,00 EUR/Monat · 1 TB min." für die IW-Eröffnungsseite.
+
 ## 0.1.0-alpha.54 – Intelligence World: Navigation & Hotels
 
 **Neu:** `src/IntelligenceWorld/CatalogContent.php` (Option `liw_iw_catalog`; `defaults()` = 13 Produktsegmente
