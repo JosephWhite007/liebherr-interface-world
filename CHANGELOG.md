@@ -1,5 +1,19 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.70] – 2026-09-19 – Simulation Builder: Szenarien speichern & vergleichen [Job A9]
+
+### Hinzugefügt
+- Im Simulation Builder lassen sich berechnete Szenarien **speichern** („Szenario speichern") und **nebeneinander
+  vergleichen**: eine Vergleichstabelle stellt Szenario, Zeithorizont, Start-/Endwert und Gesamt-Δ pro
+  gespeichertem Szenario gegenüber; einzelne per Auswahl, „Alle löschen" leert die Liste. Ablage lokal im
+  Browser (localStorage, try/catch, max. 6) – passend, da der Simulation Builder ohne WP-Login läuft.
+
+### Erledigt (Backlog Gruppe A, Punkt 9)
+
+### Verifikation
+- `tests/run-tests.php` **393/393**, `scripts/liw-selftest.php` **340/340** (Speichern/Vergleichen-Steuerung
+  gerendert). Browser: 2 Szenarien gespeichert → Vergleichstabelle (5 Zeilen × 2 Szenarien).
+
 ## [0.1.0-alpha.69] – 2026-09-19 – Local Intelligence: Szenario-Editor im Board [Job A8]
 
 ### Hinzugefügt

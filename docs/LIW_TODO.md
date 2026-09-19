@@ -39,7 +39,8 @@ der Reihe nach ab und befüllen sie mit Funktionalität), **B** = auf externe Fr
    Schritte, `[liw_adventures_help]`, Hero-CTA + inline in der Insel).
 8. ~~**Local Intelligence – Szenario-Editor im Board.**~~ **ERLEDIGT (alpha.69):** A/B/C-Varianten (Label,
    Zusammenfassung, Kennzahlen-Zeilen) im LI-Board pflegbar (`parse_scenarios`).
-9. **Simulation Builder – Szenarien speichern/vergleichen.** Persistenz + Nebeneinander-Vergleich.
+9. ~~**Simulation Builder – Szenarien speichern/vergleichen.**~~ **ERLEDIGT (alpha.70):** Speichern (localStorage)
+   + Nebeneinander-Vergleichstabelle (Szenario/Horizont/Start/Ende/Δ).
 10. **Nutzungs-/Kostenprotokoll – echte serverseitige PDF-Erzeugung** (statt Browser-Druck).
 11. **Content Board – Medien-Picker auf freigegebene Bibliothek beschränken** (CI-005; braucht Docker-Prüfung).
 

@@ -12,6 +12,14 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.70 – Simulation Builder: Szenarien speichern & vergleichen [Backlog A9]
+
+**Geändert:** `src/IntelligenceWorld/SimulationView.php` (Button „Szenario speichern" + Container
+`data-liw-sim-saved`). `assets/js/liw-iw-simulation.js` (localStorage-Store `liwIwSimSaved`, `renderSaved`/
+`renderCompare`; `bind` merkt letzte Prognose, Save/Compare/Clear). `assets/css/liw-intelligence-world.css`
+(`.liw-iw__sim-saved*`/`.liw-iw__sim-cmptable`). Selftest. Bump alpha.69 → alpha.70.
+**Nächster Bau:** A10 – Nutzungs-/Kostenprotokoll: echte serverseitige PDF-Erzeugung.
+
 ## 0.1.0-alpha.69 – Local Intelligence: Szenario-Editor im Board [Backlog A8]
 
 **Geändert:** `src/Admin/Pages/LocalIntelligenceBoardPage.php` – `scenarios_area()` (Render des A/B/C-Editors

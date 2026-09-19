@@ -127,7 +127,11 @@ final class SimulationView {
 			<div class="liw-iw__sim-out" data-liw-sim-out aria-live="polite">
 				<?php echo self::render_forecast( $default, (string) ( $first['label'] ?? $first['key'] ?? '' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- intern escaped. ?>
 			</div>
-			<p class="liw-iw__node-note"><?php echo esc_html__( 'Prototyp – Beispieldaten/-modell, keine echte Prognose. Werte deterministisch aus dem Segment abgeleitet.', 'liebherr-interface-world' ); ?></p>
+			<div class="liw-iw__sim-saverow">
+				<button type="button" class="liw-cta liw-cta--secondary" data-liw-sim-save><?php echo esc_html__( 'Szenario speichern', 'liebherr-interface-world' ); ?></button>
+			</div>
+			<div class="liw-iw__sim-saved" data-liw-sim-saved hidden></div>
+			<p class="liw-iw__node-note"><?php echo esc_html__( 'Prototyp – Beispieldaten/-modell, keine echte Prognose. Werte deterministisch aus dem Segment abgeleitet. Gespeicherte Szenarien liegen lokal im Browser.', 'liebherr-interface-world' ); ?></p>
 		</section>
 		<?php
 		return (string) ob_get_clean();

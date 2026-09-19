@@ -689,6 +689,7 @@ try {
 	liw_st_check( 'IW-Sim: Hub-Kachel „Simulation Builder" verlinkt jetzt (Anker)', str_contains( $__world, 'href="#liw-iw-simulation"' ) );
 	$__sim3 = do_shortcode( '[liw_iw_simulation]' );
 	liw_st_check( 'IW-Sim: eigenständiger Shortcode rendert Formular + Ausgabe', str_contains( $__sim3, 'liw-iw--sim-standalone' ) && str_contains( $__sim3, 'data-liw-sim-out' ) );
+	liw_st_check( 'IW-Sim: Speichern/Vergleichen-Steuerung vorhanden (A9)', str_contains( $__sim3, 'data-liw-sim-save' ) && str_contains( $__sim3, 'data-liw-sim-saved' ) );
 
 	// ── [8d4] IW-Pflege-Board (Tarife + Navigation/Hotels, §19, alpha.62) ──
 	$IWB = '\Liebherr\InterfaceWorld\Admin\Pages\IntelligenceWorldBoardPage';

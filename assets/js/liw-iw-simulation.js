@@ -83,11 +83,61 @@
 		return summary + barsSvg( fc.values ) + tableHtml( fc.values );
 	}
 
+	var STORE_KEY = 'liwIwSimSaved';
+	function loadSaved() {
+		try { var v = window.localStorage.getItem( STORE_KEY ); return v ? ( JSON.parse( v ) || [] ) : []; } catch ( e ) { return []; }
+	}
+	function storeSaved( arr ) {
+		try { window.localStorage.setItem( STORE_KEY, JSON.stringify( arr.slice( 0, 6 ) ) ); } catch ( e ) {}
+	}
+
+	function renderSaved( savedEl ) {
+		if ( ! savedEl ) { return; }
+		var list = loadSaved();
+		if ( ! list.length ) { savedEl.setAttribute( 'hidden', 'hidden' ); savedEl.innerHTML = ''; return; }
+		var rows = list.map( function ( s, i ) {
+			return '<label class="liw-iw__sim-saveditem"><input type="checkbox" data-liw-sim-cmp="' + i + '" checked> ' +
+				esc( s.segmentLabel ) + ' · ' + esc( SCEN_LABEL[ s.scenario ] || s.scenario ) + ' · ' + ( s.periods | 0 ) + 'P ' +
+				'(' + esc( num( s.end ) ) + ')</label>';
+		} ).join( '' );
+		savedEl.innerHTML =
+			'<h4 class="liw-iw__proto-subtitle">Gespeicherte Szenarien (' + list.length + ')</h4>' +
+			'<div class="liw-iw__sim-savedlist">' + rows + '</div>' +
+			'<div class="liw-iw__sim-savedactions">' +
+			'<button type="button" class="liw-cta liw-cta--secondary" data-liw-sim-compare>Vergleichen</button> ' +
+			'<button type="button" class="liw-cta liw-cta--secondary" data-liw-sim-clear>Alle löschen</button></div>' +
+			'<div class="liw-iw__sim-compare" data-liw-sim-compare-out></div>';
+		savedEl.removeAttribute( 'hidden' );
+	}
+
+	function renderCompare( savedEl ) {
+		var list = loadSaved();
+		var sel = [];
+		savedEl.querySelectorAll( '[data-liw-sim-cmp]:checked' ).forEach( function ( c ) {
+			var idx = parseInt( c.getAttribute( 'data-liw-sim-cmp' ), 10 );
+			if ( list[ idx ] ) { sel.push( list[ idx ] ); }
+		} );
+		var out = savedEl.querySelector( '[data-liw-sim-compare-out]' );
+		if ( ! out ) { return; }
+		if ( sel.length < 2 ) { out.innerHTML = '<p>Bitte mindestens zwei Szenarien auswählen.</p>'; return; }
+		function row( label, vals ) { return '<tr><th scope="row">' + esc( label ) + '</th>' + vals.map( function ( v ) { return '<td>' + esc( v ) + '</td>'; } ).join( '' ) + '</tr>'; }
+		var head = '<tr><th></th>' + sel.map( function ( s ) { return '<th>' + esc( s.segmentLabel ) + '</th>'; } ).join( '' ) + '</tr>';
+		var body =
+			row( 'Szenario', sel.map( function ( s ) { return SCEN_LABEL[ s.scenario ] || s.scenario; } ) ) +
+			row( 'Horizont', sel.map( function ( s ) { return ( s.periods | 0 ) + ' Perioden'; } ) ) +
+			row( 'Start', sel.map( function ( s ) { return num( s.base ); } ) ) +
+			row( 'Ende', sel.map( function ( s ) { return num( s.end ); } ) ) +
+			row( 'Δ gesamt', sel.map( function ( s ) { return ( s.delta_permille >= 0 ? '+' : '' ) + pct( s.delta_permille ) + ' %'; } ) );
+		out.innerHTML = '<table class="liw-iw__sim-table liw-iw__sim-cmptable"><thead>' + head + '</thead><tbody>' + body + '</tbody></table>';
+	}
+
 	function bind( root ) {
 		var segEl = root.querySelector( '[data-liw-sim-segment]' );
 		var horEl = root.querySelector( '[data-liw-sim-horizon]' );
 		var outEl = root.querySelector( '[data-liw-sim-out]' );
 		if ( ! segEl || ! horEl || ! outEl ) { return; }
+		var savedEl = root.querySelector( '[data-liw-sim-saved]' );
+		var last = null;
 
 		function recompute() {
 			var opt = segEl.options[ segEl.selectedIndex ];
@@ -98,6 +148,7 @@
 			var scenario = scenEl ? scenEl.value : 'base';
 			var fc = forecast( base, growth, periods, scenario );
 			outEl.innerHTML = outHtml( fc, opt.textContent || '' );
+			last = { segmentLabel: opt.textContent || '', scenario: fc.scenario, periods: fc.periods, base: fc.base, end: fc.end, delta_permille: fc.delta_permille };
 		}
 
 		segEl.addEventListener( 'change', recompute );
@@ -105,6 +156,23 @@
 		root.querySelectorAll( '[data-liw-sim-scenario]' ).forEach( function ( r ) {
 			r.addEventListener( 'change', recompute );
 		} );
+
+		var saveBtn = root.querySelector( '[data-liw-sim-save]' );
+		if ( saveBtn && savedEl ) {
+			saveBtn.addEventListener( 'click', function () {
+				if ( ! last ) { return; }
+				var arr = loadSaved();
+				arr.unshift( last );
+				storeSaved( arr );
+				renderSaved( savedEl );
+			} );
+			savedEl.addEventListener( 'click', function ( e ) {
+				if ( e.target.closest( '[data-liw-sim-compare]' ) ) { renderCompare( savedEl ); }
+				else if ( e.target.closest( '[data-liw-sim-clear]' ) ) { storeSaved( [] ); renderSaved( savedEl ); }
+			} );
+			renderSaved( savedEl );
+		}
+
 		recompute(); // einmal initial (ersetzt die Server-Default-Ausgabe durch die identische JS-Ausgabe)
 	}
 

@@ -190,3 +190,12 @@
 .liw-iw__mod-btn { font-variant-numeric: tabular-nums; }
 .liw-iw__mod-total { font-variant-numeric: tabular-nums; color: var(--iw-ice); }
 .liw-iw__mod-total strong { color: var(--iw-yellow); }
+
+/* ── Simulation Builder: speichern/vergleichen (alpha.70) ── */
+.liw-iw__sim-saverow { margin: .8rem 0 0; }
+.liw-iw__sim-saved { margin: 1rem 0 0; border-top: 1px solid rgba(142,216,255,.18); padding-top: 1rem; }
+.liw-iw__sim-savedlist { display: flex; flex-direction: column; gap: .3rem; margin: 0 0 .8rem; }
+.liw-iw__sim-saveditem { font-size: .92rem; color: rgba(247,249,251,.9); }
+.liw-iw__sim-savedactions { display: flex; gap: .6rem; margin: 0 0 1rem; }
+.liw-iw__sim-cmptable th, .liw-iw__sim-cmptable td { text-align: left; padding: .35rem .6rem; border-bottom: 1px solid rgba(142,216,255,.14); }
+.liw-iw__sim-cmptable th[scope="row"] { color: var(--iw-gray); font-weight: 600; }

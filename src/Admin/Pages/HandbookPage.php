@@ -121,6 +121,8 @@ final class HandbookPage {
 
 			<p><?php esc_html_e( 'Local Intelligence – Szenario-Editor (seit alpha.69): Im Local-Intelligence-Board (Modul 4 – Simulation World) lassen sich die Varianten A/B/C jetzt direkt pflegen: je Variante eine Kopfzeile „Key | Label | Zusammenfassung" und darunter Kennzahlen als „- Label | Wert". Bisher waren diese Werte nur über die Standardwerte/den Seeder änderbar. Leeres Feld behält die Standardwerte.', 'liebherr-interface-world' ); ?></p>
 
+			<p><?php esc_html_e( 'Simulation Builder – speichern & vergleichen (seit alpha.70): Ein berechnetes Szenario kann über „Szenario speichern" abgelegt und mit anderen gespeicherten Szenarien in einer Tabelle nebeneinander verglichen werden (Szenario, Zeithorizont, Start-/Endwert, Gesamt-Veränderung). Die gespeicherten Szenarien liegen lokal im Browser; „Alle löschen" leert die Liste.', 'liebherr-interface-world' ); ?></p>
+
 			<h2><?php esc_html_e( 'Nachvollziehbarkeit: Programmierlogbuch und To-Dos', 'liebherr-interface-world' ); ?></h2>
 			<p><?php esc_html_e( 'Der Reiter „🧾 Programmierlogbuch" listet jede Quellcodeänderung auf Datei-/Klassenebene (was wurde wann geändert). Der Reiter „📋 To-Dos" listet offene bzw. bewusst zurückgestellte Punkte mit Quellenangabe (z. B. Content Board §19, echte Karte für die World Connections Map, Docker-Praxistest). Beide werden bei jeder Aufgabe gepflegt, in der sich etwas ändert.', 'liebherr-interface-world' ); ?></p>
 
