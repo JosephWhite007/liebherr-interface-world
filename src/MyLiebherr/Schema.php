@@ -50,6 +50,26 @@ final class Schema {
 		return $wpdb->prefix . 'liw_myl_share_grant';
 	}
 
+	public static function contact_request_table(): string {
+		global $wpdb;
+		return $wpdb->prefix . 'liw_myl_contact_request';
+	}
+
+	public static function connection_table(): string {
+		global $wpdb;
+		return $wpdb->prefix . 'liw_myl_connection';
+	}
+
+	public static function service_table(): string {
+		global $wpdb;
+		return $wpdb->prefix . 'liw_myl_service_exchange';
+	}
+
+	public static function machine_table(): string {
+		global $wpdb;
+		return $wpdb->prefix . 'liw_myl_machine';
+	}
+
 	public static function create_tables(): void {
 		global $wpdb;
 		$charset = $wpdb->get_charset_collate();
@@ -153,5 +173,68 @@ final class Schema {
 			KEY idx_grantor (grantor_id),
 			KEY idx_recipient (recipient_type, recipient_id)
 		) {$charset} COMMENT='Liebherr My Liebherr – Freigaben Kollegen und World';" );
+
+		$cr = self::contact_request_table();
+		dbDelta( "CREATE TABLE {$cr} (
+			id           BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+			requester_id BIGINT UNSIGNED NOT NULL,
+			recipient_id BIGINT UNSIGNED NOT NULL,
+			purpose      VARCHAR(160) NOT NULL DEFAULT '',
+			service_hint VARCHAR(160) NOT NULL DEFAULT '',
+			token_frame  INT UNSIGNED NOT NULL DEFAULT 0,
+			status       VARCHAR(16)  NOT NULL DEFAULT 'requested',
+			created_at   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY (id),
+			KEY idx_requester (requester_id),
+			KEY idx_recipient (recipient_id),
+			KEY idx_status (status)
+		) {$charset} COMMENT='Liebherr My Liebherr – Kontaktanfragen';" );
+
+		$cn = self::connection_table();
+		dbDelta( "CREATE TABLE {$cn} (
+			id                BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+			party_a           BIGINT UNSIGNED NOT NULL,
+			party_b           BIGINT UNSIGNED NOT NULL,
+			agreement_version INT UNSIGNED NOT NULL DEFAULT 1,
+			limits            VARCHAR(160) NOT NULL DEFAULT '',
+			status            VARCHAR(16)  NOT NULL DEFAULT 'accepted',
+			valid_from        DATETIME     NULL,
+			valid_to          DATETIME     NULL,
+			created_at        DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY (id),
+			KEY idx_a (party_a),
+			KEY idx_b (party_b),
+			KEY idx_status (status)
+		) {$charset} COMMENT='Liebherr My Liebherr – Contact Connections zwischen Profilen';" );
+
+		$se = self::service_table();
+		dbDelta( "CREATE TABLE {$se} (
+			id              BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+			connection_id   BIGINT UNSIGNED NOT NULL,
+			provider_id     BIGINT UNSIGNED NOT NULL,
+			receiver_id     BIGINT UNSIGNED NOT NULL,
+			description     VARCHAR(200) NOT NULL DEFAULT '',
+			token_amount    INT UNSIGNED NOT NULL DEFAULT 0,
+			status          VARCHAR(16)  NOT NULL DEFAULT 'proposed',
+			idempotency_key VARCHAR(64)  NOT NULL,
+			created_at      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY (id),
+			UNIQUE KEY uniq_idem (idempotency_key),
+			KEY idx_connection (connection_id)
+		) {$charset} COMMENT='Liebherr My Liebherr – gemeinsame Leistungen je Connection';" );
+
+		$mc = self::machine_table();
+		dbDelta( "CREATE TABLE {$mc} (
+			id         BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+			user_id    BIGINT UNSIGNED NOT NULL,
+			name       VARCHAR(160) NOT NULL DEFAULT '',
+			serial     VARCHAR(120) NOT NULL DEFAULT '',
+			location   VARCHAR(160) NOT NULL DEFAULT '',
+			note       TEXT         NULL,
+			doc_url    VARCHAR(300) NOT NULL DEFAULT '',
+			created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY (id),
+			KEY idx_user (user_id)
+		) {$charset} COMMENT='Liebherr My Liebherr – persoenlich zugeordnete Maschinen';" );
 	}
 }

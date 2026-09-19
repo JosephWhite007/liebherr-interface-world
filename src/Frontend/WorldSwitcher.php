@@ -18,6 +18,7 @@ namespace Liebherr\InterfaceWorld\Frontend;
 use Liebherr\InterfaceWorld\Content\SitePages;
 use Liebherr\InterfaceWorld\MyLiebherr\Flags as MylFlags;
 use Liebherr\InterfaceWorld\MyLiebherr\Roles as MylRoles;
+use Liebherr\InterfaceWorld\Pocket\Flags as PocketFlags;
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
@@ -76,7 +77,13 @@ final class WorldSwitcher {
 			&& is_user_logged_in() && current_user_can( MylRoles::CAP_ACCESS ) ) {
 			$tabs[] = [ 'key' => 'my_liebherr', 'label' => __( 'My Liebherr', 'liebherr-interface-world' ), 'url' => (string) get_permalink( $myl_id ), 'disabled' => false, 'note' => '' ];
 		}
-		$tabs[] = [ 'key' => 'pocket_information', 'label' => __( 'Pocket Information', 'liebherr-interface-world' ), 'url' => '', 'disabled' => true, 'note' => __( 'in Vorbereitung', 'liebherr-interface-world' ) ];
+		$pocket_id = (int) get_option( 'liw_pocket_page_id', 0 );
+		if ( PocketFlags::enabled() && $pocket_id > 0 && 'publish' === get_post_status( $pocket_id )
+			&& is_user_logged_in() && current_user_can( MylRoles::CAP_ACCESS ) ) {
+			$tabs[] = [ 'key' => 'pocket_information', 'label' => __( 'Pocket Information', 'liebherr-interface-world' ), 'url' => (string) get_permalink( $pocket_id ), 'disabled' => false, 'note' => '' ];
+		} else {
+			$tabs[] = [ 'key' => 'pocket_information', 'label' => __( 'Pocket Information', 'liebherr-interface-world' ), 'url' => '', 'disabled' => true, 'note' => __( 'in Vorbereitung', 'liebherr-interface-world' ) ];
+		}
 		return $tabs;
 	}
 
@@ -90,6 +97,9 @@ final class WorldSwitcher {
 		}
 		if ( $id > 0 && $id === (int) get_option( 'liw_my_liebherr_page_id', 0 ) ) {
 			return 'my_liebherr';
+		}
+		if ( $id > 0 && $id === (int) get_option( 'liw_pocket_page_id', 0 ) ) {
+			return 'pocket_information';
 		}
 		return '';
 	}

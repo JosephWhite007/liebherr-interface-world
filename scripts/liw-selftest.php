@@ -1169,6 +1169,76 @@ try {
 		$__oadv = do_shortcode( '[liw_my_adventures]' );
 		liw_st_check( 'R3 Own Adventures: [liw_my_adventures] rendert Bereich (Insel-Wiederverwendung)', is_string( $__oadv ) && false !== strpos( $__oadv, 'liw-myl__adv' ) );
 
+		// ── R4/R5: My Contacts, My Machines, Pocket Information, Nav-Pocket ──
+		require_once ABSPATH . 'wp-admin/includes/user.php';
+		$__rcpt = wp_insert_user( [ 'user_login' => 'liw_st_rcpt_' . wp_generate_password( 5, false ), 'user_pass' => wp_generate_password( 12 ), 'user_email' => 'liw_st_r_' . wp_generate_password( 6, false ) . '@example.test', 'role' => 'subscriber' ] );
+		if ( is_int( $__rcpt ) && $__rcpt > 0 ) {
+			// Anfrage (Admin) → Zustimmung (Empfänger) → Connection → Leistung vorschlagen (Admin) → bestätigen (Empfänger).
+			$__req = $__cr( 'contacts/requests', 'POST', [ 'recipient_id' => $__rcpt, 'purpose' => 'SELFTEST-Kontakt', 'service_hint' => 'Diagnose' ] );
+			$__req_id = (int) ( $__req['request']['id'] ?? 0 );
+			wp_set_current_user( $__rcpt );
+			$__dec  = $__cr( 'contacts/requests/' . $__req_id . '/decision', 'POST', [ 'decision' => 'accept' ] );
+			$__conn_id = (int) ( $__dec['connection']['id'] ?? 0 );
+			wp_set_current_user( $__myl_admin_id );
+			$__act  = $__cr( 'connections/' . $__conn_id . '/status', 'POST', [ 'status' => 'active' ] );
+			$__svc  = $__cr( 'connections/' . $__conn_id . '/services', 'POST', [ 'description' => 'SELFTEST-Leistung', 'token_amount' => 5 ] );
+			$__svc_id = (int) ( $__svc['service']['id'] ?? 0 );
+			wp_set_current_user( $__rcpt );
+			$__conf = $__cr( 'services/' . $__svc_id . '/status', 'POST', [ 'status' => 'confirmed' ] );
+			wp_set_current_user( $__myl_admin_id );
+			liw_st_check(
+				'R4 Contacts: Anfrage→Zustimmung→Connection→Leistung vorschlagen→bestätigen (Zustandsautomat)',
+				! empty( $__req['ok'] ) && $__req_id > 0 && ! empty( $__dec['ok'] ) && $__conn_id > 0 && 'accepted' === $__dec['connection']['status']
+				&& ! empty( $__act['ok'] ) && 'active' === $__act['connection']['status']
+				&& ! empty( $__svc['ok'] ) && 'proposed' === $__svc['service']['status'] && ! empty( $__conf['ok'] ) && 'confirmed' === $__conf['service']['status']
+			);
+			// invalider Übergang wird abgewiesen (settled ohne confirmed-Pfad? confirmed→settled ok; teste requested→active-Verbot auf Connection: ended→active)
+			$__end = $__cr( 'connections/' . $__conn_id . '/status', 'POST', [ 'status' => 'ended' ] );
+			$__bad = $__cr( 'connections/' . $__conn_id . '/status', 'POST', [ 'status' => 'active' ] );
+			liw_st_check( 'R4 Contacts: unzulaessiger Uebergang abgewiesen (ended→active)', ! empty( $__end['ok'] ) && empty( $__bad['ok'] ) && 'invalid_transition' === $__bad['reason'] );
+			$wpdb->delete( \Liebherr\InterfaceWorld\MyLiebherr\Schema::service_table(), [ 'connection_id' => $__conn_id ] );
+			$wpdb->delete( \Liebherr\InterfaceWorld\MyLiebherr\Schema::connection_table(), [ 'id' => $__conn_id ] );
+			$wpdb->delete( \Liebherr\InterfaceWorld\MyLiebherr\Schema::contact_request_table(), [ 'id' => $__req_id ] );
+			wp_delete_user( $__rcpt );
+		}
+
+		// My Machines: create → list → delete.
+		$__mac = $__cr( 'machines', 'POST', [ 'name' => 'SELFTEST-Bagger', 'serial' => 'SN-1', 'location' => 'Halle' ] );
+		$__mac_id = (int) ( $__mac['machine']['id'] ?? 0 );
+		$__mac_ls = $__cr( 'machines', 'GET' );
+		$__mac_del = $__cr( 'machines/' . $__mac_id, 'DELETE' );
+		liw_st_check( 'R5 My Machines: create → list enthält → delete ok', ! empty( $__mac['ok'] ) && $__mac_id > 0 && ! empty( $__mac_ls['ok'] ) && ! empty( $__mac_del['ok'] ) );
+
+		// Pocket Information: Feed + Pflichtquittierung (eigener REST-Namespace pocket/v1).
+		$__pk = static function ( $route, $method, $params = [] ) {
+			$rq = new \WP_REST_Request( $method, '/pocket/v1/' . $route );
+			foreach ( $params as $k => $v ) { $rq->set_param( $k, $v ); }
+			return rest_do_request( $rq )->get_data();
+		};
+		$__pk_off = $__pk( 'feed', 'GET' );
+		update_option( 'liw_pocket_enabled', 1 );
+		$__pk_new = $__pk( 'items', 'POST', [ 'title' => 'SELFTEST-Alert', 'priority' => 'high', 'requires_ack' => 1 ] );
+		$__pk_id  = (int) ( $__pk_new['item']['id'] ?? 0 );
+		$__pk_ack = $__pk( 'items/' . $__pk_id . '/ack', 'POST' );
+		$__pk_del = $__pk( 'items/' . $__pk_id, 'DELETE' );
+		$__pk_view = do_shortcode( '[liw_pocket]' );
+		liw_st_check(
+			'R5 Pocket: ohne Flag disabled; mit Flag create(high,ack)→ack gesetzt→delete; Shortcode rendert',
+			isset( $__pk_off['reason'] ) && 'disabled' === $__pk_off['reason'] && ! empty( $__pk_new['ok'] ) && $__pk_id > 0
+			&& ! empty( $__pk_ack['ok'] ) && null !== $__pk_ack['item']['acknowledged_at'] && ! empty( $__pk_del['ok'] )
+			&& is_string( $__pk_view ) && false !== strpos( $__pk_view, 'liw-myl__pocket' )
+		);
+		// Nav: Pocket-Reiter aktiv, sobald Pocket scharf + Seite vorhanden.
+		$__prev_pocket_page = (int) get_option( 'liw_pocket_page_id', 0 );
+		update_option( 'liw_pocket_page_id', (int) get_option( 'liw_my_liebherr_page_id', 0 ) );
+		$__tabs_pk  = \Liebherr\InterfaceWorld\Frontend\WorldSwitcher::platform_tabs();
+		$__tab_pk   = end( $__tabs_pk );
+		liw_st_check( 'Nav R5: mit Pocket-Flag + Seite ist der Pocket-Reiter aktiv (verlinkt)', is_array( $__tab_pk ) && 'pocket_information' === $__tab_pk['key'] && false === (bool) $__tab_pk['disabled'] );
+		if ( $__prev_pocket_page > 0 ) { update_option( 'liw_pocket_page_id', $__prev_pocket_page ); } else { delete_option( 'liw_pocket_page_id' ); }
+		delete_option( 'liw_pocket_enabled' );
+		$wpdb->delete( \Liebherr\InterfaceWorld\MyLiebherr\Schema::machine_table(), [ 'user_id' => $__myl_admin_id ] );
+		$wpdb->delete( \Liebherr\InterfaceWorld\Pocket\Schema::item_table(), [ 'user_id' => $__myl_admin_id ] );
+
 		// R1-Abnahme S6: Objekt-/Rollenschutz mit echtem Subscriber (Negativtest, SEC 01).
 		require_once ABSPATH . 'wp-admin/includes/user.php';
 		$__sub_id = wp_insert_user( [ 'user_login' => 'liw_st_sub_' . wp_generate_password( 5, false ), 'user_pass' => wp_generate_password( 12 ), 'user_email' => 'liw_st_' . wp_generate_password( 6, false ) . '@example.test', 'role' => 'subscriber' ] );

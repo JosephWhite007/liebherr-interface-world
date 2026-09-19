@@ -21,6 +21,21 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.124 – My Liebherr bis Reiter 11: Contacts, Machines, Pocket Information
+
+- `src/MyLiebherr/Schema.php`: +4 Tabellen `contact_request`/`connection`/`service_exchange`/`machine`.
+- `src/MyLiebherr/ContactState.php` (NEU, rein): Übergangstabellen Request/Connection/Service.
+- `src/MyLiebherr/ContactRepository.php` (NEU): Anfragen/decide→Connection, Connection-Status (Guard), Service propose/confirm (Hook `liw_myl_service_charge`).
+- `src/MyLiebherr/MachineRepository.php` (NEU): for_user/get/add/delete.
+- `src/MyLiebherr/ContactsRest.php` (NEU): REST contacts/connections/services + machines; Empfänger per ID/E-Mail.
+- `src/MyLiebherr/ContactsView.php` / `MachinesView.php` (NEU): `[liw_my_contacts]` / `[liw_my_machines]`.
+- `src/Pocket/` (NEU, eigener Namespace): `Flags`(liw_pocket_enabled)/`Schema`(`liw_pocket_item`)/`PocketRepository`/`Rest`(NS `pocket/v1`)/`PocketView`(`[liw_pocket]`).
+- `src/Frontend/WorldSwitcher.php`: Pocket-Reiter aktiv bei `liw_pocket_enabled` + `liw_pocket_page_id` + Zugang; `current_key` kennt die Pocket-Seite.
+- `assets/js/liw-my-liebherr.js`: `data-liw-root`-Override (Pocket-REST). `assets/css/liw-my-liebherr.css`: Contacts/Machines/Pocket-Stile.
+- `liebherr-interface-world.php`: `create_tables()` + `Pocket\Schema`; `LIW_VERSION` .121→.124. `src/Bootstrap.php`: ContactsRest/ContactsView/MachinesView/Pocket\Rest/Pocket\PocketView.
+- Seeder: `liw-seed-my-liebherr.php` (+Contacts/Machines), `liw-seed-pocket.php` (NEU, `/pocket-information/`).
+- Tests: ContactState (WP-frei) + R4/R5-Integrationsblock. WP-frei 625/0, Docker 418/0.
+
 ## 0.1.0-alpha.121 – My Liebherr R3: Dreams, Gallery+Teilen, Own Adventures, CVF 4→6
 
 - `src/MyLiebherr/Schema.php`: 3 neue Tabellen `dream_item` (Spalte `sort_rank`, NICHT `rank` = MySQL-8-reserviert), `gallery_item`, `share_grant`.

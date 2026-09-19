@@ -1,5 +1,36 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.124] – 2026-09-19 – My Liebherr bis Reiter 11: My Contacts, My Machines, Pocket Information
+
+Damit sind alle funktionalen My-Liebherr-Reiter 01–11 umgesetzt (12 = Platzhalter). Alles hinter Flags (Default AUS).
+
+### 08 My Contacts (§33, voller Lebenszyklus)
+- `MyLiebherr\ContactState` (reine Übergangstabellen), `ContactRepository` (Anfragen, Connections, Service-Exchange),
+  `ContactsRest`, `ContactsView` (`[liw_my_contacts]`): Kontaktanfrage → Zustimmung → **Contact Connection**
+  (accepted/active/paused/ended/disputed/blocked) → **gemeinsame Leistung** (proposed→confirmed→settled). Erst die
+  bestätigte Leistung erzeugt die **Buchungsnaht** (Hook `liw_myl_service_charge`, deferred bis Wallet-Pflichtenheft).
+  Sicherheitsgrenze §33: eine Verbindung ist keine Kontovollmacht.
+- Neue Tabellen `ary_liw_myl_contact_request` / `_connection` / `_service_exchange`.
+
+### 09 My Machines (§29)
+- `MyLiebherr\MachineRepository` + `MachinesView` (`[liw_my_machines]`): eigene Maschinen (Name/Seriennummer/Standort/
+  Notiz/Dokument-Link), anlegen/entfernen. Tabelle `ary_liw_myl_machine`. REST in `ContactsRest`.
+
+### 10 Pocket Information (§34, 6. Reiter)
+- Neues Modul `src/Pocket/` (`Flags`/`Schema`/`PocketRepository`/`Rest`/`PocketView`): personenbezogener Feed
+  (Alerts high/critical zuerst), **Pflichtquittierung** getrennt protokolliert, Rücksprungziel; Tabelle
+  `ary_liw_pocket_item`, REST-Namespace `pocket/v1` (feed/items/ack). Shortcode `[liw_pocket]`, eigener Reiter über
+  `WorldSwitcher` (aktiv bei `liw_pocket_enabled` + Seite), Seeder `liw-seed-pocket.php` (`/pocket-information/`).
+
+### Gemeinsames
+- Generische JS-Handler um `data-liw-root`-Override erweitert (Pocket nutzt `pocket/v1`). Seeder legt Contacts/Machines
+  mit auf `/my-liebherr/`. CSS für Contacts/Machines/Pocket. `LIW_VERSION` .121→.124.
+
+### Verifikation
+- `tests/run-tests.php` **625/625** (ContactState-Übergänge), `scripts/liw-selftest.php` **418/418** (Contacts-Flow
+  Anfrage→…→Leistung-bestätigt + Übergangs-Guard, Machines-CRUD, Pocket Feed+Ack + Flag-Gating, Nav-Pocket aktiv).
+  Abnahme `docs/LIW_ABNAHME.md §9`.
+
 ## [0.1.0-alpha.121] – 2026-09-19 – My Liebherr R3: My Dreams, Own Gallery + Teilen, Own Adventures, CVF 4→6
 
 Alles hinter `liw_myl_enabled` (Default AUS). Neue Tabellen `ary_liw_myl_dream_item`/`_gallery_item`/`_share_grant`.

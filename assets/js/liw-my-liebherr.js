@@ -9,13 +9,18 @@
 	var cfg = window.liwMyl;
 	if ( ! cfg || ! cfg.root ) { return; }
 
-	function api( path, method, body ) {
-		return fetch( cfg.root + path, {
+	function api( path, method, body, base ) {
+		return fetch( ( base || cfg.root ) + path, {
 			method: method,
 			headers: { 'X-WP-Nonce': cfg.nonce, 'Content-Type': 'application/json' },
 			credentials: 'same-origin',
 			body: body ? JSON.stringify( body ) : undefined
 		} ).then( function ( r ) { return r.json(); } ).catch( function () { return null; } );
+	}
+	// Optionale REST-Basis-Override über data-liw-root am Element oder einem Vorfahren (z. B. Pocket: pocket/v1/).
+	function rootFor( el ) {
+		var holder = el && el.closest ? el.closest( '[data-liw-root]' ) : null;
+		return holder ? holder.getAttribute( 'data-liw-root' ) : cfg.root;
 	}
 
 	// ── Dashboard ─────────────────────────────────────────────────────────────
@@ -74,14 +79,14 @@
 		f.querySelectorAll( '[name]' ).forEach( function ( el ) {
 			body[ el.name ] = ( 'checkbox' === el.type ) ? ( el.checked ? 1 : 0 ) : el.value;
 		} );
-		api( path, 'POST', body ).then( function ( d ) { if ( d && false !== d.ok ) { location.reload(); } } );
+		api( path, 'POST', body, rootFor( f ) ).then( function ( d ) { if ( d && false !== d.ok ) { location.reload(); } } );
 	} );
 	// Buttons mit data-liw-act="<pfad>" (+ optional data-liw-method) lösen eine Aktion aus; danach neu laden.
 	document.addEventListener( 'click', function ( ev ) {
 		var b = ev.target.closest ? ev.target.closest( '[data-liw-act]' ) : null;
 		if ( ! b ) { return; }
 		ev.preventDefault();
-		api( b.getAttribute( 'data-liw-act' ), b.getAttribute( 'data-liw-method' ) || 'POST' ).then( function ( d ) {
+		api( b.getAttribute( 'data-liw-act' ), b.getAttribute( 'data-liw-method' ) || 'POST', null, rootFor( b ) ).then( function ( d ) {
 			if ( d && false !== d.ok ) { location.reload(); }
 		} );
 	} );

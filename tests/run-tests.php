@@ -628,6 +628,11 @@ require_once $root . '/src/MyLiebherr/ContentRules.php';
 $CR = '\Liebherr\InterfaceWorld\MyLiebherr\ContentRules';
 liw_assert( 'ContentRules: wish/visibility/scope/recipient fallen auf Standard zurück', 'idea' === $CR::wish( 'x' ) && 'favorite' === $CR::wish( 'favorite' ) && 'private' === $CR::visibility( 'x' ) && 'view' === $CR::scope( 'x' ) && 'user' === $CR::recipient_type( 'x' ) && 'world' === $CR::recipient_type( 'world' ), $checks, $failures );
 liw_assert( 'ContentRules: three_words verdichtet + begrenzt auf drei; is_three_words prüft genau drei', 'Raupe Hydraulik Entlueften' === $CR::three_words( '  Raupe   Hydraulik Entlueften extra ' ) && true === $CR::is_three_words( 'a b c' ) && false === $CR::is_three_words( 'a b' ), $checks, $failures );
+require_once $root . '/src/MyLiebherr/ContactState.php';
+$CST = '\Liebherr\InterfaceWorld\MyLiebherr\ContactState';
+liw_assert( 'ContactState: requested→accepted/declined ok, requested→active verboten', $CST::can_request( 'requested', 'accepted' ) && $CST::can_request( 'requested', 'declined' ) && ! $CST::can_request( 'requested', 'active' ), $checks, $failures );
+liw_assert( 'ContactState: connection accepted→active, active→paused/ended, ended→(nichts)', $CST::can_connection( 'accepted', 'active' ) && $CST::can_connection( 'active', 'paused' ) && $CST::can_connection( 'active', 'ended' ) && ! $CST::can_connection( 'ended', 'active' ), $checks, $failures );
+liw_assert( 'ContactState: service proposed→confirmed, confirmed→settled, settled→(nichts)', $CST::can_service( 'proposed', 'confirmed' ) && $CST::can_service( 'confirmed', 'settled' ) && ! $CST::can_service( 'settled', 'confirmed' ), $checks, $failures );
 
 // My Liebherr Dashboard S3 (ADR-LIW-MYL-001 §5): Widget-Katalog (Cap-Filter) + reine Layout-Logik.
 echo "-- My Liebherr Dashboard (S3) --\n";

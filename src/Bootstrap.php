@@ -89,6 +89,11 @@ final class Bootstrap {
 			MyLiebherr\GalleryView::register();  // Own Gallery [liw_my_gallery] (§31).
 			MyLiebherr\SharedView::register();   // Shared with Colleagues/World [liw_shared_colleagues|liw_shared_world] (§31).
 			MyLiebherr\OwnAdventuresView::register(); // Own Adventures [liw_my_adventures] (§32, Wiederverwendung Insel).
+			MyLiebherr\ContactsRest::register();  // Kontakte/Connections/Leistungen + Maschinen REST (§33/§29, R4/R5).
+			MyLiebherr\ContactsView::register();  // My Contacts [liw_my_contacts] (§33).
+			MyLiebherr\MachinesView::register();  // My Machines [liw_my_machines] (§29 Pos. 09).
+			Pocket\Rest::register();              // Pocket Information REST (§37, self-gating liw_pocket_enabled).
+			Pocket\PocketView::register();        // Pocket Information [liw_pocket] (6. Reiter, §34).
 			PlatformTime\Rest::register();       // Plattformzeit REST (start/heartbeat/status/stop; self-gating ueber liw_ptime_enabled, §41).
 			PlatformTime\ClockWidget::register(); // Schwebende Session-Uhr / Schachuhr (S11, §41.6).
 		Frontend\WorldSwitcher::register();  // Plattform-Umschalter der vier Inseln (Cross-Navigation).

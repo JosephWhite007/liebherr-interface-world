@@ -147,3 +147,21 @@
 	.liw-myl__dream-title { color: #eef1f6; }
 	.liw-myl__shareform select, .liw-myl__shareform input { background: #12141b; border-color: #2a2f3a; color: #eef1f6; }
 }
+
+/* My Contacts / My Machines / Pocket (R4/R5). */
+.liw-myl__contacts, .liw-myl__machines, .liw-myl__pocket { margin-top: 28px; border-top: 1px solid #e2e6ee; padding-top: 18px; }
+.liw-myl__conn { border: 1px solid #e2e6ee; border-radius: 12px; padding: 10px 12px; margin: 8px 0; }
+.liw-myl__pocket-list { list-style: none; margin: 8px 0 16px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.liw-myl__pocket-item { border: 1px solid #e2e6ee; border-left: 4px solid #d9dde6; border-radius: 10px; padding: 10px 12px; }
+.liw-myl__pocket-item--high { border-left-color: #f4761f; }
+.liw-myl__pocket-item--critical { border-left-color: #c0392b; background: #fff5f4; }
+.liw-myl__pocket-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.liw-myl__pocket-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; align-items: center; }
+.liw-myl__pocket-prio--high { background: #fde9d6; color: #a85a12; }
+.liw-myl__pocket-prio--critical { background: #c0392b; color: #fff; }
+
+@media ( prefers-color-scheme: dark ) {
+	.liw-myl__contacts, .liw-myl__machines, .liw-myl__pocket { border-color: #2a2f3a; }
+	.liw-myl__conn, .liw-myl__pocket-item { background: #171922; border-color: #2a2f3a; }
+	.liw-myl__pocket-item--critical { background: #241413; }
+}

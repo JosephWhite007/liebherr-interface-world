@@ -29,7 +29,7 @@ namespace Liebherr\InterfaceWorld;
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 // ── Konstanten ────────────────────────────────────────────────────────────────
-define( 'LIW_VERSION', '0.1.0-alpha.121' );
+define( 'LIW_VERSION', '0.1.0-alpha.124' );
 define( 'LIW_PATH', plugin_dir_path( __FILE__ ) );
 define( 'LIW_URL', plugin_dir_url( __FILE__ ) );
 define( 'LIW_BASENAME', plugin_basename( __FILE__ ) );
@@ -110,6 +110,7 @@ function create_tables(): void {
 	Cvf\BoardSchema::create_tables();          // CAPDB – Board/Plugin-Tabellen (ADR-LIW-CVF-002, §30).
 	MyLiebherr\Schema::create_tables();        // My Liebherr – persoenliches Profil + Mitgliedschaften (ADR-LIW-MYL-001 S1).
 	PlatformTime\Schema::create_tables();      // Plattformzeit – Session + Token-Abrechnungssatz (ADR-LIW-MYL-001 S9/S10, §41).
+	Pocket\Schema::create_tables();            // Pocket Information – personenbezogene Kurzinfos (ADR-LIW-MYL-001 R5, §34).
 }
 
 /**

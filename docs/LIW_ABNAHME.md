@@ -150,7 +150,13 @@ Verifikation: `tests/run-tests.php` 576/0, `scripts/liw-selftest.php` 408/0 (ech
 | MYL 015 | Drei Galeriesichten mit getrennten Grants | ✅ (Kollegen aktiv / World Review offen) | `[liw_my_gallery]` privat + `share_grant` Kollegen/World + `[liw_shared_colleagues]`/`[liw_shared_world]` |
 | MYL 016 | Own Adventures nach Status/Maschine filtern | ✅ | `[liw_my_adventures]` (Insel-Wiederverwendung), Status-Filter, Maschine/Bauteil/Token |
 | MYL 017 | Drei-Wort-Name genau drei normalisierte Begriffe | ⚠️ Teil | `ContentRules::three_words`/`is_three_words` (Dreams-Titel); volles Label-/Synonym-System offen |
+| MYL 018 | Kontaktanfrage: ohne Zustimmung kein Direktkontakt/Wallet-Verbindung | ✅ | `[liw_my_contacts]`: Erstkontakt nur als Anfrage; Connection entsteht erst bei accept |
+| MYL 019 | Gemeinsame Leistung erzeugt genau eine korrekte Buchung | ✅ (Naht) | Service proposed→confirmed; Buchung über Hook `liw_myl_service_charge` (deferred bis Wallet-Pflichtenheft) |
+| MYL 020 | Verbindung beenden: neue Leistungen verhindert, Historie bleibt | ✅ | Connection ended (Zustandsautomat), Service nur bei accepted/active vorschlagbar |
+| MYL 021 | Pocket-Feed personenbezogen, priorisiert, auf Quelle rückführbar | ✅ | `[liw_pocket]`/`pocket/v1/feed`, Alerts zuerst, Rücksprung-URL |
+| MYL 022 | Pocket-Pflichtinfo: Anzeige und bewusste Quittierung getrennt | ✅ | `requires_ack` + `pocket/v1/items/{id}/ack`, `acknowledged_at` protokolliert |
 | MYL 023 | CVF-Viererflow bleibt intakt, kontrolliert auf 6 erweitert | ✅ | Board-Seed ergänzt my_liebherr/pocket_information additiv + inaktiv; Bestandsflows unverändert |
+| MYL 09 | My Machines: zugeordnete Maschinen verwalten | ✅ | `[liw_my_machines]`, Tabelle machine, CRUD |
 | MYL 012 | Mobil + Tastatur bedienbar | ✅ (Durchstich) | responsive CSS, Buttons/Formfelder tastaturbedienbar, `prefers-reduced-motion` (Uhr) |
 | MYL 025 | Session-Uhr jederzeit ein-/ausblendbar, Zeit+Token | ✅ | ClockWidget unten links, Toggle, `platform-time/status` |
 | MYL 026 | Serverautoritäre Zeit (Idle/Abbruch pausiert) | ✅ | SessionClock (Gap > Timeout zählt nicht), Heartbeat; Unit+Selftest |

@@ -37,10 +37,13 @@ Session-Uhr/Token-Schachuhr** erweitert. Vollständiger Arbeits-Workflow (alle M
 - **R3 ✅ umgesetzt (alpha.118–121):** My Dreams voll (`[liw_my_dreams]`, dream_item), Own Gallery + Teilen
   (`[liw_my_gallery]`/`share_grant`/`[liw_shared_colleagues]`/`[liw_shared_world]`, Kollegen active/World pending),
   Own Adventures (`[liw_my_adventures]`, Insel-Wiederverwendung), CVF 4→6 (my_liebherr+pocket additiv/inaktiv). WP-frei 599 / Docker 413.
-- **Als Nächstes:** R4 Rest (My Contacts + Wallet Connection/Service Exchange §33; Meldungen/Sperren/Erstattung §11/§13;
-  World-Review der Freigaben), R5 (Pocket Information, My Machines, CVF-Simulation der neuen Karten). Offen bleibt:
-  Drei-Wort-Label-Vollsystem (S14), verfügbar/reserviert/gesperrt-Buckets, Wallet-Mehrwährung/Token-Buchung +
-  `liw_ptime_charge_live` = Core-Kategorie A + kommendes Wallet-Pflichtenheft.
+- **Reiter 08/09/10 ✅ umgesetzt (alpha.122–124):** My Contacts (`[liw_my_contacts]`, ContactState/Repository,
+  Anfrage→Connection→Service-Exchange, Buchung als Hook), My Machines (`[liw_my_machines]`, CRUD), Pocket Information
+  (`src/Pocket/`, `[liw_pocket]`, `pocket/v1`, Feed+Pflichtquittierung, eigener Reiter). WP-frei 625 / Docker 418.
+  **Damit sind alle funktionalen My-Liebherr-Reiter 01–11 umgesetzt (12 = Platzhalter).**
+- **Als Nächstes (offen):** Meldungen/Sperren/Erstattung (§11/§13) + World-Review der Freigaben; CVF-Simulation/
+  Vollabnahme der zwei neuen Karten (MYL 013 voll); Drei-Wort-Label-Vollsystem (S14); Wallet-Buckets +
+  Mehrwährung/Token-Buchung + `liw_ptime_charge_live`/`liw_myl_service_charge` = Core-Kategorie A + Wallet-Pflichtenheft.
 - Reihenfolge: R0 Verträge → R1 Fundament (Kontext/Nav/Dashboard/Overview/Profile) → R2 Wallet-Adapter +
   **Plattformzeit-Schachuhr** → R3 Adventures/Dreams/Gallery + CVF-4→6-Karten → R4 Qualität/Sharing/Kontakte →
   R5 Pocket/Machines/CVF-Simulation → R6 Pilot.
