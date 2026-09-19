@@ -1134,6 +1134,51 @@ try {
 		}
 	}
 
+	// CAPDB Live-Umschaltung (alpha.97): Board treibt die Customer-View (Module/Schwierigkeit/First-Entry).
+	update_option( 'liw_cvf_enabled', 1 );
+	update_option( 'liw_cvf_board_enabled', 1 );
+	\Liebherr\InterfaceWorld\Cvf\PluginRegistry::sync();
+	\Liebherr\InterfaceWorld\Cvf\AccessService::set_code( 'LIEBHERR-DEMO' );
+	$__lv_bd = \Liebherr\InterfaceWorld\Cvf\BoardRepository::create_draft( 1 );
+	$__lv_ch_type = \Liebherr\InterfaceWorld\Cvf\PluginRegistry::type_id( 'challenge_addition' );
+	$__lv_fe_type = \Liebherr\InterfaceWorld\Cvf\PluginRegistry::type_id( 'first_entry_text' );
+	// Challenge-Instanzen entfernen und EINE einstellige (single) auf die erste Kante legen (unterscheidet sich vom flachen Default 'double').
+	foreach ( \Liebherr\InterfaceWorld\Cvf\BoardRepository::instances( $__lv_bd ) as $__i ) {
+		if ( (int) $__i['plugin_type_id'] === $__lv_ch_type ) { \Liebherr\InterfaceWorld\Cvf\BoardRepository::delete_instance( $__lv_bd, (int) $__i['id'] ); }
+	}
+	$__lv_edges = \Liebherr\InterfaceWorld\Cvf\BoardRepository::edges( $__lv_bd );
+	\Liebherr\InterfaceWorld\Cvf\BoardRepository::add_instance( $__lv_bd, $__lv_ch_type, 'edge', (int) $__lv_edges[0]['id'], 'configured', 100, (string) wp_json_encode( [ 'difficulty' => 'single' ] ) );
+	// First-Entry-Text der local_intelligence-Seite mit erkennbarem Titel setzen.
+	$__lv_li = 0;
+	foreach ( \Liebherr\InterfaceWorld\Cvf\BoardRepository::areas( $__lv_bd ) as $__a ) { if ( 'local_intelligence' === (string) $__a['module_id'] ) { $__lv_li = (int) $__a['id']; } }
+	foreach ( \Liebherr\InterfaceWorld\Cvf\BoardRepository::instances( $__lv_bd ) as $__i ) {
+		if ( (int) $__i['plugin_type_id'] === $__lv_fe_type && 'page' === (string) $__i['host_type'] && (int) $__i['host_id'] === $__lv_li ) { \Liebherr\InterfaceWorld\Cvf\BoardRepository::delete_instance( $__lv_bd, (int) $__i['id'] ); }
+	}
+	\Liebherr\InterfaceWorld\Cvf\BoardRepository::add_instance( $__lv_bd, $__lv_fe_type, 'page', $__lv_li, 'configured', 100, (string) wp_json_encode( [ 'title' => 'Board-Willkommen', 'body' => 'Aus dem Board' ] ) );
+	\Liebherr\InterfaceWorld\Cvf\BoardRepository::publish_draft( $__lv_bd, 994001, false );
+	$__lv_req = static function ( $route, $params ) { $r = new \WP_REST_Request( 'POST', '/liw-cvf/v1/' . $route ); foreach ( $params as $k => $v ) { $r->set_param( $k, $v ); } return rest_do_request( $r )->get_data(); };
+	$__lv_vid = 'st-live-' . wp_generate_password( 6, false );
+	$__lv_b   = $__lv_req( 'begin', [ 'anon' => $__lv_vid ] );
+	$__lv_c   = $__lv_req( 'code', [ 'anon' => $__lv_vid, 'code' => 'liebherr-demo' ] );
+	$__lv_ch  = isset( $__lv_c['step']['challenge'] ) ? $__lv_c['step']['challenge'] : [ 'a' => 99, 'b' => 99, 'token' => '' ];
+	$__lv_single = ( (int) $__lv_ch['a'] <= 9 && (int) $__lv_ch['b'] <= 9 );
+	$__lv_v   = $__lv_req( 'challenge', [ 'anon' => $__lv_vid, 'token' => $__lv_ch['token'], 'answer' => (int) $__lv_ch['a'] + (int) $__lv_ch['b'] ] );
+	$__lv_mods = isset( $__lv_v['step']['modules'] ) ? array_map( static fn( $m ) => $m['key'], $__lv_v['step']['modules'] ) : [];
+	$__lv_m   = $__lv_req( 'module', [ 'anon' => $__lv_vid, 'module' => 'local_intelligence' ] );
+	$__lv_fe_title = isset( $__lv_m['step']['first_entry']['title'] ) ? (string) $__lv_m['step']['first_entry']['title'] : '';
+	liw_st_check( 'CAPDB-Live: Board treibt Flow (Challenge einstellig aus Board, Module aus Board, First-Entry-Text aus Board)', $__lv_single && in_array( 'local_intelligence', $__lv_mods, true ) && 'Board-Willkommen' === $__lv_fe_title );
+	if ( isset( $wpdb ) ) {
+		$__lv_sid = (int) ( $__lv_b['session'] ?? 0 );
+		$wpdb->delete( \Liebherr\InterfaceWorld\Cvf\BoardSchema::plugin_execution_table(), [ 'session_id' => $__lv_sid ] );
+		$wpdb->delete( \Liebherr\InterfaceWorld\Cvf\Schema::log_table(), [ 'session_id' => $__lv_sid ] );
+		$wpdb->delete( \Liebherr\InterfaceWorld\Cvf\Schema::session_table(), [ 'id' => $__lv_sid ] );
+		foreach ( array_unique( array_filter( [ (int) $__lv_bd, \Liebherr\InterfaceWorld\Cvf\BoardRepository::draft_id() ] ) ) as $__vid ) {
+			if ( $__vid > 0 ) { \Liebherr\InterfaceWorld\Cvf\BoardRepository::clear_board( (int) $__vid ); $wpdb->delete( \Liebherr\InterfaceWorld\Cvf\Schema::version_table(), [ 'id' => (int) $__vid ] ); }
+		}
+	}
+	delete_option( 'liw_cvf_board_enabled' );
+	delete_option( 'liw_cvf_enabled' );
+
 	// ── [9] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
 	echo "\n[9] Programmierlogbuch / To-Dos\n";
 	liw_st_check( 'docs/LIW_PROGRAMMIERLOGBUCH.md vorhanden', is_readable( LIW_PATH . 'docs/LIW_PROGRAMMIERLOGBUCH.md' ) );

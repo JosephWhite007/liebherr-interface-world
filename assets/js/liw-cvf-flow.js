@@ -70,7 +70,10 @@
 		} else if ( t === 'first_entry' ) {
 			currentModule = step.module || currentModule;
 			var lbl = currentModule ? currentModule.label : '';
-			h = '<h2 class="liw-cvf__title">' + esc( I.firstEntry ) + '</h2><p>' + esc( lbl ) + '</p>' + noteHtml +
+			var feTitle = ( step.first_entry && step.first_entry.title ) ? step.first_entry.title : '';
+			var feBody = ( step.first_entry && step.first_entry.body ) ? step.first_entry.body : '';
+			h = '<h2 class="liw-cvf__title">' + esc( feTitle || I.firstEntry ) + '</h2><p>' + esc( lbl ) + '</p>' +
+				( feBody ? '<p class="liw-cvf__fe-body">' + esc( feBody ) + '</p>' : '' ) + noteHtml +
 				'<button type="button" class="liw-cvf__enter" data-step="first">' + esc( I.enter ) + '</button>';
 		} else if ( t === 'done' ) {
 			var target = step.target || '';

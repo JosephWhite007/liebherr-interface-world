@@ -12,6 +12,17 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.97 – CAPDB: Live-Umschaltung (Board treibt die Customer-View)
+
+**Geändert:** `src/Cvf/Rest.php` – wenn `liw_cvf_board_enabled` aktiv UND eine Board-Version veröffentlicht
+ist, stammt die Customer-View aus dem BOARD statt aus den flachen Defaults: `modules()` = Ziel-Bereiche der
+Übergänge des Einstiegsbereichs (mit Route/Label), `new_challenge()`-Schwierigkeit aus der Board-Challenge-
+Instanz, `board_first_entry()`-Titel/Text der Modulseite, Ziel-Route aus dem Bereich. Ohne Flag unverändert.
+`assets/js/liw-cvf-flow.js` – First-Entry zeigt Board-Titel/-Text. `scripts/liw-selftest.php` (+1: End-to-End
+mit scharfem Board – einstellige Challenge, Module + First-Entry-Text aus dem Board). **Im Browser verifiziert**
+(Challenge „7 + 9", 3 Board-Module, First-Entry „Board-Willkommen …"). Board ist damit optional die Live-Runtime
+(Flag), sonst bleibt der flache Durchstich aktiv. Tests WP-frei 511 / Docker 390. Bump alpha.96 -> alpha.97.
+
 ## 0.1.0-alpha.96 – CAPDB Etappe 9: Härtung (≥50 Stufen) + Test-Isolation
 
 **Geändert:** `scripts/liw-selftest.php` – Skalentest: Board mit ≥50 Bereichen validiert + Snapshot ohne

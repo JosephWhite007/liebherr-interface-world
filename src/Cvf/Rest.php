@@ -65,8 +65,51 @@ final class Rest {
 		return new \WP_REST_Response( [ 'ok' => false, 'reason' => 'disabled' ], 200 );
 	}
 
-	/** Aktive Module des Durchstichs = die vier Inseln (Wiederverwendung WorldSwitcher, keine Redundanz). */
+	/** Aktiver Board-Snapshot, wenn die Board-Runtime scharfgeschaltet ist (§ Live-Umschaltung); sonst null. */
+	private static function board_snapshot(): ?array {
+		return Flags::board_enabled() ? BoardSnapshot::active() : null;
+	}
+
+	/**
+	 * Aktive Module des Durchstichs. Live-Umschaltung: bei scharfem Board stammen sie aus den Ziel-Bereichen
+	 * der Übergänge des Einstiegsbereichs (mit deren Route/First-Entry); sonst aus dem WorldSwitcher.
+	 *
+	 * @return array<int,array<string,mixed>>
+	 */
 	public static function modules(): array {
+		$snap = self::board_snapshot();
+		if ( null !== $snap ) {
+			$entry = BoardRuntime::entry_area( $snap );
+			if ( null !== $entry ) {
+				$worlds = WorldSwitcher::worlds();
+				$byId   = [];
+				foreach ( (array) $snap['areas'] as $a ) {
+					$byId[ (int) $a['id'] ] = $a;
+				}
+				$out  = [];
+				$seen = [];
+				foreach ( BoardRuntime::edges_from( $snap, (int) $entry['id'] ) as $e ) {
+					$area = $byId[ (int) $e['to_area_id'] ] ?? null;
+					if ( null === $area ) {
+						continue;
+					}
+					$key = (string) $area['module_id'];
+					if ( isset( $seen[ $key ] ) ) {
+						continue;
+					}
+					$seen[ $key ] = true;
+					$url = (string) ( $area['route_id'] ?? '' );
+					if ( '' === $url && isset( $worlds[ $key ]['url'] ) ) {
+						$url = (string) $worlds[ $key ]['url'];
+					}
+					$label = isset( $worlds[ $key ]['label'] ) ? (string) $worlds[ $key ]['label'] : $key;
+					$out[] = [ 'key' => $key, 'label' => $label, 'url' => $url, 'area_id' => (int) $area['id'], 'edge_id' => (int) $e['id'] ];
+				}
+				if ( count( $out ) > 0 ) {
+					return $out;
+				}
+			}
+		}
 		$out = [];
 		foreach ( WorldSwitcher::worlds() as $key => $w ) {
 			$out[] = [ 'key' => (string) $key, 'label' => (string) $w['label'], 'url' => (string) $w['url'] ];
@@ -81,6 +124,21 @@ final class Rest {
 			}
 		}
 		return null;
+	}
+
+	/** First-Entry-Inhalt eines Board-Bereichs (Plugin first_entry_text), falls vorhanden. */
+	private static function board_first_entry( int $area_id ): array {
+		$snap = self::board_snapshot();
+		if ( null === $snap ) {
+			return [];
+		}
+		foreach ( BoardRuntime::plugins_for( $snap, 'page', $area_id ) as $ins ) {
+			if ( 'first_entry_text' === (string) ( $ins['plugin_key'] ?? '' ) ) {
+				$cfg = (array) ( $ins['config'] ?? [] );
+				return [ 'title' => (string) ( $cfg['title'] ?? '' ), 'body' => (string) ( $cfg['body'] ?? '' ) ];
+			}
+		}
+		return [];
 	}
 
 	/**
@@ -103,11 +161,24 @@ final class Rest {
 		], 200 );
 	}
 
-	/** Erzeugt eine neue Challenge in der von der aktiven Config vorgegebenen Schwierigkeit. */
+	/** Erzeugt eine neue Challenge. Live-Umschaltung: Schwierigkeit aus der Board-Challenge-Instanz, sonst flach. */
 	private static function new_challenge(): array {
-		$active = WorkflowRepository::ensure_active();
-		$diff   = Runtime::challenge_difficulty( $active['config'] );
-		$c      = ChallengeService::create( AccessService::secret(), time(), $diff );
+		$diff = null;
+		$snap = self::board_snapshot();
+		if ( null !== $snap ) {
+			foreach ( (array) $snap['instances'] as $ins ) {
+				if ( 'challenge_addition' === (string) ( $ins['plugin_key'] ?? '' ) ) {
+					$cfg  = (array) ( $ins['config'] ?? [] );
+					$diff = ChallengeService::normalize( (string) ( $cfg['difficulty'] ?? ChallengeService::DEFAULT_DIFFICULTY ) );
+					break;
+				}
+			}
+		}
+		if ( null === $diff ) {
+			$active = WorkflowRepository::ensure_active();
+			$diff   = Runtime::challenge_difficulty( $active['config'] );
+		}
+		$c = ChallengeService::create( AccessService::secret(), time(), $diff );
 		return [
 			'a'        => $c['a'],
 			'b'        => $c['b'],
@@ -187,8 +258,15 @@ final class Rest {
 		if ( null === $module ) {
 			return new \WP_REST_Response( [ 'ok' => false, 'reason' => 'unknown_module' ], 200 );
 		}
-		$adv = SessionRepository::advance( (int) $sess['id'], Runtime::EV_MODULE_SELECTED );
-		return self::respond( (int) $sess['id'], $adv['state'], [ 'module' => $module ], 'ok' === $adv['reason'] );
+		$adv   = SessionRepository::advance( (int) $sess['id'], Runtime::EV_MODULE_SELECTED );
+		$extra = [ 'module' => $module ];
+		if ( isset( $module['area_id'] ) ) {
+			$fe = self::board_first_entry( (int) $module['area_id'] );
+			if ( array() !== $fe ) {
+				$extra['first_entry'] = $fe;
+			}
+		}
+		return self::respond( (int) $sess['id'], $adv['state'], $extra, 'ok' === $adv['reason'] );
 	}
 
 	public static function first_entry( \WP_REST_Request $req ): \WP_REST_Response {
