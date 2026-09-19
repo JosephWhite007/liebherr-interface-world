@@ -12,6 +12,15 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## Dokumentationsstand 19.09.2026 (nach alpha.61, Push origin/master fd4d464..0353085)
+
+Konsolidierungslauf, kein Quellcode geändert. Geprüft: alle drei Bücher sind auf aktuellem Stand –
+Programmierlogbuch lückenlos alpha.1→alpha.61 (neueste oben), Handbuch mit Funktionalitäts-Absätzen bis
+alpha.61, CHANGELOG bis alpha.61. `docs/LIW_TODO.md` erhielt eine geordnete **Abarbeitungsreihenfolge** aller
+zurückgestellten Jobs (Gruppe A = intern baubar in Reihenfolge, Gruppe B = extern/blockiert) und einen
+aktualisierten Kopf-Stand (alpha.41 → alpha.61). Nächster Bau laut Reihenfolge: **A1 – Intelligence-World-
+Pflege-Board (Navigation & Hotels + Tarife) im Backoffice.**
+
 ## 0.1.0-alpha.61 – Adventures: Tokenakzeptanz-Dialog beim Zugriff
 
 **Geändert:** `assets/js/liw-adventures.js` – Zugriff-Button in `buildCard()`; Modal-Dialog (`getModal`/

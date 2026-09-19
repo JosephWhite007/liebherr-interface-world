@@ -6,7 +6,52 @@ oder als offene Rückfrage an Joseph White dokumentiert wurden (Quelle jeweils a
 Sichtbar im Backend unter „Interface World → 📋 To-Dos". Wird bei jeder Aufgabe, die einen
 Punkt hier abschließt oder ergänzt, gepflegt.
 
-Stand: 18.09.2026 (0.1.0-alpha.41).
+Stand: 19.09.2026 (0.1.0-alpha.61).
+
+---
+
+## Abarbeitungsreihenfolge der offenen Jobs (Stand alpha.61)
+
+Konsolidierte Liste aller im Projektverlauf zurückgestellten Punkte, in Umsetzungsreihenfolge. Details je
+Punkt in den themenbezogenen Abschnitten weiter unten. Zwei Gruppen: **A** = intern baubar (wir arbeiten sie
+der Reihe nach ab und befüllen sie mit Funktionalität), **B** = auf externe Freigabe/Zulieferung angewiesen.
+
+### Gruppe A – intern baubar (Reihenfolge)
+
+1. **Intelligence World – Pflege-Board (Backoffice).** Administrierbares Board für Navigation & Hotels
+   (13 Segmente, Lösungswelt, 6 Hotels inkl. Drei-Wörter-Orte) UND für Tarife/Budgets (Preismodell) statt
+   nur Optionen `liw_iw_catalog`/`liw_iw_world`. Zwei Platzhalter-Hotels kuratierbar. (IW §19.1)
+2. **Intelligence World – Compute-Metering (Mock) + kostenpflichtige Module.** Modul-/Rechenlast-Ereignisse
+   als Ledger-Einträge (§6.4/§8); diese Ereignisse erscheinen anschließend im Nutzungs-/Kostenprotokoll.
+3. **Adventures – Detailseite.** Einzelansicht eines Beitrags (Titel, Story, Medien, Ort, Tokenwert, Status)
+   – Voraussetzung für World Map/Detail-Verlinkung.
+4. **Adventures – Suche/Filter nach Maschine/Bauteil (§18).** Zusätzliche Facetten im Stream.
+5. **Adventures – echtes Tokenbudget-Konto.** Persistiertes Budget je Nutzer/Org statt Filter-Default 1000;
+   Buchung beim Zugriff, Anzeige des Kontostands.
+6. **Adventures – Medien-Upload/Transcoding (§14).** Bild/Kurzvideo-Upload statt externer Bild-URL.
+7. **Adventures – Get-Help-Assistent (Phase 3).** Geführte Hilfe bei kritischen Beiträgen.
+8. **Local Intelligence – Szenario-Editor im Board.** Feingranulare A/B/C-Pflege statt Seeder/Standardwerte.
+9. **Simulation Builder – Szenarien speichern/vergleichen.** Persistenz + Nebeneinander-Vergleich.
+10. **Nutzungs-/Kostenprotokoll – echte serverseitige PDF-Erzeugung** (statt Browser-Druck).
+11. **Content Board – Medien-Picker auf freigegebene Bibliothek beschränken** (CI-005; braucht Docker-Prüfung).
+
+### Gruppe B – auf externe Freigabe/Zulieferung angewiesen (nicht allein baubar)
+
+- **Marken-/CI-Freigabe (§10–12/§34)** + Schrift-Lizenz → Launch-Blocker (CI derzeit „vorläufig").
+- **EN-Fassung + weitere Sprachen (§12.4)** + Mehrsprachigkeit der Nutzerinhalte (§15) → redaktionelle
+  Kuratierung/Freigabe im Language Board; Auto-Übersetzung der Adventure-Felder technisch andockbar
+  (TranslationBridge/Core `save_post`), Inhalte durch Redaktion.
+- **Analytik-Events (§14)** → freigegebenes Analytics-Setup.
+- **Kontakt: CRM-/Empfängerdefinition + Wertelisten Land/Region/Interesse (§22/§24/§31)** → Projektleitung.
+- **what3words: Lizenz/Vertrag + Produktiv-Key (§4.3/§24.1)** → Auftraggeber (Technik steht, Mock-Fallback).
+- **Echte Artikelbook-Anbindung** im Core an Filter `liw_articlebook_register` → Integrationsentscheidung Core.
+- **I18nSeo Option B** (Core-`I18nRouter` um `page`/`liw_section`) → erst wenn Core-Router plattformweit aktiv.
+- **Simulation Board – Status-Übergänge** → erst mit echter Simulations-Engine (YAGNI).
+- **World Connections – echte Geo-Karte** (Koordinaten + Kartenbibliothek) → optional, Kategorie A.
+- **Partnerbereich-Folgepunkte** (Auto-Konten, Doku-Fassung, Dokumente je Partner/Region, Core-Option-B,
+  Design-System-Login) → teils Liebherr-Entscheidung.
+- **Mehrsprachigkeits-Audit** (`trx-scan`/`trx-audit` je Seite×Sprache) + hartes Sprach-Gate → Betrieb/CI.
+- **Staging-Performance-/A11y-Vollmessung + Produktionsfreigabe** (AC-012/013/016) → Betrieb.
 
 ---
 
