@@ -1,5 +1,24 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.132] – 2026-09-19 – CVF-Simulation der zwei neuen Karten (§36, MYL 013)
+
+### Hinzugefügt
+- `Cvf\BoardRepository::wire_module_card()`: schaltet eine (initial deaktivierte) Bereichskarte simulierbar –
+  Bereich aktiv + Route (Seiten-URL = **Return-Route**), **Übergang vom Einstieg** (intelligence_world, `world_granted`)
+  und **First-Entry-Text** auf der Seite. Idempotent.
+- Seeder `scripts/liw-seed-cvf-6cards.php` (opt-in): verdrahtet **my_liebherr** + **pocket_information** im Board-
+  Entwurf, sodass First Entry und Rücksprung beider Karten vollständig in der Board-Simulation laufen. Veröffentlichen
+  bleibt bewusst ein separater Schritt (CVF Board Backoffice + `liw_cvf_board_enabled`).
+
+### Hintergrund (Direktlink-Schutz, MYL 013)
+- Reihenfolge der sechs Karten fix (Position 1–6); Sichtbarkeit rollenabhängig (WorldSwitcher/Grants). Die
+  persönlichen Seiten sind self-gating (Login + `liw_myl_access`) → ein Direktlink ohne Berechtigung zeigt nur den
+  Anmelde-/Zugangshinweis, keinen Inhalt.
+
+### Verifikation
+- `scripts/liw-selftest.php` **423/423**: Simulation erreicht vom Einstieg beide neuen Karten, First-Entry vorhanden,
+  Return-Route gesetzt. `tests/run-tests.php` **650/650**. `LIW_VERSION` .131→.132. Schließt MYL 013 ab.
+
 ## [0.1.0-alpha.131] – 2026-09-19 – Moderation: World-Review, Meldungen, Sperren, Erstattung (§11/§13/§31)
 
 ### Hinzugefügt

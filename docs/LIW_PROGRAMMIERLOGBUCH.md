@@ -21,6 +21,13 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.132 – CVF-Simulation der zwei neuen Karten (§36, MYL 013)
+
+- `src/Cvf/BoardRepository.php`: `wire_module_card()` (Bereich aktiv + Route/Return-Route, Übergang vom Einstieg `world_granted`, First-Entry-Text; idempotent) + `module_route()`.
+- `scripts/liw-seed-cvf-6cards.php` (NEU, opt-in): verdrahtet my_liebherr + pocket_information im Board-Entwurf.
+- `scripts/liw-selftest.php`: CVF-Sim-Block (seed_start_config→wire→Snapshot→edges_from erreicht beide, First-Entry, Return-Route). `liebherr-interface-world.php` LIW_VERSION .131→.132.
+- WP-frei 650/0, Docker 423/0.
+
 ## 0.1.0-alpha.131 – Moderation (World-Review, Meldungen, Sperren, Erstattung §11/§13/§31)
 
 - `src/MyLiebherr/Roles.php`: Cap `liw_myl_moderate` + MODERATE_ROLES (araliya_ops/reception), all_caps=3.

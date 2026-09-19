@@ -138,6 +138,62 @@ final class BoardRepository {
 		}
 	}
 
+	/**
+	 * Schaltet eine (initial deaktivierte) Bereichskarte für die Simulation/Runtime scharf (§36-Folgearbeit):
+	 * setzt den Bereich aktiv + Route (Seiten-URL = Return-Route), legt einen Übergang vom Einstieg
+	 * (intelligence_world, `world_granted`) an und hängt einen First-Entry-Text auf die Seite. Idempotent.
+	 * So laufen First Entry und Rücksprung der neuen Karten (my_liebherr, pocket_information) vollständig im Editor.
+	 */
+	public static function wire_module_card( int $version_id, string $module_id, string $title, string $body ): int {
+		$areas = self::areas( $version_id );
+		$aid   = 0;
+		$entry = 0;
+		foreach ( $areas as $a ) {
+			if ( (string) $a['module_id'] === $module_id ) { $aid = (int) $a['id']; }
+			if ( 'intelligence_world' === (string) $a['module_id'] ) { $entry = (int) $a['id']; }
+		}
+		$route = self::module_route( $module_id );
+
+		global $wpdb;
+		if ( 0 === $aid ) {
+			$aid = self::add_area( $version_id, $module_id, count( $areas ) + 1, $route, 'active', '' );
+		} else {
+			$wpdb->update( BoardSchema::area_table(), [ 'status' => 'active', 'route_id' => '' !== $route ? $route : null ], [ 'id' => $aid, 'version_id' => $version_id ], [ '%s', '%s' ], [ '%d', '%d' ] ); // phpcs:ignore WordPress.DB
+		}
+
+		if ( $entry > 0 ) {
+			$has_edge = false;
+			foreach ( self::edges( $version_id ) as $e ) {
+				if ( (int) $e['from_area_id'] === $entry && (int) $e['to_area_id'] === $aid ) { $has_edge = true; break; }
+			}
+			if ( ! $has_edge ) {
+				self::add_edge( $version_id, $entry, $aid, 'world_granted', '', 100 );
+			}
+		}
+
+		$type = PluginRegistry::type_id( 'first_entry_text' );
+		if ( $type > 0 ) {
+			$has_fe = false;
+			foreach ( self::instances( $version_id, [ 'host_type' => PluginTaxonomy::SCOPE_PAGE, 'host_id' => $aid ] ) as $ins ) {
+				if ( (int) $ins['plugin_type_id'] === $type ) { $has_fe = true; break; }
+			}
+			if ( ! $has_fe ) {
+				self::add_instance( $version_id, $type, PluginTaxonomy::SCOPE_PAGE, $aid, 'configured', 100, (string) wp_json_encode( [ 'title' => $title, 'body' => $body ] ) );
+			}
+		}
+		return $aid;
+	}
+
+	/** Return-Route (Seiten-URL) einer persönlichen Karte; leer, wenn die Seite fehlt. */
+	private static function module_route( string $module_id ): string {
+		$opt = 'my_liebherr' === $module_id ? 'liw_my_liebherr_page_id' : ( 'pocket_information' === $module_id ? 'liw_pocket_page_id' : '' );
+		if ( '' === $opt ) {
+			return '';
+		}
+		$id = (int) get_option( $opt, 0 );
+		return ( $id > 0 && 'publish' === get_post_status( $id ) ) ? (string) get_permalink( $id ) : '';
+	}
+
 	// ── CRUD Bereiche ──────────────────────────────────────────────────────────
 	public static function add_area( int $version_id, string $module_id, int $position, string $route_id, string $status = 'active', string $validity_json = '' ): int {
 		global $wpdb;

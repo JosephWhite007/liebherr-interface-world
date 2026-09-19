@@ -1529,6 +1529,36 @@ try {
 		}
 	}
 
+	// CVF-Simulation der neuen Karten (§36, MYL 013): Übergang vom Einstieg + First-Entry + Return-Route.
+	global $wpdb;
+	$__c6_v = 999124;
+	\Liebherr\InterfaceWorld\Cvf\BoardRepository::seed_start_config( $__c6_v );
+	\Liebherr\InterfaceWorld\Cvf\BoardRepository::wire_module_card( $__c6_v, 'my_liebherr', 'Willkommen', 'Text' );
+	\Liebherr\InterfaceWorld\Cvf\BoardRepository::wire_module_card( $__c6_v, 'pocket_information', 'Pocket', 'Text' );
+	$__c6_snap  = \Liebherr\InterfaceWorld\Cvf\BoardSnapshot::of_version( $__c6_v );
+	$__c6_entry = \Liebherr\InterfaceWorld\Cvf\BoardRuntime::entry_area( $__c6_snap );
+	$__c6_byid  = [];
+	foreach ( (array) $__c6_snap['areas'] as $a ) { $__c6_byid[ (int) $a['id'] ] = $a; }
+	$__c6_to = [];
+	foreach ( \Liebherr\InterfaceWorld\Cvf\BoardRuntime::edges_from( $__c6_snap, (int) $__c6_entry['id'] ) as $e ) {
+		$__c6_to[] = (string) ( $__c6_byid[ (int) $e['to_area_id'] ]['module_id'] ?? '' );
+	}
+	$__c6_myl = 0; $__c6_route = '';
+	foreach ( (array) $__c6_snap['areas'] as $a ) {
+		if ( 'my_liebherr' === $a['module_id'] ) { $__c6_myl = (int) $a['id']; $__c6_route = (string) ( $a['route_id'] ?? '' ); }
+	}
+	$__c6_fe = false;
+	foreach ( \Liebherr\InterfaceWorld\Cvf\BoardRuntime::plugins_for( $__c6_snap, 'page', $__c6_myl ) as $ins ) {
+		if ( 'first_entry_text' === (string) ( $ins['plugin_key'] ?? '' ) ) { $__c6_fe = true; }
+	}
+	liw_st_check(
+		'CVF-Sim (§36/MYL013): Einstieg→my_liebherr+pocket, First-Entry vorhanden, Return-Route (Seiten-URL) gesetzt',
+		in_array( 'my_liebherr', $__c6_to, true ) && in_array( 'pocket_information', $__c6_to, true ) && true === $__c6_fe && '' !== $__c6_route
+	);
+	foreach ( [ \Liebherr\InterfaceWorld\Cvf\BoardSchema::area_table(), \Liebherr\InterfaceWorld\Cvf\BoardSchema::edge_table(), \Liebherr\InterfaceWorld\Cvf\BoardSchema::plugin_instance_table() ] as $__c6_t ) {
+		$wpdb->delete( $__c6_t, [ 'version_id' => $__c6_v ] );
+	}
+
 	// ── [9] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
 	echo "\n[9] Programmierlogbuch / To-Dos\n";
 	liw_st_check( 'docs/LIW_PROGRAMMIERLOGBUCH.md vorhanden', is_readable( LIW_PATH . 'docs/LIW_PROGRAMMIERLOGBUCH.md' ) );

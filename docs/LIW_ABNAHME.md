@@ -145,7 +145,7 @@ Verifikation: `tests/run-tests.php` 576/0, `scripts/liw-selftest.php` 408/0 (ech
 | MYL 003 | Mehrfachrollen/Organisationen, Kontextwechsel | ⚠️ Teil | Kontext + Mitgliedschaften lesbar, aktive Org/Rolle im Profil setzbar (PATCH /me); Org-Pflege/Onboarding folgt R1-Breite |
 | MYL 004 | Wallet zeigt Salden aus dem Ledger | ✅ (read-only) | `[liw_my_wallet]` über `WalletBridge`→Core `get_summary`; verfügbar/reserviert/gesperrt-Buckets folgen mit Wallet-Pflichtenheft |
 | MYL 006 | Erlöse/Buchungen je Beleg nachvollziehbar | ✅ (read-only) | Buchungsliste mit Datum/Art/Betrag ±/Status aus `get_transactions` |
-| MYL 013 | Sechs Plattformreiter, Reihenfolge/Rollen/Direktlink | ⚠️ Teil | Nav 4 Inseln + My Liebherr (rollenabh.) + Pocket „in Vorbereitung"; volle CVF-Runtime der neuen Karten folgt |
+| MYL 013 | Sechs Plattformreiter, Reihenfolge/Rollen/Direktlink | ✅ | Reihenfolge fix (Pos. 1–6); Nav rollenabhängig; CVF-Board-Simulation der neuen Karten (Einstieg→my_liebherr/pocket, First-Entry, Return-Route) via `wire_module_card`; Direktlink-Schutz durch self-gating der persönlichen Seiten (Login + `liw_myl_access`) |
 | MYL 014 | My Dreams: private Maschinenfavoriten anlegen/sortieren/entfernen | ✅ | `[liw_my_dreams]`, Tabelle `dream_item`, REST + Round-Trip-Selftest |
 | MYL 015 | Drei Galeriesichten mit getrennten Grants | ✅ (Kollegen aktiv / World Review offen) | `[liw_my_gallery]` privat + `share_grant` Kollegen/World + `[liw_shared_colleagues]`/`[liw_shared_world]` |
 | MYL 016 | Own Adventures nach Status/Maschine filtern | ✅ | `[liw_my_adventures]` (Insel-Wiederverwendung), Status-Filter, Maschine/Bauteil/Token |
