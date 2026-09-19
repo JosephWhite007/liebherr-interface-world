@@ -1036,6 +1036,24 @@ try {
 		foreach ( [ $__p1['id'], $__pallow['id'] ] as $__vid ) { if ( $__vid ) { $wpdb->delete( $__vt, [ 'id' => $__vid ] ); } }
 	}
 
+	// CAPDB Board-Datenmodell (alpha.89): Entwurf/Seed/Publish/Rollback (mit Cleanup).
+	$__bd = \Liebherr\InterfaceWorld\Cvf\BoardRepository::ensure_draft( 1 );
+	$__bd_areas = \Liebherr\InterfaceWorld\Cvf\BoardRepository::areas( $__bd );
+	$__bd_edges = \Liebherr\InterfaceWorld\Cvf\BoardRepository::edges( $__bd );
+	liw_st_check( 'CAPDB: Entwurf mit Startkonfig (4 Bereiche + 3 Uebergaenge, Einstieg intelligence_world@1)', $__bd > 0 && 4 === count( $__bd_areas ) && 3 === count( $__bd_edges ) && 'intelligence_world' === (string) $__bd_areas[0]['module_id'] && 1 === (int) $__bd_areas[0]['position'] );
+	$__cs_a = \Liebherr\InterfaceWorld\Cvf\BoardRepository::board_checksum( $__bd );
+	$__pub = \Liebherr\InterfaceWorld\Cvf\BoardRepository::publish_draft( $__bd, 990100, false );
+	liw_st_check( 'CAPDB: Publish valide -> ok, Pruefsumme gesetzt, Version veroeffentlicht', ! empty( $__pub['ok'] ) && 64 === strlen( (string) $__pub['checksum'] ) && \Liebherr\InterfaceWorld\Cvf\BoardRepository::published_id() === $__bd );
+	$__bd2 = \Liebherr\InterfaceWorld\Cvf\BoardRepository::create_draft( 1 );
+	liw_st_check( 'CAPDB: neuer Entwurf kopiert das Board der letzten Version (4 Bereiche)', 4 === count( \Liebherr\InterfaceWorld\Cvf\BoardRepository::areas( $__bd2 ) ) );
+	$__rb = \Liebherr\InterfaceWorld\Cvf\BoardRepository::rollback_to( $__bd, 990101, false );
+	liw_st_check( 'CAPDB: Rollback auf veroeffentlichte Version -> neue Version ok', ! empty( $__rb['ok'] ) && (int) $__rb['version'] > 0 );
+	if ( isset( $wpdb ) ) {
+		$__vt = \Liebherr\InterfaceWorld\Cvf\Schema::version_table();
+		$__cleanup_versions = array_unique( array_filter( [ (int) $__bd, (int) $__bd2, (int) ( $__rb['version'] ?? 0 ), \Liebherr\InterfaceWorld\Cvf\BoardRepository::draft_id() ] ) );
+		foreach ( $__cleanup_versions as $__vid ) { if ( $__vid > 0 ) { \Liebherr\InterfaceWorld\Cvf\BoardRepository::clear_board( (int) $__vid ); $wpdb->delete( $__vt, [ 'id' => (int) $__vid ] ); } }
+	}
+
 	// ── [9] Programmierlogbuch / To-Dos (Nachvollziehbarkeit) ────────────────
 	echo "\n[9] Programmierlogbuch / To-Dos\n";
 	liw_st_check( 'docs/LIW_PROGRAMMIERLOGBUCH.md vorhanden', is_readable( LIW_PATH . 'docs/LIW_PROGRAMMIERLOGBUCH.md' ) );

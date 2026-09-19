@@ -533,6 +533,14 @@ liw_assert( 'Steps: Zustand → Schritt-Typ (at_challenge=challenge, in_module=d
 $__stp = $STP::describe( 'at_module_select', [ 'modules' => [ [ 'key' => 'x' ] ] ] );
 liw_assert( 'Steps: describe traegt type+state+extra', 'module_select' === $__stp['type'] && 'at_module_select' === $__stp['state'] && 1 === count( $__stp['modules'] ), $checks, $failures );
 
+// CAPDB – Plugin-Zustandsautomat + Scopes/Kategorien (rein, alpha.89).
+require_once $root . '/src/Cvf/PluginState.php';
+require_once $root . '/src/Cvf/PluginTaxonomy.php';
+$PS = '\Liebherr\InterfaceWorld\Cvf\PluginState';
+$PX = '\Liebherr\InterfaceWorld\Cvf\PluginTaxonomy';
+liw_assert( 'PluginState: 11 Zustaende; erlaubte/verbotene Uebergaenge (open->closing ok, open->scheduled nein)', 11 === count( $PS::all() ) && $PS::can_transition( 'open', 'closing' ) && $PS::can_transition( 'configured', 'scheduled' ) && ! $PS::can_transition( 'open', 'scheduled' ) && ! $PS::can_transition( 'closed', 'open' ), $checks, $failures );
+liw_assert( 'PluginTaxonomy: 2 Scopes, 7 Kategorien, parse_scopes + scope_allowed', 2 === count( $PX::scopes() ) && 7 === count( $PX::categories() ) && [ 'page', 'edge' ] === $PX::parse_scopes( 'page, edge, quatsch' ) && $PX::scope_allowed( 'edge', 'page,edge' ) && ! $PX::scope_allowed( 'edge', 'page' ), $checks, $failures );
+
 // Emergency – Hilfe-Koffer (einstellige Rechenaufgabe) + kontextbezogene Emergency-Area (alpha.78).
 require_once $root . '/src/Emergency/EmergencyChallenge.php';
 require_once $root . '/src/Emergency/HelpTopicCatalog.php';

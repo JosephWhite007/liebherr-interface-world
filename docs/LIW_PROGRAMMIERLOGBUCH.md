@@ -12,6 +12,19 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.89 – CAPDB Etappe 2: Datenmodell + Board-Repository
+
+**Neu (`src/Cvf/`, ADR-LIW-CVF-002 §30):** `BoardSchema` (7 Tabellen `liw_cvf_board_area/board_edge/
+plugin_type/plugin_instance/plugin_schedule/plugin_execution/board_layout`, COMMENT ohne Klammern),
+`PluginState` (11 Zustände §26.2 + erlaubte Übergänge, rein), `PluginTaxonomy` (Scopes page/edge, 7 Kategorien
+§26.1, parse/scope_allowed, rein), `BoardRepository` (Entwurf/Publish/Rollback + CRUD Bereiche/Kanten/Instanzen/
+Schedule/Layout; `ensure_draft/create_draft/copy_board/seed_start_config` [4 Bereiche + 3 Übergänge §24.1/§28];
+`board_checksum` kanonisch; `publish_draft` [validiert + unveränderlich + Prüfsumme + Vier-Augen], `rollback_to`
+[neue Version als Kopie]), `BoardValidator` (Struktur/Scope/Timer §29.7). **Geändert:** `liebherr-interface-world.php`
+`create_tables()` → `Cvf\BoardSchema::create_tables()`. Tabellen auf Docker verifiziert. `tests/run-tests.php`
+(+2 Enums), `scripts/liw-selftest.php` (+4: Entwurf/Seed/Publish/Rollback, mit Cleanup). Baut auf Phase 2, ändert
+den vertikalen Durchstich nicht. Tests WP-frei 489 / Docker 379. Bump alpha.88 -> alpha.89.
+
 ## 0.1.0-alpha.88 – Redundanz-Abbau: Intro-Gate auf zentralen ChallengeService
 
 **Geändert:** `src/Frontend/IntroOverlay.php` – das Rechen-Gate des LI-Intro-Overlays nutzt jetzt den
