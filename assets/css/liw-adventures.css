@@ -140,8 +140,9 @@
 
 /* Hilfe-Koffer inline in der „Get Help"-Überschrift (alpha.101): den Koffer dauerhaft klein zeigen,
    damit er als wiedererkennbares Hilfesymbol vertraut wird (Klick öffnet das Emergency-Plugin). */
-.liw-adv__help-suitcase { display: inline-flex; vertical-align: middle; margin-left: .4rem; }
-.liw-adv__help-suitcase .liw-emg-dot { width: 20px; height: 20px; }
-.liw-adv__help-suitcase .liw-emg-dot__ico { opacity: 1; background-size: 15px 15px; }
+.liw-adv__help-suitcase { display: inline-flex; vertical-align: middle; margin-left: .5rem; }
+/* Der Koffer ist selbst orange → kein oranger Hintergrundkreis; ~3x größer und dauerhaft sichtbar. */
+.liw-adv__help-suitcase .liw-emg-dot { width: 48px; height: 48px; background: none; box-shadow: none; border-radius: 0; }
+.liw-adv__help-suitcase .liw-emg-dot__ico { opacity: 1; width: 100%; height: 100%; background-size: contain; }
 .liw-adv__help-suitcase .liw-emg-dot:hover,
-.liw-adv__help-suitcase .liw-emg-dot:focus-visible { transform: scale( 1.3 ); }
+.liw-adv__help-suitcase .liw-emg-dot:focus-visible { transform: scale( 1.12 ); box-shadow: none; }

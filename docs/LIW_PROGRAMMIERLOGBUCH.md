@@ -21,6 +21,13 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.103 – Hilfe-Koffer im Get-Help-Titel: ohne orangen Kreis, ~3x größer
+
+**Geändert:** `assets/css/liw-adventures.css` – im `.liw-adv__help-suitcase`-Kontext entfällt der orange
+Hintergrundkreis (background/box-shadow/border-radius: none), da das Koffer-Motiv selbst orange ist; der
+Koffer ist jetzt ~48px (ca. 3x) und füllt die Fläche (background-size: contain). Funktion unverändert
+(Klick öffnet das Emergency-Overlay). Live verifiziert. Bump alpha.102 -> alpha.103.
+
 ## 0.1.0-alpha.102 – Hilfe-Koffer nutzt geliefertes Mediathek-Motiv (statt Platzhalter-SVG)
 
 **Geändert:** `src/Emergency/EmergencyController.php` – neue `icon_url()`: liefert das freigegebene Mediathek-
