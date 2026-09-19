@@ -707,6 +707,13 @@
 
 /* ── Liebherr World – Plattform-Umschalter (Cross-Navigation der vier Inseln, alpha.52) ── */
 .liw-switcher {
+	/* Voll-breite dunkle Leiste (kein zentriertes Hintergrund-Band mehr → keine weißen Ränder). */
+	width: 100%;
+	background: var(--brand-text, #202326);
+	color: #fff;
+	font-family: var(--font-body, Arial, Helvetica, sans-serif);
+}
+.liw-switcher__inner {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
@@ -714,9 +721,6 @@
 	max-width: var(--content-max, 1440px);
 	margin: 0 auto;
 	padding: .5rem 4vw;
-	background: var(--brand-text, #202326);
-	color: #fff;
-	font-family: var(--font-body, Arial, Helvetica, sans-serif);
 }
 .liw-switcher__brand { font-weight: 900; letter-spacing: .04em; text-transform: uppercase; font-size: .8rem; color: var(--brand-primary, #ffd000); }
 .liw-switcher__list { list-style: none; display: flex; flex-wrap: wrap; gap: .3rem 1.1rem; margin: 0; padding: 0; }

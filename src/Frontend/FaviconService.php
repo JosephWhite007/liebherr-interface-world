@@ -35,6 +35,10 @@ final class FaviconService {
 		// Core hängt wp_site_icon NICHT an admin_head an → dort dieselbe Core-Funktion ergänzen,
 		// damit auch der wp-admin-Tab den Globus zeigt (weiterhin eine Quelle, keine Dubletten).
 		add_action( 'admin_head', 'wp_site_icon', 99 );
+		// Kein zweiter Globus in der Adminleiste: Da unser Filter has_site_icon()=wahr macht, würde Core
+		// zusätzlich ein `img.site-icon` neben den Seitennamen hängen (Doppelglobus). Wir zeigen den Globus
+		// dort bereits als ersetztes WP-Logo → das Seitennamen-Icon abschalten.
+		add_filter( 'wp_admin_bar_show_site_icons', '__return_false' );
 		// Marken-Logo-CSS (Globus statt WP-„W" in Toolbar + auf der Login-Seite) – von Core nicht
 		// geliefert, daher in allen drei Kontexten. Icon-<link>s kommen ausschließlich von Core.
 		add_action( 'wp_head', [ self::class, 'output' ], 99 );

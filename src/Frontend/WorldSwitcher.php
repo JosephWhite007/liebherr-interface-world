@@ -83,8 +83,10 @@ final class WorldSwitcher {
 			);
 		}
 		return '<nav class="liw-switcher" aria-label="' . esc_attr__( 'Liebherr World – Bereiche', 'liebherr-interface-world' ) . '">'
+			. '<div class="liw-switcher__inner">'
 			. '<span class="liw-switcher__brand">' . esc_html__( 'Liebherr World', 'liebherr-interface-world' ) . '</span>'
-			. '<ul class="liw-switcher__list">' . $items . '</ul></nav>';
+			. '<ul class="liw-switcher__list">' . $items . '</ul>'
+			. '</div></nav>';
 	}
 
 	/** Automatisch oben auf den vier Insel-Seiten einfügen (nur Hauptabfrage, nicht in eingebetteten Abschnitten). */

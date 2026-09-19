@@ -863,6 +863,8 @@ try {
 	$__sw = \Liebherr\InterfaceWorld\Frontend\WorldSwitcher::render( 'adventures' );
 	liw_st_check( 'Cross-Nav: World-Switcher verlinkt die vier Inseln', str_contains( $__sw, 'liw-switcher' ) && str_contains( $__sw, 'Intelligence World' ) && str_contains( $__sw, 'Local Intelligence' ) && str_contains( $__sw, 'Interface Solutions' ) && str_contains( $__sw, 'Adventures' ) );
 	liw_st_check( 'Cross-Nav: aktuelle Insel hervorgehoben', str_contains( $__sw, 'is-current' ) && str_contains( $__sw, 'aria-current="page"' ) );
+	// Kopfzeile: voll-breite dunkle Leiste (Inhalt im Inner-Wrapper zentriert → keine weißen Ränder, alpha.80).
+	liw_st_check( 'Cross-Nav: Switcher hat Inner-Wrapper (voll-breite Leiste, kein weißer Rand)', str_contains( $__sw, 'liw-switcher__inner' ) );
 
 	// Simulation-World-Startbildschirm (alpha.53).
 	liw_st_check( 'SIM: Shortcode [liw_simulator] registriert', shortcode_exists( 'liw_simulator' ) );
@@ -932,6 +934,8 @@ try {
 	// Browser-Tab-Favicon: /favicon.ico → Globus statt grauem WP-„W" (get_site_icon_url-Filter, alpha.76).
 	$__fav_url = \Liebherr\InterfaceWorld\Frontend\FaviconService::filter_site_icon_url( includes_url( 'images/w-logo-gray-white-bg.png' ), 32, 0 );
 	liw_st_check( 'Favicon.ico: Globus statt WP-„W" (nur ohne gesetztes Website-Icon)', get_option( 'site_icon' ) ? true : ( str_contains( $__fav_url, 'liw-planet-icon.svg' ) || str_contains( $__fav_url, 'goheal-gold-planet' ) ) );
+	// Kein Doppelglobus in der Adminleiste: Core-Seitennamen-Icon abgeschaltet (alpha.80).
+	liw_st_check( 'Adminleiste: kein zweiter Globus (Seitennamen-Icon aus)', false === apply_filters( 'wp_admin_bar_show_site_icons', true ) );
 
 	// ── [8b] Emergency – Hilfe-Koffer & Emergency-Area (alpha.78) ────────────
 	echo "\n[8b] Emergency – Hilfe-Koffer\n";

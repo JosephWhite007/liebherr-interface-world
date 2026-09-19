@@ -12,6 +12,17 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.80 – Kopfzeile: Doppelglobus entfernt + voll-breite World-Leiste
+
+**Geändert:** `src/Frontend/FaviconService.php` – Filter `wp_admin_bar_show_site_icons` → `__return_false`:
+da unser `get_site_icon_url`-Filter `has_site_icon()`=wahr macht, hängte Core zusätzlich ein
+`img.site-icon` neben den Seitennamen der Adminleiste (zweiter Globus); der Globus bleibt dort als
+ersetztes WP-Logo. `src/Frontend/WorldSwitcher.php` – `render()` bekommt einen `.liw-switcher__inner`
+(Inhalt zentriert), `assets/css/liebherr-frontend.css` – `.liw-switcher` jetzt `width:100%` mit dunklem
+Hintergrund über die volle Breite, `.liw-switcher__inner` trägt `max-width`/`margin:auto`/`padding`
+(vorher lag der dunkle Hintergrund nur auf dem zentrierten Element → weiße Ränder links/rechts auf breiten
+Screens). `scripts/liw-selftest.php` (+2). Frontend voll-breit im Browser verifiziert. Bump alpha.79 -> alpha.80.
+
 ## 0.1.0-alpha.79 – Hilfe-Koffer: JS-freier Fallback-Pfad (Barrierefreiheit)
 
 **Geändert:** `src/Emergency/EmergencyController.php` – Koffer-Button ist jetzt ein `<a>` auf den Fallback
