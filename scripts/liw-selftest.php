@@ -754,6 +754,14 @@ try {
 	liw_st_check( 'IW: Access-Gate akzeptiert korrekten Code (ok + session_code)', ! empty( $__ok['ok'] ) && isset( $__ok['session_code'] ) && str_starts_with( (string) $__ok['session_code'], 'LIW-' ) );
 	$__bad = \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::start( ( function () { $r = new WP_REST_Request( 'POST' ); $r->set_param( 'code', 'FALSCH' ); $r->set_param( 'consent_terms', true ); $r->set_param( 'consent_storage', true ); return $r; } )() )->get_data();
 	liw_st_check( 'IW: Access-Gate weist falschen Code ab (ok=false)', empty( $__bad['ok'] ) );
+	// Nutzungs-/Kostenprotokoll (§5.5/§8, alpha.58): Route + build_protocol Ende-zu-Ende.
+	liw_st_check( 'IW-Proto: REST-Route /session/protocol registriert', array_key_exists( '/' . \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::NAMESPACE . '/session/protocol', rest_get_server()->get_routes() ) );
+	if ( isset( $__ok['session_code'] ) ) {
+		$__pc = (string) $__ok['session_code'];
+		\Liebherr\InterfaceWorld\IntelligenceWorld\SessionService::end( $__pc );
+		$__proto = \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::build_protocol( $__pc, \Liebherr\InterfaceWorld\IntelligenceWorld\WorldContent::get() );
+		liw_st_check( 'IW-Proto: build_protocol liefert Kopf, Ereignisse (>=4), Integrität + Prototyp-Flag', $__proto['session_code'] === $__pc && $__proto['event_count'] >= 4 && true === $__proto['integrity_ok'] && true === $__proto['prototype'] && isset( $__proto['billing']['base_cost_display'] ) && isset( $__proto['events'][0]['label'] ) );
+	}
 	if ( isset( $__ok['session_code'] ) ) { global $wpdb; $wpdb->query( $wpdb->prepare( 'DELETE FROM ' . \Liebherr\InterfaceWorld\IntelligenceWorld\Schema::event_table() . ' WHERE session_code = %s', (string) $__ok['session_code'] ) ); $wpdb->query( $wpdb->prepare( 'DELETE FROM ' . \Liebherr\InterfaceWorld\IntelligenceWorld\Schema::session_table() . ' WHERE session_code = %s', (string) $__ok['session_code'] ) ); }
 	// Favicon (goldener Planet, alpha.49).
 	$__fav = ( function (): string { ob_start(); \Liebherr\InterfaceWorld\Frontend\FaviconService::output(); return (string) ob_get_clean(); } )();

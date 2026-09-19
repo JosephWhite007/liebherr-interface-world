@@ -363,6 +363,19 @@ $bl2 = $SM::sample_baseline( 'earthmoving' );
 liw_assert( 'SimulationModel: sample_baseline deterministisch + in Grenzen (base 1000..9999, growth 10..99)', $bl1 === $bl2 && $bl1['base'] >= 1000 && $bl1['base'] <= 9999 && $bl1['growth_permille'] >= 10 && $bl1['growth_permille'] <= 99, $checks, $failures );
 liw_assert( 'SimulationView: Shortcode-Konstante + render_section/render_forecast vorhanden', 'liw_iw_simulation' === \Liebherr\InterfaceWorld\IntelligenceWorld\SimulationView::SHORTCODE && method_exists( \Liebherr\InterfaceWorld\IntelligenceWorld\SimulationView::class, 'render_section' ) && method_exists( \Liebherr\InterfaceWorld\IntelligenceWorld\SimulationView::class, 'render_forecast' ), $checks, $failures );
 
+// 2t. Intelligence World – Nutzungs-/Kostenprotokoll (§5.5/§8, alpha.58).
+echo "-- Intelligence World – Nutzungs-/Kostenprotokoll (alpha.58) --\n";
+require_once $root . '/src/IntelligenceWorld/ProtocolBuilder.php';
+$ET = '\Liebherr\InterfaceWorld\IntelligenceWorld\EventTypes';
+liw_assert( 'EventTypes::label: bekannter Typ übersetzt, unbekannter unverändert', 'Sitzung gestartet' === $ET::label( 'session_started' ) && 'gibt_es_nicht' === $ET::label( 'gibt_es_nicht' ), $checks, $failures );
+$pb_session = [ 'session_code' => 'S-TEST', 'status' => 'ended', 'started_at' => '2026-01-01T00:00:00Z', 'ended_at' => '2026-01-01T00:01:40Z', 'active_seconds' => 100 ];
+$pb_events  = [ [ 'seq' => 1, 'type' => 'session_started', 'occurred_at' => '2026-01-01T00:00:00Z', 'module' => '' ], [ 'seq' => 2, 'type' => 'session_ended', 'occurred_at' => '2026-01-01T00:01:40Z' ] ];
+$pb_billing = \Liebherr\InterfaceWorld\IntelligenceWorld\Rest::billing_status( 100, 9, 500000 );
+$pb = \Liebherr\InterfaceWorld\IntelligenceWorld\ProtocolBuilder::build( $pb_session, $pb_events, $pb_billing, 'EUR', true, '2026-01-01T00:02:00Z' );
+liw_assert( 'ProtocolBuilder: Kopf + aktive Zeit 00:01:40', 'S-TEST' === $pb['session_code'] && 'ended' === $pb['status'] && '00:01:40' === $pb['active_display'], $checks, $failures );
+liw_assert( 'ProtocolBuilder: Basiskosten 100s×0,09 = 9,00 EUR', 900 === $pb['billing']['base_cost_minor'] && '9,00 EUR' === $pb['billing']['base_cost_display'], $checks, $failures );
+liw_assert( 'ProtocolBuilder: 2 Ereignisse mit lesbaren Labels + Integritätsflag', 2 === $pb['event_count'] && 'Sitzung gestartet' === $pb['events'][0]['label'] && 'Sitzung beendet' === $pb['events'][1]['label'] && true === $pb['integrity_ok'] && true === $pb['prototype'], $checks, $failures );
+
 // 2p. Liebherr Adventures – Fundament (vierte Insel, §3/§4/§9, alpha.51) – reine Logik ohne WP.
 echo "-- Liebherr Adventures (alpha.51) --\n";
 require_once $root . '/src/Adventures/Taxonomy.php';

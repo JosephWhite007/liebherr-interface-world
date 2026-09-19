@@ -61,7 +61,10 @@ Produktsegmenten + Lösungswelt + 6 Hotel-Knoten (je Drei-Wörter-Ort, englisch)
   (`liw_world_connections_image_id`) + Simulator (`liw_simulator_image_id`) aus der Mediathek gesetzt & freigegeben
   – **nur Dev-DB**, auf Staging/Live erneut hochladen/freigeben/zuweisen. GIF `Liebherr_Cockpit_Sprachzyklus`
   (#2838) liegt bereit, noch keinem Slot zugeordnet.
-- Protokoll & Compute: Compute-Metering (Mock), Nutzungs-/Kostenprotokoll PDF+JSON (§5.5/§8).
+- Nutzungs-/Kostenprotokoll (alpha.58, **geliefert**): `ProtocolBuilder` (rein) + REST `session/protocol` +
+  Frontend-Ansicht nach Sitzungsende (JSON-Download + Druck/PDF, Integritätsprüfung der Hash-Kette). Offen:
+  echte serverseitige PDF-Erzeugung (Prototyp nutzt Browser-Druck), Modul-/Compute-Ereignisse ins Protokoll.
+- Compute-Metering (Mock) + kostenpflichtige Module/Rechenlast als Ledger-Ereignisse (§6.4/§8).
 - Pricing/Storage/Admin/Rollen/Audit (§14–§16, §19).
 - **Prototyp-Grenzen (§21):** kein echtes Payment/Produktivdaten; Produktivschaltung erst nach Freigabe.
 

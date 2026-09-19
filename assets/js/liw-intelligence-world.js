@@ -21,6 +21,22 @@
 		} ).then( function ( r ) { return r.json(); } );
 	}
 
+	function get( path, params ) {
+		var qs = Object.keys( params || {} ).map( function ( k ) {
+			return encodeURIComponent( k ) + '=' + encodeURIComponent( params[ k ] );
+		} ).join( '&' );
+		return fetch( cfg.rest + path + ( qs ? '?' + qs : '' ), {
+			method: 'GET',
+			headers: { 'X-LIW-Nonce': cfg.nonce }
+		} ).then( function ( r ) { return r.json(); } );
+	}
+
+	function escHtml( s ) {
+		return String( s == null ? '' : s ).replace( /[&<>"]/g, function ( c ) {
+			return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ c ];
+		} );
+	}
+
 	function money( minor, cur ) {
 		var neg = minor < 0, a = Math.abs( minor ), s = ( a / 100 ).toFixed( 2 ).replace( '.', ',' );
 		return ( neg ? '-' : '' ) + s + ' ' + ( cur || 'EUR' );
@@ -132,20 +148,71 @@
 			} ).catch( function () { announce( cfg.i18n.invalid ); refreshConfirm(); } );
 		} );
 
+		function renderProtocol( p ) {
+			if ( ! proto || ! p ) { return; }
+			var t = cfg.i18n, b = p.billing || {};
+			var rows = ( p.events || [] ).map( function ( e ) {
+				return '<tr><td>' + ( e.seq | 0 ) + '</td><td>' + escHtml( e.occurred_at ) +
+					'</td><td>' + escHtml( e.label ) + '</td></tr>';
+			} ).join( '' );
+			var integrity = p.integrity_ok
+				? '<span class="liw-iw__proto-badge liw-iw__proto-badge--ok">' + escHtml( t.proto_intact ) + '</span>'
+				: '<span class="liw-iw__proto-badge liw-iw__proto-badge--bad">' + escHtml( t.proto_broken ) + '</span>';
+			proto.innerHTML =
+				'<div class="liw-iw__proto-doc">' +
+				'<h3 class="liw-iw__proto-title">' + escHtml( t.proto_title ) + '</h3>' +
+				'<p class="liw-iw__proto-intro">' + escHtml( t.proto_intro ) + ' ' + integrity + '</p>' +
+				'<dl class="liw-iw__proto-meta">' +
+				'<dt>' + escHtml( t.proto_session ) + '</dt><dd>' + escHtml( p.session_code ) + '</dd>' +
+				'<dt>' + escHtml( t.proto_status ) + '</dt><dd>' + escHtml( p.status ) + '</dd>' +
+				'<dt>' + escHtml( t.proto_start ) + '</dt><dd>' + escHtml( p.started_at ) + '</dd>' +
+				'<dt>' + escHtml( t.proto_end ) + '</dt><dd>' + escHtml( p.ended_at ) + '</dd>' +
+				'<dt>' + escHtml( t.proto_active ) + '</dt><dd>' + escHtml( p.active_display ) + '</dd>' +
+				'<dt>' + escHtml( t.proto_base ) + '</dt><dd>' + escHtml( b.base_cost_display ) + '</dd>' +
+				'<dt>' + escHtml( t.proto_budget ) + '</dt><dd>' + escHtml( b.budget_display ) + ' · ' + ( b.budget_pct | 0 ) + ' %</dd>' +
+				'</dl>' +
+				'<h4 class="liw-iw__proto-subtitle">' + escHtml( t.proto_events ) + ' (' + ( p.event_count | 0 ) + ')</h4>' +
+				'<table class="liw-iw__proto-table"><thead><tr><th>' + escHtml( t.proto_seq ) + '</th><th>' +
+				escHtml( t.proto_time ) + '</th><th>' + escHtml( t.proto_event ) + '</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+				'<div class="liw-iw__proto-actions">' +
+				'<button type="button" class="liw-cta liw-cta--secondary" data-liw-iw-proto-json>' + escHtml( t.proto_json ) + '</button> ' +
+				'<button type="button" class="liw-cta liw-cta--secondary" data-liw-iw-proto-print>' + escHtml( t.proto_print ) + '</button>' +
+				'</div></div>';
+			proto.removeAttribute( 'hidden' );
+
+			var jsonBtn = $( '[data-liw-iw-proto-json]', proto );
+			if ( jsonBtn ) {
+				jsonBtn.addEventListener( 'click', function () {
+					var blob = new Blob( [ JSON.stringify( p, null, 2 ) ], { type: 'application/json' } );
+					var url = URL.createObjectURL( blob );
+					var a = document.createElement( 'a' );
+					a.href = url;
+					a.download = 'liebherr-intelligence-world-protokoll-' + ( p.session_code || 'sitzung' ) + '.json';
+					document.body.appendChild( a );
+					a.click();
+					document.body.removeChild( a );
+					setTimeout( function () { URL.revokeObjectURL( url ); }, 0 );
+				} );
+			}
+			var printBtn = $( '[data-liw-iw-proto-print]', proto );
+			if ( printBtn ) {
+				printBtn.addEventListener( 'click', function () {
+					root.setAttribute( 'data-liw-print', 'protocol' );
+					window.print();
+				} );
+			}
+		}
+
 		endBtn.addEventListener( 'click', function () {
 			if ( ! sessionCode ) { return; }
 			endBtn.disabled = true;
 			stopTimers();
-			post( 'session/end', { session_code: sessionCode } ).then( function ( res ) {
-				if ( res && res.ok && res.status ) {
-					syncFromStatus( res.status );
-					if ( proto ) {
-						proto.removeAttribute( 'hidden' );
-						proto.textContent = cfg.i18n.ended + ' ' + res.status.session_code + ' · ' +
-							cfg.i18n.time + ': ' + res.status.active_display + ' · ' +
-							cfg.i18n.base + ': ' + res.status.base_cost_display;
-					}
-				}
+			var code = sessionCode;
+			post( 'session/end', { session_code: code } ).then( function ( res ) {
+				if ( res && res.ok && res.status ) { syncFromStatus( res.status ); }
+				return get( 'session/protocol', { session_code: code } );
+			} ).then( function ( res ) {
+				if ( res && res.ok && res.protocol ) { renderProtocol( res.protocol ); }
 			} ).catch( function () {} );
 		} );
 	}

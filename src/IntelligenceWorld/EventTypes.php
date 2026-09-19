@@ -72,4 +72,34 @@ final class EventTypes {
 	public static function is_valid( string $type ): bool {
 		return in_array( $type, self::all(), true );
 	}
+
+	/** Menschlich lesbare Bezeichnung eines Ereignistyps (für das Nutzungsprotokoll, §8). */
+	public static function label( string $type ): string {
+		$labels = [
+			self::ACCESS_CODE_VERIFIED        => __( 'Bestätigungscode geprüft', 'liebherr-interface-world' ),
+			self::TERMS_PRESENTED             => __( 'Nutzungsbedingungen angezeigt', 'liebherr-interface-world' ),
+			self::TERMS_ACCEPTED              => __( 'Nutzungsbedingungen akzeptiert', 'liebherr-interface-world' ),
+			self::STORAGE_BUDGET_GRANTED      => __( 'Speicher-Grundbudget gewährt', 'liebherr-interface-world' ),
+			self::STORAGE_EXTENSION_REQUESTED => __( 'Speichererweiterung angefragt', 'liebherr-interface-world' ),
+			self::STORAGE_EXTENSION_DECIDED   => __( 'Speichererweiterung entschieden', 'liebherr-interface-world' ),
+			self::SESSION_STARTED             => __( 'Sitzung gestartet', 'liebherr-interface-world' ),
+			self::SESSION_HEARTBEAT           => __( 'Aktivitätssignal', 'liebherr-interface-world' ),
+			self::SESSION_PAUSED              => __( 'Sitzung pausiert', 'liebherr-interface-world' ),
+			self::SESSION_RESUMED             => __( 'Sitzung fortgesetzt', 'liebherr-interface-world' ),
+			self::MODULE_STARTED              => __( 'Modul gestartet', 'liebherr-interface-world' ),
+			self::MODULE_STOPPED              => __( 'Modul beendet', 'liebherr-interface-world' ),
+			self::DATA_SOURCE_ACCESSED        => __( 'Datenquelle genutzt', 'liebherr-interface-world' ),
+			self::QUERY_EXECUTED              => __( 'Abfrage ausgeführt', 'liebherr-interface-world' ),
+			self::SIMULATION_CONFIGURED       => __( 'Simulation konfiguriert', 'liebherr-interface-world' ),
+			self::COST_ESTIMATE_CONFIRMED     => __( 'Kostenschätzung bestätigt', 'liebherr-interface-world' ),
+			self::COMPUTE_JOB_STARTED         => __( 'Rechenauftrag gestartet', 'liebherr-interface-world' ),
+			self::COMPUTE_JOB_COMPLETED       => __( 'Rechenauftrag abgeschlossen', 'liebherr-interface-world' ),
+			self::COMPUTE_JOB_FAILED          => __( 'Rechenauftrag fehlgeschlagen', 'liebherr-interface-world' ),
+			self::RESULT_EXPORTED             => __( 'Ergebnis exportiert', 'liebherr-interface-world' ),
+			self::SESSION_ENDED               => __( 'Sitzung beendet', 'liebherr-interface-world' ),
+			self::PROTOCOL_GENERATED          => __( 'Protokoll erstellt', 'liebherr-interface-world' ),
+			self::BILLING_ADJUSTMENT_CREATED  => __( 'Abrechnungskorrektur erstellt', 'liebherr-interface-world' ),
+		];
+		return $labels[ $type ] ?? $type;
+	}
 }

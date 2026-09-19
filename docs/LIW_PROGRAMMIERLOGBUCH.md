@@ -12,6 +12,22 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.58 – Intelligence World: Nutzungs-/Kostenprotokoll
+
+**Neu:** `src/IntelligenceWorld/ProtocolBuilder.php` (reine `build()`: Sitzung + Events + vorab berechnetes
+Billing → strukturiertes Protokoll; privater `hms()`). `assets/js/liw-intelligence-world.js` – `get()`-Helper
+(REST-GET) + `escHtml()` + `renderProtocol()` (baut Protokoll-HTML, JSON-Blob-Download, `window.print()`);
+End-Handler ruft nach `session/end` `session/protocol` und rendert. `assets/css/liw-intelligence-world.css` –
+Protokoll-Stile + `@media print` (nur `.liw-iw__protocol` sichtbar, hell).
+
+**Geändert:** `src/IntelligenceWorld/EventTypes.php` – `label()` für alle 23 Typen (additiv).
+`src/IntelligenceWorld/Rest.php` – Route `GET /session/protocol`, Handler `protocol()`, `build_protocol()`
+(nutzt `SessionService::get` + `EventLog::chain_for`/`verify_chain` + `billing_status`). `WorldView.php` –
+i18n-Strings fürs Protokoll in `wp_localize_script`. Tests/Selftest ergänzt. Bump alpha.57 → alpha.58.
+
+**Layering:** Kostenrechnung bleibt in `Rest::billing_status` (SSOT); ProtocolBuilder bekommt das Ergebnis
+hereingereicht (keine Recompute-Duplizierung, keine Domain→Transport-Abhängigkeit).
+
 ## 0.1.0-alpha.57 – Simulation World: Startseite + Bild-Slots gefüllt
 
 **Neu:** `scripts/liw-seed-simulator.php` (idempotenter Seeder: Seite `/liebherr-simulator/` mit

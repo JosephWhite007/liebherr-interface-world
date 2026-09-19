@@ -60,6 +60,11 @@ final class Rest {
 			'callback'            => [ self::class, 'status' ],
 			'permission_callback' => $perm,
 		] );
+		register_rest_route( self::NAMESPACE, '/session/protocol', [
+			'methods'             => 'GET',
+			'callback'            => [ self::class, 'protocol' ],
+			'permission_callback' => $perm,
+		] );
 	}
 
 	public static function check_nonce( \WP_REST_Request $req ): bool {
@@ -123,6 +128,36 @@ final class Rest {
 			return new \WP_REST_Response( [ 'ok' => false ], 200 );
 		}
 		return new \WP_REST_Response( [ 'ok' => true, 'status' => self::status_for( $code, WorldContent::get() ) ], 200 );
+	}
+
+	/** Nutzungs-/Kostenprotokoll der Sitzung (§5.5/§8): strukturiert, für JSON-Download + Druck/PDF. */
+	public static function protocol( \WP_REST_Request $req ): \WP_REST_Response {
+		$code = self::require_session( $req );
+		if ( null === $code ) {
+			return new \WP_REST_Response( [ 'ok' => false ], 200 );
+		}
+		return new \WP_REST_Response( [ 'ok' => true, 'protocol' => self::build_protocol( $code, WorldContent::get() ) ], 200 );
+	}
+
+	/**
+	 * Stellt das Protokoll aus Sitzung + Ledger + Abrechnung zusammen (reine Bauteile in {@see ProtocolBuilder}).
+	 *
+	 * @param array<string,mixed> $cfg
+	 * @return array<string,mixed>
+	 */
+	public static function build_protocol( string $session_code, array $cfg ): array {
+		$session = SessionService::get( $session_code ) ?? [ 'session_code' => $session_code ];
+		$events  = EventLog::chain_for( $session_code );
+		$active  = (int) ( $session['active_seconds'] ?? 0 );
+		$billing = self::billing_status( $active, (int) $cfg['pricing']['base_price_second_minor'], (int) $cfg['pricing']['session_budget_minor'] );
+		return ProtocolBuilder::build(
+			$session,
+			$events,
+			$billing,
+			(string) $cfg['pricing']['currency'],
+			EventLog::verify_chain( $session_code ),
+			gmdate( 'Y-m-d\TH:i:s\Z' )
+		);
 	}
 
 	// ---------------------------------------------------------------------

@@ -1,5 +1,28 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.58] – 2026-09-19 – Intelligence World: Nutzungs-/Kostenprotokoll (JSON + Druck/PDF)
+
+### Hinzugefügt
+- **Protokoll-Builder** `IntelligenceWorld\ProtocolBuilder` (rein, testbar): baut aus Sitzung + Ereignis-
+  Ledger + Abrechnungsstatus ein strukturiertes Nutzungs-/Kostenprotokoll (§5.5/§8) – Sitzungskopf, aktive
+  Zeit, Basiskosten/Budget, Ereignisliste mit lesbaren Bezeichnungen, Integritätsflag (Hash-Kette),
+  Erstellungszeit (UTC). Kostenrechnung nicht dupliziert (Single Source `Rest::billing_status`).
+- **Lesbare Ereignis-Namen** `EventTypes::label()` für alle 23 Ereignistypen.
+- **REST** `GET liw-iw/v1/session/protocol` (öffentlich, cache-sicher wie die übrigen Prototyp-Endpunkte) +
+  `Rest::build_protocol()` (Sitzung + `EventLog::chain_for` + `verify_chain` + Abrechnung).
+- **Frontend:** Nach „Sitzung beenden" erscheint das Protokoll im (bisher ungenutzten) Bereich
+  `data-liw-iw-protocol` – Kopf/Abrechnung/Ereignistabelle plus **„Als JSON herunterladen"** (Blob-Download)
+  und **„Drucken / als PDF speichern"** (Druckansicht via `@media print`, nur das Protokoll).
+
+### Verifikation
+- `tests/run-tests.php` **348/348** (ProtocolBuilder-Struktur/Kosten/Labels, `EventTypes::label`),
+  `scripts/liw-selftest.php` **304/304** (Route registriert, `build_protocol` Ende-zu-Ende inkl. Integrität).
+  Browser end-to-end: Eintritt → Sitzung beenden → Protokoll mit 7 Ereignissen, 0,36 EUR bei 4 s, JSON/Druck.
+
+### Hinweis
+- Prototyp (§21): Beispieldaten, keine echte Abrechnung. „PDF" = Browser-Druck der Protokollansicht
+  (keine serverseitige PDF-Bibliothek im Prototyp).
+
 ## [0.1.0-alpha.57] – 2026-09-19 – Simulation World: eigene Startseite + Cockpit-/World-Connections-Bilder
 
 ### Hinzugefügt
