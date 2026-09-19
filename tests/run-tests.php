@@ -622,6 +622,13 @@ liw_assert( 'MyL Entitlement: eigenes Objekt mit Cap → true', true === $ME::ca
 liw_assert( 'MyL Entitlement: fremdes Objekt ohne Administer → false, mit Administer → true', false === $ME::can( $__acc, $MR::CAP_ACCESS, [ 'owner_user_id' => 9, 'actor_user_id' => 5 ] ) && true === $ME::can( $__adm, $MR::CAP_ACCESS, [ 'owner_user_id' => 9, 'actor_user_id' => 5 ] ), $checks, $failures );
 liw_assert( 'MyL Entitlement: Org-Mismatch ohne Administer → false, passende Org → true', false === $ME::can( $__acc, $MR::CAP_ACCESS, [ 'required_org_id' => 3, 'active_org_id' => 1 ] ) && true === $ME::can( $__acc, $MR::CAP_ACCESS, [ 'required_org_id' => 3, 'active_org_id' => 3 ] ), $checks, $failures );
 
+// My Liebherr R3 (ADR-LIW-MYL-001 §31/§32): reine Regeln für Dreams/Gallery/Shares.
+echo "-- My Liebherr R3 Content-Regeln --\n";
+require_once $root . '/src/MyLiebherr/ContentRules.php';
+$CR = '\Liebherr\InterfaceWorld\MyLiebherr\ContentRules';
+liw_assert( 'ContentRules: wish/visibility/scope/recipient fallen auf Standard zurück', 'idea' === $CR::wish( 'x' ) && 'favorite' === $CR::wish( 'favorite' ) && 'private' === $CR::visibility( 'x' ) && 'view' === $CR::scope( 'x' ) && 'user' === $CR::recipient_type( 'x' ) && 'world' === $CR::recipient_type( 'world' ), $checks, $failures );
+liw_assert( 'ContentRules: three_words verdichtet + begrenzt auf drei; is_three_words prüft genau drei', 'Raupe Hydraulik Entlueften' === $CR::three_words( '  Raupe   Hydraulik Entlueften extra ' ) && true === $CR::is_three_words( 'a b c' ) && false === $CR::is_three_words( 'a b' ), $checks, $failures );
+
 // My Liebherr Dashboard S3 (ADR-LIW-MYL-001 §5): Widget-Katalog (Cap-Filter) + reine Layout-Logik.
 echo "-- My Liebherr Dashboard (S3) --\n";
 require_once $root . '/src/MyLiebherr/WidgetCatalog.php';

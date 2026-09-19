@@ -34,9 +34,13 @@ Session-Uhr/Token-Schachuhr** erweitert. Vollständiger Arbeits-Workflow (alle M
   Datenschutz-Hinweis) · S6 R1-Abnahme (Subscriber-Negativtest, `docs/LIW_ABNAHME.md §9`). WP-frei 576 / Docker 408.
 - **R2 My Wallet S7/S8 ✅ umgesetzt (alpha.117, read-only):** `[liw_my_wallet]` + `CoreBridge\WalletBridge` → Plattform
   Health Wallet (Saldo/gutgeschrieben/belastet/Budget + letzte Buchungen als Belege); in Overview eingebettet. WP-frei 579 / Docker 409.
-- **Als Nächstes:** R3 (Own Adventures, My Dreams, Own Gallery + CVF-4→6-Karten), dann R4/R5. Verfügbar/reserviert/
-  gesperrt-Buckets, Export/Pagination, Wallet-Mehrwährung/Token-Buchung + `liw_ptime_charge_live` = Core-Kategorie A +
-  kommendes Wallet-Pflichtenheft.
+- **R3 ✅ umgesetzt (alpha.118–121):** My Dreams voll (`[liw_my_dreams]`, dream_item), Own Gallery + Teilen
+  (`[liw_my_gallery]`/`share_grant`/`[liw_shared_colleagues]`/`[liw_shared_world]`, Kollegen active/World pending),
+  Own Adventures (`[liw_my_adventures]`, Insel-Wiederverwendung), CVF 4→6 (my_liebherr+pocket additiv/inaktiv). WP-frei 599 / Docker 413.
+- **Als Nächstes:** R4 Rest (My Contacts + Wallet Connection/Service Exchange §33; Meldungen/Sperren/Erstattung §11/§13;
+  World-Review der Freigaben), R5 (Pocket Information, My Machines, CVF-Simulation der neuen Karten). Offen bleibt:
+  Drei-Wort-Label-Vollsystem (S14), verfügbar/reserviert/gesperrt-Buckets, Wallet-Mehrwährung/Token-Buchung +
+  `liw_ptime_charge_live` = Core-Kategorie A + kommendes Wallet-Pflichtenheft.
 - Reihenfolge: R0 Verträge → R1 Fundament (Kontext/Nav/Dashboard/Overview/Profile) → R2 Wallet-Adapter +
   **Plattformzeit-Schachuhr** → R3 Adventures/Dreams/Gallery + CVF-4→6-Karten → R4 Qualität/Sharing/Kontakte →
   R5 Pocket/Machines/CVF-Simulation → R6 Pilot.

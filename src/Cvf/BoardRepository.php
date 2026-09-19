@@ -111,6 +111,14 @@ final class BoardRepository {
 			$area[ $key ]   = self::add_area( $version_id, $key, $pos, $route, 'active', '' );
 			$pos++;
 		}
+		// Erweiterung auf sechs Bereichskarten (Pflichtenheft My Liebherr §36): die neuen Karten my_liebherr und
+		// pocket_information werden additiv angelegt, aber INITIAL DEAKTIVIERT (status=inactive) und ohne Übergänge –
+		// so bleiben bestehende Viererflows unverändert und keine Modulauflösung/Runtime wird beeinflusst.
+		foreach ( [ 'my_liebherr' => (int) get_option( 'liw_my_liebherr_page_id', 0 ), 'pocket_information' => 0 ] as $key => $page_id ) {
+			$route        = ( $page_id > 0 && 'publish' === get_post_status( $page_id ) ) ? (string) get_permalink( $page_id ) : '';
+			$area[ $key ] = self::add_area( $version_id, $key, $pos, $route, 'inactive', '' );
+			$pos++;
+		}
 		// Übergänge: Intelligence World → die drei Fachmodule (Modulauswahl nach WORLD_GRANTED) mit Plugin-Kette
 		// (§28): zweistellige Addition am Übergang; First-Entry-Text auf der Modulseite. Nur wenn die Typen
 		// bereits registriert sind (PluginRegistry::sync lief) – sonst reine Bereiche/Kanten.

@@ -36,7 +36,14 @@ if ( ! class_exists( \Liebherr\InterfaceWorld\MyLiebherr\OverviewView::class ) )
 echo "== My Liebherr: Startseite anlegen ==\n";
 
 $slug    = 'my-liebherr';
-$content = "<!-- wp:shortcode -->[liw_my_liebherr]<!-- /wp:shortcode -->";
+$content = implode( "\n\n", [
+	'<!-- wp:shortcode -->[liw_my_liebherr]<!-- /wp:shortcode -->',
+	'<!-- wp:shortcode -->[liw_my_dreams]<!-- /wp:shortcode -->',
+	'<!-- wp:shortcode -->[liw_my_gallery]<!-- /wp:shortcode -->',
+	'<!-- wp:shortcode -->[liw_shared_colleagues]<!-- /wp:shortcode -->',
+	'<!-- wp:shortcode -->[liw_shared_world]<!-- /wp:shortcode -->',
+	'<!-- wp:shortcode -->[liw_my_adventures]<!-- /wp:shortcode -->',
+] );
 
 $existing = get_page_by_path( $slug );
 $args = [

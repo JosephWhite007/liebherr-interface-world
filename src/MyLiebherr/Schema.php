@@ -35,6 +35,21 @@ final class Schema {
 		return $wpdb->prefix . 'liw_myl_dashboard_layout';
 	}
 
+	public static function dream_table(): string {
+		global $wpdb;
+		return $wpdb->prefix . 'liw_myl_dream_item';
+	}
+
+	public static function gallery_table(): string {
+		global $wpdb;
+		return $wpdb->prefix . 'liw_myl_gallery_item';
+	}
+
+	public static function share_table(): string {
+		global $wpdb;
+		return $wpdb->prefix . 'liw_myl_share_grant';
+	}
+
 	public static function create_tables(): void {
 		global $wpdb;
 		$charset = $wpdb->get_charset_collate();
@@ -83,5 +98,60 @@ final class Schema {
 			PRIMARY KEY (id),
 			UNIQUE KEY uniq_user_device (user_id, device)
 		) {$charset} COMMENT='Liebherr My Liebherr – persoenliches Dashboard-Layout je Nutzer und Geraetetyp';" );
+
+		$dr = self::dream_table();
+		dbDelta( "CREATE TABLE {$dr} (
+			id          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+			user_id     BIGINT UNSIGNED NOT NULL,
+			media_id    BIGINT UNSIGNED NOT NULL DEFAULT 0,
+			machine_ref VARCHAR(120) NOT NULL DEFAULT '',
+			title_words VARCHAR(120) NOT NULL DEFAULT '',
+			note        TEXT         NULL,
+			tags        VARCHAR(255) NOT NULL DEFAULT '',
+			collection  VARCHAR(80)  NOT NULL DEFAULT '',
+			cover       TINYINT      NOT NULL DEFAULT 0,
+			wish_status VARCHAR(16)  NOT NULL DEFAULT 'idea',
+			sort_rank   INT UNSIGNED NOT NULL DEFAULT 0,
+			created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY (id),
+			KEY idx_user (user_id),
+			KEY idx_rank (user_id, sort_rank)
+		) {$charset} COMMENT='Liebherr My Liebherr – My Dreams persoenliches Maschinen-Bilderbuch';" );
+
+		$gl = self::gallery_table();
+		dbDelta( "CREATE TABLE {$gl} (
+			id              BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+			owner_id        BIGINT UNSIGNED NOT NULL,
+			media_id        BIGINT UNSIGNED NOT NULL DEFAULT 0,
+			title           VARCHAR(160) NOT NULL DEFAULT '',
+			description     TEXT         NULL,
+			tags            VARCHAR(255) NOT NULL DEFAULT '',
+			album           VARCHAR(80)  NOT NULL DEFAULT '',
+			visibility      VARCHAR(16)  NOT NULL DEFAULT 'private',
+			status          VARCHAR(16)  NOT NULL DEFAULT 'active',
+			current_version INT UNSIGNED NOT NULL DEFAULT 1,
+			created_at      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY (id),
+			KEY idx_owner (owner_id),
+			KEY idx_visibility (visibility)
+		) {$charset} COMMENT='Liebherr My Liebherr – Own Gallery private Bilder und Medien';" );
+
+		$sh = self::share_table();
+		dbDelta( "CREATE TABLE {$sh} (
+			id             BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+			item_type      VARCHAR(16)  NOT NULL DEFAULT 'gallery',
+			item_id        BIGINT UNSIGNED NOT NULL,
+			grantor_id     BIGINT UNSIGNED NOT NULL,
+			recipient_type VARCHAR(16)  NOT NULL DEFAULT 'user',
+			recipient_id   BIGINT UNSIGNED NOT NULL DEFAULT 0,
+			scope          VARCHAR(16)  NOT NULL DEFAULT 'view',
+			expires_at     DATETIME     NULL,
+			status         VARCHAR(16)  NOT NULL DEFAULT 'active',
+			created_at     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY (id),
+			KEY idx_item (item_type, item_id),
+			KEY idx_grantor (grantor_id),
+			KEY idx_recipient (recipient_type, recipient_id)
+		) {$charset} COMMENT='Liebherr My Liebherr – Freigaben Kollegen und World';" );
 	}
 }

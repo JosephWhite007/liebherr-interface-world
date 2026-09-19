@@ -1121,6 +1121,54 @@ try {
 		$__wal = do_shortcode( '[liw_my_wallet]' );
 		liw_st_check( 'My Wallet S8: [liw_my_wallet] rendert Wallet-Block (Karten oder Hinweis)', is_string( $__wal ) && false !== strpos( $__wal, 'liw-myl__wallet' ) && false !== strpos( $__wal, 'My Wallet' ) );
 
+		// ── R3: My Dreams / Own Gallery / Shares / CVF 4→6 / Own Adventures ──
+		$__cr = static function ( $route, $method, $params = [] ) {
+			$rq = new \WP_REST_Request( $method, '/my-liebherr/v1/' . $route );
+			foreach ( $params as $k => $v ) { $rq->set_param( $k, $v ); }
+			return rest_do_request( $rq )->get_data();
+		};
+		$__dr_new  = $__cr( 'dreams', 'POST', [ 'title_words' => 'Raupe Hydraulik Traum', 'wish_status' => 'wish', 'machine_ref' => 'R 9200' ] );
+		$__dr_id   = (int) ( $__dr_new['dream']['id'] ?? 0 );
+		$__dr_list = $__cr( 'dreams', 'GET' );
+		$__dr_del  = $__cr( 'dreams/' . $__dr_id, 'DELETE' );
+		liw_st_check(
+			'R3 My Dreams: create (3-Wort-Titel + Wunsch) → list enthält ihn → delete ok',
+			! empty( $__dr_new['ok'] ) && $__dr_id > 0 && 'wish' === $__dr_new['dream']['wish_status'] && 'Raupe Hydraulik Traum' === $__dr_new['dream']['title_words']
+			&& ! empty( $__dr_list['ok'] ) && count( array_filter( $__dr_list['dreams'], static fn( $d ) => (int) $d['id'] === $__dr_id ) ) === 1
+			&& ! empty( $__dr_del['ok'] )
+		);
+
+		$__gl_new = $__cr( 'gallery', 'POST', [ 'title' => 'SELFTEST-Bild', 'album' => 'Test', 'visibility' => 'private' ] );
+		$__gl_id  = (int) ( $__gl_new['item']['id'] ?? 0 );
+		$__sh_u   = $__cr( 'gallery/' . $__gl_id . '/shares', 'POST', [ 'recipient_type' => 'user', 'recipient_id' => 970003, 'scope' => 'view' ] );
+		$__sh_w   = $__cr( 'gallery/' . $__gl_id . '/shares', 'POST', [ 'recipient_type' => 'world', 'scope' => 'view' ] );
+		$__sh_ls  = $__cr( 'gallery/' . $__gl_id . '/shares', 'GET' );
+		$__sh_rev = $__cr( 'shares/' . (int) ( $__sh_u['share']['id'] ?? 0 ), 'DELETE' );
+		$__gl_del = $__cr( 'gallery/' . $__gl_id, 'DELETE' );
+		liw_st_check(
+			'R3 Gallery/Shares: create Bild → Kollegen-Freigabe active + World pending → 2 Shares → revoke + delete ok',
+			! empty( $__gl_new['ok'] ) && $__gl_id > 0 && ! empty( $__sh_u['ok'] ) && 'active' === $__sh_u['share']['status']
+			&& ! empty( $__sh_w['ok'] ) && 'pending' === $__sh_w['share']['status'] && ! empty( $__sh_ls['ok'] ) && 2 === count( $__sh_ls['shares'] )
+			&& ! empty( $__sh_rev['ok'] ) && ! empty( $__gl_del['ok'] )
+		);
+
+		// CVF 4→6: frische Startkonfig seedet sechs Bereiche inkl. deaktiviertem my_liebherr + pocket_information.
+		$__cvf_vt = 999123;
+		\Liebherr\InterfaceWorld\Cvf\BoardRepository::seed_start_config( $__cvf_vt );
+		$__cvf_areas = \Liebherr\InterfaceWorld\Cvf\BoardRepository::areas( $__cvf_vt );
+		$__cvf_mods  = array_column( $__cvf_areas, 'status', 'module_id' );
+		liw_st_check(
+			'CVF 4→6: Startkonfig hat 6 Bereiche; my_liebherr + pocket_information vorhanden und inactive',
+			6 === count( $__cvf_areas ) && 'inactive' === ( $__cvf_mods['my_liebherr'] ?? '' ) && 'inactive' === ( $__cvf_mods['pocket_information'] ?? '' )
+		);
+		$wpdb->delete( \Liebherr\InterfaceWorld\Cvf\BoardSchema::area_table(), [ 'version_id' => $__cvf_vt ] );
+		$wpdb->delete( \Liebherr\InterfaceWorld\Cvf\BoardSchema::edge_table(), [ 'version_id' => $__cvf_vt ] );
+		$wpdb->delete( \Liebherr\InterfaceWorld\Cvf\BoardSchema::plugin_instance_table(), [ 'version_id' => $__cvf_vt ] );
+
+		// Own Adventures: Shortcode rendert (Wiederverwendung der Insel).
+		$__oadv = do_shortcode( '[liw_my_adventures]' );
+		liw_st_check( 'R3 Own Adventures: [liw_my_adventures] rendert Bereich (Insel-Wiederverwendung)', is_string( $__oadv ) && false !== strpos( $__oadv, 'liw-myl__adv' ) );
+
 		// R1-Abnahme S6: Objekt-/Rollenschutz mit echtem Subscriber (Negativtest, SEC 01).
 		require_once ABSPATH . 'wp-admin/includes/user.php';
 		$__sub_id = wp_insert_user( [ 'user_login' => 'liw_st_sub_' . wp_generate_password( 5, false ), 'user_pass' => wp_generate_password( 12 ), 'user_email' => 'liw_st_' . wp_generate_password( 6, false ) . '@example.test', 'role' => 'subscriber' ] );
@@ -1204,12 +1252,12 @@ try {
 	}
 	$__bd_areas = \Liebherr\InterfaceWorld\Cvf\BoardRepository::areas( $__bd );
 	$__bd_edges = \Liebherr\InterfaceWorld\Cvf\BoardRepository::edges( $__bd );
-	liw_st_check( 'CAPDB: Entwurf mit Startkonfig (4 Bereiche + 3 Uebergaenge, Einstieg intelligence_world@1)', $__bd > 0 && 4 === count( $__bd_areas ) && 3 === count( $__bd_edges ) && 'intelligence_world' === (string) $__bd_areas[0]['module_id'] && 1 === (int) $__bd_areas[0]['position'] );
+	liw_st_check( 'CAPDB: Startkonfig (6 Bereiche: 4 aktiv + my_liebherr/pocket inaktiv, 3 Uebergaenge, Einstieg intelligence_world@1)', $__bd > 0 && 6 === count( $__bd_areas ) && 3 === count( $__bd_edges ) && 'intelligence_world' === (string) $__bd_areas[0]['module_id'] && 1 === (int) $__bd_areas[0]['position'] );
 	$__cs_a = \Liebherr\InterfaceWorld\Cvf\BoardRepository::board_checksum( $__bd );
 	$__pub = \Liebherr\InterfaceWorld\Cvf\BoardRepository::publish_draft( $__bd, 990100, false );
 	liw_st_check( 'CAPDB: Publish valide -> ok, Pruefsumme gesetzt, Version veroeffentlicht', ! empty( $__pub['ok'] ) && 64 === strlen( (string) $__pub['checksum'] ) && \Liebherr\InterfaceWorld\Cvf\BoardRepository::published_id() === $__bd );
 	$__bd2 = \Liebherr\InterfaceWorld\Cvf\BoardRepository::create_draft( 1 );
-	liw_st_check( 'CAPDB: neuer Entwurf kopiert das Board der letzten Version (4 Bereiche)', 4 === count( \Liebherr\InterfaceWorld\Cvf\BoardRepository::areas( $__bd2 ) ) );
+	liw_st_check( 'CAPDB: neuer Entwurf kopiert das Board der letzten Version (6 Bereiche)', 6 === count( \Liebherr\InterfaceWorld\Cvf\BoardRepository::areas( $__bd2 ) ) );
 	$__rb = \Liebherr\InterfaceWorld\Cvf\BoardRepository::rollback_to( $__bd, 990101, false );
 	liw_st_check( 'CAPDB: Rollback auf veroeffentlichte Version -> neue Version ok', ! empty( $__rb['ok'] ) && (int) $__rb['version'] > 0 );
 	if ( isset( $wpdb ) ) {
@@ -1268,7 +1316,8 @@ try {
 
 	// CAPDB Härtung/Skala (alpha.96): >= 50 Stufen ohne Funktionsverlust (§21).
 	$__sc = \Liebherr\InterfaceWorld\Cvf\BoardRepository::create_draft( 1 );
-	for ( $__i = 5; $__i <= 54; $__i++ ) {
+	// Startkonfig belegt jetzt die Positionen 1–6 (4 aktiv + 2 inaktiv); die 50 Skala-Bereiche folgen ab 7 (kollisionsfrei).
+	for ( $__i = 7; $__i <= 56; $__i++ ) {
 		\Liebherr\InterfaceWorld\Cvf\BoardRepository::add_area( $__sc, 'mod_' . $__i, $__i, '', 'active', '' );
 	}
 	$__sc_areas = \Liebherr\InterfaceWorld\Cvf\BoardRepository::areas( $__sc );

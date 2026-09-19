@@ -84,6 +84,11 @@ final class Bootstrap {
 			MyLiebherr\OverviewView::register(); // My Overview Startseite [liw_my_liebherr] (ADR-LIW-MYL-001 S4/S3).
 			MyLiebherr\ProfileView::register();  // My Profile & Rollen [liw_my_profile] (ADR-LIW-MYL-001 S5).
 			MyLiebherr\WalletView::register();   // My Wallet (read-only Salden/Buchungen) [liw_my_wallet] (ADR-LIW-MYL-001 S8).
+			MyLiebherr\ContentRest::register();  // Dreams/Gallery/Shares REST (ADR-LIW-MYL-001 R3, §31).
+			MyLiebherr\DreamsView::register();   // My Dreams [liw_my_dreams] (§31).
+			MyLiebherr\GalleryView::register();  // Own Gallery [liw_my_gallery] (§31).
+			MyLiebherr\SharedView::register();   // Shared with Colleagues/World [liw_shared_colleagues|liw_shared_world] (§31).
+			MyLiebherr\OwnAdventuresView::register(); // Own Adventures [liw_my_adventures] (§32, Wiederverwendung Insel).
 			PlatformTime\Rest::register();       // Plattformzeit REST (start/heartbeat/status/stop; self-gating ueber liw_ptime_enabled, §41).
 			PlatformTime\ClockWidget::register(); // Schwebende Session-Uhr / Schachuhr (S11, §41.6).
 		Frontend\WorldSwitcher::register();  // Plattform-Umschalter der vier Inseln (Cross-Navigation).

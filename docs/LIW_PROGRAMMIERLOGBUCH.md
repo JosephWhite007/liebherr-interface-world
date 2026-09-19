@@ -21,6 +21,21 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.121 – My Liebherr R3: Dreams, Gallery+Teilen, Own Adventures, CVF 4→6
+
+- `src/MyLiebherr/Schema.php`: 3 neue Tabellen `dream_item` (Spalte `sort_rank`, NICHT `rank` = MySQL-8-reserviert), `gallery_item`, `share_grant`.
+- `src/MyLiebherr/ContentRules.php` (NEU, rein): WISH/VISIBILITY/SCOPE/RECIPIENT + `three_words`/`is_three_words`.
+- `src/MyLiebherr/DreamRepository.php` (NEU): for_user/get/add/update/delete/move (rangbasiert).
+- `src/MyLiebherr/GalleryRepository.php` (NEU): for_owner/get/get_any/add/update/delete (löscht Freigaben mit).
+- `src/MyLiebherr/ShareRepository.php` (NEU): add (World→pending, sonst active)/get/for_item/incoming_for_user/world_list/revoke/delete_for_item.
+- `src/MyLiebherr/ContentRest.php` (NEU): REST dreams (+/{id}/move), gallery (+/{id}/shares), shares/{id}.
+- `src/MyLiebherr/DreamsView.php` / `GalleryView.php` / `SharedView.php` / `OwnAdventuresView.php` (NEU): Shortcodes `[liw_my_dreams]`/`[liw_my_gallery]`/`[liw_shared_colleagues]`+`[liw_shared_world]`/`[liw_my_adventures]`.
+- `src/Cvf/BoardRepository.php`: `seed_start_config` ergänzt my_liebherr + pocket_information (position 5/6, status inactive, keine Kanten).
+- `assets/js/liw-my-liebherr.js`: generische Handler [data-liw-post] (Formulare) + [data-liw-act]/[data-liw-method] (Buttons). `assets/css/liw-my-liebherr.css`: R3-Stile.
+- `src/Bootstrap.php`: ContentRest/DreamsView/GalleryView/SharedView/OwnAdventuresView registriert. `scripts/liw-seed-my-liebherr.php`: alle Bereiche auf der Seite.
+- `liebherr-interface-world.php`: `LIW_VERSION` .117→.121.
+- Tests angepasst (CAPDB 4→6 Bereiche, Skala-Positionen ab 7) + R3-Blöcke. WP-frei 599/0, Docker 413/0.
+
 ## 0.1.0-alpha.117 – My Liebherr R2: My Wallet S8 (read-only)
 
 - `src/MyLiebherr/WalletView.php` (NEU): `[liw_my_wallet]` — Salden-Karten (Saldo/gutgeschrieben/belastet/Budget) + letzte 10 Buchungen; nutzt `CoreBridge\WalletBridge` (get_summary/get_transactions). Read-only.

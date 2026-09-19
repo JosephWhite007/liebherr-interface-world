@@ -63,6 +63,29 @@
 		} );
 	}
 
+	// ── Generische Content-Aktionen (Dreams/Gallery/Shares) ─────────────────────
+	// Formulare mit data-liw-post="<pfad>" senden ihre Felder als JSON-POST; danach neu laden.
+	document.addEventListener( 'submit', function ( ev ) {
+		var f = ev.target.closest ? ev.target.closest( '[data-liw-post]' ) : null;
+		if ( ! f ) { return; }
+		ev.preventDefault();
+		var path = f.getAttribute( 'data-liw-post' );
+		var body = {};
+		f.querySelectorAll( '[name]' ).forEach( function ( el ) {
+			body[ el.name ] = ( 'checkbox' === el.type ) ? ( el.checked ? 1 : 0 ) : el.value;
+		} );
+		api( path, 'POST', body ).then( function ( d ) { if ( d && false !== d.ok ) { location.reload(); } } );
+	} );
+	// Buttons mit data-liw-act="<pfad>" (+ optional data-liw-method) lösen eine Aktion aus; danach neu laden.
+	document.addEventListener( 'click', function ( ev ) {
+		var b = ev.target.closest ? ev.target.closest( '[data-liw-act]' ) : null;
+		if ( ! b ) { return; }
+		ev.preventDefault();
+		api( b.getAttribute( 'data-liw-act' ), b.getAttribute( 'data-liw-method' ) || 'POST' ).then( function ( d ) {
+			if ( d && false !== d.ok ) { location.reload(); }
+		} );
+	} );
+
 	// ── Profil-Formular ─────────────────────────────────────────────────────────
 	var form = document.querySelector( '[data-liw-profile-form]' );
 	if ( form ) {

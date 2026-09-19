@@ -1,5 +1,39 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.121] – 2026-09-19 – My Liebherr R3: My Dreams, Own Gallery + Teilen, Own Adventures, CVF 4→6
+
+Alles hinter `liw_myl_enabled` (Default AUS). Neue Tabellen `ary_liw_myl_dream_item`/`_gallery_item`/`_share_grant`.
+
+### My Dreams (§31, voll)
+- `MyLiebherr\DreamRepository` + `DreamsView` (`[liw_my_dreams]`): Maschinen-Bilderbuch mit Bild (Mediathek-ID) oder
+  Maschinenbezug, **Drei-Wort-Titel**, Notiz, Tags, Sammlung, Cover, Wunschstatus (Idee/Wunsch/Favorit); hinzufügen/
+  ändern/entfernen/ordnen. Privat.
+
+### Own Gallery + Teilen (§31)
+- `MyLiebherr\GalleryRepository` + `GalleryView` (`[liw_my_gallery]`): private Bilder (Mediathek-ID), Titel/Beschreibung/
+  Tags/Album/Sichtbarkeit.
+- `MyLiebherr\ShareRepository`: gezielte Freigaben je Objekt an **Kollegen** (Person/Team, Status `active`) oder an die
+  **World** (Status `pending` – Review vorbehalten, keine automatische Weltveröffentlichung), inkl. Widerruf.
+- `MyLiebherr\SharedView`: `[liw_shared_colleagues]` (mit mir geteilt) + `[liw_shared_world]` (World-Freigaben mit Status).
+
+### Own Adventures (§32)
+- `MyLiebherr\OwnAdventuresView` (`[liw_my_adventures]`): **Wiederverwendung der bestehenden Adventures-Insel** – eigene
+  Beiträge (author-gebunden), Status-Filter, Maschine/Bauteil + Tokenwert (aus `Adventures\RegistrationService`). Keine zweite Datenhaltung.
+
+### CVF 4→6 (§36)
+- `Cvf\BoardRepository::seed_start_config` ergänzt additiv die Karten **my_liebherr** und **pocket_information**,
+  initial **deaktiviert** (`status=inactive`) und ohne Übergänge → bestehende Viererflows/Runtime unverändert.
+
+### Gemeinsames
+- `MyLiebherr\ContentRest` (REST dreams/gallery/shares), `ContentRules` (reine Wertlisten/Drei-Wort-Normalisierung),
+  generische JS-Handler (Formular-POST + Aktions-Buttons) in `liw-my-liebherr.js`, CSS für Grids/Shares/Filter.
+  Seeder `liw-seed-my-liebherr.php` legt alle Bereiche auf `/my-liebherr/`. `LIW_VERSION` .117→.121.
+- Fix: Dream-Spalte `rank` → `sort_rank` (MySQL-8-reserviertes Wort).
+
+### Verifikation
+- `tests/run-tests.php` **599/599**, `scripts/liw-selftest.php` **413/413** (Dreams-CRUD, Gallery+Shares-Round-Trip,
+  CVF-6-Seed, Own-Adventures-Render; CAPDB-Bestandstests auf 6 Bereiche nachgezogen). Abnahme `docs/LIW_ABNAHME.md §9`.
+
 ## [0.1.0-alpha.117] – 2026-09-19 – My Liebherr R2: My Wallet (S8), read-only über die Plattform-Wallet
 
 ### Hinzugefügt
