@@ -21,6 +21,12 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.127 – Demo-Seeder My Liebherr + Pocket (Dev-Vorschau)
+
+- `scripts/liw-seed-demo-my-liebherr.php` (NEU, nur development): setzt Flags liw_myl_enabled/liw_pocket_enabled/liw_ptime_enabled=1 und legt DEMO-Inhalte für den ersten Admin an (Dreams/Machines/Gallery/Pocket); idempotent via Option `liw_demo_myl_seeded_uid`; `--reset` räumt auf. LIW_VERSION .126→.127.
+- alpha.126 (nachgetragen): `AdminMenu::render_frontend()` Linkliste um My Liebherr + Pocket ergänzt.
+- In Dev ausgeführt + headless verifiziert (alle Shortcodes rendern gefüllt für Admin). Nur Vorschau/Testdaten.
+
 ## 0.1.0-alpha.125 – My Liebherr + Pocket im Admin-Menü „Liebherr Frontend" verankert
 
 - `src/Admin/AdminMenu.php`: in `add_menu()` zwei Direktlinks unter `liw-frontend` ergänzt (👤 My Liebherr, 🎒 Pocket Information) via neuem Helfer `page_url()` (Option→veröffentlichte Seite→Permalink); Reihenfolge hinter den vier Welten.

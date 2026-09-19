@@ -1,5 +1,17 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.127] – 2026-09-19 – Demo-Seeder My Liebherr + Pocket (Dev-Vorschau)
+
+### Hinzugefügt
+- `scripts/liw-seed-demo-my-liebherr.php` (nur `development`): schaltet in Dev die Flags `liw_myl_enabled`/
+  `liw_pocket_enabled`/`liw_ptime_enabled` scharf und legt für den ersten Administrator DEMO-Inhalte an (3 Dreams,
+  2 Machines, 1 Gallery, 3 Pocket-Items inkl. kritischem Alert mit Pflichtquittierung). Idempotent (Marker-Option),
+  `--reset` entfernt Inhalte + schaltet Flags aus. Reine Vorschau/Testdaten, nicht für Produktion.
+
+### Verifikation
+- In Dev ausgeführt; alle Reiter rendern für den Admin gefüllt (Overview inkl. Wallet-Sektion, Dreams, Machines,
+  Gallery, Pocket mit kritisch-zuerst + Quittieren). `LIW_VERSION` .126→.127.
+
 ## [0.1.0-alpha.126] – 2026-09-19 – Übersichtsseite „Liebherr Frontend": My Liebherr + Pocket in der Linkliste
 
 ### Geändert
