@@ -437,6 +437,8 @@ $tl_same = [ 'metadata' => [ 'a' => 1, 'b' => 2 ], 'kind' => 'access', 'seq' => 
 liw_assert( 'TokenLedger: canonical stabil (Schlüsselreihenfolge egal)', $TL::canonical( $tl_core ) === $TL::canonical( $tl_same ), $checks, $failures );
 liw_assert( 'TokenLedger: Hash verkettet (prev_hash geht ein) + Manipulation ändert Hash', $TL::hash( 'PREV', $tl_core ) !== $TL::hash( '', $tl_core ) && $TL::hash( '', $tl_core ) !== $TL::hash( '', array_merge( $tl_core, [ 'token_value' => 26 ] ) ), $checks, $failures );
 liw_assert( 'TokenLedger: gültige Vorgangsarten (access/registered/…)', $TL::is_valid_kind( 'access' ) && $TL::is_valid_kind( 'registered' ) && ! $TL::is_valid_kind( 'quatsch' ) && 9 === count( $TL::kinds() ), $checks, $failures );
+require_once $root . '/src/Adventures/DetailView.php';
+liw_assert( 'DetailView: Shortcode-Konstante + QUERY_VAR + render()', 'liw_adventure_detail' === \Liebherr\InterfaceWorld\Adventures\DetailView::SHORTCODE && 'adv' === \Liebherr\InterfaceWorld\Adventures\DetailView::QUERY_VAR && method_exists( \Liebherr\InterfaceWorld\Adventures\DetailView::class, 'render' ), $checks, $failures );
 
 // 3. strict_types=1 in jeder src/-Datei (Coding Standard, CLAUDE.md Abschnitt 5).
 echo "-- Coding Standard --\n";

@@ -39,13 +39,12 @@
 		var meta = el( 'span', 'liw-adv__card-meta' ); meta.textContent = [ a.region, a.date ].filter( Boolean ).join( ' · ' ); body.appendChild( meta );
 		if ( a.story ) { var st = el( 'span', 'liw-adv__card-story' ); st.textContent = a.story; body.appendChild( st ); }
 		if ( a.id ) {
-			var open = el( 'button', 'liw-cta liw-cta--secondary liw-adv__open' );
-			open.type = 'button';
-			open.setAttribute( 'data-liw-adv-open', String( a.id ) );
+			var open = el( 'a', 'liw-cta liw-cta--secondary liw-adv__open' );
+			open.href = window.location.pathname + '?adv=' + encodeURIComponent( a.id );
 			var tv = parseInt( a.token_value, 10 ) || 0;
 			open.textContent = tv > 0
-				? ( ( cfg.i18n.openFor || 'Zugriff' ) + ' · ' + tv + ' ' + ( cfg.i18n.tokens || 'Tokens' ) )
-				: ( cfg.i18n.openFree || 'Ansehen (kostenfrei)' );
+				? ( ( cfg.i18n.detailFor || 'Details ansehen' ) + ' · ' + tv + ' ' + ( cfg.i18n.tokens || 'Tokens' ) )
+				: ( cfg.i18n.detail || 'Details ansehen' );
 			body.appendChild( open );
 		}
 		li.appendChild( body );
@@ -215,6 +214,7 @@
 		api( 'accept', { method: 'POST', auth: true, body: { post_id: modalPost } } ).then( function ( res ) {
 			if ( res && res.ok ) {
 				modalDone = true;
+				try { document.dispatchEvent( new CustomEvent( 'liw-adv-accepted', { detail: { postId: modalPost } } ) ); } catch ( e ) {}
 				var charge = parseInt( res.charge, 10 ) || 0;
 				msg.textContent = t( 'dlgOk', 'Zugriff protokolliert.' ) + ' · ' +
 					( charge > 0 ? ( t( 'dlgCharged', 'belastet' ) + ': ' + charge + ' ' + t( 'tokens', 'Tokens' ) ) : t( 'dlgFree', 'ohne Belastung' ) ) +
@@ -234,6 +234,13 @@
 		document.addEventListener( 'click', function ( e ) {
 			var b = e.target.closest( '[data-liw-adv-open]' );
 			if ( b ) { e.preventDefault(); openDialog( parseInt( b.getAttribute( 'data-liw-adv-open' ), 10 ) ); }
+		} );
+		// Nach bestätigtem Zugriff auf der Detailseite den Inhalt zeigen (Seite neu laden → Server rendert ihn).
+		document.addEventListener( 'liw-adv-accepted', function ( e ) {
+			var gate = document.querySelector( '[data-liw-adv-detail-gate]' );
+			if ( gate && e.detail && parseInt( gate.getAttribute( 'data-liw-adv-detail-gate' ), 10 ) === ( e.detail.postId | 0 ) ) {
+				setTimeout( function () { window.location.reload(); }, 700 );
+			}
 		} );
 	}
 	if ( document.readyState === 'loading' ) { document.addEventListener( 'DOMContentLoaded', boot ); } else { boot(); }

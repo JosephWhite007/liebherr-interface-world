@@ -12,6 +12,21 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.64 – Adventures: Detailseite eines Beitrags [Backlog A3]
+
+**Neu:** `src/Adventures/DetailView.php` (Shortcode `[liw_adventure_detail]`, `?adv=<ID>`; `render(id)` =
+Kopf [Badges/Titel/Ort/Status/Tokenwert/Artikelbook/Medium] + Inhalts-Gate; `current_id()`/`url()`). Inhalt
+bei kostenpflichtig+nicht-Autor+kein-Zugriff verborgen (nicht im DOM); nach Dialog-Bestätigung → `reload`,
+Server zeigt Inhalt (has_access). `TokenLedger::has_access(contrib,user,version)`.
+
+**Geändert:** `src/Adventures/AdventuresView.php` – Detail bei `?adv` vorangestellt; Karten-Button `open_button()`
+→ Link auf `?adv=ID` („Details ansehen"); Enqueue auch für Detail-Shortcode; i18n detail/detailFor.
+`assets/js/liw-adventures.js` – `buildCard` Karten-Link statt Modal-Button; `confirmAccess` löst Event
+`liw-adv-accepted` aus; `boot()` lauscht → Detailseite lädt nach Zugriff neu. `src/Bootstrap.php` –
+`DetailView::register()`. `assets/css/liw-adventures.css` – `.liw-advdetail*`. Tests/Selftest. Bump → alpha.64.
+
+**Ergebnis:** Backlog-A3 erledigt. Nächster Bau laut Reihenfolge: **A4 – Adventures Suche/Filter nach Maschine/Bauteil (§18).**
+
 ## 0.1.0-alpha.63 – Intelligence World: Compute-Metering + kostenpflichtige Module [Backlog A2]
 
 **Neu:** `src/IntelligenceWorld/ModuleCatalog.php` (reine 5-Aktionen-Katalog: `actions/is_valid/get/label/

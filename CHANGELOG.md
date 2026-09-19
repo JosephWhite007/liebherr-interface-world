@@ -1,5 +1,27 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.64] – 2026-09-19 – Adventures: Detailseite eines Beitrags [Job A3]
+
+### Hinzugefügt
+- **Detailseite** `Adventures\DetailView` (Shortcode `[liw_adventure_detail]`, aufrufbar über `?adv=<ID>` auf der
+  Adventures-Seite): Titel, Klassifikation, Ort (three words) + Region, Registrierungsstatus, Tokenwert +
+  Nutzungsumfang, Artikelbook-Referenz und Medium. Die Karten im Stream verlinken jetzt auf die Detailseite
+  („Details ansehen"), statt direkt den Dialog zu öffnen.
+- **Inhalts-Gate (§5):** Bei kostenpflichtigen Beiträgen ist die Story erst nach Tokenakzeptanz sichtbar. Der
+  bezahlte Text wird **nicht** vorab ins DOM eingebettet – nach Bestätigung über den bestehenden Dialog
+  (alpha.61) lädt die Seite neu und der Server zeigt den Inhalt, weil dann ein Zugriff protokolliert ist.
+  Eigene und kostenlose Beiträge sowie bereits abgerufene werden direkt gezeigt.
+- `TokenLedger::has_access()` – prüft, ob ein Nutzer den Beitrag (in der Version) bereits bestätigt abgerufen
+  hat; verhindert doppelte Belastung bei erneutem Aufruf (§6).
+
+### Erledigt (Backlog Gruppe A, Punkt 3)
+- „Adventures – Detailseite" abgeschlossen (Grundlage für World-Map-/Detail-Verlinkung).
+
+### Verifikation
+- `tests/run-tests.php` **384/384**, `scripts/liw-selftest.php` **328/328** (Shortcode registriert; `has_access`;
+  Autor sieht Inhalt, Nicht-Ersteller ohne Zugriff erhält das Token-Gate mit verborgenem Inhalt). Browser:
+  `/liebherr-adventures/?adv=<ID>` zeigt Kopf + Gate „Zugriff bestätigen · 40 Tokens", Inhalt nicht im DOM.
+
 ## [0.1.0-alpha.63] – 2026-09-19 – Intelligence World: Compute-Metering + kostenpflichtige Module [Job A2]
 
 ### Hinzugefügt

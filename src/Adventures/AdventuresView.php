@@ -49,7 +49,7 @@ final class AdventuresView {
 
 	public static function maybe_enqueue(): void {
 		$post = get_post();
-		if ( ! $post instanceof \WP_Post || ! has_shortcode( (string) $post->post_content, self::SHORTCODE ) ) {
+		if ( ! $post instanceof \WP_Post || ( ! has_shortcode( (string) $post->post_content, self::SHORTCODE ) && ! has_shortcode( (string) $post->post_content, DetailView::SHORTCODE ) ) ) {
 			return;
 		}
 		wp_enqueue_style( self::HANDLE, LIW_URL . 'assets/css/liw-adventures.css', [], self::ver( 'assets/css/liw-adventures.css' ) );
@@ -74,6 +74,8 @@ final class AdventuresView {
 				'tokens'       => __( 'Tokens', 'liebherr-interface-world' ),
 				'openFor'      => __( 'Zugriff', 'liebherr-interface-world' ),
 				'openFree'     => __( 'Ansehen (kostenfrei)', 'liebherr-interface-world' ),
+				'detail'       => __( 'Details ansehen', 'liebherr-interface-world' ),
+				'detailFor'    => __( 'Details ansehen', 'liebherr-interface-world' ),
 				'close'        => __( 'Schließen', 'liebherr-interface-world' ),
 				'dlgToken'     => __( 'Tokenwert', 'liebherr-interface-world' ),
 				'dlgUsage'     => __( 'Nutzungsumfang', 'liebherr-interface-world' ),
@@ -98,9 +100,14 @@ final class AdventuresView {
 		$partner   = LocationService::attribution_text();
 		$can       = Policy::can_create();
 
+		$detail_id = DetailView::current_id();
+
 		ob_start();
 		?>
 		<div class="liw-adv" data-liw-adv>
+			<?php if ( $detail_id > 0 ) : ?>
+				<?php echo DetailView::render( $detail_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- in DetailView escaped. ?>
+			<?php endif; ?>
 			<section class="liw-adv__hero">
 				<p class="liw-adv__eyebrow"><?php echo esc_html__( 'LIEBHERR ADVENTURES · Vierte Insel', 'liebherr-interface-world' ); ?></p>
 				<h1 class="liw-adv__headline"><?php echo esc_html__( 'One place. Three words. One shared experience.', 'liebherr-interface-world' ); ?></h1>
@@ -185,8 +192,8 @@ final class AdventuresView {
 		$token = isset( $a['token_value'] ) ? (int) $a['token_value'] : 0;
 		$label = $token > 0
 			/* translators: %d = token count */
-			? sprintf( esc_html__( 'Zugriff · %d Tokens', 'liebherr-interface-world' ), $token )
-			: esc_html__( 'Ansehen (kostenfrei)', 'liebherr-interface-world' );
-		return '<button type="button" class="liw-cta liw-cta--secondary liw-adv__open" data-liw-adv-open="' . esc_attr( (string) $id ) . '">' . $label . '</button>';
+			? sprintf( esc_html__( 'Details ansehen · %d Tokens', 'liebherr-interface-world' ), $token )
+			: esc_html__( 'Details ansehen', 'liebherr-interface-world' );
+		return '<a class="liw-cta liw-cta--secondary liw-adv__open" href="' . esc_url( DetailView::url( $id ) ) . '">' . $label . '</a>';
 	}
 }

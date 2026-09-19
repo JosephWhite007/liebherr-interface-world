@@ -764,6 +764,18 @@ try {
 	liw_st_check( 'ADV-Zugriff: Rest::accept protokolliert + Transaktions-ID (Budget-Filter)', ! empty( $__accd['ok'] ) && 25 === (int) $__accd['charge'] && '' !== (string) ( $__accd['transaction_id'] ?? '' ) );
 	wp_set_current_user( (int) $__prev_user );
 
+	// A3 – Detailseite (alpha.64): Gate für Nicht-Ersteller ohne Zugriff, Inhalt für Autor/Zugriffsberechtigte.
+	$__ver = (int) $RSVC::get_registration( (int) $__a1['id'] )['version'];
+	liw_st_check( 'ADV-Detail: Shortcode [liw_adventure_detail] registriert', shortcode_exists( 'liw_adventure_detail' ) );
+	liw_st_check( 'ADV-Detail: has_access – Nutzer 2 (akzeptiert) ja, Nutzer 4242 nein', $TLED::has_access( (int) $__a1['id'], 2, $__ver ) && ! $TLED::has_access( (int) $__a1['id'], 4242, 0 ) );
+	wp_set_current_user( 1 );
+	$__det_author = \Liebherr\InterfaceWorld\Adventures\DetailView::render( (int) $__a1['id'] );
+	liw_st_check( 'ADV-Detail: Autor sieht Inhalt direkt (kein Gate)', str_contains( $__det_author, 'liw-advdetail__content' ) && ! str_contains( $__det_author, 'data-liw-adv-detail-gate' ) );
+	wp_set_current_user( 0 );
+	$__det_anon = \Liebherr\InterfaceWorld\Adventures\DetailView::render( (int) $__a1['id'] );
+	liw_st_check( 'ADV-Detail: Nicht-Ersteller ohne Zugriff → Token-Gate, Inhalt verborgen (§5)', str_contains( $__det_anon, 'data-liw-adv-detail-gate' ) && ! str_contains( $__det_anon, 'liw-advdetail__content' ) );
+	wp_set_current_user( (int) $__prev_user );
+
 	// Aufräumen (Testdaten inkl. Ledger).
 	global $wpdb; $__lt = \Liebherr\InterfaceWorld\Adventures\TokenSchema::table();
 	foreach ( [ $__a1['id'], $__a2['id'], $__d['id'] ] as $__id ) {

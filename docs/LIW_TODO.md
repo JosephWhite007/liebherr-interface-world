@@ -25,8 +25,9 @@ der Reihe nach ab und befüllen sie mit Funktionalität), **B** = auf externe Fr
 2. ~~**Intelligence World – Compute-Metering (Mock) + kostenpflichtige Module.**~~ **ERLEDIGT (alpha.63):**
    `ModuleCatalog` (5 Aktionen) + REST `session/use` schreiben Kosten-Ereignisse ins Ledger; `ProtocolBuilder`
    weist Posten + Modulsumme + Gesamtkosten aus; Frontend-Panel mit laufender Zusatzkosten-Anzeige.
-3. **Adventures – Detailseite.** Einzelansicht eines Beitrags (Titel, Story, Medien, Ort, Tokenwert, Status)
-   – Voraussetzung für World Map/Detail-Verlinkung.
+3. ~~**Adventures – Detailseite.**~~ **ERLEDIGT (alpha.64):** `Adventures\DetailView` (`[liw_adventure_detail]`,
+   `?adv=ID`) mit Kopf (Titel/Ort/Status/Tokenwert/Artikelbook/Medium) + Inhalts-Gate (§5, Inhalt erst nach
+   Tokenakzeptanz, nicht vorab im DOM); `TokenLedger::has_access()` verhindert Doppelbelastung.
 4. **Adventures – Suche/Filter nach Maschine/Bauteil (§18).** Zusätzliche Facetten im Stream.
 5. **Adventures – echtes Tokenbudget-Konto.** Persistiertes Budget je Nutzer/Org statt Filter-Default 1000;
    Buchung beim Zugriff, Anzeige des Kontostands.
@@ -85,7 +86,7 @@ der Bestätigung Tokenwert + Nutzungsumfang + Version + Nutzungsbedingungen; Zug
 ausdrücklicher Bestätigung → REST `accept` → revisionssichere Protokollierung (Belastung + Transaktions-ID).
 Eigene Beiträge frei, unzureichendes Budget wird gemeldet. Tokenbudget via Filter `liw_adv_token_budget`.
 
-**Offen / nächste Etappen:** World Map + Detailseite, Medien-Upload/Transcoding (§14; MVP: externe Bild-URL),
+**Offen / nächste Etappen:** World Map (Detailseite **geliefert alpha.64**), Medien-Upload/Transcoding (§14; MVP: externe Bild-URL),
 Moderations-UI/Audit (§17/§12.3), Get-Help-Assistent (Phase 3), Suche/Filter Maschine/Bauteil (§18),
 Mehrsprachigkeit der Nutzerinhalte (§15). **alpha.53:** what3words als echter Ortsdienst angebunden
 (englisch, Key-gesteuert, Mock-Fallback) – offen nur noch Lizenz/Vertrag + Produktiv-Key (§4.3/§24.1).

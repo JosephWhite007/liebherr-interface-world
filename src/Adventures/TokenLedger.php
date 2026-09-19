@@ -178,6 +178,24 @@ final class TokenLedger {
 		return is_array( $rows ) ? $rows : [];
 	}
 
+	/**
+	 * Hat dieser Nutzer den Beitrag in dieser Version bereits (bestätigt) abgerufen? (§6: bereits bestätigte
+	 * Nutzungen nicht erneut belasten). Version 0 = beliebige Version.
+	 */
+	public static function has_access( int $contribution_id, int $user_ref, int $version = 0 ): bool {
+		global $wpdb;
+		$table = TokenSchema::table();
+		if ( $contribution_id <= 0 || $user_ref <= 0 ) {
+			return false;
+		}
+		if ( $version > 0 ) {
+			$sql = $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE contribution_id = %d AND user_ref = %d AND kind = %s AND version = %d", $contribution_id, $user_ref, self::KIND_ACCESS, $version ); // phpcs:ignore WordPress.DB
+		} else {
+			$sql = $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE contribution_id = %d AND user_ref = %d AND kind = %s", $contribution_id, $user_ref, self::KIND_ACCESS ); // phpcs:ignore WordPress.DB
+		}
+		return (int) $wpdb->get_var( $sql ) > 0; // phpcs:ignore WordPress.DB
+	}
+
 	/** Prüft die Hash-Kette des Beitrags (erkennt nachträgliche Manipulation). */
 	public static function verify_chain( int $contribution_id ): bool {
 		$prev = '';
