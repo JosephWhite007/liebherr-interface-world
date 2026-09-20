@@ -21,6 +21,24 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## Feature-Start: Plattformzeit Standby/Beenden + plattformweite Sperre (Konzept freigegeben 20.09.2026)
+
+Beschreibung der neuen Funktion (Umsetzung folgt in Stufen P1–P3, je eigener Versions-Eintrag unten):
+
+- **Zwei Aktionen an der Session-Uhr.** **Standby** = Raum verlassen ohne Abrechnung: die Uhr friert ein
+  (`paused`, kein Token-Zuwachs), die Plattform wird gesperrt, Rückkehr über eine server-autoritative
+  Rechenaufgabe (`Cvf\ChallengeService`). **Beenden** = Sitzung abschließen: genau ein Abrechnungssatz
+  (`PlatformTime\ChargeService`, idempotent), Report-Popup mit verbrauchter Zeit + Token, Bestätigung bucht
+  über die Wallet-Naht (`liw_ptime_charge` + `CoreBridge\WalletBridge`).
+- **Plattformweite Sperre.** Bei `paused`/`stopped` sind ALLE Welten blockiert; nur die „Liebherr World"-Leiste
+  und der Sprachumschalter bleiben sichtbar/bedienbar. Technik: Server-Gate ist die Wahrheit (gated REST
+  `423 Locked`, gated Seiten rendern nur Kopf), das Overlay ist nur die Anzeige (wiederverwendet das
+  `liw-intro-lock`-Muster aus alpha.136/137). Ein Guard an EINER Stelle (keine Redundanz).
+- **Festlegungen (Joseph):** (1) Standby friert ein, (2) Beenden streng — Freigabe erst nach erfolgreicher
+  Wallet-Buchung, sonst bleibt gesperrt bis Aufladung, (3) Sperre über alle Welten, (4) Auto-Standby am Timeout.
+- **Grundlage:** `docs/ADR-LIW-MYL-002_Plattformzeit_Standby_Beenden_Sperre.md`, Pflichtenheft §41 + neu §41.8
+  (Abnahme MYL 029–032). P3 (echte Token-Buchung) hängt am Wallet-Mehrwährungs-Pflichtenheft (Core-Kategorie A).
+
 ## 0.1.0-alpha.138 – Plattformzeit als blinkender „Time"-Punkt neben den Koffer (unten rechts)
 
 - `assets/css/liw-ptime-clock.css`: `.liw-ptime` von unten links → unten rechts (`right:68px; bottom:22px`, flex-column, `align-items:flex-end`) direkt links neben `.liw-emg-dot--float` (Koffer, right:16, 44px). Pill kompakter (padding 6/12, h≈28), `.liw-ptime__label` 13px/600. Panel öffnet nach oben (`order:-1; margin-bottom:8px`), Pill bleibt unten verankert (Toggle `margin:0`, alte `is-collapsed`-Toggle-Marginregel entfernt). Punkt blinkt: zweite Animation `liw-ptime-blink` (Opazität) zusätzlich zum Ring-Puls; reduced-motion setzt beides aus.

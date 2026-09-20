@@ -55,6 +55,25 @@ Session-Uhr/Token-Schachuhr** erweitert. Vollständiger Arbeits-Workflow (alle M
 - Wiederverwendung statt Neubau: IW `SessionService/SessionMeter/Money/PriceRule/EventLog/ProtocolBuilder`,
   CVF/CAPDB-Board, Roles/Flags/MediaBridge. Keine zweite Wallet-/Zeitquelle.
 
+### Plattformzeit: Standby / Beenden + plattformweite Sperre (ADR-LIW-MYL-002, §41.8)
+
+Konzept **freigegeben (Joseph, 20.09.2026)**. Session-Uhr bekommt zwei Aktionen; beide sperren sofort die
+gesamte Plattform (alle Welten), nur „Liebherr World"-Leiste + Sprachumschalter bleiben sichtbar/bedienbar.
+Server-Gate ist die Wahrheit (REST `423` + reduziertes Template), Overlay ist nur die Anzeige (wiederverwendet
+`liw-intro-lock` aus alpha.136/137). Festlegungen: (1) Standby friert ein, (2) Beenden streng bis Aufladung,
+(3) Sperre alle Welten, (4) Auto-Standby am Timeout. Rechenlogik = `Cvf\ChallengeService`; Protokoll =
+vorhandener `PlatformTime\ChargeService`; Wallet-Buchung = Naht `liw_ptime_charge` + `CoreBridge\WalletBridge`.
+
+- [ ] **P1 — Zustand + Sperre + Standby:** Sitzungs-Zustandsnutzung, plattformweites `LockGuard`
+  (REST `423` + Content-Reduktion in allen Welten), Standby-Overlay `LockOverlay` mit `ChallengeService`,
+  REST `standby`/`resume`, Auto-Standby am bestehenden Timeout. *(ohne Wallet)* — Abnahme MYL 029/030/032.
+- [ ] **P2 — Beenden + Report + Protokoll:** REST `end`, Report-Popup (Zeit/Token/Tarif), Protokoll
+  finalisieren, zweiter Knopf + **Anleitungs-Knopf** im Widget, Events `platformtime.*`. *(ohne Wallet)* —
+  Abnahme MYL 027/028/031.
+- [ ] **P3 — Wallet-Buchung scharf:** `settle` + `liw_ptime_charge`-Consumer gegen `WalletBridge`
+  (`liw_ptime_charge_live`), strenge Deckungsprüfung, „Wallet aufladen"-Weg. **Hängt am
+  Wallet-Mehrwährungs-Pflichtenheft (Core-Kategorie A), eigene Freigabe.** — Abnahme MYL 031.
+
 ## Auf Zuruf erledigt (ungeplant, nach Group A)
 
 - ~~**Browser-Tab-Favicon = Globus statt WP-„W".**~~ **ERLEDIGT (alpha.76/77):** `/favicon.ico` zeigt
