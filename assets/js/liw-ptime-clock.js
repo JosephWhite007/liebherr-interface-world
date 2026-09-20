@@ -45,12 +45,17 @@
 	}
 
 	root.hidden = false;
-	try {
-		if ( localStorage.getItem( 'liwPtimeCollapsed' ) === '1' ) {
-			root.classList.add( 'is-collapsed' );
-			if ( btnTgl ) { btnTgl.setAttribute( 'aria-expanded', 'false' ); }
-		}
-	} catch ( e ) {}
+	// Standard eingeklappt (nur grüner Punkt + „Time"). Nur wenn der Nutzer zuletzt ausdrücklich
+	// aufgeklappt hatte (localStorage '0'), starten wir wieder aufgeklappt.
+	var startExpanded = false;
+	try { startExpanded = localStorage.getItem( 'liwPtimeCollapsed' ) === '0'; } catch ( e ) {}
+	if ( startExpanded ) {
+		root.classList.remove( 'is-collapsed' );
+		if ( btnTgl ) { btnTgl.setAttribute( 'aria-expanded', 'true' ); }
+	} else {
+		root.classList.add( 'is-collapsed' );
+		if ( btnTgl ) { btnTgl.setAttribute( 'aria-expanded', 'false' ); }
+	}
 
 	api( 'start', 'POST' ).then( sync );
 	var hb = setInterval( function () { if ( ! stopped ) { api( 'heartbeat', 'POST' ).then( sync ); } }, ( cfg.interval || 30 ) * 1000 );

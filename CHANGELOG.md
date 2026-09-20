@@ -1,5 +1,22 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.138] – 2026-09-20 – Plattformzeit als „Time"-Punkt neben den Koffer (unten rechts)
+
+### Geändert
+- Die schwebende **Plattformzeit** sitzt nicht mehr unten links, sondern **unten rechts direkt links neben dem
+  Hilfe-Koffer** (`right:68px` = 16 Koffer-Rand + 44 Koffer-Breite + 8 Abstand; vertikal mittig zum 44px-Koffer).
+- Sie startet **eingeklappt**: nur ein **blinkender grüner Punkt + „Time"** als kleine Pill. Erst ein **Klick**
+  öffnet das vorhandene Fenster (Zeit, Token, „Sitzung beenden"); das Fenster klappt **nach oben** auf, die Pill
+  bleibt am Koffer verankert. Label des Widgets von „Plattformzeit" → „Time" (Kurzlabel), `aria-label` bleibt
+  „Plattformzeit anzeigen".
+- Der grüne Punkt blinkt jetzt klar erkennbar (Opazitäts-Blink zusätzlich zum Live-Ring-Puls); bei
+  `prefers-reduced-motion` beides aus.
+
+### Verifikation
+- Browser (My-Liebherr-Seite, echte Plugin-CSS): Pill eingeklappt unten rechts, 8px links vom Koffer, Punkt
+  `rgb(61,220,132)` grün + Blink-Animation; Klick/Aufklappen zeigt das Fenster **oberhalb** der Pill, vollständig
+  sichtbar. `tests/run-tests.php` **657/657**. `LIW_VERSION` .137→.138. (Nach Live-Deploy WP-Rocket-Cache leeren.)
+
 ## [0.1.0-alpha.137] – 2026-09-19 – Sprachumschalter sitzt bei aktivem Intro-Gate in der „Liebherr World"-Leiste
 
 ### Geändert

@@ -2,8 +2,9 @@
 /**
  * Liebherr World – Plattformzeit: schwebende Session-Uhr / „Schachuhr" (Pflichtenheft My Liebherr §41.6, S11).
  *
- * Plattformweit schwebendes, jederzeit ein-/ausklappbares Widget (unten links, kollidiert nicht mit dem
- * Hilfe-Koffer unten rechts). Zeigt verstrichene aktive Zeit + laufende Tokenkosten; die Anzeige tickt lokal,
+ * Plattformweit schwebendes Widget unten rechts, direkt links neben dem Hilfe-Koffer. Standard eingeklappt:
+ * nur ein blinkender grüner Punkt + „Time"; erst ein Klick öffnet das Fenster (Panel). Zeigt dann verstrichene
+ * aktive Zeit + laufende Tokenkosten; die Anzeige tickt lokal,
  * maßgeblich ist der serverautoritäre Heartbeat (§41.1). Nur für angemeldete Nutzer mit
  * {@see \Liebherr\InterfaceWorld\MyLiebherr\Roles::CAP_ACCESS} und nur bei {@see Flags::enabled()}. Muster wie
  * der Emergency-Koffer (Front + wp-admin).
@@ -64,10 +65,13 @@ final class ClockWidget {
 		if ( ! self::gate() ) {
 			return;
 		}
-		echo '<div class="liw-ptime" data-liw-ptime hidden>'
-			. '<button type="button" class="liw-ptime__toggle" data-liw-ptime-toggle aria-expanded="true">'
+		// Standard: eingeklappt – nur der blinkende grüne Punkt + „Time" (Pill sitzt unten rechts, links vom
+		// Hilfe-Koffer). Erst ein Klick öffnet das vorhandene Fenster (Panel). aria-expanded=false von Anfang an,
+		// damit kein Aufblitzen des Panels vor dem JS entsteht.
+		echo '<div class="liw-ptime is-collapsed" data-liw-ptime hidden>'
+			. '<button type="button" class="liw-ptime__toggle" data-liw-ptime-toggle aria-expanded="false" aria-label="' . esc_attr__( 'Plattformzeit anzeigen', 'liebherr-interface-world' ) . '">'
 			. '<span class="liw-ptime__dot" aria-hidden="true"></span>'
-			. '<span class="liw-ptime__label">' . esc_html__( 'Plattformzeit', 'liebherr-interface-world' ) . '</span>'
+			. '<span class="liw-ptime__label">' . esc_html_x( 'Time', 'Plattformzeit-Kurzlabel neben dem Koffer', 'liebherr-interface-world' ) . '</span>'
 			. '</button>'
 			. '<div class="liw-ptime__panel" data-liw-ptime-panel>'
 			. '<span class="liw-ptime__time" data-liw-ptime-time>00:00:00</span>'

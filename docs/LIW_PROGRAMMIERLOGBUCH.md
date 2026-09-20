@@ -21,6 +21,13 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.138 – Plattformzeit als blinkender „Time"-Punkt neben den Koffer (unten rechts)
+
+- `assets/css/liw-ptime-clock.css`: `.liw-ptime` von unten links → unten rechts (`right:68px; bottom:22px`, flex-column, `align-items:flex-end`) direkt links neben `.liw-emg-dot--float` (Koffer, right:16, 44px). Pill kompakter (padding 6/12, h≈28), `.liw-ptime__label` 13px/600. Panel öffnet nach oben (`order:-1; margin-bottom:8px`), Pill bleibt unten verankert (Toggle `margin:0`, alte `is-collapsed`-Toggle-Marginregel entfernt). Punkt blinkt: zweite Animation `liw-ptime-blink` (Opazität) zusätzlich zum Ring-Puls; reduced-motion setzt beides aus.
+- `src/PlatformTime/ClockWidget.php` (`render()`): Widget startet mit Klasse `is-collapsed` + `aria-expanded=false`; sichtbares Label „Plattformzeit" → `esc_html_x('Time', …)`, `aria-label='Plattformzeit anzeigen'`. Docblock-Position aktualisiert.
+- `assets/js/liw-ptime-clock.js`: Default eingeklappt; nur bei localStorage `liwPtimeCollapsed==='0'` (Nutzer hatte zuletzt aufgeklappt) wieder aufgeklappt starten. Toggle-Logik unverändert.
+- `liebherr-interface-world.php` LIW_VERSION .137→.138. Browser verifiziert (echte CSS injiziert auf /my-liebherr/: Pill 8px links vom Koffer, grüner Blink-Punkt, Fenster öffnet oberhalb). `tests/run-tests.php` 657/657. FALLE: WP-Rocket-Cache leeren. Widget-Gate unverändert (Flag `liw_ptime_enabled` + Login + CAP_ACCESS).
+
 ## 0.1.0-alpha.137 – Sprachumschalter bei aktivem Intro-Gate in die „Liebherr World"-Leiste umgehängt
 
 - `assets/js/liebherr-frontend.js` (`init()`): bei Gate-Start (`liw-intro-lock`) wird der DOM-Knoten `.liw-header__lang` (Wrapper um das **Core**-Sprachwidget) in `.liw-switcher__inner` umgehängt; `cleanup()` hängt ihn an die ursprüngliche Position zurück. `.liw-switcher` wird beim Gate **nicht** mehr per `aria-hidden` versteckt (Leiste bleibt bedienbar). Grund: reines z-index scheitert – `.liw-header` ist `position:sticky; z-index:20` und deckelt den Umschalter (2147483602) unter die Leiste (2147483601).
