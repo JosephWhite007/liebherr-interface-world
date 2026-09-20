@@ -20,14 +20,7 @@
 		document.documentElement.classList.add( 'liw-intro-lock' );
 	}
 
-	var elQ     = root.querySelector( '[data-liw-ptlock-q]' );
-	var elTok   = root.querySelector( '[data-liw-ptlock-token]' );
-	var elAns   = root.querySelector( '[data-liw-ptlock-answer]' );
-	var elForm  = root.querySelector( '[data-liw-ptlock-form]' );
-	var elEnter = root.querySelector( '[data-liw-ptlock-enter]' );
-	var elHint  = root.querySelector( '[data-liw-ptlock-hint]' );
-	var i18n    = cfg.i18n || {};
-	var busy    = false;
+	var i18n = cfg.i18n || {};
 
 	function api( path, method, body ) {
 		return fetch( cfg.root + path, {
@@ -37,6 +30,59 @@
 			body: body ? JSON.stringify( body ) : undefined
 		} ).then( function ( r ) { return r.json().catch( function () { return null; } ); } ).catch( function () { return null; } );
 	}
+
+	function two( n ) { return ( n < 10 ? '0' : '' ) + n; }
+	function fmtTime( s ) {
+		s = Math.max( 0, s | 0 );
+		return two( Math.floor( s / 3600 ) ) + ':' + two( Math.floor( ( s % 3600 ) / 60 ) ) + ':' + two( s % 60 );
+	}
+
+	// ── Report-/Beenden-Flow (Abrechnung offen) ───────────────────────────────
+	if ( root.hasAttribute( 'data-liw-ptreport' ) ) {
+		var rTime  = root.querySelector( '[data-liw-ptreport-time]' );
+		var rTok   = root.querySelector( '[data-liw-ptreport-tokens]' );
+		var rWalR  = root.querySelector( '[data-liw-ptreport-wallet-row]' );
+		var rWal   = root.querySelector( '[data-liw-ptreport-wallet]' );
+		var rForm  = root.querySelector( '[data-liw-ptreport-form]' );
+		var rBtn   = root.querySelector( '[data-liw-ptreport-settle]' );
+		var rHint  = root.querySelector( '[data-liw-ptreport-hint]' );
+		var rBusy  = false;
+
+		api( 'report', 'GET' ).then( function ( d ) {
+			if ( ! d || ! d.ok ) { return; }
+			if ( rTime ) { rTime.textContent = fmtTime( d.active_seconds ); }
+			if ( rTok ) { rTok.textContent = String( d.tokens ); }
+			if ( d.wallet_balance && rWal && rWalR ) { rWal.textContent = d.wallet_balance; rWalR.removeAttribute( 'hidden' ); }
+		} );
+
+		if ( rForm ) {
+			rForm.addEventListener( 'submit', function ( ev ) {
+				ev.preventDefault();
+				if ( rBusy ) { return; }
+				rBusy = true; if ( rBtn ) { rBtn.disabled = true; }
+				api( 'settle', 'POST' ).then( function ( d ) {
+					if ( d && d.ok ) {
+						if ( window.LiwWorldbarLock ) { window.LiwWorldbarLock.release(); }
+						window.location.reload();
+						return;
+					}
+					rBusy = false; if ( rBtn ) { rBtn.disabled = false; }
+					var reason = d && d.reason ? d.reason : 'error';
+					if ( rHint ) { rHint.textContent = 'insufficient' === reason ? ( i18n.insufficient || '' ) : ( i18n.error || '' ); }
+				} );
+			} );
+		}
+		return; // Report-Flow abgeschlossen – kein Standby-Flow.
+	}
+
+	// ── Standby-Flow (Rechenaufgabe) ───────────────────────────────────────────
+	var elQ     = root.querySelector( '[data-liw-ptlock-q]' );
+	var elTok   = root.querySelector( '[data-liw-ptlock-token]' );
+	var elAns   = root.querySelector( '[data-liw-ptlock-answer]' );
+	var elForm  = root.querySelector( '[data-liw-ptlock-form]' );
+	var elEnter = root.querySelector( '[data-liw-ptlock-enter]' );
+	var elHint  = root.querySelector( '[data-liw-ptlock-hint]' );
+	var busy    = false;
 
 	function refresh() { if ( elEnter ) { elEnter.disabled = busy || '' === elAns.value.replace( /\s/g, '' ); } }
 

@@ -115,7 +115,7 @@ Das Protokoll ist der bestehende `platform_time_charge`-Satz (append-only, Korre
 | Stufe | Inhalt | Wallet nötig? | Abnahme |
 |---|---|---|---|
 | **P1 ✅ (alpha.139)** | Zustandsnutzung für Sperre; plattformweites Server-Gate (gated REST `423`, alle Welten) + Frontend-Overlay; Standby-Overlay mit `ChallengeService`; `standby`/`resume`/`challenge`-Routen; Auto-Standby am Timeout | nein | Sperre greift überall außer Leiste+Sprache; Rückkehr nur per gelöster Aufgabe; Token in Standby eingefroren |
-| **P2** | `end`-Route + Report-Popup; Protokoll finalisieren; zweiter Knopf + Anleitungs-Knopf im Widget; Events | nein | Beenden erzeugt genau einen Satz (MYL 027); Report zeigt Zeit/Token/Tarif; Naht AUS ⇒ `pending` (MYL 028) |
+| **P2 ✅ (alpha.140)** | `end`/`settle`/`report`-Routen + Report-Overlay; Protokoll finalisieren (Status `ending`→`settled`); Anleitung im Overlay; Reload-Schleife behoben | nein | Beenden erzeugt genau einen Satz (MYL 027); Report zeigt Zeit/Token/Tarif; Naht AUS ⇒ `pending` (MYL 028) |
 | **P3** | `settle`-Route + Wallet-Buchung scharf (`liw_ptime_charge_live`), strenge Deckungsprüfung, „Wallet aufladen"-Weg | **ja** (Core-Kategorie A) | `settled` nur bei erfolgreicher Buchung; Deckungsfehler hält Sperre |
 
 P3 hängt am **Wallet-Mehrwährungs-Pflichtenheft** (eigene Freigabe/Startklärung).

@@ -48,32 +48,47 @@ final class SessionRepository {
 		return is_array( $row ) ? self::shape( $row ) : null;
 	}
 
-	/** Aktueller Abschnitt unabhängig vom Zustand (running ODER paused) oder null – für Sperre/Resume. */
+	/**
+	 * Aktueller, noch nicht abgeschlossener Abschnitt (running, paused ODER ending) oder null. Bereits
+	 * abgerechnete (`settled`) und historische (`stopped`, Alt-Modell vor P2) Abschnitte gelten als
+	 * abgeschlossen und sperren nicht.
+	 */
 	public static function current_for( int $user_id ): ?array {
 		if ( $user_id <= 0 ) {
 			return null;
 		}
 		global $wpdb;
 		$t   = Schema::session_table();
-		$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$t} WHERE user_id = %d AND status IN ('running','paused') ORDER BY id DESC LIMIT 1", $user_id ), ARRAY_A ); // phpcs:ignore WordPress.DB
+		$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$t} WHERE user_id = %d AND status IN ('running','paused','ending') ORDER BY id DESC LIMIT 1", $user_id ), ARRAY_A ); // phpcs:ignore WordPress.DB
 		return is_array( $row ) ? self::shape( $row ) : null;
 	}
 
 	/**
-	 * Sperrzustand des Nutzers: '' (frei) oder 'standby' (Abschnitt pausiert, ADR-LIW-MYL-002 §4).
-	 * Die Beenden-/Abrechnungssperre (`settlement`) folgt in P2/P3.
+	 * Sperrzustand des Nutzers (ADR-LIW-MYL-002 §4/§6): '' (frei), 'standby' (pausiert) oder 'settlement'
+	 * (beendet, Abrechnung offen → Report/Buchung nötig).
 	 */
 	public static function lock_state( int $user_id ): string {
 		$cur = self::current_for( $user_id );
-		return ( null !== $cur && 'paused' === (string) $cur['status'] ) ? 'standby' : '';
+		if ( null === $cur ) {
+			return '';
+		}
+		if ( 'paused' === (string) $cur['status'] ) {
+			return 'standby';
+		}
+		if ( 'ending' === (string) $cur['status'] ) {
+			return 'settlement';
+		}
+		return '';
 	}
 
 	/** Startet (oder setzt fort) den Zeitabschnitt = Reservierung beim Eintritt. */
 	public static function start( int $user_id, ?int $now = null ): array {
 		$now  = $now ?? self::now();
-		$open = self::open_for( $user_id );
-		if ( null !== $open ) {
-			return $open;
+		// Kein neuer Abschnitt, solange ein aktueller besteht – auch pausiert (Standby) oder gestoppt
+		// (Abrechnung offen). Sonst würde ein Reload während der Sperre die Sperre umgehen (ADR-LIW-MYL-002 §5/§6).
+		$cur = self::current_for( $user_id );
+		if ( null !== $cur ) {
+			return $cur;
 		}
 		global $wpdb;
 		$wpdb->insert( // phpcs:ignore WordPress.DB
@@ -97,7 +112,15 @@ final class SessionRepository {
 		$now  = $now ?? self::now();
 		$open = self::open_for( $user_id );
 		if ( null === $open ) {
+			// Kein laufender Abschnitt: evtl. gesperrt (paused/stopped) → Sperrzustand melden, sonst neu starten.
+			$cur = self::current_for( $user_id );
+			if ( null !== $cur && 'running' !== (string) $cur['status'] ) {
+				return self::state( $cur, false );
+			}
 			$open = self::start( $user_id, $now );
+			if ( 'running' !== (string) $open['status'] ) {
+				return self::state( $open, false );
+			}
 		}
 		$acc = SessionClock::accrue( (int) $open['active_seconds'], self::ts( $open['last_seen_at'] ), $now, self::timeout() );
 		// Auto-Standby (ADR-LIW-MYL-002 §4): Bei Inaktivität/Timeout wird der Abschnitt automatisch pausiert
@@ -195,29 +218,90 @@ final class SessionRepository {
 		return self::state( $open, (bool) $acc['idle'] ) + [ 'active' => true ];
 	}
 
-	/** Beendet den Abschnitt = Bestätigung beim Verlassen; erzeugt genau einen Abrechnungssatz. */
+	/**
+	 * Beenden = Bestätigung beim Verlassen (ADR-LIW-MYL-002 §6): aktive Zeit festschreiben, Abschnitt in
+	 * `ending` (beendet, Abrechnung offen → gesperrt bis zur Bestätigung) überführen und GENAU EINEN
+	 * Abrechnungssatz erzeugen ({@see ChargeService}, idempotent). Liefert die Report-Daten. Idempotent:
+	 * ein bereits beendeter Abschnitt liefert denselben Report ohne Doppelbuchung.
+	 *
+	 * @return array<string,mixed>
+	 */
 	public static function stop( int $user_id, ?int $now = null ): array {
-		$now  = $now ?? self::now();
-		$open = self::open_for( $user_id );
-		if ( null === $open ) {
+		$now = $now ?? self::now();
+		$cur = self::current_for( $user_id );
+		if ( null === $cur ) {
 			return [ 'ok' => false, 'reason' => 'no_session' ];
 		}
-		$acc     = SessionClock::accrue( (int) $open['active_seconds'], self::ts( $open['last_seen_at'] ), $now, self::timeout() );
-		$active  = (int) $acc['active'];
+		if ( 'ending' === (string) $cur['status'] ) {
+			// Schon beendet, Abrechnung offen → denselben (idempotenten) Report liefern, nicht erneut buchen.
+			$charge = ChargeService::record( (int) $cur['id'], $user_id, (int) $cur['active_seconds'] );
+			return self::report_of( $cur, $charge );
+		}
+		$acc    = SessionClock::accrue( (int) $cur['active_seconds'], self::ts( $cur['last_seen_at'] ), $now, self::timeout() );
+		$active = (int) $acc['active'];
 		global $wpdb;
 		$wpdb->update( // phpcs:ignore WordPress.DB
 			Schema::session_table(),
-			[ 'active_seconds' => $active, 'status' => 'stopped', 'ended_at' => self::dt( $now ), 'last_seen_at' => self::dt( $now ), 'updated_at' => current_time( 'mysql' ) ],
-			[ 'id' => (int) $open['id'] ],
+			[ 'active_seconds' => $active, 'status' => 'ending', 'ended_at' => self::dt( $now ), 'last_seen_at' => self::dt( $now ), 'updated_at' => current_time( 'mysql' ) ],
+			[ 'id' => (int) $cur['id'] ],
 			[ '%d', '%s', '%s', '%s', '%s' ],
 			[ '%d' ]
 		);
-		$charge = ChargeService::record( (int) $open['id'], $user_id, $active );
+		$cur['active_seconds'] = $active;
+		$charge                = ChargeService::record( (int) $cur['id'], $user_id, $active );
+		return self::report_of( $cur, $charge );
+	}
+
+	/** Beenden – Alias von {@see stop()} mit sprechendem Namen (Pflichtenheft §41.8/Report). */
+	public static function end( int $user_id, ?int $now = null ): array {
+		return self::stop( $user_id, $now );
+	}
+
+	/**
+	 * Abrechnungssatz bestätigen (ADR-LIW-MYL-002 §6): schaltet den beendeten Abschnitt frei. Solange die
+	 * Wallet-Naht deaktiviert ist ({@see Flags::charge_live()} = AUS, Standard), bleibt der Satz `pending`
+	 * (nur protokolliert, §41.1/MYL 028) und der Abschnitt wird auf `settled` gesetzt → Sperre fällt. Die
+	 * echte Wallet-Buchung inkl. strenger Deckungsprüfung (Festlegung 2) kommt mit P3 (Wallet-Pflichtenheft).
+	 *
+	 * @return array<string,mixed>
+	 */
+	public static function settle( int $user_id, ?int $now = null ): array {
+		$now = $now ?? self::now();
+		$cur = self::current_for( $user_id );
+		if ( null === $cur || 'ending' !== (string) $cur['status'] ) {
+			return [ 'ok' => false, 'reason' => 'no_settlement' ];
+		}
+		/**
+		 * Naht für die echte Token-Buchung (P3). Ein Consumer kann bei aktivierter Wallet buchen und bei
+		 * fehlender Deckung abbrechen (dann bliebe der Abschnitt `ending` = gesperrt). Ohne Consumer /
+		 * deaktivierte Naht wird nur entsperrt (Satz bleibt `pending`).
+		 */
+		do_action( 'liw_ptime_settle', (int) $cur['id'], $user_id, Flags::charge_live() );
+		global $wpdb;
+		$wpdb->update( // phpcs:ignore WordPress.DB
+			Schema::session_table(),
+			[ 'status' => 'settled', 'updated_at' => current_time( 'mysql' ) ],
+			[ 'id' => (int) $cur['id'] ],
+			[ '%s', '%s' ],
+			[ '%d' ]
+		);
+		return [ 'ok' => true, 'state' => 'settled', 'session' => (int) $cur['id'] ];
+	}
+
+	/**
+	 * Report-Daten eines beendeten Abschnitts (verbrauchte Zeit + Token + Tarif + Abrechnungssatz).
+	 *
+	 * @param array<string,mixed> $row
+	 * @param array<string,mixed> $charge
+	 * @return array<string,mixed>
+	 */
+	private static function report_of( array $row, array $charge ): array {
 		return [
 			'ok'             => true,
-			'session'        => (int) $open['id'],
-			'active_seconds' => $active,
+			'session'        => (int) $row['id'],
+			'active_seconds' => (int) $row['active_seconds'],
 			'tokens'         => (int) $charge['token_amount'],
+			'rule_version'   => (string) $charge['rule_version'],
 			'charge'         => $charge,
 		];
 	}
@@ -238,8 +322,8 @@ final class SessionRepository {
 			'tokens'         => $tokens,
 			'running'        => 'running' === $status,
 			'idle'           => $idle,
-			'state'          => $status, // running | paused | stopped
-			'locked'         => 'paused' === $status, // P1: nur Standby sperrt; settlement folgt P2/P3.
+			'state'          => $status, // running | paused | ending | settled
+			'locked'         => ( 'paused' === $status || 'ending' === $status ), // Standby ODER Abrechnung offen.
 		];
 	}
 

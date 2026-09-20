@@ -1071,11 +1071,12 @@ try {
 	$__pt_hb   = \Liebherr\InterfaceWorld\PlatformTime\SessionRepository::heartbeat( $__pt_uid, $__t0 + 30 );
 	$__pt_stop = \Liebherr\InterfaceWorld\PlatformTime\SessionRepository::stop( $__pt_uid, $__t0 + 60 );
 	$__pt_stop2 = \Liebherr\InterfaceWorld\PlatformTime\SessionRepository::stop( $__pt_uid, $__t0 + 90 );
+	$__pt_charges = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$__pt_c} WHERE user_id = %d", $__pt_uid ) ); // phpcs:ignore WordPress.DB
 	liw_st_check(
-		'PTime-Session: start→heartbeat(30s)→stop(60s)=60s/10 Token pending; zweiter Stop no_session (Idempotenz)',
+		'PTime-Session: start→heartbeat(30s)→stop(60s)=60s/10 Token pending; zweiter Stop liefert idempotent denselben Report (KEINE Doppelbuchung)',
 		30 === (int) $__pt_hb['active_seconds'] && ! empty( $__pt_stop['ok'] ) && 60 === (int) $__pt_stop['active_seconds']
 		&& 10 === (int) $__pt_stop['tokens'] && 'pending' === $__pt_stop['charge']['status']
-		&& empty( $__pt_stop2['ok'] ) && 'no_session' === $__pt_stop2['reason']
+		&& ! empty( $__pt_stop2['ok'] ) && 60 === (int) $__pt_stop2['active_seconds'] && 1 === $__pt_charges
 	);
 	$wpdb->delete( $__pt_c, [ 'user_id' => $__pt_uid ] );
 	$wpdb->delete( $__pt_s, [ 'user_id' => $__pt_uid ] );
@@ -1119,6 +1120,40 @@ try {
 	);
 	$wpdb->delete( $__pt_c, [ 'user_id' => $__lk_uid ] );
 	$wpdb->delete( $__pt_s, [ 'user_id' => $__lk_uid ] );
+
+	// ── Beenden (end) → Report/Settlement-Sperre → settle (P2, ADR-LIW-MYL-002 §6) ──
+	$__en_uid = 970004;
+	$__e0     = 1000000000;
+	\Liebherr\InterfaceWorld\PlatformTime\SessionRepository::start( $__en_uid, $__e0 );
+	\Liebherr\InterfaceWorld\PlatformTime\SessionRepository::heartbeat( $__en_uid, $__e0 + 30 );
+	$__en_end = \Liebherr\InterfaceWorld\PlatformTime\SessionRepository::end( $__en_uid, $__e0 + 60 );
+	$__en_charges = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$__pt_c} WHERE user_id = %d", $__en_uid ) ); // phpcs:ignore WordPress.DB
+	liw_st_check(
+		'PTime-Beenden: end() 60s/10 Token, genau EIN Satz (pending), Sperre settlement',
+		! empty( $__en_end['ok'] ) && 60 === (int) $__en_end['active_seconds'] && 10 === (int) $__en_end['tokens']
+		&& 'pending' === $__en_end['charge']['status'] && 1 === $__en_charges
+		&& 'settlement' === \Liebherr\InterfaceWorld\PlatformTime\SessionRepository::lock_state( $__en_uid )
+	);
+	// Während „ending": kein neuer Abschnitt per start(); zweites end() bucht NICHT doppelt (Idempotenz).
+	$__en_start2 = \Liebherr\InterfaceWorld\PlatformTime\SessionRepository::start( $__en_uid, $__e0 + 90 );
+	$__en_end2   = \Liebherr\InterfaceWorld\PlatformTime\SessionRepository::end( $__en_uid, $__e0 + 120 );
+	$__en_charges2 = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$__pt_c} WHERE user_id = %d", $__en_uid ) ); // phpcs:ignore WordPress.DB
+	liw_st_check(
+		'PTime-Beenden: start() legt keinen neuen Abschnitt an (bleibt ending); zweites end() keine Doppelbuchung',
+		'ending' === (string) $__en_start2['status'] && 1 === $__en_charges2
+		&& 'settlement' === \Liebherr\InterfaceWorld\PlatformTime\SessionRepository::lock_state( $__en_uid )
+	);
+	// settle() → Abschnitt settled, Sperre faellt; danach legt start() wieder einen frischen Abschnitt an.
+	$__en_settle = \Liebherr\InterfaceWorld\PlatformTime\SessionRepository::settle( $__en_uid, $__e0 + 150 );
+	$__en_free   = \Liebherr\InterfaceWorld\PlatformTime\SessionRepository::lock_state( $__en_uid );
+	$__en_fresh  = \Liebherr\InterfaceWorld\PlatformTime\SessionRepository::start( $__en_uid, $__e0 + 180 );
+	liw_st_check(
+		'PTime-Settle: settle() entsperrt (settled); frischer start() = neuer running-Abschnitt',
+		! empty( $__en_settle['ok'] ) && '' === $__en_free
+		&& 'running' === (string) $__en_fresh['status'] && (int) $__en_fresh['id'] !== (int) $__en_end['session']
+	);
+	$wpdb->delete( $__pt_c, [ 'user_id' => $__en_uid ] );
+	$wpdb->delete( $__pt_s, [ 'user_id' => $__en_uid ] );
 
 	update_option( 'liw_myl_enabled', 1 );
 	$__tabs = \Liebherr\InterfaceWorld\Frontend\WorldSwitcher::platform_tabs();

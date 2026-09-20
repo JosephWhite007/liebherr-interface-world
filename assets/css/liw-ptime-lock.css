@@ -57,3 +57,11 @@
 .liw-ptlock__enter:hover:not(:disabled) { filter: brightness( 1.06 ); }
 .liw-ptlock__enter:disabled { opacity: 0.5; cursor: default; }
 .liw-ptlock__hint { margin: 10px 0 0; min-height: 1.2em; font-size: 0.85rem; color: var(--brand-primary, #f4761f); }
+
+/* Report/Beenden-Variante: verbrauchte Zeit + Token + Wallet-Saldo. */
+.liw-ptlock__report { margin: 0 0 14px; }
+.liw-ptlock__row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid color-mix( in srgb, var(--brand-text, #202326) 12%, transparent ); }
+.liw-ptlock__row:last-child { border-bottom: 0; }
+.liw-ptlock__row dt { margin: 0; font-size: 0.9rem; color: color-mix( in srgb, var(--brand-text, #202326) 70%, transparent ); }
+.liw-ptlock__row dd { margin: 0; font-size: 1.05rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.liw-ptlock__row[hidden] { display: none; }

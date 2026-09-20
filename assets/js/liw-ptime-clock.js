@@ -37,13 +37,18 @@
 			credentials: 'same-origin'
 		} ).then( function ( r ) { return r.json(); } ).catch( function () { return null; } );
 	}
+	function overlayPresent() {
+		return !! document.querySelector( '[data-liw-ptlock]' );
+	}
 	function sync( d ) {
 		if ( ! d || ! d.ok ) { return; }
-		// Server meldet Standby-Sperre (auch per Auto-Standby am Timeout): neu laden, damit der Server
-		// das Sperr-Overlay rendert (ADR-LIW-MYL-002 §4/§7).
+		// Server meldet Sperre (Standby oder Beenden/Abrechnung offen, auch per Auto-Standby am Timeout).
+		// Die Uhr hält an. Nur EINMAL neu laden – und NUR, wenn das Sperr-Overlay noch nicht da ist,
+		// sonst entsteht eine Reload-Schleife (das Overlay steht bei gesperrter Sitzung ohnehin schon).
 		if ( d.locked === true && ! stopped ) {
 			stopped = true;
-			window.location.reload();
+			clearInterval( hb );
+			if ( ! overlayPresent() ) { window.location.reload(); }
 			return;
 		}
 		if ( typeof d.active_seconds === 'number' ) { baseActive = d.active_seconds; baseAt = Date.now(); }
@@ -88,14 +93,12 @@
 	if ( btnStop ) {
 		btnStop.addEventListener( 'click', function () {
 			btnStop.disabled = true;
-			api( 'stop', 'POST' ).then( function ( d ) {
-				stopped = true; running = false;
-				clearInterval( hb );
-				if ( d && typeof d.active_seconds === 'number' ) { baseActive = d.active_seconds; }
-				if ( d && typeof d.tokens === 'number' ) { tokens = d.tokens; }
-				baseAt = Date.now();
-				paint();
-				if ( cfg.i18n && cfg.i18n.stopped && elTime ) { elTime.setAttribute( 'title', cfg.i18n.stopped ); }
+			// Beenden: Abschnitt abschließen (genau ein Abrechnungssatz) → Abschnitt „ending" = gesperrt;
+			// danach neu laden → Server rendert das Report-Overlay (Zeit/Token → auf Wallet buchen).
+			stopped = true;
+			clearInterval( hb );
+			api( 'end', 'POST' ).then( function () {
+				window.location.reload();
 			} );
 		} );
 	}

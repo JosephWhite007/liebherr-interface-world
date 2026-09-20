@@ -49,6 +49,9 @@ final class Rest {
 		register_rest_route( self::NAMESPACE, '/platform-time/standby',   [ 'methods' => 'POST', 'callback' => [ self::class, 'standby' ] ] + $login );
 		register_rest_route( self::NAMESPACE, '/platform-time/resume',    [ 'methods' => 'POST', 'callback' => [ self::class, 'resume' ] ] + $login );
 		register_rest_route( self::NAMESPACE, '/platform-time/challenge', [ 'methods' => 'GET',  'callback' => [ self::class, 'challenge' ] ] + $login );
+		register_rest_route( self::NAMESPACE, '/platform-time/end',       [ 'methods' => 'POST', 'callback' => [ self::class, 'end' ] ] + $login );
+		register_rest_route( self::NAMESPACE, '/platform-time/settle',    [ 'methods' => 'POST', 'callback' => [ self::class, 'settle' ] ] + $login );
+		register_rest_route( self::NAMESPACE, '/platform-time/report',    [ 'methods' => 'GET',  'callback' => [ self::class, 'report' ] ] + $login );
 	}
 
 	/** Angemeldet + My-Liebherr-Zugang (WP prüft bei Cookie-Auth zusätzlich den REST-Nonce). */
@@ -120,6 +123,47 @@ final class Rest {
 			'question' => ChallengeService::question( (int) $c['a'], (int) $c['b'] ),
 			'token'    => (string) $c['token'],
 		], 200 );
+	}
+
+	/** Beenden: Abschnitt abschließen + genau einen Abrechnungssatz (ADR-LIW-MYL-002 §6). Sperrt bis Bestätigung. */
+	public static function end( \WP_REST_Request $req ): \WP_REST_Response {
+		unset( $req );
+		if ( ! Flags::enabled() ) {
+			return self::disabled();
+		}
+		return new \WP_REST_Response( SessionRepository::end( get_current_user_id() ), 200 );
+	}
+
+	/** Abrechnung bestätigen: bucht (Naht) und entsperrt (ADR-LIW-MYL-002 §6). */
+	public static function settle( \WP_REST_Request $req ): \WP_REST_Response {
+		unset( $req );
+		if ( ! Flags::enabled() ) {
+			return self::disabled();
+		}
+		return new \WP_REST_Response( SessionRepository::settle( get_current_user_id() ), 200 );
+	}
+
+	/** GET: Report-Daten des beendeten Abschnitts (Zeit, Token, Tarif, Wallet-Saldo) für das Report-Overlay. */
+	public static function report( \WP_REST_Request $req ): \WP_REST_Response {
+		unset( $req );
+		if ( ! Flags::enabled() ) {
+			return self::disabled();
+		}
+		$uid = get_current_user_id();
+		$st  = SessionRepository::status( $uid );
+		$out = [
+			'ok'             => true,
+			'active_seconds' => (int) ( $st['active_seconds'] ?? 0 ),
+			'tokens'         => (int) ( $st['tokens'] ?? 0 ),
+			'state'          => (string) ( $st['state'] ?? '' ),
+		];
+		if ( \Liebherr\InterfaceWorld\CoreBridge\WalletBridge::available() ) {
+			$cents = \Liebherr\InterfaceWorld\CoreBridge\WalletBridge::balance_cents( $uid );
+			if ( null !== $cents ) {
+				$out['wallet_balance'] = \Liebherr\InterfaceWorld\CoreBridge\WalletBridge::format_cents( $cents );
+			}
+		}
+		return new \WP_REST_Response( $out, 200 );
 	}
 
 	/** Resume: prüft die Rechenaufgabe (einmalig) und setzt den Abschnitt fort (ADR-LIW-MYL-002 §7). */

@@ -1,5 +1,30 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.140] – 2026-09-20 – Plattformzeit P2: Beenden + Report + Abrechnungsprotokoll; Reload-Schleife behoben
+
+### Behoben
+- **Reload-Schleife bei aktiver Sperre.** Die Session-Uhr lud bei `locked` immer wieder neu, obwohl das
+  Sperr-Overlay schon stand (Standby lief in eine Endlosschleife). Jetzt hält die Uhr an und lädt **höchstens
+  einmal** neu – und nur, wenn das Overlay noch nicht vorhanden ist.
+
+### Neu
+- **Beenden** (Knopf „Sitzung beenden" an der Uhr) → REST `end`: schreibt die Zeit fest, überführt den
+  Abschnitt in **`ending`** (beendet, Abrechnung offen → gesperrt) und erzeugt **genau einen** Abrechnungssatz
+  (idempotent, MYL 027). Danach zeigt der Server das **Report-Overlay**: verbrauchte Zeit, Token, Tarifversion
+  und – falls verfügbar – der Wallet-Saldo, plus Knopf **„Auf Wallet buchen & weiter"**.
+- **Bestätigen** → REST `settle`: schaltet den Abschnitt frei (`settled`); die nächste Interaktion startet
+  eine frische Sitzung. Solange die Wallet-Naht deaktiviert ist (Standard), bleibt der Satz `pending`
+  (nur protokolliert, MYL 028) und die Bestätigung entsperrt (die echte Buchung + strenge Deckungsprüfung
+  kommt mit **P3**/Wallet-Pflichtenheft, Naht `liw_ptime_settle`).
+- REST ergänzt: `end`, `settle`, `report`. Das Sperr-Overlay unterscheidet **Standby** (Rechenaufgabe) und
+  **Beenden** (Report) je nach Sperrgrund; ein Reload während der Sperre legt keinen neuen Abschnitt an.
+
+### Verifikation
+- WP-frei `tests/run-tests.php` **662/662**; Docker `liw-selftest.php` **432/432** (neu: end 60 s/10 Token,
+  genau ein Satz, Sperre `settlement`; kein neuer Abschnitt während `ending`; zweites end ohne Doppelbuchung;
+  settle entsperrt + frischer Start). Browser: Report-Overlay über der gesperrten Plattform, Leiste bleibt
+  oben. `LIW_VERSION` .139→.140. (Live: WP-Rocket-Cache leeren.)
+
 ## [0.1.0-alpha.139] – 2026-09-20 – Plattformzeit P1: Standby + plattformweite Sperre (ADR-LIW-MYL-002)
 
 ### Neu

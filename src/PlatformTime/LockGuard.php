@@ -39,12 +39,17 @@ final class LockGuard {
 		return Flags::lock_enabled() && is_user_logged_in() && current_user_can( MylRoles::CAP_ACCESS );
 	}
 
-	/** Ist die eigene Sitzung gerade gesperrt (Standby)? */
+	/** Ist die eigene Sitzung gerade gesperrt (Standby oder Abrechnung offen)? */
 	public static function is_locked(): bool {
+		return '' !== self::reason();
+	}
+
+	/** Sperrgrund der eigenen Sitzung: '' | 'standby' | 'settlement'. */
+	public static function reason(): string {
 		if ( ! self::eligible() ) {
-			return false;
+			return '';
 		}
-		return '' !== SessionRepository::lock_state( get_current_user_id() );
+		return SessionRepository::lock_state( get_current_user_id() );
 	}
 
 	// ── REST-Enforcement ────────────────────────────────────────────────────
@@ -112,17 +117,22 @@ final class LockGuard {
 			'root'  => esc_url_raw( rest_url( Rest::NAMESPACE . '/platform-time/' ) ),
 			'nonce' => wp_create_nonce( 'wp_rest' ),
 			'i18n'  => [
-				'wrong'   => __( 'Leider falsch. Bitte erneut versuchen.', 'liebherr-interface-world' ),
-				'expired' => __( 'Aufgabe abgelaufen – eine neue wird geladen.', 'liebherr-interface-world' ),
-				'error'   => __( 'Es ist ein Fehler aufgetreten. Bitte erneut versuchen.', 'liebherr-interface-world' ),
+				'wrong'        => __( 'Leider falsch. Bitte erneut versuchen.', 'liebherr-interface-world' ),
+				'expired'      => __( 'Aufgabe abgelaufen – eine neue wird geladen.', 'liebherr-interface-world' ),
+				'error'        => __( 'Es ist ein Fehler aufgetreten. Bitte erneut versuchen.', 'liebherr-interface-world' ),
+				'insufficient' => __( 'Wallet-Guthaben reicht nicht. Bitte Wallet aufladen.', 'liebherr-interface-world' ),
 			],
 		] );
 	}
 
 	public static function render_overlay(): void {
-		if ( is_admin() || ! self::is_locked() ) {
+		if ( is_admin() ) {
 			return;
 		}
-		echo LockOverlay::render(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- in LockOverlay::render() escaped.
+		$reason = self::reason();
+		if ( '' === $reason ) {
+			return;
+		}
+		echo LockOverlay::render( $reason ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- in LockOverlay escaped.
 	}
 }

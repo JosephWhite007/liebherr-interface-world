@@ -68,9 +68,10 @@ vorhandener `PlatformTime\ChargeService`; Wallet-Buchung = Naht `liw_ptime_charg
   `PlatformTime\LockGuard` (gated REST `423` in allen Welten + Frontend-Overlay), `LockOverlay` mit
   `Cvf\ChallengeService`, REST `standby`/`resume`/`challenge`, Auto-Standby am Timeout, gemeinsamer Helfer
   `liw-worldbar-lock.js` (Intro + Sperre, keine Redundanz). WP-frei 662 / Docker 429. Abnahme MYL 029/030/032.
-- [ ] **P2 — Beenden + Report + Protokoll:** REST `end`, Report-Popup (Zeit/Token/Tarif), Protokoll
-  finalisieren, zweiter Knopf + **Anleitungs-Knopf** im Widget, Events `platformtime.*`. *(ohne Wallet)* —
-  Abnahme MYL 027/028/031.
+- [x] **P2 — Beenden + Report + Protokoll ✅ umgesetzt (alpha.140):** REST `end`/`settle`/`report`,
+  Report-Overlay (Zeit/Token/Tarif/Wallet-Saldo → „Auf Wallet buchen & weiter"), Status `ending`→`settled`,
+  Protokoll idempotent (genau ein Satz), Anleitung im Overlay. Zusätzlich **Reload-Schleife bei aktiver
+  Sperre behoben**. *(ohne Wallet)* — Abnahme MYL 027/028. WP-frei 662 / Docker 432.
 - [ ] **P3 — Wallet-Buchung scharf:** `settle` + `liw_ptime_charge`-Consumer gegen `WalletBridge`
   (`liw_ptime_charge_live`), strenge Deckungsprüfung, „Wallet aufladen"-Weg. **Hängt am
   Wallet-Mehrwährungs-Pflichtenheft (Core-Kategorie A), eigene Freigabe.** — Abnahme MYL 031.

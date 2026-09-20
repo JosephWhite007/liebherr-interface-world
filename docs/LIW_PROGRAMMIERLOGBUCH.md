@@ -21,6 +21,15 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.140 – Plattformzeit P2: Beenden + Report + Settlement; Reload-Schleife behoben
+
+- `assets/js/liw-ptime-clock.js`: Reload-Schleifen-Fix – bei `locked` hält die Uhr an (`clearInterval(hb)`) und lädt nur EINMAL neu, und NUR wenn `[data-liw-ptlock]` noch nicht vorhanden ist (`overlayPresent()`). Beenden-Knopf ruft jetzt `end` (statt in-place `stop`) und lädt neu → Server rendert Report-Overlay.
+- `src/PlatformTime/SessionRepository.php`: `stop()` → Status `ending` (statt `stopped`; historische `stopped`-Zeilen bleiben unangetastet) + idempotenter Report (kein Doppel-Charge), neu `end()` (Alias) + `settle()` (→ `settled`, Naht `liw_ptime_settle`) + `report_of()`; `current_for()` schließt `ending` ein; `lock_state()` liefert `settlement`; `state().locked` auch bei `ending`; `start()` legt bei bestehendem Abschnitt (auch ending) KEINEN neuen an; `heartbeat()`/`status()` melden Sperre statt neu zu starten.
+- `src/PlatformTime/Rest.php`: Routen `end`/`settle`/`report` (report liefert Zeit/Token/Tarif + Wallet-Saldo über `CoreBridge\WalletBridge`).
+- `src/PlatformTime/LockOverlay.php`: `render($reason)` dispatcht Standby vs. `render_report()` (Report/Settlement mit „Auf Wallet buchen & weiter"). `src/PlatformTime/LockGuard.php`: `reason()` ('' | standby | settlement), Overlay je Grund, i18n `insufficient`.
+- `assets/js/liw-ptime-lock.js`: verzweigt Report-Flow (`data-liw-ptreport`: report laden → settle → reload; `insufficient`-Hinweis) vs. Standby-Flow; gemeinsame Helfer (api/two/fmtTime) oben, Duplikate entfernt. `assets/css/liw-ptime-lock.css`: Report-Liste (`__report`/`__row`).
+- `liebherr-interface-world.php` LIW_VERSION .139→.140. `tests/run-tests.php` 662/662, `scripts/liw-selftest.php` 432/432 (PTime-Session-Idempotenz-Assert an neue Semantik angepasst; PTime-Beenden/Settle neu). FALLE: WP-Rocket-Cache leeren.
+
 ## 0.1.0-alpha.139 – Plattformzeit P1: Standby + plattformweite Sperre (ADR-LIW-MYL-002)
 
 - `src/PlatformTime/Schema.php`: Session-Tabelle um `paused_seconds` INT + `paused_at` DATETIME NULL ergänzt (Migration via dbDelta; COMMENT ohne Klammern).
