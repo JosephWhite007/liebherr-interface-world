@@ -139,6 +139,13 @@ liw_assert( 'aktiver Link erhält aria-current + Klasse is-current', str_contain
 liw_assert( 'kein Inline-Handler/eval im Skript', ! preg_match( '/\beval\s*\(/', $anchornav_src ), $checks, $failures );
 liw_assert( 'CSS enthält Aktiv-Zustand .liw-landingpage__nav-link.is-current', str_contains( $frontend_css, '.liw-landingpage__nav-link.is-current' ), $checks, $failures );
 
+// Plattformzeit-Sichtbarkeit (alpha.141): Time-Pille ohne JS sichtbar + Rocket-Kompatibilität.
+$clock_src  = (string) file_get_contents( $root . '/src/PlatformTime/ClockWidget.php' );
+$rocket_src = (string) file_get_contents( $root . '/src/Frontend/RocketCompat.php' );
+liw_assert( 'ClockWidget rendert die Time-Pille ohne hidden (sichtbar auch bei verzoegertem JS)', str_contains( $clock_src, "class=\"liw-ptime is-collapsed\" data-liw-ptime>" ), $checks, $failures );
+liw_assert( 'RocketCompat: RUCSS-Safelist enthaelt .liw-ptime', str_contains( $rocket_src, "'.liw-ptime'" ), $checks, $failures );
+liw_assert( 'RocketCompat: Delay-JS-Ausschluss fuer liw-ptime-clock.js', str_contains( $rocket_src, 'rocket_delay_js_exclusions' ) && str_contains( $rocket_src, 'assets/js/liw-ptime-clock.js' ), $checks, $failures );
+
 // 2f. Brand Tokens (Etappe 1, CI §10–12) – reine Logik ohne WordPress.
 echo "-- Brand Tokens (alpha.27) --\n";
 require_once $root . '/src/Branding/BrandTokens.php';

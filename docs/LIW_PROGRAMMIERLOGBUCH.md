@@ -21,6 +21,12 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.141 – Time-Pille wieder sichtbar (ohne JS + WP-Rocket-fest)
+
+- `src/PlatformTime/ClockWidget.php`: Widget-Wurzel ohne `hidden` gerendert (`class="liw-ptime is-collapsed" data-liw-ptime`) → eingeklappte Pille auch ohne/vor JS sichtbar (grüner Punkt blinkt per CSS). Ursache des Fehlers: bei WP Rocket „Delay JavaScript" blieb `hidden` bestehen (JS entfernte es nie).
+- `src/Frontend/RocketCompat.php`: RUCSS-Safelist um `.liw-ptime`/`.liw-ptlock`/`.liw-emg`/`.liw-header__lang` erweitert; neuer Filter `rocket_delay_js_exclusions` schließt `liw-ptime-clock.js`/`liw-ptime-lock.js`/`liw-worldbar-lock.js` + Inline-Konfig (`liwPtime`/`liwPtimeLock`) vom JS-Delay aus.
+- `tests/run-tests.php`: drei Asserts (Pille ohne hidden; Safelist enthält .liw-ptime; Delay-JS-Ausschluss). `liebherr-interface-world.php` LIW_VERSION .140→.141. WP-frei 665/665, Docker 432/432. Browser: Pille sichtbar ohne Clock-JS. FALLE: WP-Rocket-Cache leeren.
+
 ## 0.1.0-alpha.140 – Plattformzeit P2: Beenden + Report + Settlement; Reload-Schleife behoben
 
 - `assets/js/liw-ptime-clock.js`: Reload-Schleifen-Fix – bei `locked` hält die Uhr an (`clearInterval(hb)`) und lädt nur EINMAL neu, und NUR wenn `[data-liw-ptlock]` noch nicht vorhanden ist (`overlayPresent()`). Beenden-Knopf ruft jetzt `end` (statt in-place `stop`) und lädt neu → Server rendert Report-Overlay.

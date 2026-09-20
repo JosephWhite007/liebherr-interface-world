@@ -67,9 +67,10 @@ final class ClockWidget {
 			return;
 		}
 		// Standard: eingeklappt – nur der blinkende grüne Punkt + „Time" (Pill sitzt unten rechts, links vom
-		// Hilfe-Koffer). Erst ein Klick öffnet das vorhandene Fenster (Panel). aria-expanded=false von Anfang an,
-		// damit kein Aufblitzen des Panels vor dem JS entsteht.
-		echo '<div class="liw-ptime is-collapsed" data-liw-ptime hidden>'
+		// Hilfe-Koffer). Erst ein Klick öffnet das vorhandene Fenster (Panel). aria-expanded=false von Anfang an.
+		// WICHTIG: NICHT `hidden` rendern – die Pill ist ohne JS sichtbar (nur eingeklappt), damit sie auch bei
+		// verzögertem/aufgeschobenem JS (z. B. WP Rocket „Delay JavaScript") sofort erscheint. JS reichert nur an.
+		echo '<div class="liw-ptime is-collapsed" data-liw-ptime>'
 			. '<button type="button" class="liw-ptime__toggle" data-liw-ptime-toggle aria-expanded="false" aria-label="' . esc_attr__( 'Plattformzeit anzeigen', 'liebherr-interface-world' ) . '">'
 			. '<span class="liw-ptime__dot" aria-hidden="true"></span>'
 			. '<span class="liw-ptime__label">' . esc_html_x( 'Time', 'Plattformzeit-Kurzlabel neben dem Koffer', 'liebherr-interface-world' ) . '</span>'

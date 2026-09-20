@@ -1,5 +1,25 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.141] – 2026-09-20 – Time-Pille wieder sichtbar (ohne JS + WP-Rocket-fest)
+
+### Behoben
+- **Der grüne blinkende „Time"-Punkt unten rechts neben dem Hilfe-Koffer war unsichtbar.** Ursache: Das
+  Widget wurde mit `hidden` gerendert und erst per JavaScript eingeblendet – bei aktivem WP Rocket „Delay
+  JavaScript" (oder wenn das Skript-JS verzögert lädt) blieb es dauerhaft verborgen, während der Koffer
+  (per CSS sichtbar) erschien.
+- Fix: Die eingeklappte Pille wird jetzt **ohne `hidden`** gerendert und ist damit auch ohne/vor JavaScript
+  sichtbar (der grüne Punkt blinkt rein per CSS). JavaScript reichert nur noch an (Zeit/Token, Auf-/Zuklappen,
+  Standby/Beenden).
+- WP-Rocket-Härtung: `.liw-ptime`/`.liw-ptlock`/`.liw-emg`/`.liw-header__lang` in die RUCSS-Safelist
+  aufgenommen (Styles werden nicht mehr als „unbenutzt" gestrippt); die Plattform-Helfer-Skripte
+  (`liw-ptime-clock.js`, `liw-ptime-lock.js`, `liw-worldbar-lock.js` inkl. Inline-Konfig) sind von „Delay
+  JavaScript" ausgenommen, damit Uhr und Sperre sofort laufen.
+
+### Verifikation
+- Browser: Pille erscheint unten rechts (right:68/bottom:22, links vom Koffer) **auch ohne geladenes
+  Clock-JS**. WP-frei `tests/run-tests.php` **665/665**, Docker `liw-selftest.php` **432/432**. `LIW_VERSION`
+  .140→.141. (Live: nach Deploy WP-Rocket-Cache leeren.)
+
 ## [0.1.0-alpha.140] – 2026-09-20 – Plattformzeit P2: Beenden + Report + Abrechnungsprotokoll; Reload-Schleife behoben
 
 ### Behoben
