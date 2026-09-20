@@ -2,10 +2,9 @@
 /**
  * Liebherr – Website-Icon / Favicon „goldener Planet" (Intelligence-World-Vorgabe).
  *
- * Ersetzt das WordPress-Standard-Icon im Browser-Tab durch den goldenen GoHeal-Globus. Primär als
- * kontrastreiches SVG (assets/img/liw-planet-icon.svg); sind zusätzlich vom Auftraggeber gelieferte PNGs
- * hinterlegt (assets/img/goheal-gold-planet-32|192|180.png), werden diese ergänzt (Vorrang in Browsern
- * ohne SVG-Favicon-Unterstützung sowie für Apple-Touch-Icon). Ausgabe im `<head>` – Frontend, Admin und
+ * Ersetzt das WordPress-Standard-Icon im Browser-Tab durch den gelieferten goldenen Globus. Browser-Tab =
+ * `assets/img/favicon.ico` (Multi-Size, via get_site_icon_url); Adminleisten-/Login-Logo = derselbe Globus als
+ * PNG (`assets/img/liw-planet-icon.png`, 256px – aus der .ico extrahiert), mit SVG-Fallback. Ausgabe im `<head>` – Frontend, Admin und
  * Login –, damit das Icon auf allen Seiten erscheint (inkl. Local Intelligence). Über Filter
  * `liw_favicon_enabled` abschaltbar; die offizielle, WP-weite Pflege bleibt zusätzlich über
  * Design → Customizer → Website-Icon möglich.
@@ -54,12 +53,15 @@ final class FaviconService {
 	 * durch den goldenen Globus – per CSS (die Selektoren greifen nur im jeweiligen Kontext).
 	 */
 	public static function brand_logo_css(): string {
-		$svg = esc_url( LIW_URL . 'assets/img/liw-planet-icon.svg' );
+		// Gelieferter goldener Globus als PNG (256px, aus favicon.ico extrahiert) – identisch zum Browser-Tab.
+		// Fällt auf das SVG zurück, falls das PNG (noch) nicht ausgeliefert ist.
+		$png  = 'assets/img/liw-planet-icon.png';
+		$logo = esc_url( LIW_URL . ( is_readable( LIW_PATH . $png ) ? $png : 'assets/img/liw-planet-icon.svg' ) );
 		return '<style id="liw-brand-logo">'
 			// Admin-Leiste „W" → Globus (Frontend-Toolbar + wp-admin).
-			. '#wpadminbar #wp-admin-bar-wp-logo>.ab-item .ab-icon:before{content:"" !important;background:url(' . $svg . ') center center/16px 16px no-repeat;width:20px;height:100%;display:inline-block;}'
+			. '#wpadminbar #wp-admin-bar-wp-logo>.ab-item .ab-icon:before{content:"" !important;background:url(' . $logo . ') center center/16px 16px no-repeat;width:20px;height:100%;display:inline-block;}'
 			// Login-Seite: großes WordPress-Logo → Globus.
-			. 'body.login h1 a{background-image:url(' . $svg . ') !important;background-size:contain !important;width:120px;height:120px;}'
+			. 'body.login h1 a{background-image:url(' . $logo . ') !important;background-size:contain !important;width:120px;height:120px;}'
 			. '</style>' . "\n";
 	}
 

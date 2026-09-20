@@ -21,6 +21,12 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.143 – Neuer Globus im Adminleisten-/Login-Logo (Bugfix)
+
+- `assets/img/liw-planet-icon.png` (NEU, 256×256, aus gelieferter favicon.ico extrahiert = neuer Bayern-Globus).
+- `src/Frontend/FaviconService.php` (`brand_logo_css()`): Adminleisten-„W" (`#wp-admin-bar-wp-logo`) + Login-Logo (`body.login h1 a`) von `liw-planet-icon.svg` → `liw-planet-icon.png` umgestellt (SVG-Fallback via is_readable). Docblock aktualisiert. Browser-Tab (favicon.ico via get_site_icon_url) war bereits neu.
+- `liebherr-interface-world.php` LIW_VERSION .142→.143. PNG-Auslieferung im Browser verifiziert; `php -l` grün. FALLE: WP-Rocket- + Browser-Icon-Cache.
+
 ## 0.1.0-alpha.142 – Plattformzeit P3/W2: echte Token-Buchung aufs Wallet beim Beenden
 
 - `src/CoreBridge/WalletBridge.php`: Token-Naht ergänzt – `tokens_available()` (prüft Core `debit_tokens`), `token_balance()`, `token_summary()`, `debit_tokens()` (delegiert an Core-`WalletService`; strukturiertes Ergebnis {ok,reason,tx}, reason='insufficient_tokens' etc.).

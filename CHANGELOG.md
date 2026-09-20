@@ -1,5 +1,19 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.143] – 2026-09-21 – Neuer goldener Globus auch im Adminleisten-/Login-Logo
+
+### Behoben
+- Oben links in der **WP-Adminleiste** (und auf der **Login-Seite**) erschien noch der **alte** Globus:
+  Das Logo-CSS zeigte auf das alte `assets/img/liw-planet-icon.svg`, während der Browser-Tab bereits den neuen
+  Globus (`favicon.ico`) nutzt.
+- Fix: Aus der gelieferten `favicon.ico` den **256×256-Frame als PNG** extrahiert
+  (`assets/img/liw-planet-icon.png`, der neue Bayern-Globus) und das Adminleisten-/Login-Logo darauf
+  umgestellt (SVG bleibt nur noch als Fallback). Browser-Tab-Icon war bereits aktuell (unverändert).
+
+### Verifikation
+- PNG wird ausgeliefert (256×256, neuer Globus). `php -l` fehlerfrei. `LIW_VERSION` .142→.143.
+  (Nach Deploy WP-Rocket-Cache leeren; Browser-Cache für das Icon ggf. hart neu laden.)
+
 ## [0.1.0-alpha.142] – 2026-09-20 – Plattformzeit P3/W2: echte Token-Buchung aufs Wallet beim Beenden
 
 ### Neu
