@@ -1069,6 +1069,46 @@ try {
 	$wpdb->delete( $__pt_c, [ 'user_id' => $__pt_uid ] );
 	$wpdb->delete( $__pt_s, [ 'user_id' => $__pt_uid ] );
 
+	// ── Standby / Resume / Sperre + Auto-Standby (ADR-LIW-MYL-002 §4/§7, P1) ──
+	$__lk_uid = 970003;
+	$__l0     = 1000000000;
+	\Liebherr\InterfaceWorld\PlatformTime\SessionRepository::start( $__lk_uid, $__l0 );
+	\Liebherr\InterfaceWorld\PlatformTime\SessionRepository::heartbeat( $__lk_uid, $__l0 + 40 );
+	$__lk_free  = \Liebherr\InterfaceWorld\PlatformTime\SessionRepository::lock_state( $__lk_uid );
+	$__lk_stby  = \Liebherr\InterfaceWorld\PlatformTime\SessionRepository::standby( $__lk_uid, $__l0 + 60 );
+	$__lk_lock  = \Liebherr\InterfaceWorld\PlatformTime\SessionRepository::lock_state( $__lk_uid );
+	$__lk_charges = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$__pt_c} WHERE user_id = %d", $__lk_uid ) ); // phpcs:ignore WordPress.DB
+	liw_st_check(
+		'PTime-Standby: laufend=frei; standby friert 60s ein (locked, KEIN Abrechnungssatz)',
+		'' === $__lk_free && 60 === (int) $__lk_stby['active_seconds'] && true === (bool) $__lk_stby['locked']
+		&& 'standby' === $__lk_lock && 0 === $__lk_charges
+	);
+	// Resume: Pause zählt nicht als aktive Zeit; Sperre fällt; Token bleiben eingefroren.
+	$__lk_res  = \Liebherr\InterfaceWorld\PlatformTime\SessionRepository::resume( $__lk_uid, $__l0 + 600 );
+	$__lk_hb2  = \Liebherr\InterfaceWorld\PlatformTime\SessionRepository::heartbeat( $__lk_uid, $__l0 + 610 );
+	liw_st_check(
+		'PTime-Resume: Standby-Pause zaehlt nicht als aktive Zeit (bleibt 70s), Sperre faellt',
+		! empty( $__lk_res['ok'] ) && '' === \Liebherr\InterfaceWorld\PlatformTime\SessionRepository::lock_state( $__lk_uid )
+		&& 70 === (int) $__lk_hb2['active_seconds'] && false === (bool) $__lk_hb2['locked']
+	);
+	// Auto-Standby: großer Gap > Timeout → Heartbeat pausiert automatisch (Sperre greift ohne Aktion).
+	$__lk_auto = \Liebherr\InterfaceWorld\PlatformTime\SessionRepository::heartbeat( $__lk_uid, $__l0 + 610 + \Liebherr\InterfaceWorld\PlatformTime\SessionRepository::timeout() + 120 );
+	liw_st_check(
+		'PTime-Auto-Standby: Inaktivitaet > Timeout pausiert automatisch (locked)',
+		'paused' === (string) $__lk_auto['state'] && true === (bool) $__lk_auto['locked']
+		&& 'standby' === \Liebherr\InterfaceWorld\PlatformTime\SessionRepository::lock_state( $__lk_uid )
+	);
+	// LockGuard: gated Route wird erkannt, Steuerroute nicht.
+	$__lg = new \ReflectionMethod( \Liebherr\InterfaceWorld\PlatformTime\LockGuard::class, 'is_gated_route' );
+	$__lg->setAccessible( true );
+	liw_st_check(
+		'PTime-LockGuard: my-liebherr/v1/me gated, platform-time/resume frei',
+		true === $__lg->invoke( null, '/my-liebherr/v1/me' ) && true === $__lg->invoke( null, '/pocket/v1/feed' )
+		&& false === $__lg->invoke( null, '/my-liebherr/v1/platform-time/resume' )
+	);
+	$wpdb->delete( $__pt_c, [ 'user_id' => $__lk_uid ] );
+	$wpdb->delete( $__pt_s, [ 'user_id' => $__lk_uid ] );
+
 	update_option( 'liw_myl_enabled', 1 );
 	$__tabs = \Liebherr\InterfaceWorld\Frontend\WorldSwitcher::platform_tabs();
 	$__tab_last = end( $__tabs );

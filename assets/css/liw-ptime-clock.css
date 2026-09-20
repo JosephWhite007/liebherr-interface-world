@@ -72,6 +72,21 @@
 }
 .liw-ptime__stop:hover { filter: brightness( 1.05 ); }
 .liw-ptime__stop:disabled { opacity: 0.55; cursor: default; }
+.liw-ptime__standby {
+	appearance: none;
+	-webkit-appearance: none;
+	cursor: pointer;
+	margin-top: 4px;
+	padding: 7px 10px;
+	border-radius: 8px;
+	font-size: 12px;
+	font-weight: 600;
+	color: #f2f4f8;
+	background: transparent;
+	border: 1px solid rgba( 242, 244, 248, 0.35 );
+}
+.liw-ptime__standby:hover { border-color: rgba( 242, 244, 248, 0.7 ); }
+.liw-ptime__standby:disabled { opacity: 0.55; cursor: default; }
 
 @keyframes liw-ptime-pulse {
 	0%   { box-shadow: 0 0 0 0 rgba( 61, 220, 132, 0.6 ); }

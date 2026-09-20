@@ -95,8 +95,9 @@ final class Bootstrap {
 			MyLiebherr\MachinesView::register();  // My Machines [liw_my_machines] (§29 Pos. 09).
 			Pocket\Rest::register();              // Pocket Information REST (§37, self-gating liw_pocket_enabled).
 			Pocket\PocketView::register();        // Pocket Information [liw_pocket] (6. Reiter, §34).
-			PlatformTime\Rest::register();       // Plattformzeit REST (start/heartbeat/status/stop; self-gating ueber liw_ptime_enabled, §41).
+			PlatformTime\Rest::register();       // Plattformzeit REST (start/heartbeat/status/stop/standby/resume/challenge; self-gating liw_ptime_enabled, §41).
 			PlatformTime\ClockWidget::register(); // Schwebende Session-Uhr / Schachuhr (S11, §41.6).
+			PlatformTime\LockGuard::register();   // Plattformweite Standby-Sperre (REST 423 + Overlay; ADR-LIW-MYL-002 §5, §41.8).
 		Frontend\WorldSwitcher::register();  // Plattform-Umschalter der vier Inseln (Cross-Navigation).
 			Frontend\ThemeMenu::register();      // My Liebherr/Pocket im Theme-Frontend-Menü (rollen-/flag-gated, §1/§29/§35).
 		Frontend\SimulatorView::register();  // Liebherr Simulation World – Startbildschirm [liw_simulator].

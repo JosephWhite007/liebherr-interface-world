@@ -21,6 +21,22 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.139 – Plattformzeit P1: Standby + plattformweite Sperre (ADR-LIW-MYL-002)
+
+- `src/PlatformTime/Schema.php`: Session-Tabelle um `paused_seconds` INT + `paused_at` DATETIME NULL ergänzt (Migration via dbDelta; COMMENT ohne Klammern).
+- `src/PlatformTime/SessionRepository.php`: neu `current_for()` (running ODER paused), `lock_state()` ('' | 'standby'), `standby()` (einfrieren → `paused`, kein Charge, idempotent), `resume()` (Pausendauer → `paused_seconds`, `last_seen_at`=jetzt, damit die Pause nicht als aktive Zeit zählt); `heartbeat()` bei `idle` → Auto-`standby()` (§4); `status()` meldet auch pausierte Sitzung; `state()` liefert `state` + `locked`; `shape()` um neue Felder.
+- `src/PlatformTime/Flags.php`: `OPT_LOCK`/`lock_enabled()` (Default AN, nur wenn `enabled()`).
+- `src/PlatformTime/Rest.php`: neue Routen `standby`/`resume`/`challenge` (+ eigenes Signaturgeheimnis `liw_ptime_secret`, Einmal-Nonce via Transient, Schwierigkeit `double`); Rückkehr prüft `Cvf\ChallengeService`.
+- `src/PlatformTime/LockGuard.php` (NEU): `rest_pre_dispatch` → 423 für gated `my-liebherr/v1`+`pocket/v1` (außer `platform-time/*`) bei Standby; Frontend-Enqueue (liebherr-frontend.css + liw-ptime-lock.css + liw-worldbar-lock.js + liw-ptime-lock.js) + Overlay im `wp_footer`. Registriert in `src/Bootstrap.php`.
+- `src/PlatformTime/LockOverlay.php` (NEU): Standby-Overlay-Markup (Rechenaufgabe wird per JS nachgeladen) inkl. Anleitung (Tool-braucht-Anweisung).
+- `src/PlatformTime/ClockWidget.php`: zweiter Knopf „Standby (Raum verlassen)" + i18n.
+- `assets/js/liw-worldbar-lock.js` (NEU): gemeinsamer Helfer `LiwWorldbarLock.engage()/release()` (Leiste schwebt + Sprachumschalter in die Leiste) – EINE Quelle für Intro-Gate UND Sperre.
+- `assets/js/liebherr-frontend.js`: Intro nutzt jetzt `LiwWorldbarLock` (alpha.137-Inline-Umhängung entfernt, keine Redundanz).
+- `assets/js/liw-ptime-lock.js` (NEU): Overlay-Steuerung (challenge laden → resume → bei Erfolg reload). `assets/js/liw-ptime-clock.js`: Standby-Knopf → POST standby → reload; bei `locked` aus status/heartbeat → reload.
+- `assets/css/liw-ptime-lock.css` (NEU): Overlay-Optik (z 2147483000 < Leiste). `assets/css/liw-ptime-clock.css`: Standby-Knopf-Stil.
+- `src/Frontend/FrontendAssets.php`: `liw-worldbar-lock.js` als Abhängigkeit von `liebherr-frontend.js`. `tests/run-tests.php` + `scripts/liw-selftest.php` um Standby/Resume/Auto-Standby/LockGuard erweitert.
+- `liebherr-interface-world.php` LIW_VERSION .138→.139. WP-frei 662/662, Docker 429/429. FALLE: WP-Rocket-Cache leeren.
+
 ## Feature-Start: Plattformzeit Standby/Beenden + plattformweite Sperre (Konzept freigegeben 20.09.2026)
 
 Beschreibung der neuen Funktion (Umsetzung folgt in Stufen P1–P3, je eigener Versions-Eintrag unten):

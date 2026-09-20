@@ -1,5 +1,32 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.139] – 2026-09-20 – Plattformzeit P1: Standby + plattformweite Sperre (ADR-LIW-MYL-002)
+
+### Neu
+- **Standby** an der Session-Uhr (Knopf „Standby (Raum verlassen)"): friert den Zeitabschnitt ein
+  (`paused`, **kein** Token-Zuwachs, **kein** Abrechnungssatz) und **sperrt die Plattform sofort**.
+- **Plattformweite Sperre** (Server ist die Wahrheit): gated Plattform-REST (alle Welten: `my-liebherr/v1` +
+  `pocket/v1`) antwortet bei aktivem Standby mit **HTTP 423**; die Plattformzeit-Steuerung
+  (`platform-time/*`) bleibt frei. Im Frontend liegt ein **Sperr-Overlay** darüber – die „Liebherr World"-
+  Leiste und der Sprachumschalter **bleiben oben sichtbar/bedienbar** (gemeinsamer Helfer, `liw-intro-lock`).
+- **Rückkehr** nur über die server-autoritäre **Rechenaufgabe** (zwei zweistellige Zahlen, einmal einlösbar –
+  wiederverwendet `Cvf\ChallengeService`); erst danach fällt die Sperre. Kein Abzug.
+- **Auto-Standby (§41.1/§4):** Inaktivität/Timeout überführt den Abschnitt automatisch nach `paused`
+  (Sperre greift ohne Nutzeraktion).
+- Optionaler Schalter `liw_ptime_lock_enabled` (Default AN, nur wirksam bei aktiver Zeitmessung).
+
+### Hinweise
+- **P1 sperrt nur beim Standby.** „Beenden" (Report + Wallet-Buchung, Settlement-Sperre) folgt in **P2/P3**;
+  die echte Token-Buchung hängt am Wallet-Mehrwährungs-Pflichtenheft (Core-Kategorie A).
+- Neue Spalten `paused_seconds`/`paused_at` (Migration via `create_tables`/dbDelta). Der Sprachumschalter
+  wird nur dort in die Leiste gehängt, wo der Theme-Header existiert.
+
+### Verifikation
+- WP-frei `tests/run-tests.php` **662/662**; Docker `liw-selftest.php` **429/429** (neu: Standby friert 60 s
+  ein ohne Abrechnungssatz + locked; Resume zählt Pause nicht als aktive Zeit; Auto-Standby am Timeout;
+  LockGuard erkennt gated vs. Steuerroute). Browser: Overlay deckt die Plattform, Leiste bleibt oben
+  klickbar (z 2147483601 > Overlay 2147483000). `LIW_VERSION` .138→.139. (Live: WP-Rocket-Cache leeren.)
+
 ## [0.1.0-alpha.138] – 2026-09-20 – Plattformzeit als „Time"-Punkt neben den Koffer (unten rechts)
 
 ### Geändert

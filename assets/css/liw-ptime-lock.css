@@ -1,0 +1,59 @@
+/* Liebherr – Plattformzeit: Standby-Sperr-Overlay (ADR-LIW-MYL-002 §5.2). Vollbild-Overlay UNTER der
+   schwebenden „Liebherr World"-Leiste (html.liw-intro-lock .liw-switcher = z 2147483601); nur --brand-*-
+   Tokens, mobil-first. Ohne JS bleibt das Overlay statisch sichtbar (Plattform bleibt gesperrt). */
+
+.liw-ptlock {
+	position: fixed;
+	inset: 0;
+	z-index: 2147483000; /* über Inhalt, UNTER der Weltleiste (2147483601) */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 64px 16px 24px; /* oben Platz für die 44px-Leiste */
+	background: color-mix( in srgb, var(--brand-text, #202326) 78%, transparent );
+	font-family: var(--font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+	color: var(--brand-surface, #fff);
+}
+.liw-ptlock__panel {
+	width: 100%;
+	max-width: 420px;
+	background: var(--brand-surface, #fff);
+	color: var(--brand-text, #202326);
+	border: 1px solid color-mix( in srgb, var(--brand-primary, #f4761f) 45%, transparent );
+	border-radius: 16px;
+	padding: 22px 22px 18px;
+	box-shadow: 0 18px 48px rgba( 0, 0, 0, 0.45 );
+}
+.liw-ptlock__title { margin: 0 0 6px; font-family: var(--font-heading, inherit); font-size: 1.25rem; font-weight: 900; }
+.liw-ptlock__intro { margin: 0 0 12px; font-size: 0.95rem; line-height: 1.45; }
+.liw-ptlock__help { margin: 0 0 14px; font-size: 0.85rem; }
+.liw-ptlock__help summary { cursor: pointer; font-weight: 700; color: var(--brand-primary, #f4761f); }
+.liw-ptlock__help p { margin: 8px 0 0; line-height: 1.45; }
+.liw-ptlock__q { margin: 0 0 10px; font-size: 1.15rem; font-weight: 700; letter-spacing: 0.03em; }
+.liw-ptlock__label { display: block; font-size: 0.9rem; font-weight: 600; margin: 0 0 12px; }
+.liw-ptlock__answer {
+	display: block;
+	width: 100%;
+	margin-top: 6px;
+	padding: 10px 12px;
+	font-size: 1.05rem;
+	border: 1px solid color-mix( in srgb, var(--brand-text, #202326) 30%, transparent );
+	border-radius: 10px;
+	box-sizing: border-box;
+}
+.liw-ptlock__enter {
+	appearance: none;
+	-webkit-appearance: none;
+	border: 0;
+	cursor: pointer;
+	width: 100%;
+	padding: 11px 16px;
+	font-size: 1rem;
+	font-weight: 800;
+	border-radius: 10px;
+	color: var(--brand-surface, #fff);
+	background: var(--brand-primary, #f4761f);
+}
+.liw-ptlock__enter:hover:not(:disabled) { filter: brightness( 1.06 ); }
+.liw-ptlock__enter:disabled { opacity: 0.5; cursor: default; }
+.liw-ptlock__hint { margin: 10px 0 0; min-height: 1.2em; font-size: 0.85rem; color: var(--brand-primary, #f4761f); }

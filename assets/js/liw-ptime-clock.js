@@ -14,6 +14,7 @@
 	var elTime = root.querySelector( '[data-liw-ptime-time]' );
 	var elTok  = root.querySelector( '[data-liw-ptime-tokens]' );
 	var btnStop = root.querySelector( '[data-liw-ptime-stop]' );
+	var btnStby = root.querySelector( '[data-liw-ptime-standby]' );
 	var btnTgl  = root.querySelector( '[data-liw-ptime-toggle]' );
 
 	var baseActive = 0, baseAt = Date.now(), tokens = 0, running = false, stopped = false;
@@ -38,6 +39,13 @@
 	}
 	function sync( d ) {
 		if ( ! d || ! d.ok ) { return; }
+		// Server meldet Standby-Sperre (auch per Auto-Standby am Timeout): neu laden, damit der Server
+		// das Sperr-Overlay rendert (ADR-LIW-MYL-002 §4/§7).
+		if ( d.locked === true && ! stopped ) {
+			stopped = true;
+			window.location.reload();
+			return;
+		}
 		if ( typeof d.active_seconds === 'number' ) { baseActive = d.active_seconds; baseAt = Date.now(); }
 		if ( typeof d.tokens === 'number' ) { tokens = d.tokens; }
 		running = ( d.running !== false );
@@ -66,6 +74,15 @@
 			var col = root.classList.toggle( 'is-collapsed' );
 			btnTgl.setAttribute( 'aria-expanded', col ? 'false' : 'true' );
 			try { localStorage.setItem( 'liwPtimeCollapsed', col ? '1' : '0' ); } catch ( e ) {}
+		} );
+	}
+	if ( btnStby ) {
+		btnStby.addEventListener( 'click', function () {
+			btnStby.disabled = true;
+			// Standby: Uhr einfrieren + Plattform sperren; danach neu laden → Server rendert das Overlay.
+			api( 'standby', 'POST' ).then( function () {
+				window.location.reload();
+			} );
 		} );
 	}
 	if ( btnStop ) {

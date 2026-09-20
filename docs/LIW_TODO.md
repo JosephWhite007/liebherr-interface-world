@@ -64,9 +64,10 @@ Server-Gate ist die Wahrheit (REST `423` + reduziertes Template), Overlay ist nu
 (3) Sperre alle Welten, (4) Auto-Standby am Timeout. Rechenlogik = `Cvf\ChallengeService`; Protokoll =
 vorhandener `PlatformTime\ChargeService`; Wallet-Buchung = Naht `liw_ptime_charge` + `CoreBridge\WalletBridge`.
 
-- [ ] **P1 — Zustand + Sperre + Standby:** Sitzungs-Zustandsnutzung, plattformweites `LockGuard`
-  (REST `423` + Content-Reduktion in allen Welten), Standby-Overlay `LockOverlay` mit `ChallengeService`,
-  REST `standby`/`resume`, Auto-Standby am bestehenden Timeout. *(ohne Wallet)* — Abnahme MYL 029/030/032.
+- [x] **P1 — Zustand + Sperre + Standby ✅ umgesetzt (alpha.139):** `paused`-Zustand (`paused_seconds`/`paused_at`),
+  `PlatformTime\LockGuard` (gated REST `423` in allen Welten + Frontend-Overlay), `LockOverlay` mit
+  `Cvf\ChallengeService`, REST `standby`/`resume`/`challenge`, Auto-Standby am Timeout, gemeinsamer Helfer
+  `liw-worldbar-lock.js` (Intro + Sperre, keine Redundanz). WP-frei 662 / Docker 429. Abnahme MYL 029/030/032.
 - [ ] **P2 — Beenden + Report + Protokoll:** REST `end`, Report-Popup (Zeit/Token/Tarif), Protokoll
   finalisieren, zweiter Knopf + **Anleitungs-Knopf** im Widget, Events `platformtime.*`. *(ohne Wallet)* —
   Abnahme MYL 027/028/031.

@@ -82,12 +82,22 @@ final class FrontendAssets {
 			wp_add_inline_style( self::HANDLE, $font_css );
 		}
 
+		// Gemeinsamer „Weltleisten-Sperr"-Helfer (ADR-LIW-MYL-002 §5.2): eine Quelle für Intro-Gate UND
+		// Plattformzeit-Sperre (keine Redundanz). Muss vor liebherr-frontend.js geladen sein.
+		wp_enqueue_script(
+			'liw-worldbar-lock',
+			LIW_URL . 'assets/js/liw-worldbar-lock.js',
+			[],
+			self::asset_version( 'assets/js/liw-worldbar-lock.js' ),
+			true
+		);
+
 		// Aktive Hervorhebung des sichtbaren Abschnitts in der Sprungleiste (alpha.26):
-		// fortschreitende Verbesserung, im Footer, ohne Abhängigkeit, kein Inline-Code.
+		// fortschreitende Verbesserung, im Footer, hängt am Weltleisten-Helfer.
 		wp_enqueue_script(
 			self::HANDLE,
 			LIW_URL . 'assets/js/liebherr-frontend.js',
-			[],
+			[ 'liw-worldbar-lock' ],
 			LIW_VERSION,
 			true
 		);

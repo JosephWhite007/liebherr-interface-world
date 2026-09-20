@@ -54,6 +54,7 @@ final class ClockWidget {
 				'title'   => __( 'Plattformzeit', 'liebherr-interface-world' ),
 				'tokens'  => __( 'Token', 'liebherr-interface-world' ),
 				'stop'    => __( 'Sitzung beenden', 'liebherr-interface-world' ),
+				'standby' => __( 'Standby (Raum verlassen)', 'liebherr-interface-world' ),
 				'hide'    => __( 'Ausblenden', 'liebherr-interface-world' ),
 				'show'    => __( 'Plattformzeit', 'liebherr-interface-world' ),
 				'stopped' => __( 'Sitzung beendet', 'liebherr-interface-world' ),
@@ -76,6 +77,7 @@ final class ClockWidget {
 			. '<div class="liw-ptime__panel" data-liw-ptime-panel>'
 			. '<span class="liw-ptime__time" data-liw-ptime-time>00:00:00</span>'
 			. '<span class="liw-ptime__tokens"><strong data-liw-ptime-tokens>0</strong> ' . esc_html__( 'Token', 'liebherr-interface-world' ) . '</span>'
+			. '<button type="button" class="liw-ptime__standby" data-liw-ptime-standby>' . esc_html__( 'Standby (Raum verlassen)', 'liebherr-interface-world' ) . '</button>'
 			. '<button type="button" class="liw-ptime__stop" data-liw-ptime-stop>' . esc_html__( 'Sitzung beenden', 'liebherr-interface-world' ) . '</button>'
 			. '</div></div>';
 	}

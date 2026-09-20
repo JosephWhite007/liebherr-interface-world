@@ -48,6 +48,26 @@ final class SessionRepository {
 		return is_array( $row ) ? self::shape( $row ) : null;
 	}
 
+	/** Aktueller Abschnitt unabhängig vom Zustand (running ODER paused) oder null – für Sperre/Resume. */
+	public static function current_for( int $user_id ): ?array {
+		if ( $user_id <= 0 ) {
+			return null;
+		}
+		global $wpdb;
+		$t   = Schema::session_table();
+		$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$t} WHERE user_id = %d AND status IN ('running','paused') ORDER BY id DESC LIMIT 1", $user_id ), ARRAY_A ); // phpcs:ignore WordPress.DB
+		return is_array( $row ) ? self::shape( $row ) : null;
+	}
+
+	/**
+	 * Sperrzustand des Nutzers: '' (frei) oder 'standby' (Abschnitt pausiert, ADR-LIW-MYL-002 §4).
+	 * Die Beenden-/Abrechnungssperre (`settlement`) folgt in P2/P3.
+	 */
+	public static function lock_state( int $user_id ): string {
+		$cur = self::current_for( $user_id );
+		return ( null !== $cur && 'paused' === (string) $cur['status'] ) ? 'standby' : '';
+	}
+
 	/** Startet (oder setzt fort) den Zeitabschnitt = Reservierung beim Eintritt. */
 	public static function start( int $user_id, ?int $now = null ): array {
 		$now  = $now ?? self::now();
@@ -80,6 +100,11 @@ final class SessionRepository {
 			$open = self::start( $user_id, $now );
 		}
 		$acc = SessionClock::accrue( (int) $open['active_seconds'], self::ts( $open['last_seen_at'] ), $now, self::timeout() );
+		// Auto-Standby (ADR-LIW-MYL-002 §4): Bei Inaktivität/Timeout wird der Abschnitt automatisch pausiert
+		// (statt still weiterzulaufen) → die Sperre greift ohne Nutzeraktion.
+		if ( (bool) $acc['idle'] ) {
+			return self::standby( $user_id, $now );
+		}
 		global $wpdb;
 		$wpdb->update( // phpcs:ignore WordPress.DB
 			Schema::session_table(),
@@ -93,12 +118,77 @@ final class SessionRepository {
 		return self::state( $open, (bool) $acc['idle'] );
 	}
 
+	/**
+	 * Standby (ADR-LIW-MYL-002 §7): aktive Zeit bis jetzt festschreiben, dann Abschnitt einfrieren
+	 * (`paused`). Es entsteht KEIN Abrechnungssatz. Idempotent: ein bereits pausierter Abschnitt bleibt
+	 * pausiert. Nur der eigene laufende Abschnitt.
+	 *
+	 * @return array<string,mixed>
+	 */
+	public static function standby( int $user_id, ?int $now = null ): array {
+		$now = $now ?? self::now();
+		$cur = self::current_for( $user_id );
+		if ( null === $cur ) {
+			return [ 'active' => false, 'active_seconds' => 0, 'tokens' => 0, 'running' => false, 'state' => 'none', 'locked' => false ];
+		}
+		if ( 'paused' === (string) $cur['status'] ) {
+			return self::state( $cur, false ) + [ 'active' => true ];
+		}
+		$acc    = SessionClock::accrue( (int) $cur['active_seconds'], self::ts( $cur['last_seen_at'] ), $now, self::timeout() );
+		$active = (int) $acc['active'];
+		global $wpdb;
+		$wpdb->update( // phpcs:ignore WordPress.DB
+			Schema::session_table(),
+			[ 'active_seconds' => $active, 'status' => 'paused', 'paused_at' => self::dt( $now ), 'last_seen_at' => self::dt( $now ), 'updated_at' => current_time( 'mysql' ) ],
+			[ 'id' => (int) $cur['id'] ],
+			[ '%d', '%s', '%s', '%s', '%s' ],
+			[ '%d' ]
+		);
+		$cur['active_seconds'] = $active;
+		$cur['status']         = 'paused';
+		return self::state( $cur, false ) + [ 'active' => true ];
+	}
+
+	/**
+	 * Resume (ADR-LIW-MYL-002 §7): pausierten Abschnitt fortsetzen. Die Pausendauer wird auf
+	 * `paused_seconds` addiert (Token bleiben eingefroren, Festlegung 1) und `last_seen_at` auf jetzt
+	 * gesetzt, damit die Pause NICHT als aktive Zeit gezählt wird. Nur der eigene pausierte Abschnitt.
+	 *
+	 * @return array<string,mixed>
+	 */
+	public static function resume( int $user_id, ?int $now = null ): array {
+		$now = $now ?? self::now();
+		$cur = self::current_for( $user_id );
+		if ( null === $cur ) {
+			return [ 'ok' => false, 'reason' => 'no_session' ];
+		}
+		if ( 'running' === (string) $cur['status'] ) {
+			return [ 'ok' => true ] + self::state( $cur, false );
+		}
+		$paused_gap = max( 0, $now - self::ts( $cur['paused_at'] ) );
+		global $wpdb;
+		$wpdb->update( // phpcs:ignore WordPress.DB
+			Schema::session_table(),
+			[ 'status' => 'running', 'paused_seconds' => (int) $cur['paused_seconds'] + $paused_gap, 'paused_at' => null, 'last_seen_at' => self::dt( $now ), 'updated_at' => current_time( 'mysql' ) ],
+			[ 'id' => (int) $cur['id'] ],
+			[ '%s', '%d', '%s', '%s', '%s' ],
+			[ '%d' ]
+		);
+		$cur['status'] = 'running';
+		return [ 'ok' => true ] + self::state( $cur, false );
+	}
+
 	/** Aktueller Stand ohne Persistenz (Lesen) – rechnet den offenen Gap in-memory dazu. */
 	public static function status( int $user_id, ?int $now = null ): array {
 		$now  = $now ?? self::now();
 		$open = self::open_for( $user_id );
 		if ( null === $open ) {
-			return [ 'active' => false, 'active_seconds' => 0, 'tokens' => 0, 'running' => false ];
+			// Kein laufender Abschnitt: evtl. pausiert (Standby) → Sperrzustand melden, sonst frei.
+			$paused = self::current_for( $user_id );
+			if ( null !== $paused && 'paused' === (string) $paused['status'] ) {
+				return self::state( $paused, false ) + [ 'active' => true ];
+			}
+			return [ 'active' => false, 'active_seconds' => 0, 'tokens' => 0, 'running' => false, 'state' => 'none', 'locked' => false ];
 		}
 		$acc                    = SessionClock::accrue( (int) $open['active_seconds'], self::ts( $open['last_seen_at'] ), $now, self::timeout() );
 		$open['active_seconds'] = (int) $acc['active'];
@@ -141,12 +231,15 @@ final class SessionRepository {
 	private static function state( array $row, bool $idle ): array {
 		$seconds = (int) $row['active_seconds'];
 		$tokens  = TokenRule::current()->tokens_for( $seconds );
+		$status  = (string) $row['status'];
 		return [
 			'session'        => (int) $row['id'],
 			'active_seconds' => $seconds,
 			'tokens'         => $tokens,
-			'running'        => 'running' === (string) $row['status'],
+			'running'        => 'running' === $status,
 			'idle'           => $idle,
+			'state'          => $status, // running | paused | stopped
+			'locked'         => 'paused' === $status, // P1: nur Standby sperrt; settlement folgt P2/P3.
 		];
 	}
 
@@ -161,7 +254,9 @@ final class SessionRepository {
 			'status'         => (string) ( $row['status'] ?? 'running' ),
 			'rule_version'   => (string) ( $row['rule_version'] ?? '' ),
 			'active_seconds' => (int) ( $row['active_seconds'] ?? 0 ),
+			'paused_seconds' => (int) ( $row['paused_seconds'] ?? 0 ),
 			'started_at'     => (string) ( $row['started_at'] ?? '' ),
+			'paused_at'      => isset( $row['paused_at'] ) ? (string) $row['paused_at'] : null,
 			'last_seen_at'   => (string) ( $row['last_seen_at'] ?? '' ),
 			'ended_at'       => isset( $row['ended_at'] ) ? (string) $row['ended_at'] : null,
 		];

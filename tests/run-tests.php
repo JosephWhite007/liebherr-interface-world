@@ -131,7 +131,8 @@ $anchornav_src = is_readable( $anchornav_js ) ? (string) file_get_contents( $anc
 $frontassets   = (string) file_get_contents( $root . '/src/Frontend/FrontendAssets.php' );
 $frontend_css  = (string) file_get_contents( $root . '/assets/css/liebherr-frontend.css' );
 liw_assert( 'assets/js/liebherr-frontend.js vorhanden', '' !== $anchornav_src, $checks, $failures );
-liw_assert( 'FrontendAssets registriert das Skript im Footer mit LIW_VERSION', (bool) preg_match( "/wp_enqueue_script\(\s*self::HANDLE,\s*LIW_URL\s*\.\s*'assets\/js\/liebherr-frontend\.js',\s*\[\],\s*LIW_VERSION,\s*true\s*\)/", $frontassets ), $checks, $failures );
+liw_assert( 'FrontendAssets registriert das Skript im Footer mit LIW_VERSION', (bool) preg_match( "/wp_enqueue_script\(\s*self::HANDLE,\s*LIW_URL\s*\.\s*'assets\/js\/liebherr-frontend\.js',\s*\[\s*'liw-worldbar-lock'\s*\],\s*LIW_VERSION,\s*true\s*\)/", $frontassets ), $checks, $failures );
+liw_assert( 'FrontendAssets laedt den Weltleisten-Sperr-Helfer als Abhaengigkeit', str_contains( $frontassets, "'liw-worldbar-lock'," ) && str_contains( $frontassets, "assets/js/liw-worldbar-lock.js" ), $checks, $failures );
 liw_assert( 'Skript ist an .liw-landingpage__nav gebunden', str_contains( $anchornav_src, '.liw-landingpage__nav' ), $checks, $failures );
 liw_assert( 'Scrollspy nutzt IntersectionObserver', str_contains( $anchornav_src, 'IntersectionObserver' ), $checks, $failures );
 liw_assert( 'aktiver Link erhält aria-current + Klasse is-current', str_contains( $anchornav_src, "'aria-current'" ) && str_contains( $anchornav_src, 'is-current' ), $checks, $failures );
