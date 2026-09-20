@@ -36,6 +36,7 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 - `assets/css/liw-ptime-lock.css` (NEU): Overlay-Optik (z 2147483000 < Leiste). `assets/css/liw-ptime-clock.css`: Standby-Knopf-Stil.
 - `src/Frontend/FrontendAssets.php`: `liw-worldbar-lock.js` als Abhängigkeit von `liebherr-frontend.js`. `tests/run-tests.php` + `scripts/liw-selftest.php` um Standby/Resume/Auto-Standby/LockGuard erweitert.
 - `liebherr-interface-world.php` LIW_VERSION .138→.139. WP-frei 662/662, Docker 429/429. FALLE: WP-Rocket-Cache leeren.
+- Nachtrag (gleicher Tag): `scripts/liw-selftest.php` sichert die Feature-Flags (liw_myl_enabled/liw_pocket_enabled/liw_ptime_enabled/liw_cvf_enabled/liw_cvf_board_enabled/liw_public_release) am Anfang, erzwingt eine Default-AUS-Basis für die deterministischen Prüfungen und stellt im `finally` die vorherige Scharfschaltung wieder her. Damit setzt ein Selbsttest die im Dev gesetzten Kopfzeilen-Reiter (My Liebherr/Pocket) + die Plattformzeit-Time-Pille nicht mehr dauerhaft zurück. Kein LIW_VERSION-Bump (nur Dev-Testskript).
 
 ## Feature-Start: Plattformzeit Standby/Beenden + plattformweite Sperre (Konzept freigegeben 20.09.2026)
 

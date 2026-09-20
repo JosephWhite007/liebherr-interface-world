@@ -90,6 +90,17 @@ $cleanup_document_ids   = [];
 try {
 	global $wpdb;
 
+	// Feature-Flags VOR dem Test sichern und im finally-Block wiederherstellen, damit ein Selbsttest die
+	// im Dev gesetzte Scharfschaltung (z. B. liw_myl_enabled/liw_ptime_enabled → Kopfzeilen-Reiter + Time-
+	// Pille) NICHT dauerhaft zurücksetzt. Die „Default AUS"-Prüfungen laufen mittendrin (Flag gelöscht) und
+	// bleiben gültig; die Wiederherstellung erfolgt erst ganz am Ende.
+	$__flag_opts    = [ 'liw_myl_enabled', 'liw_pocket_enabled', 'liw_ptime_enabled', 'liw_cvf_enabled', 'liw_cvf_board_enabled', 'liw_public_release' ];
+	$__flag_restore = [];
+	foreach ( $__flag_opts as $__fo ) {
+		$__flag_restore[ $__fo ] = get_option( $__fo, '__liw_unset__' );
+		delete_option( $__fo ); // Bekannte Default-AUS-Basis, egal was im Dev gesetzt war (Prüfungen sind deterministisch).
+	}
+
 	// ── [0] Vorbedingungen ────────────────────────────────────────────────────
 	echo "\n[0] Vorbedingungen\n";
 	liw_st_check( 'Plugin-Konstanten definiert (LIW_VERSION/LIW_PATH)', defined( 'LIW_VERSION' ) && defined( 'LIW_PATH' ) );
@@ -1702,6 +1713,18 @@ try {
 	foreach ( $cleanup_contact_ids as $id ) {
 		$wpdb->delete( ContactSchema::table_name(), [ 'id' => $id ] );
 		$wpdb->delete( ConsentLogSchema::table_name(), [ 'request_id' => $id, 'request_kind' => 'contact' ] );
+	}
+	// Feature-Flags auf den Stand VOR dem Test zurücksetzen (siehe Sicherung oben) – bewahrt die im Dev
+	// gesetzte Scharfschaltung (Kopfzeilen-Reiter My Liebherr/Pocket + Plattformzeit-Time-Pille).
+	if ( isset( $__flag_restore ) && is_array( $__flag_restore ) ) {
+		foreach ( $__flag_restore as $__fo => $__fv ) {
+			if ( '__liw_unset__' === $__fv ) {
+				delete_option( $__fo );
+			} else {
+				update_option( $__fo, $__fv );
+			}
+		}
+		echo "  Feature-Flags wiederhergestellt (Scharfschaltung bleibt erhalten).\n";
 	}
 	echo "  Testdaten entfernt (Präfix {$run}).\n";
 }
