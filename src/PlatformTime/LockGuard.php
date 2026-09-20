@@ -114,15 +114,26 @@ final class LockGuard {
 		wp_enqueue_script( 'liw-worldbar-lock', self::bust( 'assets/js/liw-worldbar-lock.js' ), [], null, true );
 		wp_enqueue_script( 'liw-ptime-lock', self::bust( 'assets/js/liw-ptime-lock.js' ), [ 'liw-worldbar-lock' ], null, true );
 		wp_localize_script( 'liw-ptime-lock', 'liwPtimeLock', [
-			'root'  => esc_url_raw( rest_url( Rest::NAMESPACE . '/platform-time/' ) ),
-			'nonce' => wp_create_nonce( 'wp_rest' ),
-			'i18n'  => [
+			'root'       => esc_url_raw( rest_url( Rest::NAMESPACE . '/platform-time/' ) ),
+			'nonce'      => wp_create_nonce( 'wp_rest' ),
+			'wallet_url' => self::wallet_url(),
+			'i18n'       => [
 				'wrong'        => __( 'Leider falsch. Bitte erneut versuchen.', 'liebherr-interface-world' ),
 				'expired'      => __( 'Aufgabe abgelaufen – eine neue wird geladen.', 'liebherr-interface-world' ),
 				'error'        => __( 'Es ist ein Fehler aufgetreten. Bitte erneut versuchen.', 'liebherr-interface-world' ),
-				'insufficient' => __( 'Wallet-Guthaben reicht nicht. Bitte Wallet aufladen.', 'liebherr-interface-world' ),
+				'insufficient' => __( 'Token-Guthaben reicht nicht. Bitte Wallet aufladen.', 'liebherr-interface-world' ),
+				'topup'        => __( 'Wallet aufladen', 'liebherr-interface-world' ),
 			],
 		] );
+	}
+
+	/** Ziel für „Wallet aufladen": My-Liebherr-Seite (dort steht My Wallet), sonst leer. */
+	private static function wallet_url(): string {
+		$page_id = (int) get_option( 'liw_my_liebherr_page_id', 0 );
+		if ( $page_id > 0 && 'publish' === get_post_status( $page_id ) ) {
+			return (string) get_permalink( $page_id );
+		}
+		return '';
 	}
 
 	public static function render_overlay(): void {

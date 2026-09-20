@@ -65,3 +65,17 @@
 .liw-ptlock__row dt { margin: 0; font-size: 0.9rem; color: color-mix( in srgb, var(--brand-text, #202326) 70%, transparent ); }
 .liw-ptlock__row dd { margin: 0; font-size: 1.05rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 .liw-ptlock__row[hidden] { display: none; }
+.liw-ptlock__topup {
+	display: inline-block;
+	margin-top: 10px;
+	padding: 9px 14px;
+	border-radius: 10px;
+	font-size: 0.9rem;
+	font-weight: 700;
+	text-decoration: none;
+	color: var(--brand-text, #202326);
+	background: var(--brand-surface, #fff);
+	border: 1px solid var(--brand-primary, #f4761f);
+}
+.liw-ptlock__topup:hover { background: color-mix( in srgb, var(--brand-primary, #f4761f) 12%, var(--brand-surface, #fff) ); }
+.liw-ptlock__topup[hidden] { display: none; }

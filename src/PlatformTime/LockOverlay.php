@@ -82,6 +82,7 @@ final class LockOverlay {
 		$html .= '<form class="liw-ptlock__form" data-liw-ptreport-form novalidate>';
 		$html .= '<button type="submit" class="liw-ptlock__enter" data-liw-ptreport-settle>' . $enter . '</button>';
 		$html .= '<p class="liw-ptlock__hint" data-liw-ptreport-hint aria-live="polite"></p>';
+		$html .= '<a class="liw-ptlock__topup" data-liw-ptreport-topup href="#" hidden></a>';
 		$html .= '</form>';
 		$html .= '</div></div>';
 		return $html;

@@ -72,9 +72,13 @@ vorhandener `PlatformTime\ChargeService`; Wallet-Buchung = Naht `liw_ptime_charg
   Report-Overlay (Zeit/Token/Tarif/Wallet-Saldo → „Auf Wallet buchen & weiter"), Status `ending`→`settled`,
   Protokoll idempotent (genau ein Satz), Anleitung im Overlay. Zusätzlich **Reload-Schleife bei aktiver
   Sperre behoben**. *(ohne Wallet)* — Abnahme MYL 027/028. WP-frei 662 / Docker 432.
-- [ ] **P3 — Wallet-Buchung scharf:** `settle` + `liw_ptime_charge`-Consumer gegen `WalletBridge`
-  (`liw_ptime_charge_live`), strenge Deckungsprüfung, „Wallet aufladen"-Weg. **Hängt am
-  Wallet-Mehrwährungs-Pflichtenheft (Core-Kategorie A), eigene Freigabe.** — Abnahme MYL 031.
+- [x] **P3 — Wallet-Buchung scharf ✅ umgesetzt:** W1 im **Core** (`araliya-platform-core` alpha.718, Branch
+  `feature/ARY-wallet-token`, DB 4.93.0): Token-Währung TOK neben EUR, `WalletService::*_tokens`, Konto je
+  (guest_id,currency). W2 im **Satelliten** (alpha.142): `settle` bucht echt über `WalletBridge::debit_tokens`
+  bei `liw_ptime_charge_live`, strenge Deckungsprüfung (`insufficient` → bleibt gesperrt), „Wallet aufladen"-Weg.
+  Docker 434 / WP-frei 665. Abnahme MYL 031 (+ WAL 01/02/03/05 im Core-Selbsttest). **Live:** Core deployen +
+  Flag setzen. **Rest der Wallet-Nähte** (Leistung §33, Erstattung §11, TokenAccount-Migration) bleibt späteren
+  Wallet-Releases W2–W4 vorbehalten (bewusst nicht Teil von „nur Plattformzeit").
 
 ## Auf Zuruf erledigt (ungeplant, nach Group A)
 

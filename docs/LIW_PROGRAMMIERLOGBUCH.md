@@ -21,6 +21,15 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.142 – Plattformzeit P3/W2: echte Token-Buchung aufs Wallet beim Beenden
+
+- `src/CoreBridge/WalletBridge.php`: Token-Naht ergänzt – `tokens_available()` (prüft Core `debit_tokens`), `token_balance()`, `token_summary()`, `debit_tokens()` (delegiert an Core-`WalletService`; strukturiertes Ergebnis {ok,reason,tx}, reason='insufficient_tokens' etc.).
+- `src/PlatformTime/ChargeService.php`: `get( $session_id )` (Satz lesen) + `mark_settled( $session_id, $wallet_ref )` (Status→settled + wallet_ref, append-only).
+- `src/PlatformTime/SessionRepository.php` (`settle()`): bei `Flags::charge_live()` + `WalletBridge::tokens_available()` echte Token-Abbuchung (Betrag/rule_version aus dem Satz, idem-key `ptime-settle-<session>`, Quelle `token_billing_debit`, source_ref `ptime:<session>`). Streng: `insufficient` → return {ok:false,reason:'insufficient',state:'ending',locked:true} (bleibt gesperrt). Erfolg → `mark_settled` + Session `settled`. Naht AUS/0 Token → wie P2 (entsperren, pending). Event `liw_ptime_settled`.
+- `src/PlatformTime/LockGuard.php`: `wallet_url()` (My-Liebherr-Seite) + i18n `topup` in `liwPtimeLock`.
+- `src/PlatformTime/LockOverlay.php`: „Wallet aufladen"-Link (hidden) im Report-Overlay. `assets/js/liw-ptime-lock.js`: bei `insufficient` Link mit `cfg.wallet_url` einblenden. `assets/css/liw-ptime-lock.css`: `.liw-ptlock__topup`.
+- `liebherr-interface-world.php` LIW_VERSION .141→.142. `scripts/liw-selftest.php` um W2 (Buchung + strenge Deckung) erweitert. Docker 434/434, WP-frei 665/665. Live-Voraussetzung: Core ≥ alpha.718 + Flag `liw_ptime_charge_live`. FALLE: WP-Rocket-Cache leeren.
+
 ## 0.1.0-alpha.141 – Time-Pille wieder sichtbar (ohne JS + WP-Rocket-fest)
 
 - `src/PlatformTime/ClockWidget.php`: Widget-Wurzel ohne `hidden` gerendert (`class="liw-ptime is-collapsed" data-liw-ptime`) → eingeklappte Pille auch ohne/vor JS sichtbar (grüner Punkt blinkt per CSS). Ursache des Fehlers: bei WP Rocket „Delay JavaScript" blieb `hidden` bestehen (JS entfernte es nie).

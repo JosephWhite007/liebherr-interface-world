@@ -68,6 +68,34 @@ final class ChargeService {
 	}
 
 	/**
+	 * Liest den Abrechnungssatz eines Abschnitts (oder null), z. B. für die Wallet-Buchung beim Settle.
+	 *
+	 * @return array<string,mixed>|null
+	 */
+	public static function get( int $session_id ): ?array {
+		global $wpdb;
+		$table = Schema::charge_table();
+		$row   = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table} WHERE idempotency_key = %s", 'ptime-' . $session_id ), ARRAY_A ); // phpcs:ignore WordPress.DB
+		return is_array( $row ) ? self::shape( $row ) : null;
+	}
+
+	/**
+	 * Markiert den Abrechnungssatz nach erfolgreicher Wallet-Buchung als `settled` und hinterlegt die
+	 * Wallet-Referenz (Transaktions-ID). Append-only-Prinzip bleibt gewahrt: nur Status/Referenz, keine
+	 * Betragsänderung.
+	 */
+	public static function mark_settled( int $session_id, string $wallet_ref ): void {
+		global $wpdb;
+		$wpdb->update( // phpcs:ignore WordPress.DB
+			Schema::charge_table(),
+			[ 'status' => 'settled', 'wallet_ref' => $wallet_ref ],
+			[ 'idempotency_key' => 'ptime-' . $session_id ],
+			[ '%s', '%s' ],
+			[ '%s' ]
+		);
+	}
+
+	/**
 	 * @param array<string,mixed> $row
 	 * @return array<string,mixed>
 	 */

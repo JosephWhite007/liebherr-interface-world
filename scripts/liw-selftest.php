@@ -1155,6 +1155,62 @@ try {
 	$wpdb->delete( $__pt_c, [ 'user_id' => $__en_uid ] );
 	$wpdb->delete( $__pt_s, [ 'user_id' => $__en_uid ] );
 
+	// ── P3/W2: echte Token-Buchung beim Settle (charge_live), strenge Deckungsprüfung ──
+	if ( \Liebherr\InterfaceWorld\CoreBridge\WalletBridge::tokens_available() ) {
+		$__wc  = 'Araliya\\Platform\\Core\\Modules\\Wallet\\WalletService';
+		$__acc = $wpdb->prefix . 'ary_wallet_accounts';
+		$__wtx = $wpdb->prefix . 'ary_wallet_transactions';
+		add_filter( 'liw_ptime_charge_live', '__return_true' );
+
+		$__clean_wallet = static function ( int $uid ) use ( $wpdb, $__acc, $__wtx ): void {
+			$ids = $wpdb->get_col( $wpdb->prepare( "SELECT id FROM `{$__acc}` WHERE guest_id = %d", $uid ) );
+			foreach ( $ids as $id ) { $wpdb->delete( $__wtx, [ 'account_id' => $id ] ); }
+			$wpdb->delete( $__acc, [ 'guest_id' => $uid ] );
+		};
+
+		// W2a — genug Token: end(60s=10 Token) → settle bucht → settled + Satz settled + 10 Token abgezogen.
+		$__ta = 970006; $__t0 = 1000000000;
+		$__clean_wallet( $__ta );
+		$__wc::credit_tokens( $__ta, 50, 'platform_start', 'seed', 'rule-v1', 'wt2a-seed-' . $__ta );
+		\Liebherr\InterfaceWorld\PlatformTime\SessionRepository::start( $__ta, $__t0 );
+		\Liebherr\InterfaceWorld\PlatformTime\SessionRepository::heartbeat( $__ta, $__t0 + 60 );
+		$__ea = \Liebherr\InterfaceWorld\PlatformTime\SessionRepository::end( $__ta, $__t0 + 60 );
+		$__sa = \Liebherr\InterfaceWorld\PlatformTime\SessionRepository::settle( $__ta, $__t0 + 90 );
+		$__cha = \Liebherr\InterfaceWorld\PlatformTime\ChargeService::get( (int) $__ea['session'] );
+		liw_st_check(
+			'PTime-W2 Buchung: charge_live + genug Token → settle bucht (settled, Satz settled, Token 50→40)',
+			! empty( $__sa['ok'] ) && 'settled' === ( $__sa['state'] ?? '' )
+			&& '' === \Liebherr\InterfaceWorld\PlatformTime\SessionRepository::lock_state( $__ta )
+			&& 40 === (int) $__wc::token_balance( $__ta )
+			&& is_array( $__cha ) && 'settled' === $__cha['status']
+		);
+		$__clean_wallet( $__ta );
+		$wpdb->delete( $__pt_c, [ 'user_id' => $__ta ] );
+		$wpdb->delete( $__pt_s, [ 'user_id' => $__ta ] );
+
+		// W2b — zu wenig Token: settle streng abgelehnt → Abschnitt bleibt ending (gesperrt), Saldo unverändert.
+		$__tb = 970007;
+		$__clean_wallet( $__tb );
+		$__wc::credit_tokens( $__tb, 5, 'platform_start', 'seed', 'rule-v1', 'wt2b-seed-' . $__tb );
+		\Liebherr\InterfaceWorld\PlatformTime\SessionRepository::start( $__tb, $__t0 );
+		\Liebherr\InterfaceWorld\PlatformTime\SessionRepository::heartbeat( $__tb, $__t0 + 60 );
+		\Liebherr\InterfaceWorld\PlatformTime\SessionRepository::end( $__tb, $__t0 + 60 );
+		$__sb = \Liebherr\InterfaceWorld\PlatformTime\SessionRepository::settle( $__tb, $__t0 + 90 );
+		liw_st_check(
+			'PTime-W2 Deckung streng: zu wenig Token → settle=insufficient, bleibt gesperrt, Saldo 5 unverändert',
+			empty( $__sb['ok'] ) && 'insufficient' === ( $__sb['reason'] ?? '' )
+			&& 'settlement' === \Liebherr\InterfaceWorld\PlatformTime\SessionRepository::lock_state( $__tb )
+			&& 5 === (int) $__wc::token_balance( $__tb )
+		);
+		$__clean_wallet( $__tb );
+		$wpdb->delete( $__pt_c, [ 'user_id' => $__tb ] );
+		$wpdb->delete( $__pt_s, [ 'user_id' => $__tb ] );
+
+		remove_filter( 'liw_ptime_charge_live', '__return_true' );
+	} else {
+		liw_st_check( 'PTime-W2 Token-Naht: Core-Token-Wallet verfügbar (übersprungen, Core-Mehrwährung noch nicht ausgerollt)', true );
+	}
+
 	update_option( 'liw_myl_enabled', 1 );
 	$__tabs = \Liebherr\InterfaceWorld\Frontend\WorldSwitcher::platform_tabs();
 	$__tab_last = end( $__tabs );

@@ -46,6 +46,7 @@
 		var rForm  = root.querySelector( '[data-liw-ptreport-form]' );
 		var rBtn   = root.querySelector( '[data-liw-ptreport-settle]' );
 		var rHint  = root.querySelector( '[data-liw-ptreport-hint]' );
+		var rTopup = root.querySelector( '[data-liw-ptreport-topup]' );
 		var rBusy  = false;
 
 		api( 'report', 'GET' ).then( function ( d ) {
@@ -69,6 +70,12 @@
 					rBusy = false; if ( rBtn ) { rBtn.disabled = false; }
 					var reason = d && d.reason ? d.reason : 'error';
 					if ( rHint ) { rHint.textContent = 'insufficient' === reason ? ( i18n.insufficient || '' ) : ( i18n.error || '' ); }
+					// Bei fehlender Deckung „Wallet aufladen" anbieten (Plattform bleibt gesperrt).
+					if ( 'insufficient' === reason && rTopup && cfg.wallet_url ) {
+						rTopup.href = cfg.wallet_url;
+						rTopup.textContent = i18n.topup || 'Wallet';
+						rTopup.removeAttribute( 'hidden' );
+					}
 				} );
 			} );
 		}

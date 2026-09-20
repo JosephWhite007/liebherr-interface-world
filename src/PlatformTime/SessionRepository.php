@@ -271,21 +271,44 @@ final class SessionRepository {
 		if ( null === $cur || 'ending' !== (string) $cur['status'] ) {
 			return [ 'ok' => false, 'reason' => 'no_settlement' ];
 		}
-		/**
-		 * Naht für die echte Token-Buchung (P3). Ein Consumer kann bei aktivierter Wallet buchen und bei
-		 * fehlender Deckung abbrechen (dann bliebe der Abschnitt `ending` = gesperrt). Ohne Consumer /
-		 * deaktivierte Naht wird nur entsperrt (Satz bleibt `pending`).
-		 */
-		do_action( 'liw_ptime_settle', (int) $cur['id'], $user_id, Flags::charge_live() );
+		$session_id = (int) $cur['id'];
+
+		// Echte Token-Buchung (P3/W2), NUR bei scharfer Naht (liw_ptime_charge_live) und verfügbarer
+		// Token-Wallet. Streng (Festlegung 2): reicht das Token-Guthaben nicht, bleibt der Abschnitt
+		// `ending` (= gesperrt) und der Nutzer wird auf „Wallet aufladen" verwiesen. Idempotent über
+		// den Schlüssel ptime-settle-<session> (auch im Core), daher kein Doppelabzug bei Wiederholung.
+		if ( Flags::charge_live() && \Liebherr\InterfaceWorld\CoreBridge\WalletBridge::tokens_available() ) {
+			$charge = ChargeService::get( $session_id );
+			$tokens = null !== $charge ? (int) $charge['token_amount'] : 0;
+			$rule   = null !== $charge ? (string) $charge['rule_version'] : '';
+			if ( $tokens > 0 ) {
+				$res = \Liebherr\InterfaceWorld\CoreBridge\WalletBridge::debit_tokens(
+					$user_id,
+					$tokens,
+					'token_billing_debit',
+					'ptime:' . $session_id,
+					$rule,
+					'ptime-settle-' . $session_id
+				);
+				if ( empty( $res['ok'] ) ) {
+					$reason = ( 'insufficient_tokens' === ( $res['reason'] ?? '' ) ) ? 'insufficient' : ( $res['reason'] ?: 'charge_failed' );
+					return [ 'ok' => false, 'reason' => $reason, 'state' => 'ending', 'locked' => true ];
+				}
+				ChargeService::mark_settled( $session_id, (string) $res['tx'] );
+			}
+		}
+
+		// Naht AUS ODER erfolgreich gebucht ODER 0 Token → Abschnitt freigeben.
 		global $wpdb;
 		$wpdb->update( // phpcs:ignore WordPress.DB
 			Schema::session_table(),
 			[ 'status' => 'settled', 'updated_at' => current_time( 'mysql' ) ],
-			[ 'id' => (int) $cur['id'] ],
+			[ 'id' => $session_id ],
 			[ '%s', '%s' ],
 			[ '%d' ]
 		);
-		return [ 'ok' => true, 'state' => 'settled', 'session' => (int) $cur['id'] ];
+		do_action( 'liw_ptime_settled', $session_id, $user_id, Flags::charge_live() );
+		return [ 'ok' => true, 'state' => 'settled', 'session' => $session_id ];
 	}
 
 	/**

@@ -67,6 +67,54 @@ final class WalletBridge {
 		return is_array( $rows ) ? $rows : [];
 	}
 
+	// ── Token-Währung (TOK) – Naht zur Core-Wallet-Mehrwährung (ARY-PH-Wallet §5) ────────────────────────
+
+	/** Ist die Token-Buchungsnaht im Core verfügbar (Mehrwährung ausgerollt)? */
+	public static function tokens_available(): bool {
+		return self::available() && method_exists( self::WALLET_CLASS, 'debit_tokens' );
+	}
+
+	/** Token-Saldo (ganze Token) oder null, wenn die Wallet/Token-Naht fehlt. */
+	public static function token_balance( int $user_id ): ?int {
+		if ( $user_id <= 0 || ! self::tokens_available() ) {
+			return null;
+		}
+		$cls = self::WALLET_CLASS;
+		return (int) $cls::token_balance( $user_id );
+	}
+
+	/**
+	 * Token-Zusammenfassung (Saldo + Lebenszeitsummen) oder null.
+	 *
+	 * @return array<string,mixed>|null
+	 */
+	public static function token_summary( int $user_id ): ?array {
+		if ( $user_id <= 0 || ! self::tokens_available() ) {
+			return null;
+		}
+		$cls = self::WALLET_CLASS;
+		$sum = $cls::token_summary( $user_id );
+		return is_array( $sum ) ? $sum : null;
+	}
+
+	/**
+	 * Token abbuchen (Plattformnutzung). Delegiert an die Core-Wallet (idempotent, strenge Deckungsprüfung).
+	 * Gibt ein strukturiertes Ergebnis zurück, damit der Aufrufer bei fehlender Deckung die Sperre halten kann.
+	 *
+	 * @return array{ok:bool,reason:string,tx:int} reason='unavailable'|'insufficient_tokens'|<error_code>|''
+	 */
+	public static function debit_tokens( int $user_id, int $amount, string $source, string $source_ref, string $rule_version, string $idempotency_key ): array {
+		if ( $user_id <= 0 || $amount <= 0 || ! self::tokens_available() ) {
+			return [ 'ok' => false, 'reason' => 'unavailable', 'tx' => 0 ];
+		}
+		$cls = self::WALLET_CLASS;
+		$res = $cls::debit_tokens( $user_id, $amount, $source, $source_ref, $rule_version, $idempotency_key );
+		if ( is_wp_error( $res ) ) {
+			return [ 'ok' => false, 'reason' => (string) $res->get_error_code(), 'tx' => 0 ];
+		}
+		return [ 'ok' => true, 'reason' => '', 'tx' => (int) $res ];
+	}
+
 	/** Formatiert Minor-Units als lesbaren EUR-Betrag (Anzeige; keine Rechenbasis). */
 	public static function format_cents( int $cents ): string {
 		return number_format_i18n( $cents / 100, 2 ) . ' €';

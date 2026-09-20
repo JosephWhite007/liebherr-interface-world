@@ -1,5 +1,30 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.142] – 2026-09-20 – Plattformzeit P3/W2: echte Token-Buchung aufs Wallet beim Beenden
+
+### Neu
+- **Beenden → „Auf Wallet buchen & weiter" bucht jetzt echt** Token über die Plattform-Wallet: `settle`
+  ruft `CoreBridge\WalletBridge::debit_tokens()` → Core-`WalletService` (Token-Währung TOK, idempotent,
+  Regelversion). **Nur** bei scharfer Naht `liw_ptime_charge_live` (Default AUS) und verfügbarer Core-
+  Token-Wallet (ARY-PH-Wallet W1, DB ≥ 4.93.0).
+- **Strenge Deckungsprüfung (Festlegung 2):** reicht das Token-Guthaben nicht (`insufficient_tokens`),
+  bleibt der Abschnitt **`ending` (gesperrt)**; das Report-Overlay zeigt den Hinweis + einen Knopf
+  **„Wallet aufladen"** (Link zur My-Liebherr-Seite). Erst nach erfolgreicher Buchung wird `settled`.
+- `WalletBridge` erweitert: `tokens_available()`, `token_balance()`, `token_summary()`, `debit_tokens()`
+  (strukturiertes Ergebnis für die strenge Sperre). `ChargeService`: `get()` + `mark_settled()` (Satz nach
+  Buchung `settled` + `wallet_ref`, append-only). Event `liw_ptime_settled`.
+
+### Hinweise
+- Ist die Naht AUS (Standard) oder die Core-Token-Wallet noch nicht ausgerollt, bleibt das Verhalten wie in
+  P2: Bestätigen entsperrt, der Abrechnungssatz bleibt `pending` (nur protokolliert).
+- Live-Voraussetzung: Core `araliya-platform-core` ≥ alpha.718 (Wallet-Mehrwährung W1) deployt **und**
+  Option/Filter `liw_ptime_charge_live` gesetzt.
+
+### Verifikation
+- Docker `liw-selftest.php` **434/434** (neu: charge_live + genug Token → settle bucht real, Token 50→40,
+  Satz settled; zu wenig Token → `insufficient`, bleibt gesperrt, Saldo unverändert). WP-frei **665/665**.
+  `LIW_VERSION` .141→.142. (Live: WP-Rocket-Cache leeren.)
+
 ## [0.1.0-alpha.141] – 2026-09-20 – Time-Pille wieder sichtbar (ohne JS + WP-Rocket-fest)
 
 ### Behoben
