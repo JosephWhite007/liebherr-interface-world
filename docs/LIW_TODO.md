@@ -15,6 +15,14 @@ Stand: 19.09.2026 (0.1.0-alpha.78).
 
 ---
 
+## FREEZE 28.09.2026 – Migration per Duplicator Pro (vor allen anderen Punkten)
+
+- Entwicklungsstand eingefroren (alpha.145, Core alpha.718). Nächster Schritt ist die Voll-Migration der Dev-Instanz:
+  Runbook `araliya-platform-core/STAGING_DEPLOY/DUPLICATOR-MIGRATION-RUNBOOK-2026-09-28.md`. Offene Entscheidung
+  darin (1.4): Feature-Flags/Demo-Daten vor dem Paketieren belassen oder zurücksetzen.
+- `scripts/deploy.sh`: SSH-Ziel unbekannt (Annahme comehome.care fehlgeschlagen) → nach der Migration klären oder
+  `--zip`-Modus nachrüsten.
+
 ## Entschieden 28.09.2026 (alpha.145): Time-Pille + Hilfe-Koffer plattformweit AUS
 
 - **Entscheidung JW:** NICHT „nur Frontend" – beide Widgets bleiben bis zur Freigabe **überall deaktiviert**

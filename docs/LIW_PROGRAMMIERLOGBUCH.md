@@ -31,6 +31,11 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 - `liebherr-interface-world.php`: Header `Version:` .106→.144 (war seit alpha.106 nicht mitgezogen), `LIW_VERSION` .143→.144. `HandbookPage`: Koffer-Absatz nennt Option + Filter.
 - Bewusst NICHT: Overlay im Admin nachbauen (ADR-LIW-MYL-002: Sperre ist Frontend-Erlebnis; Backoffice-Nutzer dürfen verwalten) und Koffer-Default auf AUS (würde Live ändern – Entscheidung JW offen, s. TODO).
 
+## FREEZE 28.09.2026 – Entwicklungsstand eingefroren (alpha.145 / Core alpha.718)
+
+- Entscheidung JW: Plugin war nie auf Staging; statt Einzel-Deploy wird die **gesamte Dev-Instanz per Duplicator Pro** übertragen (Probe mindwell.team → comehome.care → araliya.world, Voll-Ersetzung, keine Echtdaten). Freeze-Dokument + Runbook im Core: `STAGING_DEPLOY/FREEZE-2026-09-28-alpha718-liw145.md`, `STAGING_DEPLOY/DUPLICATOR-MIGRATION-RUNBOOK-2026-09-28.md` (nutzt den vorhandenen Installer-Assistant-Klonprozess, kein Parallelverfahren).
+- Bis Migrationsfreigabe keine Feature-Commits. `scripts/deploy.sh` (SSH-Modus) bleibt unverifiziert – Host unbekannt, SSH-Test 28.09. fehlgeschlagen; für die Migration nicht verwenden. Tag: `freeze-2026-09-28`.
+
 ## Nachtrag alpha.145 – `scripts/deploy.sh` (Deploy per SSH + rsync statt manuellem Terminal-scp)
 
 - Bisher: Dateien einzeln per scp/ssh (Muster `build_v10/deploy_alpha20.sh` des Core). Neu: `scripts/deploy.sh` – Standard ist ein **Probelauf** (rsync `--dry-run`), erst `--go` überträgt. Ablauf: Vorprüfung (Header = `LIW_VERSION`, sauberer Git-Baum, Docker-Selbsttest + WP-frei grün – abschaltbar mit `--no-tests`) → SSH-Check + installierte Remote-Version lesen → Remote-Backup `…_backup_<alt>_<stamp>.tar.gz` neben dem Plugin-Ordner → rsync `--delete` ohne Dev-Anteile (`.git`, `tests/`, Seeder, Selbsttest, `commit.sh`, `deploy.sh`, `COMMIT_MSG.txt`) → WP-CLI: Cache-Flush, `rocket_clean_domain()`, Versionsprüfung → Rollback-Befehl ausgegeben.
