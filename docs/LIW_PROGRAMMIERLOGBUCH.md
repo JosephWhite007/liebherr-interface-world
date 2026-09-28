@@ -31,6 +31,10 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 - `liebherr-interface-world.php`: Header `Version:` .106→.144 (war seit alpha.106 nicht mitgezogen), `LIW_VERSION` .143→.144. `HandbookPage`: Koffer-Absatz nennt Option + Filter.
 - Bewusst NICHT: Overlay im Admin nachbauen (ADR-LIW-MYL-002: Sperre ist Frontend-Erlebnis; Backoffice-Nutzer dürfen verwalten) und Koffer-Default auf AUS (würde Live ändern – Entscheidung JW offen, s. TODO).
 
+## Nachtrag – Deaktivierungstest bestanden, LIW auf Dev ausgeschaltet (28.09.2026 14:26)
+
+- Docker-Dev: Backup (19,6 MB, `--no-tablespaces`), 6 Trägerseiten → draft, Plugin deaktiviert, Core alpha.718 (`main`, Merge `70f12ee`) läuft ohne LIW: StagingGate `warning`, HTTP 200, keine Fatals. Befund: Docker-Image ohne WP-CLI, kein `debug.log` → Verfahren in `LIW_CORE_KOPPLUNG.md` §4 auf `php -r`/`docker logs` umgestellt. Erwartung „keine `liw_`-Caps auf administrator" war falsch – `revoke_capabilities()` schont `administrator` bewusst (Core-Konvention); §3 korrigiert. Tags `freeze-2026-09-28` in beiden Repos auf den Endstand verschoben.
+
 ## Nachtrag Freeze – Isolationsnachweis `docs/LIW_CORE_KOPPLUNG.md` (28.09.2026)
 
 - Auftrag JW: Kopplung zum Core dokumentieren, Plugin vor der Duplicator-Migration ausschalten und nicht mitkopieren. Quelltext-Scan: 13 Core-Klassen, ausschließlich über `src/CoreBridge/*` (15 `class_exists`/`method_exists`-Guards mit Fallback), 2 Core-Filter (Translation), 2 Core-Tabellen (`ary_audit_log` lesend, `ary_partners` 1 JOIN). **Core enthält keinen Verweis auf LIW** – Kopplung einseitig. Inventar dessen, was nach dem Ausschalten bleibt (37 Tabellen `{prefix}liw_*`, ~30 Optionen, CPT-Posts, Trägerseiten, Rolle `liw_partner`), Ausschalt-Verfahren mit Deaktivierungstest, Wieder-Einschalten, ANNAHME-LIW-ISO-1…3. Befund: Trägerseiten zeigen bei ausgeschaltetem Plugin Rohtext-Shortcodes → im Verfahren „auf Entwurf setzen" vorgesehen. Kein Code geändert.

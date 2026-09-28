@@ -31,7 +31,9 @@ Nicht genutzt: Core-Optionen (`ary_*`, `araliya_*`), Core-REST-Namespaces, Core-
 
 ## 3. Was das Plugin im System anlegt (bleibt nach dem Ausschalten bestehen)
 
-Ausschalten (= `deactivate()`) entfernt: LIW-Capabilities von `administrator`/`araliya_admin`, My-Liebherr- und CVF-Caps,
+Ausschalten (= `deactivate()`) entfernt: LIW-Capabilities von `araliya_admin`/`araliya_marketing` (**nicht** von
+`administrator` – Core-Konvention `RoleManager::deactivate()`, der native Admin verliert keine Caps; 12 `liw_*`-Caps
+bleiben dort wirkungslos stehen), My-Liebherr- und CVF-Caps,
 den Cron `daily` der Kontakt-Aufbewahrung, Rewrite-Regeln (Flush). **Bewusst NICHT entfernt** (Daten bleiben, kein
 `uninstall.php`, Pflichtenheft-Vorgabe „keine Datenlöschung ohne Auftrag"):
 
@@ -49,21 +51,25 @@ den Cron `daily` der Kontakt-Aufbewahrung, Rewrite-Regeln (Flush). **Bewusst NIC
 
 ## 4. Verfahren „Plugin ausschalten" (für die Duplicator-Migration)
 
-1. Backup der Dev-DB (Docker: `docker exec araliya_mysql mysqldump -u araliya -p"$DB_PASSWORD" araliya_dev > dev-vor-liw-aus.sql`).
-2. LIW-Trägerseiten auf **Entwurf** setzen (sonst Rohtext-Shortcodes öffentlich):
-   `docker exec araliya_wordpress wp eval 'foreach(["liw_interface_page_id","liw_my_liebherr_page_id","liw_pocket_page_id","liw_iw_page_id","liw_li_page_id","liw_adventures_page_id"] as $o){ $id=(int)get_option($o); if($id){ wp_update_post(["ID"=>$id,"post_status"=>"draft"]); echo "$o=$id draft\n"; } }' --allow-root`
-3. Plugin deaktivieren: `docker exec araliya_wordpress wp plugin deactivate liebherr-interface-world --allow-root`
-   → **nicht** löschen (Ordner ist in Docker gemountet; im Duplicator-Paket über die Ausschlussliste ausgeschlossen).
-4. Nachweis Core-ohne-LIW (Deaktivierungstest, Ergebnis unten eintragen):
-   - `wp plugin list --allow-root` → LIW `inactive`, Core `active`
-   - Frontend-Startseite + eine CPT-Single (Suite/Tree-Room) + Backend-Dashboard laden → HTTP 200, kein Fatal in `wp-content/debug.log` (`tail -50`)
-   - `curl -s http://localhost:8080/wp-json/araliya/v1/admin/health` → `overall: ok|warning`
-   - `wp eval 'echo json_encode(Araliya\Platform\Core\Core\StagingGate::run());' --allow-root` → kein `critical`
-   - Theme-Menü ohne „Liebherr Frontend"-Einträge; Adminmenü ohne „Liebherr Frontend"/„Special …"-LIW-Boards
-   - `wp cap list administrator --allow-root | grep liw_` → leer
-5. Golden-Master-Preflight erst **danach** ausführen (Runbook Phase 1.5).
+Hinweis Docker-Dev: Das Image `wordpress:6.5-php8.2-apache` hat **kein WP-CLI**; `WP_DEBUG_LOG` ist nicht gesetzt (Fehler
+stehen in `docker logs araliya_wordpress`). Alle Schritte laufen daher als `php -r` über `wp-load.php`.
 
-**Ergebnis Deaktivierungstest:** ☐ offen – Datum/Ausgabe: ____________________
+1. Backup der Dev-DB: `docker exec araliya_mysql sh -c 'mysqldump --no-tablespaces -u araliya -p"$MYSQL_PASSWORD" araliya_dev' > ~/Desktop/dev-vor-liw-aus-$(date +%Y%m%d).sql`
+   (`--no-tablespaces` nötig – MySQL 8 ohne PROCESS-Recht).
+2. LIW-Trägerseiten auf **Entwurf** setzen (sonst Rohtext-Shortcodes öffentlich) und Plugin deaktivieren – **nicht** löschen
+   (Ordner ist gemountet; im Duplicator-Paket per Ausschlussliste ausgeschlossen):
+   `docker exec araliya_wordpress php -r 'require "/var/www/html/wp-load.php"; require_once ABSPATH."wp-admin/includes/plugin.php"; foreach(["liw_interface_page_id","liw_my_liebherr_page_id","liw_pocket_page_id","liw_iw_page_id","liw_li_page_id","liw_adventures_page_id"] as $o){ $id=(int)get_option($o); if($id){ wp_update_post(["ID"=>$id,"post_status"=>"draft"]); echo "$o=$id draft\n"; } } deactivate_plugins("liebherr-interface-world/liebherr-interface-world.php"); echo "LIW aktiv: ".(is_plugin_active("liebherr-interface-world/liebherr-interface-world.php")?"JA":"nein")."\n";'`
+3. Nachweis Core-ohne-LIW (Deaktivierungstest):
+   - `php -r '… StagingGate::run() …'` → `overall` nicht `critical`; `class_exists(StagingGate)` = ja
+   - Startseite und `wp-login.php` → HTTP 200; Backend-Dashboard + eine CPT-Single im Browser fehlerfrei
+   - `docker logs araliya_wordpress --since 3m 2>&1 | grep -i "fatal\|PHP Warning"` → leer
+   - `administrator` behält die 12 `liw_*`-Caps (erwartet, s. o.); `araliya_admin` ohne `liw_*`
+4. Golden-Master-Preflight erst **danach** ausführen (Runbook Phase 1.5).
+
+**Ergebnis Deaktivierungstest: ✅ bestanden – 28.09.2026 14:26 (JW, Docker-Dev, Core alpha.718 `main`).**
+Backup `dev-vor-liw-aus-20260928.sql` (19,6 MB). Trägerseiten 2093/4176/4275/2638/2483/2728 → draft. `LIW aktiv: nein`.
+`Core aktiv: ja`, `StagingGate overall: warning` (Dev-üblich, kein critical), Startseite 200, wp-login 200, keine Fatals/
+Warnings im Container-Log. `administrator`: 12 `liw_*`-Caps verbleiben (dokumentiertes Verhalten). Browser-Sichtprüfung: ☐ JW.
 
 ## 5. Wieder einschalten (nach der Migration, Local → Staging → Produktiv)
 
