@@ -15,6 +15,14 @@ Stand: 19.09.2026 (0.1.0-alpha.78).
 
 ---
 
+## Offen aus dem Backoffice-Befund 28.09.2026 (alpha.144)
+
+- **Time-Pille + Hilfe-Koffer im wp-admin: dauerhaft nur Frontend?** Aktuell per Design auf beiden Seiten
+  (alpha.78/112); im Dev seit alpha.144 per Option abgeschaltet (`liw_ptime_enabled` gelöscht,
+  `liw_emergency_enabled=0`). Entscheidung JW: bleiben sie im Backoffice, oder Hooks `admin_footer`/
+  `admin_enqueue_scripts` entfernen? *Quelle: LOGBUCH_TECHNIK 28.09.2026.*
+- **Koffer-Default** (`liw_emergency_enabled`): AN belassen (Live unverändert) oder AUS bis Freigabe? *JW.*
+
 ## Nächstes großes Programm: My Liebherr & Pocket Information (§41 Plattformzeit inkl.)
 
 Pflichtenheft `Programmierpflichtenheft_My_Liebherr.md` (v2.0) liegt vor und ist um **§41 Plattformzeit/

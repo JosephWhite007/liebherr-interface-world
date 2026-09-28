@@ -94,7 +94,7 @@ try {
 	// im Dev gesetzte Scharfschaltung (z. B. liw_myl_enabled/liw_ptime_enabled → Kopfzeilen-Reiter + Time-
 	// Pille) NICHT dauerhaft zurücksetzt. Die „Default AUS"-Prüfungen laufen mittendrin (Flag gelöscht) und
 	// bleiben gültig; die Wiederherstellung erfolgt erst ganz am Ende.
-	$__flag_opts    = [ 'liw_myl_enabled', 'liw_pocket_enabled', 'liw_ptime_enabled', 'liw_cvf_enabled', 'liw_cvf_board_enabled', 'liw_public_release' ];
+	$__flag_opts    = [ 'liw_myl_enabled', 'liw_pocket_enabled', 'liw_ptime_enabled', 'liw_cvf_enabled', 'liw_cvf_board_enabled', 'liw_public_release', \Liebherr\InterfaceWorld\Emergency\EmergencyController::OPT_ENABLED ];
 	$__flag_restore = [];
 	foreach ( $__flag_opts as $__fo ) {
 		$__flag_restore[ $__fo ] = get_option( $__fo, '__liw_unset__' );

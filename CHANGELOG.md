@@ -1,5 +1,30 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.144] – 2026-09-28 – Backoffice: Reload-Schleife der Plattformzeit-Uhr behoben; Hilfe-Koffer per Option abschaltbar
+
+### Behoben
+- **Reload-Schleife im wp-admin.** Die Session-Uhr (`liw-ptime-clock.js`) lädt die Seite neu, sobald der Server
+  eine gesperrte Sitzung meldet (Standby/Beenden) und kein Sperr-Overlay im DOM steht. Im Backoffice rendert
+  `LockGuard` das Overlay aber grundsätzlich nicht (`is_admin()` → Frontend-only) – der Schutz „nur neu laden,
+  wenn kein Overlay da ist" (alpha.140) griff dort nie: jeder Seitenaufruf im wp-admin löste bei gesperrter
+  Sitzung sofort den nächsten Reload aus. Fix: `ClockWidget` reicht `isAdmin` an das Skript; im Admin hält die
+  Uhr bei Sperre nur an und lädt nie neu (Overlay ist dort konzeptionell nicht vorgesehen).
+- **Plugin-Header „Version:" hing seit alpha.106 hinterher** (`0.1.0-alpha.106` bei `LIW_VERSION` .143) – die
+  Plugin-Liste in WP zeigte die falsche Version. Beides jetzt `.144`; neuer WP-freier Test prüft die Gleichheit
+  dauerhaft.
+
+### Neu
+- **Hilfe-Koffer abschaltbar ohne Code:** Option `liw_emergency_enabled` (Default AN – keine Verhaltensänderung
+  für bestehende Installationen); der bisherige Filter gleichen Namens bleibt und überstimmt. Muster wie
+  `PlatformTime\Flags`. Selbsttest sichert/stellt die Option wie die übrigen Feature-Flags wieder her.
+- Für die DEV-Umgebung (Wunsch 28.09.2026: Time-Pille und Koffer vorerst überall aus):
+  `delete_option('liw_ptime_enabled')` + `update_option('liw_emergency_enabled', 0)` – Befehl s. Logbuch.
+
+### Verifikation
+- `php -l` alle geänderten Dateien grün, `node --check` Skript grün; drei neue Prüfungen in `tests/run-tests.php`
+  (Header = LIW_VERSION, Koffer-Option statt nacktem Filter, kein Admin-Reload) lokal bestanden.
+  Docker-Selbsttest/WP-frei-Gesamtlauf: durch JW.
+
 ## [0.1.0-alpha.143] – 2026-09-21 – Neuer goldener Globus auch im Adminleisten-/Login-Logo
 
 ### Behoben

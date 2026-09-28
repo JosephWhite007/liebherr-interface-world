@@ -50,6 +50,7 @@ final class ClockWidget {
 			'root'     => esc_url_raw( rest_url( Rest::NAMESPACE . '/platform-time/' ) ),
 			'nonce'    => wp_create_nonce( 'wp_rest' ),
 			'interval' => 30, // Heartbeat-Intervall (Sekunden); serverautoritär (§41.1).
+			'isAdmin'  => is_admin(), // Im wp-admin gibt es kein Sperr-Overlay (LockGuard nur Frontend) → dort nie neu laden (alpha.144).
 			'i18n'     => [
 				'title'   => __( 'Plattformzeit', 'liebherr-interface-world' ),
 				'tokens'  => __( 'Token', 'liebherr-interface-world' ),

@@ -26,6 +26,7 @@ final class EmergencyController {
 	public const SHORTCODE   = 'liw_emergency_suitcase';
 	private const SECRET_OPT = 'liw_emg_secret';
 	private const IMG_OPT     = 'liw_emergency_suitcase_image_id'; // Mediathek-Bild (Koffer) statt Platzhalter-SVG.
+	public const OPT_ENABLED  = 'liw_emergency_enabled'; // Koffer plattformweit an/aus (Default AN); Filter gleichen Namens überstimmt.
 	private const USED_TTL   = 900; // Einmal-Sperre einer eingelösten Aufgabe (s).
 
 	/**
@@ -42,6 +43,15 @@ final class EmergencyController {
 			}
 		}
 		return LIW_URL . 'assets/img/liw-emergency-suitcase.svg';
+	}
+
+	/**
+	 * Hilfe-Koffer aktiv? Option `liw_emergency_enabled` (Default AN, damit sich bestehende Installationen
+	 * nicht ändern) ODER Filter `liw_emergency_enabled` – gleiches Muster wie PlatformTime\Flags (alpha.144:
+	 * bisher nur Filter, damit im Betrieb ohne Code-Änderung nicht abschaltbar).
+	 */
+	public static function enabled(): bool {
+		return (bool) apply_filters( 'liw_emergency_enabled', (bool) get_option( self::OPT_ENABLED, true ) );
 	}
 
 	public static function register(): void {
@@ -85,7 +95,7 @@ final class EmergencyController {
 	}
 
 	public static function enqueue(): void {
-		if ( ! apply_filters( 'liw_emergency_enabled', true ) ) {
+		if ( ! self::enabled() ) {
 			return;
 		}
 		wp_enqueue_style( self::HANDLE, LIW_URL . 'assets/css/liw-emergency.css', [], self::ver( 'assets/css/liw-emergency.css' ) );
@@ -113,7 +123,7 @@ final class EmergencyController {
 	// ── Button ──────────────────────────────────────────────────────────────
 	/** Fester, winziger Koffer-Punkt (unten rechts) – auf jeder Seite. */
 	public static function render_button(): void {
-		if ( ! apply_filters( 'liw_emergency_enabled', true ) ) {
+		if ( ! self::enabled() ) {
 			return;
 		}
 		echo self::button_html( true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- statisch/escaped.
@@ -152,7 +162,7 @@ final class EmergencyController {
 		if ( ! isset( $_GET['liw_help'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- öffentliche Hilfe, kein Statuswechsel
 			return;
 		}
-		if ( ! apply_filters( 'liw_emergency_enabled', true ) ) {
+		if ( ! self::enabled() ) {
 			return;
 		}
 		$from   = isset( $_GET['from'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['from'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended

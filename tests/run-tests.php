@@ -750,5 +750,15 @@ foreach ( $iterator2 as $file ) {
 	);
 }
 
+// ── alpha.144: Versionsheader, Koffer-Option, Uhr-Reload-Schutz im Admin ─────
+$__main = (string) file_get_contents( $root . '/liebherr-interface-world.php' );
+preg_match( '/^\s*\*\s*Version:\s*(\S+)/m', $__main, $__hv );
+preg_match( "/define\(\s*'LIW_VERSION',\s*'([^']+)'\s*\)/", $__main, $__cv );
+liw_assert( 'Plugin-Header „Version:" und LIW_VERSION sind identisch (' . ( $__hv[1] ?? '?' ) . ')', isset( $__hv[1], $__cv[1] ) && $__hv[1] === $__cv[1], $checks, $failures );
+$__emg = (string) file_get_contents( $root . '/src/Emergency/EmergencyController.php' );
+liw_assert( 'Emergency: Option liw_emergency_enabled (Default AN) + Filter, keine nackten apply_filters-Gates mehr', str_contains( $__emg, "get_option( self::OPT_ENABLED, true )" ) && 0 === substr_count( $__emg, "apply_filters( 'liw_emergency_enabled', true )" ) && 3 === substr_count( $__emg, 'self::enabled()' ), $checks, $failures );
+$__clock = (string) file_get_contents( $root . '/assets/js/liw-ptime-clock.js' );
+liw_assert( 'Plattformzeit-Uhr: kein window.location.reload() im wp-admin bei gesperrter Sitzung', str_contains( $__clock, '! inAdmin && ! overlayPresent()' ) && str_contains( (string) file_get_contents( $root . '/src/PlatformTime/ClockWidget.php' ), "'isAdmin'  => is_admin()" ), $checks, $failures );
+
 echo "\n{$checks} Prüfungen, {$failures} fehlgeschlagen.\n";
 exit( $failures > 0 ? 1 : 0 );

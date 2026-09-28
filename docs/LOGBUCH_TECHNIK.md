@@ -8,6 +8,26 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-09-28 · Backoffice: Plattformzeit-Uhr + Hilfe-Koffer überall, Reload-Schleife (0.1.0-alpha.144)
+
+**Frage/Kontext.** JW: Time-Pille und Erste-Hilfe-Koffer erscheinen jetzt auch im Backoffice-Menü, dazu eine
+durchlaufende Schleife; beides vorerst deaktivieren.
+
+**Analyse.** Beide Widgets hängen per Design an `wp_footer` UND `admin_footer` (Handbuch: „Frontend UND
+Backoffice"). Die Pille ist im Dev sichtbar, weil `liw-seed-demo-my-liebherr.php` `liw_ptime_enabled=1` setzt.
+Die Schleife ist ein echter Fehler: `liw-ptime-clock.js` lädt bei serverseitig gesperrter Sitzung neu, sofern das
+Sperr-Overlay fehlt – `LockGuard` rendert das Overlay aber nur im Frontend, also fehlt es im Admin immer.
+
+**Entscheidungen (Kategorie B).**
+- Reload im Admin unterbinden (Uhr hält nur an) statt Overlay im Admin nachzubauen – die Sperre ist laut
+  ADR-LIW-MYL-002 ein Frontend-Erlebnis; Backoffice bleibt bedienbar.
+- Koffer bekommt eine Option (`liw_emergency_enabled`, Default AN) nach dem `Flags`-Muster – bisher war er nur
+  per Filter (Code) abschaltbar. Default bleibt AN, damit Live sich nicht ändert.
+- Deaktivierung im Dev per Option, nicht per Code: `liw_ptime_enabled` löschen, `liw_emergency_enabled=0`.
+
+**Offen (JW):** Sollen Koffer/Pille dauerhaft aus dem wp-admin verschwinden (nur Frontend)? Dann `admin_footer`/
+`admin_enqueue_scripts`-Hooks in `ClockWidget`/`EmergencyController` entfernen – kleiner, gezielter Eingriff.
+
 ### 2026-09-19 · Liebherr Adventures – vierte Insel, Visible-Adventures-MVP (0.1.0-alpha.51)
 
 **Frage/Kontext.** Grundlagenkonzept „Liebherr Adventures": ortsbezogene Medien-/Wissens-/Hilfe-Insel.

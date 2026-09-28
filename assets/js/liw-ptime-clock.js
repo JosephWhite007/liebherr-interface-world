@@ -40,6 +40,9 @@
 	function overlayPresent() {
 		return !! document.querySelector( '[data-liw-ptlock]' );
 	}
+	// Im wp-admin rendert LockGuard kein Overlay (nur Frontend) – ein Reload würde dort bei gesperrter Sitzung
+	// endlos wiederholt (Befund 28.09.2026: Reload-Schleife im Backoffice). Dort: nur anhalten, nie neu laden.
+	var inAdmin = !! cfg.isAdmin || document.body.classList.contains( 'wp-admin' );
 	function sync( d ) {
 		if ( ! d || ! d.ok ) { return; }
 		// Server meldet Sperre (Standby oder Beenden/Abrechnung offen, auch per Auto-Standby am Timeout).
@@ -48,7 +51,7 @@
 		if ( d.locked === true && ! stopped ) {
 			stopped = true;
 			clearInterval( hb );
-			if ( ! overlayPresent() ) { window.location.reload(); }
+			if ( ! inAdmin && ! overlayPresent() ) { window.location.reload(); }
 			return;
 		}
 		if ( typeof d.active_seconds === 'number' ) { baseActive = d.active_seconds; baseAt = Date.now(); }

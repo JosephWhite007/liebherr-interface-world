@@ -21,6 +21,16 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.144 – Backoffice-Reload-Schleife (Plattformzeit) + Hilfe-Koffer-Option + Versionsheader
+
+- Befund JW 28.09.2026 (Screenshot Backoffice „Special Art Views"): Time-Pille und Hilfe-Koffer erscheinen im wp-admin, dazu eine Endlos-Reload-Schleife. Analyse: Pille = `ClockWidget` (hookt `admin_footer`, Gate Flag `liw_ptime_enabled` – im Dev durch `liw-seed-demo-my-liebherr.php` gesetzt – + Login + CAP_ACCESS); Koffer = `EmergencyController` (hookt `admin_footer`, nur Filter-Gate, per Design „Front + Admin"). Schleife: `sync()` im Clock-JS ruft `location.reload()`, wenn `locked` und kein `[data-liw-ptlock]`-Overlay – `LockGuard::render_overlay()` ist aber `is_admin()`-blind → im Admin bei gesperrter Sitzung Reload ohne Ende.
+- `src/PlatformTime/ClockWidget.php`: `wp_localize_script` um `isAdmin => is_admin()` ergänzt. `assets/js/liw-ptime-clock.js`: `inAdmin` (Konfig oder `body.wp-admin`); Reload nur `! inAdmin && ! overlayPresent()`.
+- `src/Emergency/EmergencyController.php`: `OPT_ENABLED = 'liw_emergency_enabled'`, `enabled()` = Filter über `get_option(…, true)`; die drei Gates (`enqueue`, `render_button`, `maybe_render_fallback`) nutzen `self::enabled()`. Kein Verhaltenswechsel ohne gesetzte Option.
+- `scripts/liw-selftest.php`: `EmergencyController::OPT_ENABLED` in die gesicherten/wiederhergestellten Flags aufgenommen.
+- `tests/run-tests.php`: drei Prüfungen (Header „Version:" = `LIW_VERSION`; Koffer-Option + keine nackten `apply_filters(..., true)`-Gates; kein Admin-Reload im Clock-JS + `isAdmin` in ClockWidget).
+- `liebherr-interface-world.php`: Header `Version:` .106→.144 (war seit alpha.106 nicht mitgezogen), `LIW_VERSION` .143→.144. `HandbookPage`: Koffer-Absatz nennt Option + Filter.
+- Bewusst NICHT: Overlay im Admin nachbauen (ADR-LIW-MYL-002: Sperre ist Frontend-Erlebnis; Backoffice-Nutzer dürfen verwalten) und Koffer-Default auf AUS (würde Live ändern – Entscheidung JW offen, s. TODO).
+
 ## 0.1.0-alpha.143 – Neuer Globus im Adminleisten-/Login-Logo (Bugfix)
 
 - `assets/img/liw-planet-icon.png` (NEU, 256×256, aus gelieferter favicon.ico extrahiert = neuer Bayern-Globus).
