@@ -31,6 +31,12 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 - `liebherr-interface-world.php`: Header `Version:` .106→.144 (war seit alpha.106 nicht mitgezogen), `LIW_VERSION` .143→.144. `HandbookPage`: Koffer-Absatz nennt Option + Filter.
 - Bewusst NICHT: Overlay im Admin nachbauen (ADR-LIW-MYL-002: Sperre ist Frontend-Erlebnis; Backoffice-Nutzer dürfen verwalten) und Koffer-Default auf AUS (würde Live ändern – Entscheidung JW offen, s. TODO).
 
+## 0.1.0-alpha.145 – Koffer + Time-Pille plattformweit AUS (Entscheidung JW 28.09.2026)
+
+- JW auf die offene Frage „nur Frontend?": Nein – deaktivieren, überall. `EmergencyController::enabled()` Default `false`; Docblock/Konstante kommentiert. `liw_ptime_enabled` war Default AUS. Hooks bewusst belassen (Scharfschaltung per Option/Filter ohne Deploy).
+- `scripts/liw-selftest.php` [8b]: neue Prüfung „Default AUS" (beide `enabled()` false bei gelöschten Flags). `tests/run-tests.php`: Assertion auf `get_option( self::OPT_ENABLED, false )`.
+- `HandbookPage`, `LIW_TODO` (Punkt von „offen" auf „entschieden"), `LOGBUCH_TECHNIK` (Entscheidung + Live-Auswirkung), CHANGELOG. `LIW_VERSION` .144→.145, Header mitgezogen.
+
 ## Nachtrag alpha.144 – Selbsttest-Prüfung „Brand-Logo" an alpha.143 (PNG) angepasst
 
 - Befund Docker-Lauf 28.09.2026 (433/434): `✗ Brand-Logo: Globus ersetzt WP-„W"` – die Prüfung erwartete noch `liw-planet-icon.svg`, `brand_logo_css()` liefert seit alpha.143 das PNG (alpha.143 wurde nur mit `php -l` verifiziert, ohne Selbsttest). Prüfung erwartet jetzt genau die Datei, die `brand_logo_css()` bei vorhandenem PNG wählt (PNG, sonst SVG). Nur Dev-Testskript, kein LIW_VERSION-Bump.

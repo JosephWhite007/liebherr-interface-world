@@ -960,6 +960,8 @@ try {
 
 	// ── [8b] Emergency – Hilfe-Koffer & Emergency-Area (alpha.78) ────────────
 	echo "\n[8b] Emergency – Hilfe-Koffer\n";
+	// Default AUS (alpha.145, JW 28.09.2026): ohne Option/Filter weder Koffer noch Time-Pille (Flags sind zu diesem Zeitpunkt gelöscht).
+	liw_st_check( 'Emergency + Plattformzeit: Default AUS (kein schwebender Koffer, keine Time-Pille ohne Scharfschaltung)', ! \Liebherr\InterfaceWorld\Emergency\EmergencyController::enabled() && ! \Liebherr\InterfaceWorld\PlatformTime\Flags::enabled() );
 	$__emg_sc = do_shortcode( '[liw_emergency_suitcase]' );
 	liw_st_check( 'Emergency: Koffer-Shortcode rendert Button (data-liw-emg + Icon)', str_contains( $__emg_sc, 'data-liw-emg' ) && str_contains( $__emg_sc, 'background-image:url(' ) );
 	liw_st_check( 'Emergency: Koffer-SVG-Asset vorhanden', is_readable( LIW_PATH . 'assets/img/liw-emergency-suitcase.svg' ) );

@@ -26,7 +26,7 @@ final class EmergencyController {
 	public const SHORTCODE   = 'liw_emergency_suitcase';
 	private const SECRET_OPT = 'liw_emg_secret';
 	private const IMG_OPT     = 'liw_emergency_suitcase_image_id'; // Mediathek-Bild (Koffer) statt Platzhalter-SVG.
-	public const OPT_ENABLED  = 'liw_emergency_enabled'; // Koffer plattformweit an/aus (Default AN); Filter gleichen Namens überstimmt.
+	public const OPT_ENABLED  = 'liw_emergency_enabled'; // Koffer plattformweit an/aus (Default AUS seit alpha.145, Entscheidung JW 28.09.2026); Filter gleichen Namens überstimmt.
 	private const USED_TTL   = 900; // Einmal-Sperre einer eingelösten Aufgabe (s).
 
 	/**
@@ -46,12 +46,13 @@ final class EmergencyController {
 	}
 
 	/**
-	 * Hilfe-Koffer aktiv? Option `liw_emergency_enabled` (Default AN, damit sich bestehende Installationen
-	 * nicht ändern) ODER Filter `liw_emergency_enabled` – gleiches Muster wie PlatformTime\Flags (alpha.144:
-	 * bisher nur Filter, damit im Betrieb ohne Code-Änderung nicht abschaltbar).
+	 * Hilfe-Koffer aktiv? Option `liw_emergency_enabled` ODER Filter `liw_emergency_enabled` – gleiches Muster
+	 * wie PlatformTime\Flags. Default AUS (alpha.145, Entscheidung JW 28.09.2026: Koffer und Time-Pille bleiben
+	 * bis zur Freigabe plattformweit deaktiviert – Frontend UND Backoffice). Der Shortcode
+	 * `[liw_emergency_suitcase]` ist davon unberührt (bewusste redaktionelle Platzierung).
 	 */
 	public static function enabled(): bool {
-		return (bool) apply_filters( 'liw_emergency_enabled', (bool) get_option( self::OPT_ENABLED, true ) );
+		return (bool) apply_filters( 'liw_emergency_enabled', (bool) get_option( self::OPT_ENABLED, false ) );
 	}
 
 	public static function register(): void {

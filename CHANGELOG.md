@@ -1,5 +1,20 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.145] – 2026-09-28 – Hilfe-Koffer und Time-Pille plattformweit deaktiviert (Entscheidung JW)
+
+### Geändert
+- **Entscheidung 28.09.2026 (JW):** Koffer und Plattformzeit-Pille bleiben bis zur Freigabe **überall** aus –
+  Frontend und Backoffice, nicht „nur Frontend". `liw_emergency_enabled` Default AN → **AUS**;
+  `liw_ptime_enabled` war bereits Default AUS. Hooks unverändert, Scharfschaltung später per Option/Filter.
+  **Live-Auswirkung:** Koffer verschwindet nach Deploy auch auf der Live-Seite (gewollt). Shortcode
+  `[liw_emergency_suitcase]` und die JS-freie Hilfe-Seite hinter `?liw_help` bleiben nur bei gesetzter Option aktiv,
+  der Shortcode als bewusste Platzierung unabhängig davon.
+- Selbsttest: Prüfung „Default AUS" für beide Widgets; Prüfung „Brand-Logo" an alpha.143 (PNG statt SVG)
+  angepasst – die einzige rote Prüfung des 434er-Laufs stammte von dort (alpha.143 nur mit `php -l` verifiziert).
+
+### Verifikation
+- `php -l` grün; WP-frei-Prüfung auf `get_option( self::OPT_ENABLED, false )` angepasst. Docker-Lauf: JW.
+
 ## [0.1.0-alpha.144] – 2026-09-28 – Backoffice: Reload-Schleife der Plattformzeit-Uhr behoben; Hilfe-Koffer per Option abschaltbar
 
 ### Behoben

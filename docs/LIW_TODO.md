@@ -15,13 +15,15 @@ Stand: 19.09.2026 (0.1.0-alpha.78).
 
 ---
 
-## Offen aus dem Backoffice-Befund 28.09.2026 (alpha.144)
+## Entschieden 28.09.2026 (alpha.145): Time-Pille + Hilfe-Koffer plattformweit AUS
 
-- **Time-Pille + Hilfe-Koffer im wp-admin: dauerhaft nur Frontend?** Aktuell per Design auf beiden Seiten
-  (alpha.78/112); im Dev seit alpha.144 per Option abgeschaltet (`liw_ptime_enabled` gelöscht,
-  `liw_emergency_enabled=0`). Entscheidung JW: bleiben sie im Backoffice, oder Hooks `admin_footer`/
-  `admin_enqueue_scripts` entfernen? *Quelle: LOGBUCH_TECHNIK 28.09.2026.*
-- **Koffer-Default** (`liw_emergency_enabled`): AN belassen (Live unverändert) oder AUS bis Freigabe? *JW.*
+- **Entscheidung JW:** NICHT „nur Frontend" – beide Widgets bleiben bis zur Freigabe **überall deaktiviert**
+  (Frontend und Backoffice). Umsetzung: `liw_emergency_enabled` Default AUS (alpha.145),
+  `liw_ptime_enabled` war bereits Default AUS. Hooks (`wp_footer`/`admin_footer`) bleiben unverändert, damit
+  die Scharfschaltung später per Option/Filter ohne Code-Änderung möglich ist.
+- **Wieder einschalten (wenn freigegeben):** `update_option('liw_emergency_enabled', 1)` bzw.
+  `update_option('liw_ptime_enabled', 1)` – oder Filter gleichen Namens. Shortcode `[liw_emergency_suitcase]`
+  bleibt unabhängig davon nutzbar. *Quelle: LOGBUCH_TECHNIK 28.09.2026.*
 
 ## Nächstes großes Programm: My Liebherr & Pocket Information (§41 Plattformzeit inkl.)
 

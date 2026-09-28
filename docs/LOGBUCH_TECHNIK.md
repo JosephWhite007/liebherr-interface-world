@@ -25,8 +25,10 @@ Sperr-Overlay fehlt – `LockGuard` rendert das Overlay aber nur im Frontend, al
   per Filter (Code) abschaltbar. Default bleibt AN, damit Live sich nicht ändert.
 - Deaktivierung im Dev per Option, nicht per Code: `liw_ptime_enabled` löschen, `liw_emergency_enabled=0`.
 
-**Offen (JW):** Sollen Koffer/Pille dauerhaft aus dem wp-admin verschwinden (nur Frontend)? Dann `admin_footer`/
-`admin_enqueue_scripts`-Hooks in `ClockWidget`/`EmergencyController` entfernen – kleiner, gezielter Eingriff.
+**Entscheidung JW (gleicher Tag, alpha.145):** Nein – nicht „nur Frontend", sondern **beide plattformweit
+deaktiviert** bis zur Freigabe. Umsetzung als Default-Wechsel der Option (`liw_emergency_enabled` → AUS), nicht
+als Hook-Entfernung: die Funktion bleibt vollständig, Scharfschaltung später per Option/Filter ohne Deploy.
+Auswirkung Live: Koffer verschwindet nach Deploy von alpha.145 auch dort (gewollt).
 
 ### 2026-09-19 · Liebherr Adventures – vierte Insel, Visible-Adventures-MVP (0.1.0-alpha.51)
 
