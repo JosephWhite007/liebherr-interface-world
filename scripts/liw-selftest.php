@@ -947,8 +947,10 @@ try {
 	// Kein doppelter Icon-<link> aus unserem output() (nur noch Marken-CSS).
 	$__fav = ( function (): string { ob_start(); \Liebherr\InterfaceWorld\Frontend\FaviconService::output(); return (string) ob_get_clean(); } )();
 	liw_st_check( 'Favicon: output() gibt KEINEN eigenen Icon-<link> mehr aus (keine Dublette)', ! str_contains( $__fav, 'rel="icon"' ) );
-	// Globus statt WordPress-Logo: Adminleiste + Login (alpha.75).
-	liw_st_check( 'Brand-Logo: Globus ersetzt WP-„W" in Adminleiste + Login-Logo (CSS)', str_contains( $__fav, 'wp-admin-bar-wp-logo' ) && str_contains( $__fav, 'body.login h1 a' ) && str_contains( $__fav, 'liw-planet-icon.svg' ) );
+	// Globus statt WordPress-Logo: Adminleiste + Login (alpha.75). Seit alpha.143 PNG (neuer Globus), SVG nur Fallback –
+	// erwartet wird genau die Datei, die brand_logo_css() bei diesem Dateibestand wählt.
+	$__logo_file = is_readable( LIW_PATH . 'assets/img/liw-planet-icon.png' ) ? 'liw-planet-icon.png' : 'liw-planet-icon.svg';
+	liw_st_check( 'Brand-Logo: Globus ersetzt WP-„W" in Adminleiste + Login-Logo (CSS, ' . $__logo_file . ')', str_contains( $__fav, 'wp-admin-bar-wp-logo' ) && str_contains( $__fav, 'body.login h1 a' ) && str_contains( $__fav, $__logo_file ), $__fav );
 	liw_st_check( 'Brand-Logo: Login-Link → Seite, Login-Text → Seitenname', home_url( '/' ) === apply_filters( 'login_headerurl', 'x' ) && get_bloginfo( 'name' ) === apply_filters( 'login_headertext', 'x' ) );
 	// Browser-Tab-Favicon: /favicon.ico → Globus statt grauem WP-„W" (get_site_icon_url-Filter, alpha.76).
 	$__fav_url = \Liebherr\InterfaceWorld\Frontend\FaviconService::filter_site_icon_url( includes_url( 'images/w-logo-gray-white-bg.png' ), 32, 0 );
