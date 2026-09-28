@@ -31,6 +31,11 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 - `liebherr-interface-world.php`: Header `Version:` .106→.144 (war seit alpha.106 nicht mitgezogen), `LIW_VERSION` .143→.144. `HandbookPage`: Koffer-Absatz nennt Option + Filter.
 - Bewusst NICHT: Overlay im Admin nachbauen (ADR-LIW-MYL-002: Sperre ist Frontend-Erlebnis; Backoffice-Nutzer dürfen verwalten) und Koffer-Default auf AUS (würde Live ändern – Entscheidung JW offen, s. TODO).
 
+## Nachtrag alpha.145 – `scripts/deploy.sh` (Deploy per SSH + rsync statt manuellem Terminal-scp)
+
+- Bisher: Dateien einzeln per scp/ssh (Muster `build_v10/deploy_alpha20.sh` des Core). Neu: `scripts/deploy.sh` – Standard ist ein **Probelauf** (rsync `--dry-run`), erst `--go` überträgt. Ablauf: Vorprüfung (Header = `LIW_VERSION`, sauberer Git-Baum, Docker-Selbsttest + WP-frei grün – abschaltbar mit `--no-tests`) → SSH-Check + installierte Remote-Version lesen → Remote-Backup `…_backup_<alt>_<stamp>.tar.gz` neben dem Plugin-Ordner → rsync `--delete` ohne Dev-Anteile (`.git`, `tests/`, Seeder, Selbsttest, `commit.sh`, `deploy.sh`, `COMMIT_MSG.txt`) → WP-CLI: Cache-Flush, `rocket_clean_domain()`, Versionsprüfung → Rollback-Befehl ausgegeben.
+- **ANNAHME-LIW-DEPLOY-1:** Ziel `root@comehome.care:/var/www/html/wp-content/plugins/liebherr-interface-world` (aus `deploy_alpha20.sh` übernommen, für das Liebherr-Plugin nirgends dokumentiert). Überschreibbar per `LIW_DEPLOY_HOST`/`LIW_DEPLOY_PATH`/`LIW_DEPLOY_WP`. Kein LIW_VERSION-Bump (nur Tooling).
+
 ## 0.1.0-alpha.145 – Koffer + Time-Pille plattformweit AUS (Entscheidung JW 28.09.2026)
 
 - JW auf die offene Frage „nur Frontend?": Nein – deaktivieren, überall. `EmergencyController::enabled()` Default `false`; Docblock/Konstante kommentiert. `liw_ptime_enabled` war Default AUS. Hooks bewusst belassen (Scharfschaltung per Option/Filter ohne Deploy).
