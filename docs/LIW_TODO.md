@@ -15,6 +15,13 @@ Stand: 19.09.2026 (0.1.0-alpha.78).
 
 ---
 
+## Entscheidungspunkt: `liebherr-download-consent` in LIW zusammenführen? (JW-Frage 28.09.2026)
+
+- Zwei Liebherr-Plugins: Download & Newsletter Consent (alpha.1, bewusst Core-unabhängig, 1 Tabelle `ldc_consent_log`,
+  2 Shortcodes) und Interface Solutions. Merge technisch möglich (Modul `src/DownloadConsent/`, Consent-Log über
+  `ConsentLogService` mit `request_kind`, Shortcode-Aliase, Datenmigration), Nachteil: Download-Gate verlöre die
+  Eigenständigkeit ohne Core. Empfehlung: erst nach der Migration im Pflichtenheft-Workflow entscheiden (ADR).
+
 ## FREEZE 28.09.2026 – Migration per Duplicator Pro (vor allen anderen Punkten)
 
 - Entwicklungsstand eingefroren (alpha.145, Core alpha.718). Nächster Schritt ist die Voll-Migration der Dev-Instanz:
