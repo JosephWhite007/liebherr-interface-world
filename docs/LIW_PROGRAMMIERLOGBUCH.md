@@ -21,6 +21,12 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## Nachtrag 03.10.2026 – Vollbild-Vorlage der Liebherr-Seiten (Reparatur im Core, keine Plugin-Codeänderung)
+
+- Befund JW (Screenshots Dev): Seiten `/my-liebherr/`, `/liebherr-intelligence-world/`, `/liebherr-local-intelligence/`, `/liebherr-adventures/` wirken im Layout zerschossen (Theme-Kopf, schmale Spalte, Seitentitel um den Inhalt).
+- Analyse: `Frontend\PageTemplate::maybe_use()` greift nur bei `_wp_page_template = liw-full-width.php`. Sechs Seiten (`interface-solutions`, `liebherr-local-intelligence`, `liebherr-intelligence-world`, `liebherr-adventures`, `my-liebherr`, `pocket-information`) standen auf `default` (alle am 29.09.2026 21:33:08 geändert; `liebherr-simulator` unberührt). Ursache der Umstellung nicht geklärt.
+- Behebung: **Core** `scripts/liw-repair-template.php` (Core alpha.753, BF-026) – findet Seiten an den `[liw_…]`-Shortcodes und setzt nur das Meta; Trockenlauf, `--confirm`, idempotent. Dieses Plugin: nur `src/Admin/Pages/HandbookPage.php` (neuer Absatz zu Vorlage + Reparatur), Dokumente. Keine Versionsänderung (`LIW_VERSION` bleibt alpha.145).
+
 ## 0.1.0-alpha.144 – Backoffice-Reload-Schleife (Plattformzeit) + Hilfe-Koffer-Option + Versionsheader
 
 - Befund JW 28.09.2026 (Screenshot Backoffice „Special Art Views"): Time-Pille und Hilfe-Koffer erscheinen im wp-admin, dazu eine Endlos-Reload-Schleife. Analyse: Pille = `ClockWidget` (hookt `admin_footer`, Gate Flag `liw_ptime_enabled` – im Dev durch `liw-seed-demo-my-liebherr.php` gesetzt – + Login + CAP_ACCESS); Koffer = `EmergencyController` (hookt `admin_footer`, nur Filter-Gate, per Design „Front + Admin"). Schleife: `sync()` im Clock-JS ruft `location.reload()`, wenn `locked` und kein `[data-liw-ptlock]`-Overlay – `LockGuard::render_overlay()` ist aber `is_admin()`-blind → im Admin bei gesperrter Sitzung Reload ohne Ende.

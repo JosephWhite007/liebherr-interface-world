@@ -8,6 +8,16 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-10-03 · Liebherr-Seiten im Theme-Rahmen statt Vollbild – Vorlage zurücksetzen (Core alpha.753)
+
+**Frage/Kontext.** JW: Layout der Liebherr-Seiten (My Liebherr, Intelligence World, Local Intelligence, Adventures) ist zerschossen.
+
+**Befund.** Das Plugin schaltet sein Vollbild-Layout ausschließlich über das Seitenmeta `_wp_page_template = liw-full-width.php`. Sechs Seiten standen auf `default` (Massenänderung 29.09.2026 21:33:08); das Theme (Core alpha.722, Standardseiten im Design-System) rahmt sie seither mit Kopf und schmaler Spalte. Nur `liebherr-simulator` war unberührt.
+
+**Entscheidung (Kat. B).** Keine Änderung am Plugin: Reparatur über Core-Skript `scripts/liw-repair-template.php` (Terminal-Regel, `--confirm`). Verworfen: Vorlage zwangsweise per `template_include` für alle `[liw_…]`-Seiten erzwingen – würde bewusste Redaktionsentscheidungen überschreiben und den Fehler verdecken statt zu zeigen.
+
+**Auswirkung.** Core alpha.753, BF-026. Offen: Ursache der Massenänderung; Prüfung Produktion/Goheal (gleiches Skript).
+
 ### 2026-09-28 · Backoffice: Plattformzeit-Uhr + Hilfe-Koffer überall, Reload-Schleife (0.1.0-alpha.144)
 
 **Frage/Kontext.** JW: Time-Pille und Erste-Hilfe-Koffer erscheinen jetzt auch im Backoffice-Menü, dazu eine
