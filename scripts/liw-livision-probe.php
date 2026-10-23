@@ -4,7 +4,7 @@
  *
  * Ohne --confirm: Trockenlauf (prüft nur Env-Keys und Instanzfreigabe, sendet nichts).
  * Mit --confirm: ein GET gegen https://livision.azure-api.net/crm/v3 – Standard `/tab-text?CodeList=AH&Language=0`
- * (Anrede, Deutsch). Andere lesende Endpunkte: --endpoint=/product-list, --endpoint=/tab-text --CodeList=1B --Language=2 …
+ * (Anrede, Deutsch). Andere lesende Endpunkte: --endpoint=/product-list, --endpoint=/tab-text --CodeList=1B --Language=2 …; Händler: --dealer=<kürzel> (Standard: aktiver Händler, Dealer Board)
  * Ausgabe: Status, Dauer, Zeilenzahl, die ersten Zeilen (nur Codelisten-/Produktdaten, keine Personen). Keys werden nie
  * ausgegeben. Jeder Lauf landet in Option `liw_livision_last_probe` und im Audit.
  *
@@ -26,6 +26,7 @@ require_once dirname( __DIR__, 4 ) . '/wp-load.php';
 
 use Liebherr\InterfaceWorld\CoreBridge\InstanceBridge;
 use Liebherr\InterfaceWorld\SalesInterface\DealerApiClient;
+use Liebherr\InterfaceWorld\SalesInterface\DealerRepository;
 
 if ( ! class_exists( DealerApiClient::class ) ) {
 	fwrite( STDERR, "Plugin liebherr-interface-world ist nicht aktiv.\n" );
@@ -34,10 +35,13 @@ if ( ! class_exists( DealerApiClient::class ) ) {
 
 $opts     = [];
 $endpoint = '/tab-text';
+$dealer   = DealerRepository::active_code();
 foreach ( $argv as $arg ) {
 	if ( preg_match( '/^--([A-Za-z]+)=(.*)$/', $arg, $m ) ) {
 		if ( 'endpoint' === $m[1] ) {
 			$endpoint = $m[2];
+		} elseif ( 'dealer' === $m[1] ) {
+			$dealer = sanitize_key( $m[2] );
 		} else {
 			$opts[ $m[1] ] = $m[2];
 		}
@@ -48,11 +52,13 @@ if ( '/tab-text' === $endpoint && [] === $opts ) {
 }
 
 echo "== Liebherr Dealer Interface – Verbindungsprobe (Testumgebung, lesend) ==\n";
+echo "  Händler:   {$dealer}\n";
 echo "  Basis:     " . DealerApiClient::BASE_TEST . "\n";
 echo "  Endpunkt:  GET {$endpoint}" . ( [] !== $opts ? ' ?' . http_build_query( $opts ) : '' ) . "\n";
-echo '  Key:       ' . ( InstanceBridge::env_set( InstanceBridge::ENV_KEY_TEST ) ? 'hinterlegt' : 'FEHLT (' . InstanceBridge::ENV_KEY_TEST . ')' ) . "\n";
-echo '  UserEmail: ' . ( InstanceBridge::env_set( InstanceBridge::ENV_USER_EMAIL ) ? 'hinterlegt' : 'FEHLT (' . InstanceBridge::ENV_USER_EMAIL . ')' ) . "\n";
-$ready = DealerApiClient::readiness();
+$creds = DealerRepository::credentials( $dealer );
+echo '  Key:       ' . ( '' !== (string) ( $creds['key'] ?? '' ) ? 'hinterlegt' : 'FEHLT (Dealer Board oder Env ' . InstanceBridge::ENV_KEY_TEST . ')' ) . "\n";
+echo '  UserEmail: ' . ( '' !== (string) ( $creds['user_email'] ?? '' ) ? 'hinterlegt' : 'FEHLT (Dealer Board oder Env ' . InstanceBridge::ENV_USER_EMAIL . ')' ) . "\n";
+$ready = DealerApiClient::readiness( $dealer );
 echo '  Freigabe:  ' . ( $ready['ok'] ? 'bereit' : 'blockiert (' . $ready['reason'] . ')' ) . "\n";
 
 if ( ! in_array( '--confirm', $argv, true ) ) {
@@ -64,7 +70,7 @@ if ( ! $ready['ok'] ) {
 	exit( 3 );
 }
 
-$res = DealerApiClient::get( $endpoint, $opts );
+$res = DealerApiClient::get( $endpoint, $opts, 0, $dealer );
 echo "\n  HTTP:      {$res['status']}  ({$res['duration_ms']} ms)\n";
 if ( ! $res['ok'] ) {
 	echo "  Ergebnis:  FEHLER – {$res['error']}\n";

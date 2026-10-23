@@ -17,13 +17,18 @@ Stand: 19.09.2026 (0.1.0-alpha.78).
 
 ## Sales Interface – Folgestufen (ADR-LIW-SALES-001, Freigabe JW 23.10.2026: nur Stufe 1a)
 
-- **1b** Codelisten-Import (`liw_codelist`, Skript aus `LIVISION_Auswahlliste.xlsx`, ≈49 100 Zeilen, 8 Sprachen) + Suche;
-  Sandbox mit `SimulationMockEngine`.
+- **1b** ✅ alpha.149: Codelisten-Import (48 912 Zeilen, 20 Listen, 8 Sprachen) + Suche auf der Sales-Seite. Sandbox mit
+  `SimulationMockEngine` entfällt zugunsten der echten Testverbindung (1c). **Offen:** Codelisten vor Schreibaufrufen zur
+  Validierung nutzen (z. B. Salutation AH, FederalState 1B); Abgleich lokaler Spiegel ↔ `GET /tab-text` (Live-Diff im Board).
 - **1c** ✅ alpha.147: `DealerApiClient` (nur Test, nur GET), Manifest, `may_send`, Audit, Probe-Skript; **Echtlauf 24.10.2026
   erfolgreich** (`/tab-text` AH/0 → 3 Anreden, `/product-list` → 14 701 Produkte). **Offen:** Ergebnisse (Codelisten-Texte,
   Produktliste) in Seite/Board sichtbar machen; Endpunkt-Status der geprüften GETs Entwurf → Verifiziert nachziehen;
   `/sales-orders` liefert reale Auftragsdaten (Kundennamen) – nur mit Zweckbindung anzeigen, nie loggen.
-- **1d** Schreibende Endpunkte hinter Feature-Flag (Default AUS); Klärung PUT /opportunity-Body und `oderDateFrom` mit Liebherr.
+- **1d** ✅ alpha.148 (gebaut, **noch nicht gesendet**): Händler-Entität + Dealer Board, Schreibpfad Kunde/Kontakt mit
+  Schalter je Händler, Trockenlauf-Skript. **Offen:** SalesAccountNumber für `tradler` eintragen (JW reicht nach),
+  Schreibschalter setzen, Trockenlauf freigeben → vier Echtläufe (customer, contact, customer-update, contact-update);
+  Antwortformat von POST /customer (ID-Feld) beim ersten Echtlauf verifizieren (Skript probiert mehrere Schlüssel);
+  Klärung PUT /opportunity-Body und `oderDateFrom` mit Liebherr; später: Händlerauswahl auf der Sales-Seite (Variante B-Naht).
 - **Variante B** Händlerindividuelle Codes über `GateBridge`-Naht (statt Plattformcode).
 - Einträge der 17 Endpunkte im Interface Board (`liw_interface`) spiegeln – in 1a bewusst nicht automatisiert.
 

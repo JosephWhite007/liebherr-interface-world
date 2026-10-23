@@ -4,7 +4,7 @@
  * Plugin URI:   https://araliya.info
  * Description:  Administrierbare, mehrsprachige Landingpage "Interface World Connections" für Liebherr-Händler-,
  *               Lieferanten- und Kundenanbindung (Magic Cube, Interface LogiQ). Solution Provider: GoHeal.
- * Version:      0.1.0-alpha.147
+ * Version:      0.1.0-alpha.149
  * Author:       GoHeal
  * Author URI:   https://araliya.info
  * Requires at least: 6.0
@@ -29,7 +29,7 @@ namespace Liebherr\InterfaceWorld;
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 // ── Konstanten ────────────────────────────────────────────────────────────────
-define( 'LIW_VERSION', '0.1.0-alpha.147' );
+define( 'LIW_VERSION', '0.1.0-alpha.149' );
 define( 'LIW_PATH', plugin_dir_path( __FILE__ ) );
 define( 'LIW_URL', plugin_dir_url( __FILE__ ) );
 define( 'LIW_BASENAME', plugin_basename( __FILE__ ) );
@@ -110,7 +110,9 @@ function create_tables(): void {
 	Cvf\BoardSchema::create_tables();          // CAPDB – Board/Plugin-Tabellen (ADR-LIW-CVF-002, §30).
 	MyLiebherr\Schema::create_tables();        // My Liebherr – persoenliches Profil + Mitgliedschaften (ADR-LIW-MYL-001 S1).
 	PlatformTime\Schema::create_tables();      // Plattformzeit – Session + Token-Abrechnungssatz (ADR-LIW-MYL-001 S9/S10, §41).
-	Pocket\Schema::create_tables();            // Pocket Information – personenbezogene Kurzinfos (ADR-LIW-MYL-001 R5, §34).
+	Pocket\Schema::create_tables();
+	SalesInterface\DealerSchema::create_table();
+	SalesInterface\CodeListSchema::create_table(); // Lokalspiegel der LIVISION-Codelisten (Stufe 1b). // Haendler mit eigenen Schnittstellen-Zugangsdaten (ADR-LIW-SALES-001 Stufe 1d).            // Pocket Information – personenbezogene Kurzinfos (ADR-LIW-MYL-001 R5, §34).
 }
 
 /**
@@ -132,6 +134,7 @@ function maybe_upgrade_database(): void {
 	Cvf\Roles::grant();                           // CVF-Caps an bestehende ARALIYA-Rollen (selbstheilend, alpha.85).
 	Cvf\PluginRegistry::sync();                   // CAPDB – Plugin-Typen registrieren (idempotent, alpha.90).
 	MyLiebherr\Roles::grant();                    // My-Liebherr-Caps an bestehende Rollen (selbstheilend, alpha.108).
+	SalesInterface\DealerRepository::ensure_default(); // Standardhaendler tradler (Env-Fallback), alpha.148.
 	update_option( 'liw_installed_version', LIW_VERSION );
 }
 

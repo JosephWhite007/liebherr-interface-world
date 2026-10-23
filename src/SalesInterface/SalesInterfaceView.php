@@ -30,6 +30,22 @@ final class SalesInterfaceView {
 		add_shortcode( self::SHORTCODE, [ self::class, 'render' ] );
 		add_filter( 'wp_robots', [ self::class, 'robots' ] );
 		add_filter( 'wp_sitemaps_posts_query_args', [ self::class, 'exclude_from_sitemap' ], 10, 2 );
+		add_action( 'template_redirect', [ self::class, 'no_cache' ] );
+	}
+
+	/**
+	 * Geschützte, suchbare Seite nie im Seitencache: Der Core setzt DONOTCACHEPAGE nur bei aktivem Zugangsschutz; ohne
+	 * (Dev) würde WP Rocket die Seite samt Suchergebnis zwischenspeichern und Query-Parameter ignorieren.
+	 */
+	public static function no_cache(): void {
+		$post = get_post();
+		if ( ! $post instanceof \WP_Post || ! has_shortcode( (string) $post->post_content, self::SHORTCODE ) ) {
+			return;
+		}
+		if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+			define( 'DONOTCACHEPAGE', true );
+		}
+		nocache_headers();
 	}
 
 	/** @param array<string,mixed> $robots */
@@ -210,13 +226,65 @@ final class SalesInterfaceView {
 		return $out;
 	}
 
-	/** @param array<string,mixed> $c */
+	/**
+	 * Reiter Codelisten: Übersicht aller Listen (lokaler Spiegel der Auswahlliste) + Suche je Liste/Sprache.
+	 * Suchparameter per GET (serverseitig gerendert, kein JavaScript); Ausgabe nur nach Gate-Prüfung (render()).
+	 *
+	 * @param array<string,mixed> $c
+	 */
 	private static function codelists( array $c ): string {
-		$out = '<p class="liw-sales__text">' . esc_html__( 'Felder wie Bundesland, Branche oder Klassifizierung verweisen auf interne Codelisten von Liebherr. Die Anzeigetexte liefert GET /tab-text je Sprache; die Auswahlliste umfasst acht Sprachen (0 Deutsch, 1 Französisch, 2 Englisch, 3 Italienisch, 4 Spanisch, 5 Russisch, 6 Niederländisch, 7 Chinesisch). Import und Suche der Listeninhalte folgen in Stufe 1b.', 'liebherr-interface-world' ) . '</p>';
+		$lists = CodeListService::lists();
+		$langs = CodeListService::languages();
+		$out   = '<p class="liw-sales__text">' . esc_html__( 'Felder wie Bundesland, Branche oder Klassifizierung verweisen auf interne Codelisten von Liebherr. Die Anzeigetexte liefert GET /tab-text je Sprache; hier steht der lokale Spiegel der LIVISION-Auswahlliste mit Suche.', 'liebherr-interface-world' ) . '</p>';
+
+		if ( [] === $lists ) {
+			$out .= '<p class="liw-sales__meta">' . esc_html__( 'Noch keine Codelisten importiert (Skript scripts/liw-import-livision-codelists.php).', 'liebherr-interface-world' ) . '</p>';
+			foreach ( $c['codelists'] as $l ) {
+				$lists[ (string) $l['code'] ] = [ 'name' => (string) $l['name'], 'entity' => (string) $l['entity'], 'rows' => 0 ];
+			}
+		}
+
+		// Suchformular (GET): Liste, Sprache, Begriff – alle Werte sanitisiert, Liste muss existieren.
+		$sel_list = isset( $_GET['cl'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['cl'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- reine Lesesuche.
+		$sel_lang = isset( $_GET['lang'] ) ? max( 0, min( 99, (int) $_GET['lang'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$term     = isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['q'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( ! isset( $lists[ $sel_list ] ) ) {
+			$sel_list = '';
+		}
+		$page_url = (string) get_permalink();
+		$out     .= '<form class="liw-sales__search" method="get" action="' . esc_url( $page_url . '#liw-sales-codelists' ) . '">';
+		$out     .= '<label class="liw-sales__field"><span>' . esc_html__( 'Codeliste', 'liebherr-interface-world' ) . '</span><select name="cl"><option value="">' . esc_html__( '– wählen –', 'liebherr-interface-world' ) . '</option>';
+		foreach ( $lists as $code => $l ) {
+			$out .= '<option value="' . esc_attr( $code ) . '"' . selected( $sel_list, $code, false ) . '>' . esc_html( $code . ' – ' . $l['name'] ) . '</option>';
+		}
+		$out .= '</select></label><label class="liw-sales__field"><span>' . esc_html__( 'Sprache', 'liebherr-interface-world' ) . '</span><select name="lang">';
+		foreach ( $langs as $n => $name ) {
+			$out .= '<option value="' . esc_attr( (string) $n ) . '"' . selected( $sel_lang, (int) $n, false ) . '>' . esc_html( $n . ' – ' . $name ) . '</option>';
+		}
+		$out .= '</select></label><label class="liw-sales__field"><span>' . esc_html__( 'Code oder Text', 'liebherr-interface-world' ) . '</span><input type="search" name="q" value="' . esc_attr( $term ) . '" maxlength="80" /></label>';
+		$out .= '<button type="submit" class="liw-sales__button">' . esc_html__( 'Suchen', 'liebherr-interface-world' ) . '</button></form>';
+
+		if ( '' !== $sel_list ) {
+			$rows = CodeListService::search( $sel_list, $sel_lang, $term );
+			$out .= '<h3 class="liw-sales__h3">' . esc_html( sprintf( /* translators: 1: Liste, 2: Name, 3: Sprache */ __( 'Ergebnis %1$s – %2$s (%3$s)', 'liebherr-interface-world' ), $sel_list, $lists[ $sel_list ]['name'], (string) ( $langs[ $sel_lang ] ?? $sel_lang ) ) ) . '</h3>';
+			if ( [] === $rows ) {
+				$out .= '<p class="liw-sales__meta">' . esc_html__( 'Keine Treffer.', 'liebherr-interface-world' ) . '</p>';
+			} else {
+				$out .= '<p class="liw-sales__meta">' . esc_html( sprintf( /* translators: %d: Anzahl */ _n( '%d Treffer', '%d Treffer', count( $rows ), 'liebherr-interface-world' ), count( $rows ) ) . ( count( $rows ) >= CodeListService::MAX_RESULTS ? ' ' . __( '(gekürzt – Suche eingrenzen)', 'liebherr-interface-world' ) : '' ) ) . '</p>';
+				$out .= '<div class="liw-sales__scroll"><table class="liw-sales__table"><thead><tr><th scope="col">' . esc_html__( 'Code', 'liebherr-interface-world' ) . '</th><th scope="col">' . esc_html__( 'Text', 'liebherr-interface-world' ) . '</th><th scope="col">' . esc_html__( 'Zusatz', 'liebherr-interface-world' ) . '</th></tr></thead><tbody>';
+				foreach ( $rows as $r ) {
+					$out .= '<tr><th scope="row"><code>' . esc_html( (string) $r['code'] ) . '</code></th><td>' . esc_html( (string) $r['description'] ) . '</td><td>' . esc_html( (string) $r['additional_value'] ) . '</td></tr>';
+				}
+				$out .= '</tbody></table></div>';
+			}
+		}
+
+		$out .= '<h3 class="liw-sales__h3">' . esc_html__( 'Alle Listen', 'liebherr-interface-world' ) . '</h3>';
 		$out .= '<div class="liw-sales__scroll"><table class="liw-sales__table"><thead><tr><th scope="col">' . esc_html__( 'Codeliste', 'liebherr-interface-world' ) . '</th><th scope="col">'
-			. esc_html__( 'Bezeichnung', 'liebherr-interface-world' ) . '</th><th scope="col">' . esc_html__( 'Entität', 'liebherr-interface-world' ) . '</th></tr></thead><tbody>';
-		foreach ( $c['codelists'] as $l ) {
-			$out .= '<tr><th scope="row"><code>' . esc_html( $l['code'] ) . '</code></th><td>' . esc_html( $l['name'] ) . '</td><td>' . esc_html( $l['entity'] ) . '</td></tr>';
+			. esc_html__( 'Bezeichnung', 'liebherr-interface-world' ) . '</th><th scope="col">' . esc_html__( 'Entität', 'liebherr-interface-world' ) . '</th><th scope="col">' . esc_html__( 'Codes (DE)', 'liebherr-interface-world' ) . '</th></tr></thead><tbody>';
+		foreach ( $lists as $code => $l ) {
+			$link = add_query_arg( [ 'cl' => $code, 'lang' => $sel_lang ], $page_url ) . '#liw-sales-codelists';
+			$out .= '<tr><th scope="row"><a href="' . esc_url( $link ) . '"><code>' . esc_html( $code ) . '</code></a></th><td>' . esc_html( $l['name'] ) . '</td><td>' . esc_html( $l['entity'] ) . '</td><td>' . esc_html( (string) $l['rows'] ) . '</td></tr>';
 		}
 		return $out . '</tbody></table></div>';
 	}

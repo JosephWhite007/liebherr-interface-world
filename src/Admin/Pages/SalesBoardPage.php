@@ -19,6 +19,7 @@ namespace Liebherr\InterfaceWorld\Admin\Pages;
 use Liebherr\InterfaceWorld\CoreBridge\AuditBridge;
 use Liebherr\InterfaceWorld\CoreBridge\GateBridge;
 use Liebherr\InterfaceWorld\CoreBridge\RoleBridge;
+use Liebherr\InterfaceWorld\SalesInterface\CodeListService;
 use Liebherr\InterfaceWorld\SalesInterface\DealerApiClient;
 use Liebherr\InterfaceWorld\SalesInterface\SalesContent;
 use Liebherr\InterfaceWorld\SalesInterface\SalesInterfaceView;
@@ -126,10 +127,15 @@ final class SalesBoardPage {
 
 		// Stufe 1c: Testverbindung (nur lesend, nur Testumgebung) – Vorbedingungen und letzter Lauf, nie Nutzdaten.
 		$ready = DealerApiClient::readiness();
+		echo '<tr><th>' . esc_html__( 'Aktiver Händler', 'liebherr-interface-world' ) . '</th><td><code>' . esc_html( $ready['dealer'] ) . '</code> – <a href="' . esc_url( admin_url( 'admin.php?page=' . DealerBoardPage::MENU_SLUG ) ) . '">' . esc_html__( 'Dealer Board', 'liebherr-interface-world' ) . '</a></td></tr>';
 		echo '<tr><th>' . esc_html__( 'Testverbindung', 'liebherr-interface-world' ) . '</th><td>'
 			. esc_html( $ready['ok'] ? __( 'bereit – Probe: scripts/liw-livision-probe.php --confirm', 'liebherr-interface-world' ) : sprintf( /* translators: %s: Grund */ __( 'blockiert (%s)', 'liebherr-interface-world' ), self::reason_label( $ready['reason'] ) ) ) . '</td></tr>';
 		$probe = DealerApiClient::last_probe();
 		echo '<tr><th>' . esc_html__( 'Letzter Aufruf', 'liebherr-interface-world' ) . '</th><td>' . esc_html( self::probe_label( $probe ) ) . '</td></tr>';
+		$imp = CodeListService::last_import();
+		echo '<tr><th>' . esc_html__( 'Codelisten', 'liebherr-interface-world' ) . '</th><td>' . esc_html( null === $imp
+			? __( 'nicht importiert – scripts/liw-import-livision-codelists.php --confirm', 'liebherr-interface-world' )
+			: sprintf( /* translators: 1: Zeilen, 2: Listen, 3: Sprachen, 4: Datum, 5: Datei */ __( '%1$s Zeilen, %2$d Listen, %3$d Sprachen – importiert %4$s (%5$s)', 'liebherr-interface-world' ), number_format_i18n( CodeListService::total() ), (int) $imp['lists'], (int) $imp['languages'], wp_date( 'd.m.Y H:i', (int) $imp['at'] ), (string) $imp['file'] ) ) . '</td></tr>';
 		echo '</tbody></table>';
 	}
 
@@ -138,6 +144,10 @@ final class SalesBoardPage {
 			'key_missing'        => __( 'Subscription-Key fehlt in der Umgebung', 'liebherr-interface-world' ),
 			'user_email_missing' => __( 'UserEmail fehlt in der Umgebung', 'liebherr-interface-world' ),
 			'instance_locked'    => __( 'Instanz nicht freigegeben (Klon/Not-Aus/Kill-Switch)', 'liebherr-interface-world' ),
+			'dealer_unknown'     => __( 'Händler unbekannt', 'liebherr-interface-world' ),
+			'dealer_inactive'    => __( 'Händler inaktiv', 'liebherr-interface-world' ),
+			'environment_not_test' => __( 'Händler nicht auf Testumgebung', 'liebherr-interface-world' ),
+			'write_disabled'     => __( 'Schreibschalter aus', 'liebherr-interface-world' ),
 		];
 		return $map[ $reason ] ?? $reason;
 	}
@@ -151,7 +161,7 @@ final class SalesBoardPage {
 			/* translators: 1: Datum, 2: Endpunkt, 3: Ergebnis, 4: HTTP-Status, 5: Dauer ms */
 			__( '%1$s · GET %2$s · %3$s (HTTP %4$d, %5$d ms)', 'liebherr-interface-world' ),
 			wp_date( 'd.m.Y H:i', (int) ( $probe['at'] ?? 0 ) ),
-			(string) ( $probe['endpoint'] ?? '' ),
+			( ! empty( $probe['dealer'] ) ? '[' . (string) $probe['dealer'] . '] ' : '' ) . (string) ( $probe['endpoint'] ?? '' ),
 			! empty( $probe['ok'] ) ? __( 'OK', 'liebherr-interface-world' ) : __( 'Fehler', 'liebherr-interface-world' ) . ' ' . (string) ( $probe['error'] ?? '' ),
 			(int) ( $probe['status'] ?? 0 ),
 			(int) ( $probe['duration_ms'] ?? 0 )

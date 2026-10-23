@@ -21,6 +21,27 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.149 – Sales Interface Stufe 1b: Codelisten – 24.10.2026
+
+- NEU `src/SalesInterface/CodeListSchema.php` (Tabelle `liw_codelist`), `XlsxReader.php` (ZipArchive+XMLReader),
+  `CodeListService.php` (import/detect_sheets/lists/languages/search/label/total/last_import).
+- NEU `scripts/liw-import-livision-codelists.php`; `data/` angelegt, `.gitignore`: `/data/*.xlsx`.
+- `src/SalesInterface/SalesInterfaceView.php`: Reiter Codelisten mit Suche (GET), `no_cache()` auf `template_redirect`.
+- `src/Admin/Pages/SalesBoardPage.php`: Statuszeile Codelisten. `assets/css/liebherr-frontend.css`: `.liw-sales__search/__field/__button`.
+- `liebherr-interface-world.php`: `CodeListSchema::create_table()`; Version alpha.149.
+- `tests/run-tests.php`: 7 Prüfungen (XLSX-Fixture, Service, Schema, Suche).
+
+## 0.1.0-alpha.148 – Sales Interface Stufe 1d: Händler + Schreibaufrufe – 24.10.2026
+
+- NEU `src/SalesInterface/DealerSchema.php` (Tabelle `liw_dealer`), `DealerRepository.php` (CRUD, credentials, ensure_default,
+  set_active, Audit), `TestDataFactory.php` (Sunnyside/Island/Alice/Bob), `src/CoreBridge/SecretBridge.php` (encrypt_blob).
+- `src/SalesInterface/DealerApiClient.php`: händlerbezogen (`$dealer_code`), `readiness($code,$write)`, `send()` mit
+  WRITE_ENDPOINTS/missing_fields/Sunnyside-Prüfung/dry_run, `request()` via `wp_remote_request`, Option `liw_livision_last_write`.
+- NEU `src/Admin/Pages/DealerBoardPage.php`; `src/Admin/AdminMenu.php`: „🏢 Dealer Board“; `SalesBoardPage`: aktiver Händler.
+- NEU `scripts/liw-livision-write.php`; `scripts/liw-livision-probe.php`: `--dealer`.
+- `liebherr-interface-world.php`: `DealerSchema::create_table()`, `DealerRepository::ensure_default()`; Version alpha.148.
+- `tests/run-tests.php`: 10 Prüfungen (Schreibendpunkte, Pflichtfelder, Konvention, Schema-COMMENT, Repository, Board).
+
 ## 0.1.0-alpha.147 – Sales Interface Stufe 1c: lesende Testverbindung – 23.10.2026
 
 - NEU `src/CoreBridge/InstanceBridge.php`: Manifest-Filter (`declare_keys`, Cache-Reset da Core vor dem Plugin lädt),

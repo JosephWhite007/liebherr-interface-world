@@ -657,6 +657,11 @@
 .liw-sales__dl dt { font-weight: 700; margin-top: 0.9rem; }
 .liw-sales__dl dd { margin: 0.2rem 0 0; max-width: 75ch; }
 .liw-sales__locked { padding: 3rem 1rem; text-align: center; }
+.liw-sales__search { display: flex; flex-wrap: wrap; gap: 0.75rem 1rem; align-items: flex-end; margin: 1rem 0 1.25rem; padding: 1rem; background: var(--brand-surface, #fff); border: 1px solid var(--brand-border, #d9d9d9); }
+.liw-sales__field { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.85rem; color: var(--brand-muted, #666); }
+.liw-sales__field select, .liw-sales__field input { min-width: 12rem; padding: 0.45rem 0.6rem; border: 1px solid var(--brand-border, #d9d9d9); border-radius: var(--radius-control, 2px); font: inherit; color: var(--brand-text, #1f1f1f); background: #fff; }
+.liw-sales__button { padding: 0.5rem 1.1rem; border: 0; border-radius: var(--radius-control, 2px); background: var(--brand-primary, #3a3f45); color: var(--brand-on-primary, #fff); font: inherit; font-weight: 600; cursor: pointer; }
+.liw-sales__button:hover, .liw-sales__button:focus-visible { filter: brightness(0.92); }
 
 /* Roadmap-Zeitleiste (LP-12) */
 .liw-roadmap { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }

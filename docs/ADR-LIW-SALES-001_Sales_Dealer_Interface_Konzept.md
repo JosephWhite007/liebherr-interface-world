@@ -3,7 +3,7 @@
 **Auftrag:** Joseph White, 23.10.2026 — Karte „Sales" (Process Worlds, Interface Solutions) bekommt Mouse-over-Effekt und
 führt auf ein passwortgeschütztes Untermenü (Code 3268) mit der aktuellen Schnittstellenbeschreibung; Integrationskonzept für
 die API-Schnittstellen in Stufe 1 (Sales); alles im Backend administrierbar, nach dem Muster des Liebherr-Plugins.
-**Status:** Entwurf zur Freigabe — Fragen F1–F4 am 23.10.2026 beantwortet (siehe Abschnitt 10); **Stufe 1a freigegeben (JW 23.10.2026, „F5–F12 gelten") und in 0.1.0-alpha.146 umgesetzt**; Stufe 1c (lesender Client, Manifest, Probe) in alpha.147 umgesetzt – Echtlauf 24.10.2026 erfolgreich (tab-text, product-list); 1b, 1d und Variante B offen (`docs/LIW_TODO.md`).
+**Status:** Entwurf zur Freigabe — Fragen F1–F4 am 23.10.2026 beantwortet (siehe Abschnitt 10); **Stufe 1a freigegeben (JW 23.10.2026, „F5–F12 gelten") und in 0.1.0-alpha.146 umgesetzt**; Stufe 1c (lesender Client, Manifest, Probe) in alpha.147 umgesetzt – Echtlauf 24.10.2026 erfolgreich (tab-text, product-list); 1d in alpha.148 gebaut (Händler-Entität, Schreibpfad, Trockenlauf – Echtlauf wartet auf SalesAccountNumber); 1b in alpha.149 umgesetzt (Codelisten-Import + Suche; Sandbox-Simulation entfällt zugunsten der echten Testverbindung); Variante B offen (`docs/LIW_TODO.md`).
 **Plugin:** `liebherr-interface-world` (0.1.0-alpha.145) · **Quellen:** `Tradler-Dealer-Interface-Guide.md` (Sales API v3),
 `LIVISION_Auswahlliste.xlsx` (Codelisten), Bestandscode des Plugins (siehe Abschnitt 1).
 

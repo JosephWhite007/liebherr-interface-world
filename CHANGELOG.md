@@ -1,5 +1,68 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.149] – 2026-10-24 – Sales Interface Stufe 1b: Codelisten-Import aus der LIVISION-Auswahlliste + Suche auf der Sales-Seite
+
+### Neu
+- **Tabelle `liw_codelist`** (Sprache, Liste, Code, Text, Zusatzwert; UNIQUE Sprache+Liste+Code) als lokaler Spiegel der
+  Liebherr-Codelisten; Listen-Metadaten und Sprachen in Optionen (`liw_codelist_meta`, `liw_codelist_langs`), letzter Import
+  in `liw_codelist_last_import`.
+- **`XlsxReader`** – eigener, minimaler XLSX-Leser (ZipArchive + XMLReader, zeilenweise, konstanter Speicher; keine neue
+  externe Bibliothek). Shared Strings inkl. Rich-Text-Runs, Inline-Strings, Zahlen.
+- **`CodeListService`** – Import (Upsert in 500er-Batches, idempotent), `lists()`, `languages()`, `search()` (prepared,
+  `esc_like`, max. 200 Treffer), `label()`. Blätter werden **an der Kopfzeile erkannt**, nicht am Namen: In der gelieferten
+  Datei heißt das Zeilenblatt „Codelist“ und das Metadatenblatt „CodeDetails“ (vertauscht gegenüber der Erwartung).
+- **Skript `scripts/liw-import-livision-codelists.php`** (`--confirm`, `--file=`; Standard `data/LIVISION_Auswahlliste.xlsx`,
+  Ordner git-ignoriert – Liebherr-interne Daten werden nicht committet). Ohne `--confirm` Trockenlauf.
+- **Sales-Seite, Reiter Codelisten:** Suchformular (Liste, Sprache, Code/Text; GET, serverseitig, ohne JavaScript),
+  Ergebnistabelle, Übersicht aller Listen mit Codezahl (DE) und Direktlink. Seite setzt jetzt immer `DONOTCACHEPAGE` +
+  `nocache_headers()` – ohne aktiven Zugangsschutz hätte WP Rocket die Seite samt Suchergebnis zwischengespeichert und
+  Query-Parameter ignoriert (auf Dev beobachtet).
+- Sales Board: Statuszeile „Codelisten“ (Zeilen, Listen, Sprachen, Datum, Datei).
+
+### Verifikation
+- `php -l` grün; `tests/run-tests.php` 730 Prüfungen, 0 Fehler (7 neue: XLSX-Fixture zur Laufzeit – Blattauflösung,
+  alle Zeilen, Shared/Rich/Inline/Zahl; Service-Erkennung/Upsert/esc_like; Schema; Suche sanitisiert/escaped).
+- Dev-Import: 49 104 Zeilen gelesen, **48 912** gespeichert (192 Dubletten gleicher Sprache+Liste+Code in der Quelle
+  zusammengeführt), 20 Listen, 8 Sprachen, 1,8 s; zweiter Lauf ändert nichts (Idempotenz). Suche: AH/DE → 3 Anreden,
+  1B/EN „Bay“ → DE-BY Bayern, LN/DE „Polen“ → PL. Unbekannte Liste und `<script>` im Suchfeld: keine Ausgabe, keine Injektion.
+- Befund beim Bau: XMLReader `next()` + `read()` übersprang jede zweite Zeile – behoben, durch Test abgesichert.
+
+
+## [0.1.0-alpha.148] – 2026-10-24 – Sales Interface Stufe 1d: Händler-Verwaltung und schreibende Testaufrufe (Kunde/Kontakt)
+
+### Neu
+- **Händler als Entität** (Entscheidung JW 24.10.2026: Plattform für viele Händler weltweit, Schnittstellen je Händler
+  getrennt): Tabelle **`liw_dealer`** (Kürzel, Name, Land, Umgebung, SalesAccountNumber, UserEmail, API-Key
+  verschlüsselt, Schreibschalter, Status, Notizen). `DealerRepository` (CRUD, Audit ohne Werte, `credentials()` nur im
+  Speicher), `DealerSchema`, neue `CoreBridge\SecretBridge` (Core-`EncryptionService::encrypt_blob`, Master Key aus Env,
+  fail closed: ohne Key wird kein API-Key gespeichert). Standardhändler `tradler` wird angelegt und nutzt die
+  Env-Zugangsdaten (`LIW_LIVISION_*`), solange im Datensatz nichts steht. Aktiver Händler: Option
+  `liw_livision_active_dealer`.
+- **🏢 Dealer Board** (Liebherr Backoffice, Cap `liw_manage_interfaces`): Liste mit Verbindungsstatus je Händler,
+  Anlegen/Bearbeiten (API-Key nur schreibend, Anzeige „hinterlegt/aus Env/fehlt“), „Aktiv setzen“, letzter
+  Schreibaufruf, Anleitung.
+- **Schreibpfad im `DealerApiClient`** (`send()`): nur Testumgebung, nur `POST/PUT /customer` und `POST/PUT /contact`
+  (keine Opportunity-Schreibpfade: `PUT` ohne Body-Spezifikation, `DELETE` = Verlustmeldung realer Bedarfsfälle),
+  Pflichtfelder laut Guide §4.2–4.5 vor dem Senden geprüft, Kunden ohne „Sunnyside“-Namen abgelehnt, Schreibschalter
+  **je Händler** (Standard AUS), `dry_run` liefert den Body ohne zu senden; Audit `api_write`/`api_write_fail`,
+  letzter Lauf in `liw_livision_last_write`. Lesen (`get()`) jetzt ebenfalls händlerbezogen.
+- **Testdaten-Konvention** `TestDataFactory` (Vorgabe JW): Kunden „Sunnyside One/Two/…“, Adressen „Island Street/Home/…“,
+  Ansprechpartner Alice (w) / Bob (m); Notizfeld markiert den Datensatz als löschbaren Test.
+- **Skript `scripts/liw-livision-write.php`**: `--step=customer|contact|customer-update|contact-update`, ohne
+  `--confirm` **Trockenlauf mit vollständigem Body** (Freigabe JW: Trockenlauf vorher sehen), mit `--confirm` genau ein
+  Aufruf; `--dealer`, `--n`, `--male`; angelegte IDs je Händler in `liw_livision_test_records` (keine Dubletten).
+  `liw-livision-probe.php` nimmt `--dealer`.
+- Sales Board: Statuszeile „Aktiver Händler“ mit Link zum Dealer Board; weitere Blockiergründe benannt.
+
+### Verifikation
+- `php -l` grün; `tests/run-tests.php` 716 Prüfungen, 0 Fehler (10 neue). Dev: Tabelle angelegt (`maybe_upgrade_database`),
+  `tradler` gesät; Lesen über den Händler weiter OK (`/product-list` 200); Dealer Board rendert ohne Key-Leck;
+  Trockenlauf `--step=customer` zeigt Body „Sunnyside One / Island Street 1 / Island City“ und blockiert korrekt mit
+  `write_disabled` bzw. `missing_salesaccountnumber`. **Noch kein Schreibaufruf gesendet** – wartet auf
+  SalesAccountNumber (JW reicht nach) und Freigabe des Trockenlaufs.
+- Behoben vor Auslieferung: `DealerRepository::save()` schrieb bei fehlendem `status`/`environment` Leerstrings.
+
+
 ## [0.1.0-alpha.147] – 2026-10-23 – Sales Interface: lesende Testverbindung zur Liebherr Dealer Interface API (Stufe 1c)
 
 ### Neu
