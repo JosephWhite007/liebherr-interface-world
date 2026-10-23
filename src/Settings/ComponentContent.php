@@ -25,13 +25,16 @@ final class ComponentContent {
 
 	public const OPTION = 'liw_components';
 
+	/** Seitenpfad der Sales-Unterseite (ADR-LIW-SALES-001); Ziel der Karte „Sales". */
+	public const SALES_TARGET = 'liebherr-local-intelligence/interface-solutions/sales';
+
 	/**
-	 * @return array{process:array<int,array{title:string,text:string}>,roadmap:array<int,array{title:string,text:string}>,onboarding:array<int,array{title:string,text:string}>}
+	 * @return array{process:array<int,array{title:string,text:string,target?:string}>,roadmap:array<int,array{title:string,text:string}>,onboarding:array<int,array{title:string,text:string}>}
 	 */
 	public static function defaults(): array {
 		return [
 			'process' => [
-				[ 'title' => __( 'Sales', 'liebherr-interface-world' ), 'text' => __( 'Angebots- und Vertriebsprozesse einheitlich abbilden.', 'liebherr-interface-world' ) ],
+				[ 'title' => __( 'Sales', 'liebherr-interface-world' ), 'text' => __( 'Angebots- und Vertriebsprozesse einheitlich abbilden.', 'liebherr-interface-world' ), 'target' => self::SALES_TARGET ],
 				[ 'title' => __( 'Configuration', 'liebherr-interface-world' ), 'text' => __( 'Maschinen- und Anbaukonfiguration ohne Medienbruch.', 'liebherr-interface-world' ) ],
 				[ 'title' => __( 'Order', 'liebherr-interface-world' ), 'text' => __( 'Auftragsdaten konsistent zwischen Zentrale und Händler.', 'liebherr-interface-world' ) ],
 				[ 'title' => __( 'Goods', 'liebherr-interface-world' ), 'text' => __( 'Warenströme, Lieferungen und Bestände nachvollziehbar.', 'liebherr-interface-world' ) ],
@@ -61,7 +64,7 @@ final class ComponentContent {
 		];
 	}
 
-	/** @return array<string,array<int,array{title:string,text:string}>> */
+	/** @return array<string,array<int,array{title:string,text:string,target?:string}>> */
 	public static function get(): array {
 		$stored = get_option( self::OPTION, [] );
 		if ( ! is_array( $stored ) || [] === $stored ) {
@@ -99,12 +102,35 @@ final class ComponentContent {
 				}
 				$title = sanitize_text_field( (string) ( $item['title'] ?? '' ) );
 				$text  = sanitize_text_field( (string) ( $item['text'] ?? '' ) );
-				if ( '' !== $title ) {
-					$items[] = [ 'title' => $title, 'text' => $text ];
+				if ( '' === $title ) {
+					continue;
 				}
+				$entry = [ 'title' => $title, 'text' => $text ];
+				if ( 'process' === $list ) {
+					$target = self::sanitize_target( (string) ( $item['target'] ?? '' ) );
+					if ( '' !== $target ) {
+						$entry['target'] = $target;
+					}
+				}
+				$items[] = $entry;
 			}
 			$out[ $list ] = [] !== $items ? $items : $def[ $list ];
 		}
 		return $out;
+	}
+
+	/**
+	 * Zielseite einer Process-Karte als WP-Seitenpfad („eltern/kind"): nur Slug-Segmente, keine URL,
+	 * kein Schema, keine Pfad-Tricks. Leer = Karte ohne Link.
+	 */
+	public static function sanitize_target( string $raw ): string {
+		$segments = [];
+		foreach ( explode( '/', trim( $raw ) ) as $segment ) {
+			$segment = sanitize_title( $segment );
+			if ( '' !== $segment ) {
+				$segments[] = $segment;
+			}
+		}
+		return implode( '/', $segments );
 	}
 }

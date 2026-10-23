@@ -21,6 +21,27 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.146 – Sales Interface (Stufe 1a, ADR-LIW-SALES-001) – 23.10.2026
+
+- `src/Settings/ComponentContent.php`: Konstante `SALES_TARGET`; Process-Karten optional `target` (Seitenpfad); neue
+  `sanitize_target()` (nur Slug-Segmente); Standard: Karte „Sales" verlinkt.
+- `src/Frontend/ComponentViews.php`: Karte mit Ziel als `<a class="liw-pcard__link">` (Hover/Fokus, 🔒 bei Code-Schutz,
+  Pfeil); Helfer `target_page()`.
+- `src/Admin/Pages/ComponentsBoardPage.php`: dritte Spalte „Zielseite" in Eingabe/Ausgabe der Process-Zeilen.
+- NEU `src/CoreBridge/GateBridge.php`: Kopplung an Core `SiteGateSettings`/`SiteGate` (protect, is_protected, is_unlocked).
+- NEU `src/SalesInterface/SalesContent.php`: Datenmodell + Sanitizer + Standardinhalt (17 Endpunkte, 5 Gruppen, 5 Schemas,
+  20 Codelisten, Klärungspunkte, Stufenplan, Anleitung); `parse_lines()/format_lines()` fürs Board.
+- NEU `src/SalesInterface/SalesInterfaceView.php`: Shortcode `[liw_sales_interface]`, acht Reiter, `wp_robots` noindex,
+  Sitemap-Ausschluss, Gate-Prüfung vor Ausgabe.
+- NEU `src/Admin/Pages/SalesBoardPage.php`: Backoffice-Board (Formular, Status, Anleitung, Audit).
+- `src/Admin/AdminMenu.php`: Eintrag „💼 Sales Board" (Cap `liw_manage_interfaces`) vor dem Language Board.
+- `src/Bootstrap.php`: `SalesInterfaceView::register()`; `src/Frontend/FrontendAssets.php`: Shortcode in Asset-Trigger.
+- `assets/css/liebherr-frontend.css`: Blöcke `.liw-pcard--link` (Hover) und `.liw-sales__*` (Seite), nur `--brand-*`.
+- NEU `scripts/liw-seed-sales-interface.php` (idempotent, `--confirm`).
+- `tests/run-tests.php`: Abschnitt „Sales Interface (alpha.146)" (12 Prüfungen).
+- `docs/ADR-LIW-SALES-001_…`: Status auf „Stufe 1a umgesetzt"; Handbuch: Kapitel „Sales Interface"; LIW_TODO: Stufen 1b–1d.
+- Version `0.1.0-alpha.146` (Header + `LIW_VERSION`).
+
 ## Nachtrag 03.10.2026 – Vollbild-Vorlage der Liebherr-Seiten (Reparatur im Core, keine Plugin-Codeänderung)
 
 - Befund JW (Screenshots Dev): Seiten `/my-liebherr/`, `/liebherr-intelligence-world/`, `/liebherr-local-intelligence/`, `/liebherr-adventures/` wirken im Layout zerschossen (Theme-Kopf, schmale Spalte, Seitentitel um den Inhalt).

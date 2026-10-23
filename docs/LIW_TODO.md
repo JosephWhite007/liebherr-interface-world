@@ -15,6 +15,16 @@ Stand: 19.09.2026 (0.1.0-alpha.78).
 
 ---
 
+## Sales Interface – Folgestufen (ADR-LIW-SALES-001, Freigabe JW 23.10.2026: nur Stufe 1a)
+
+- **1b** Codelisten-Import (`liw_codelist`, Skript aus `LIVISION_Auswahlliste.xlsx`, ≈49 100 Zeilen, 8 Sprachen) + Suche;
+  Sandbox mit `SimulationMockEngine`.
+- **1c** `DealerApiClient` gegen Testserver, nur lesende GETs; Keys nur Env (`LIW_LIVISION_KEY_TEST`,
+  `LIW_LIVISION_USER_EMAIL`), Manifest-Eintrag, `InstanceState::may_send('liebherr-livision')`, Audit ohne Kundendaten.
+- **1d** Schreibende Endpunkte hinter Feature-Flag (Default AUS); Klärung PUT /opportunity-Body und `oderDateFrom` mit Liebherr.
+- **Variante B** Händlerindividuelle Codes über `GateBridge`-Naht (statt Plattformcode).
+- Einträge der 17 Endpunkte im Interface Board (`liw_interface`) spiegeln – in 1a bewusst nicht automatisiert.
+
 ## Entscheidungspunkt: `liebherr-download-consent` in LIW zusammenführen? (JW-Frage 28.09.2026)
 
 - Zwei Liebherr-Plugins: Download & Newsletter Consent (alpha.1, bewusst Core-unabhängig, 1 Tabelle `ldc_consent_log`,

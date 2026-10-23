@@ -760,5 +760,46 @@ liw_assert( 'Emergency: Option liw_emergency_enabled (Default AUS, alpha.145) + 
 $__clock = (string) file_get_contents( $root . '/assets/js/liw-ptime-clock.js' );
 liw_assert( 'Plattformzeit-Uhr: kein window.location.reload() im wp-admin bei gesperrter Sitzung', str_contains( $__clock, '! inAdmin && ! overlayPresent()' ) && str_contains( (string) file_get_contents( $root . '/src/PlatformTime/ClockWidget.php' ), "'isAdmin'  => is_admin()" ), $checks, $failures );
 
+// ── alpha.146: Sales Interface (ADR-LIW-SALES-001, Stufe 1a) ─────────────────
+echo "-- Sales Interface (alpha.146) --\n";
+if ( ! function_exists( 'sanitize_title' ) ) { function sanitize_title( $s ) { return strtolower( trim( (string) preg_replace( '/[^A-Za-z0-9-]+/', '-', (string) $s ), '-' ) ); } }
+if ( ! function_exists( 'sanitize_key' ) ) { function sanitize_key( $s ) { return strtolower( (string) preg_replace( '/[^a-z0-9_\-]/i', '', (string) $s ) ); } }
+if ( ! function_exists( 'sanitize_textarea_field' ) ) { function sanitize_textarea_field( $s ) { return trim( (string) $s ); } }
+if ( ! function_exists( 'esc_url_raw' ) ) { function esc_url_raw( $u, $p = [] ) { return preg_match( '#^https://#', (string) $u ) ? (string) $u : ''; } }
+if ( ! defined( 'ABSPATH' ) ) { define( 'ABSPATH', __DIR__ ); }
+require_once $root . '/src/SalesInterface/SalesContent.php';
+require_once $root . '/src/SalesInterface/SalesInterfaceView.php';
+$sc  = \Liebherr\InterfaceWorld\SalesInterface\SalesContent::defaults();
+$cdp = \Liebherr\InterfaceWorld\Settings\ComponentContent::defaults();
+liw_assert( 'Sales: Karte „Sales" verlinkt auf die Sales-Seite, andere Karten ohne Ziel', \Liebherr\InterfaceWorld\Settings\ComponentContent::SALES_TARGET === ( $cdp['process'][0]['target'] ?? '' ) && empty( $cdp['process'][1]['target'] ), $checks, $failures );
+liw_assert( 'Sales: 17 Endpunkte laut Dealer Interface Guide', 17 === count( $sc['endpoints'] ), $checks, $failures );
+$sc_group_keys = array_column( $sc['groups'], 'key' );
+$sc_ok = true;
+foreach ( $sc['endpoints'] as $ep ) {
+	if ( ! in_array( $ep['group'], $sc_group_keys, true ) || ! in_array( $ep['method'], \Liebherr\InterfaceWorld\SalesInterface\SalesContent::METHODS, true ) || '/' !== $ep['path'][0] || ! in_array( $ep['status'], \Liebherr\InterfaceWorld\SalesInterface\SalesContent::STATUSES, true ) ) { $sc_ok = false; }
+}
+liw_assert( 'Sales: jeder Endpunkt hat gültige Gruppe, Methode, Pfad mit „/" und Status', $sc_ok, $checks, $failures );
+liw_assert( 'Sales: 5 Gruppen, 5 Schemas, 20 Codelisten (Auswahlliste 21 Zeilen inkl. DL1)', 5 === count( $sc['groups'] ) && 5 === count( $sc['schemas'] ) && 20 === count( $sc['codelists'] ), $checks, $failures );
+$sc_envs_https = true;
+foreach ( $sc['environments'] as $e ) { if ( 0 !== strpos( $e['url'], 'https://' ) ) { $sc_envs_https = false; } }
+liw_assert( 'Sales: alle Umgebungs-URLs https', $sc_envs_https, $checks, $failures );
+$sc_dump = json_encode( $sc );
+liw_assert( 'Sales: Standardinhalt enthält keine Schlüsselwerte (nur Verweis auf Env)', ! preg_match( '/[0-9a-f]{32}/i', (string) $sc_dump ), $checks, $failures );
+$sc_san = \Liebherr\InterfaceWorld\SalesInterface\SalesContent::sanitize( [ 'endpoints' => [
+	[ 'group' => 'Customer', 'method' => 'get', 'path' => 'x/y', 'summary' => 'ok', 'params' => '', 'status' => 'kaputt' ],
+	[ 'group' => 'customer', 'method' => 'HACK', 'path' => '/z', 'summary' => 'x', 'params' => '', 'status' => 'draft' ],
+	[ 'group' => '', 'method' => 'GET', 'path' => '/q', 'summary' => 'x', 'params' => '', 'status' => 'draft' ],
+] ] );
+liw_assert( 'Sales sanitize: Methode groß, Pfad mit „/", Status-Fallback draft, ungültige Zeilen verworfen', 1 === count( $sc_san['endpoints'] ) && 'GET' === $sc_san['endpoints'][0]['method'] && '/x/y' === $sc_san['endpoints'][0]['path'] && 'draft' === $sc_san['endpoints'][0]['status'], $checks, $failures );
+$sc_env = \Liebherr\InterfaceWorld\SalesInterface\SalesContent::sanitize( [ 'environments' => [ [ 'key' => 'x', 'label' => 'X', 'url' => 'javascript:alert(1)', 'note' => '' ] ] ] );
+liw_assert( 'Sales sanitize: Nicht-https-URL wird verworfen', '' === $sc_env['environments'][0]['url'], $checks, $failures );
+$sc_rt = \Liebherr\InterfaceWorld\SalesInterface\SalesContent::parse_lines( 'endpoints', \Liebherr\InterfaceWorld\SalesInterface\SalesContent::format_lines( 'endpoints', $sc['endpoints'] ) );
+liw_assert( 'Sales Board: format_lines → parse_lines verlustfrei (Endpunkte)', count( $sc_rt ) === count( $sc['endpoints'] ) && $sc_rt[5]['path'] === $sc['endpoints'][5]['path'] && $sc_rt[5]['method'] === $sc['endpoints'][5]['method'], $checks, $failures );
+$cct = \Liebherr\InterfaceWorld\Settings\ComponentContent::sanitize_target( 'https://evil.example/../Sales Seite' );
+liw_assert( 'Karten-Ziel: nur Slug-Segmente, keine URL/Pfad-Tricks', false === strpos( $cct, ':' ) && false === strpos( $cct, '..' ) && false === strpos( $cct, '.' ), $checks, $failures );
+$__view = (string) file_get_contents( $root . '/src/SalesInterface/SalesInterfaceView.php' );
+liw_assert( 'Sales-Ansicht: serverseitige Freigabeprüfung (GateBridge) vor jeder Ausgabe + noindex', str_contains( $__view, 'GateBridge::is_unlocked()' ) && str_contains( $__view, "'noindex'" ), $checks, $failures );
+liw_assert( 'Sales-Ansicht: letzter Reiter = Anleitung', 'guide' === array_key_last( \Liebherr\InterfaceWorld\SalesInterface\SalesInterfaceView::tabs() ), $checks, $failures );
+
 echo "\n{$checks} Prüfungen, {$failures} fehlgeschlagen.\n";
 exit( $failures > 0 ? 1 : 0 );

@@ -61,6 +61,7 @@ final class Bootstrap {
 		HeroView::register();
 		FooterView::register();
 		ComponentViews::register();
+		SalesInterface\SalesInterfaceView::register(); // Sales Interface [liw_sales_interface], geschuetzte Unterseite der Karte Sales (ADR-LIW-SALES-001).
 		WorldMapView::register();
 		LandingpageView::register();
 		IntroOverlay::register();          // Intro-Overlay (Sternenregen + Eintritts-Fenster).

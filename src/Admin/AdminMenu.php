@@ -32,6 +32,7 @@ use Liebherr\InterfaceWorld\Admin\Pages\MediaBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\OnboardingBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\PartnerDocumentBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\ProgrammingLogPage;
+use Liebherr\InterfaceWorld\Admin\Pages\SalesBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\SimulationBoardPage;
 use Liebherr\InterfaceWorld\Admin\Pages\TodoBoardPage;
 use Liebherr\InterfaceWorld\Content\SitePages;
@@ -112,6 +113,7 @@ final class AdminMenu {
 		add_submenu_page( 'liw-interface-board', __( 'Brand Board (Design / CI)', 'liebherr-interface-world' ), __( '🎨 Brand Board', 'liebherr-interface-world' ), $cc, BrandBoardPage::MENU_SLUG, [ BrandBoardPage::class, 'render' ] );
 		add_submenu_page( 'liw-interface-board', __( 'Header Board (Navigation & CTAs)', 'liebherr-interface-world' ), __( '🧭 Header Board', 'liebherr-interface-world' ), $cc, HeaderBoardPage::MENU_SLUG, [ HeaderBoardPage::class, 'render' ] );
 		add_submenu_page( 'liw-interface-board', __( 'Components Board (Kern-Komponenten)', 'liebherr-interface-world' ), __( '🧩 Components Board', 'liebherr-interface-world' ), $cc, ComponentsBoardPage::MENU_SLUG, [ ComponentsBoardPage::class, 'render' ] );
+		add_submenu_page( 'liw-interface-board', __( 'Sales Board (Sales Interface)', 'liebherr-interface-world' ), __( '💼 Sales Board', 'liebherr-interface-world' ), $ci, SalesBoardPage::MENU_SLUG, [ SalesBoardPage::class, 'render' ] );
 		add_submenu_page( 'liw-interface-board', __( 'Language Board (Release-Readiness)', 'liebherr-interface-world' ), __( '🌐 Language Board', 'liebherr-interface-world' ), $cc, LanguageBoardPage::MENU_SLUG, [ LanguageBoardPage::class, 'render' ] );
 		add_submenu_page( 'liw-interface-board', __( 'Onboarding – Partneranfragen', 'liebherr-interface-world' ), __( 'Onboarding', 'liebherr-interface-world' ), RoleBridge::CAP_VIEW_ONBOARDING, OnboardingBoardPage::MENU_SLUG, [ OnboardingBoardPage::class, 'render' ] );
 		add_submenu_page( 'liw-interface-board', __( 'Kontaktanfragen (LP-13)', 'liebherr-interface-world' ), __( 'Kontaktanfragen', 'liebherr-interface-world' ), RoleBridge::CAP_VIEW_ONBOARDING, ContactBoardPage::MENU_SLUG, [ ContactBoardPage::class, 'render' ] );

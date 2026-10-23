@@ -1,5 +1,36 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.146] – 2026-10-23 – Sales Interface: geschützte Unterseite hinter der Karte „Sales" (ADR-LIW-SALES-001, Stufe 1a)
+
+### Neu
+- **Karte „Sales" (Process Worlds) ist klickbar:** Process-Karten im Components Board können eine Zielseite tragen
+  („Titel | Text | Seitenpfad"). Mit Ziel wird die Karte zum Link mit Hover-/Fokus-Effekt (Anheben, Schatten, Pfeil,
+  🔒-Hinweis bei Code-Schutz; `prefers-reduced-motion` respektiert). Karten ohne Ziel bleiben unverändert.
+- **Seite „Sales Interface"** (`…/interface-solutions/sales/`, Shortcode `[liw_sales_interface]`, Vollbild-Vorlage):
+  Schnittstellenbeschreibung der Liebherr Dealer Interface API (Sales API v3) in acht Reitern – Übersicht, Umgebungen &
+  Zugang, Endpunkte (17, fünf Gruppen, je mit Status), Datenmodell (Customer/Contact/Opportunity), Codelisten (20 Listen,
+  8 Sprachen), Sandbox (Platzhalter 1b/1c), Roadmap & Klärungspunkte, Anleitung (zuletzt). `noindex`, nicht in der Sitemap.
+- **Zugangsschutz (Variante A, JW: „A jetzt, B später"):** neue `CoreBridge\GateBridge` setzt die Core-Regel »mit Code«
+  (Standardcode der Plattform). Zweite Verteidigungslinie serverseitig: ohne Freigabe rendert der Shortcode keinen
+  technischen Inhalt. Händlercodes (Variante B) folgen über dieselbe Naht.
+- **Sales Board** (Liebherr Backoffice → 💼 Sales Board, Cap `liw_manage_interfaces`): alle Inhalte der Seite pflegbar
+  (Einleitung, Authentifizierungstext, Umgebungen, Gruppen, Endpunkte mit Status, Datenmodell, Codelisten, Klärungspunkte,
+  Stufenplan, Anleitung), Statusblock (Seite, Schutz, Karten-Link, Env-Schlüssel „hinterlegt/fehlt" – nie Werte), Audit.
+- **Seed-Skript** `scripts/liw-seed-sales-interface.php --confirm`: legt die Seite an, setzt Vorlage, Schutz, Option
+  `liw_sales_page_id` und das Karten-Ziel; idempotent.
+- Datenquelle `SalesInterface\SalesContent` (Option `liw_sales_interface`), Standardinhalt aus
+  `Tradler-Dealer-Interface-Guide.md` + `LIVISION_Auswahlliste.xlsx`; **keine Zugangsdaten** in Code/DB/Seite
+  (Schlüssel nur Env `LIW_LIVISION_KEY_TEST`/`LIW_LIVISION_USER_EMAIL`, erst Stufe 1c).
+
+### Verifikation
+- `php -l` alle Dateien grün; `tests/run-tests.php` 688 Prüfungen, 0 Fehler (12 neue: Karten-Ziel, Endpunkte,
+  Sanitizer, Round-Trip Board, Gate-Prüfung, Reiterfolge).
+- Dev: Seite 200 mit allen acht Reitern; Karte „Sales" als Link mit 🔒; Sales Board rendert mit Status „Aktiv: Core-Regel".
+  Mit `ary_site_gate_enabled=1` liefert die Seite 403 + Code-Maske ohne Inhalt (danach Option wieder entfernt).
+- Hinweis: Ein vor dem Einschalten des Schutzes von WP Rocket zwischengespeicherter Stand bleibt bis zum Cache-Leeren sichtbar
+  (Core setzt `DONOTCACHEPAGE` nur bei gesperrten Aufrufen) – nach Aktivierung des Schutzes Rocket-Cache leeren.
+
+
 ## [0.1.0-alpha.145] – 2026-09-28 – Hilfe-Koffer und Time-Pille plattformweit deaktiviert (Entscheidung JW)
 
 ### Geändert

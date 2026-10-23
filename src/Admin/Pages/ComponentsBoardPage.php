@@ -29,7 +29,7 @@ final class ComponentsBoardPage {
 
 	/** @var array<string,string> Listen-Schlüssel → Label. */
 	private const LISTS = [
-		'process'    => 'Process World Cards (LP-08) – [liw_process_worlds]',
+		'process'    => 'Process World Cards (LP-08) – [liw_process_worlds] – je Zeile „Titel | Text | Zielseite (Seitenpfad, optional)"',
 		'roadmap'    => 'Roadmap-Phasen (LP-12) – [liw_roadmap]',
 		'onboarding' => 'Onboarding-Schritte (LP-11) – [liw_onboarding_steps]',
 	];
@@ -43,7 +43,7 @@ final class ComponentsBoardPage {
 		$data   = ComponentContent::get();
 
 		echo '<div class="wrap"><h1>' . esc_html__( 'Components Board – Kern-Komponenten', 'liebherr-interface-world' ) . '</h1>';
-		echo '<p class="description">' . esc_html__( 'Inhalte der datengetriebenen Abschnitte. Je Zeile: „Titel | Text". Leere Liste setzt die Standardwerte (Pflichtenheft §8) zurück. Ausgabe über die Shortcodes im jeweiligen Abschnitt.', 'liebherr-interface-world' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'Inhalte der datengetriebenen Abschnitte. Je Zeile: „Titel | Text" (Process-Karten optional: „Titel | Text | Zielseite" – Seitenpfad, z. B. liebherr-local-intelligence/interface-solutions/sales; mit Ziel wird die Karte zum Link mit Hover-Effekt). Leere Liste setzt die Standardwerte (Pflichtenheft §8) zurück. Ausgabe über die Shortcodes im jeweiligen Abschnitt.', 'liebherr-interface-world' ) . '</p>';
 
 		if ( null !== $notice ) {
 			printf( '<div class="notice %s is-dismissible"><p>%s</p></div>', esc_attr( $notice['class'] ), esc_html( $notice['message'] ) );
@@ -57,7 +57,8 @@ final class ComponentsBoardPage {
 		foreach ( self::LISTS as $key => $label ) {
 			$lines = '';
 			foreach ( $data[ $key ] as $item ) {
-				$lines .= $item['title'] . ( '' !== $item['text'] ? ' | ' . $item['text'] : '' ) . "\n";
+				$lines .= $item['title'] . ( '' !== $item['text'] || ! empty( $item['target'] ) ? ' | ' . $item['text'] : '' )
+					. ( ! empty( $item['target'] ) ? ' | ' . $item['target'] : '' ) . "\n";
 			}
 			echo '<tr><th scope="row"><label for="liw-comp-' . esc_attr( $key ) . '">' . esc_html__( $label, 'liebherr-interface-world' ) . '</label></th><td>';
 			printf( '<textarea id="liw-comp-%1$s" name="liw_components[%1$s]" rows="9" class="large-text code">%2$s</textarea>', esc_attr( $key ), esc_textarea( trim( $lines ) ) );
@@ -102,7 +103,7 @@ final class ComponentsBoardPage {
 	/**
 	 * „Titel | Text" je Zeile → Items.
 	 *
-	 * @return array<int,array{title:string,text:string}>
+	 * @return array<int,array{title:string,text:string,target?:string}>
 	 */
 	private static function parse_lines( string $raw ): array {
 		$items = [];
@@ -111,8 +112,12 @@ final class ComponentsBoardPage {
 			if ( '' === $line ) {
 				continue;
 			}
-			$parts = explode( '|', $line, 2 );
-			$items[] = [ 'title' => trim( $parts[0] ), 'text' => isset( $parts[1] ) ? trim( $parts[1] ) : '' ];
+			$parts = explode( '|', $line, 3 );
+			$item  = [ 'title' => trim( $parts[0] ), 'text' => isset( $parts[1] ) ? trim( $parts[1] ) : '' ];
+			if ( isset( $parts[2] ) && '' !== trim( $parts[2] ) ) {
+				$item['target'] = trim( $parts[2] ); // nur für Process-Karten wirksam (ComponentContent::sanitize).
+			}
+			$items[] = $item;
 		}
 		return $items;
 	}
