@@ -799,6 +799,15 @@ $cct = \Liebherr\InterfaceWorld\Settings\ComponentContent::sanitize_target( 'htt
 liw_assert( 'Karten-Ziel: nur Slug-Segmente, keine URL/Pfad-Tricks', false === strpos( $cct, ':' ) && false === strpos( $cct, '..' ) && false === strpos( $cct, '.' ), $checks, $failures );
 $__view = (string) file_get_contents( $root . '/src/SalesInterface/SalesInterfaceView.php' );
 liw_assert( 'Sales-Ansicht: serverseitige Freigabeprüfung (GateBridge) vor jeder Ausgabe + noindex', str_contains( $__view, 'GateBridge::is_unlocked()' ) && str_contains( $__view, "'noindex'" ), $checks, $failures );
+require_once $root . '/src/CoreBridge/InstanceBridge.php';
+require_once $root . '/src/SalesInterface/DealerApiClient.php';
+$dac = \Liebherr\InterfaceWorld\SalesInterface\DealerApiClient::class;
+liw_assert( 'DealerApiClient (1c): Basis ist ausschließlich die Testumgebung, https', 'https://livision.azure-api.net/crm/v3' === $dac::BASE_TEST && ! str_contains( (string) file_get_contents( $root . '/src/SalesInterface/DealerApiClient.php' ), 'emt-api.liebherr.com' ), $checks, $failures );
+liw_assert( 'DealerApiClient: nur lesende Pfade freigegeben, Pfadparameter erlaubt, Schreibpfade/Unbekanntes abgelehnt', '/opportunity' === $dac::base_path( '/opportunity/123/configuration/abc' ) && '/opportunity-id' === $dac::base_path( '/opportunity-id' ) && null === $dac::base_path( '/customer' ) && null === $dac::base_path( '/livision-url-for-update' ) && null === $dac::base_path( '/' ), $checks, $failures );
+liw_assert( 'DealerApiClient: /sales-orders ohne UserEmail, übrige mit (Guide §4.15)', false === $dac::READ_ENDPOINTS['/sales-orders'] && true === $dac::READ_ENDPOINTS['/tab-text'], $checks, $failures );
+$__dac_src = (string) file_get_contents( $root . '/src/SalesInterface/DealerApiClient.php' );
+liw_assert( 'DealerApiClient: nur wp_remote_get, may_send-Prüfung vor dem Senden, Keys nur aus getenv', str_contains( $__dac_src, 'wp_remote_get' ) && ! str_contains( $__dac_src, 'wp_remote_post' ) && str_contains( $__dac_src, 'readiness()' ) && str_contains( $__dac_src, 'getenv( InstanceBridge::ENV_KEY_TEST )' ) && ! preg_match( '/get_option\(\s*[\'"][^\'"]*key/i', $__dac_src ), $checks, $failures );
+liw_assert( 'InstanceBridge: Adapter-Schlüssel + beide Env-Keys deklariert (Manifest-Pflicht ADR-134)', 'liebherr-livision' === \Liebherr\InterfaceWorld\CoreBridge\InstanceBridge::ADAPTER && str_contains( (string) file_get_contents( $root . '/src/CoreBridge/InstanceBridge.php' ), "::FILTER, [ self::class, 'declare_keys' ]" ), $checks, $failures );
 liw_assert( 'Sales-Ansicht: letzter Reiter = Anleitung', 'guide' === array_key_last( \Liebherr\InterfaceWorld\SalesInterface\SalesInterfaceView::tabs() ), $checks, $failures );
 
 echo "\n{$checks} Prüfungen, {$failures} fehlgeschlagen.\n";

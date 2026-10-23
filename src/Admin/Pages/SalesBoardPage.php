@@ -19,6 +19,7 @@ namespace Liebherr\InterfaceWorld\Admin\Pages;
 use Liebherr\InterfaceWorld\CoreBridge\AuditBridge;
 use Liebherr\InterfaceWorld\CoreBridge\GateBridge;
 use Liebherr\InterfaceWorld\CoreBridge\RoleBridge;
+use Liebherr\InterfaceWorld\SalesInterface\DealerApiClient;
 use Liebherr\InterfaceWorld\SalesInterface\SalesContent;
 use Liebherr\InterfaceWorld\SalesInterface\SalesInterfaceView;
 use Liebherr\InterfaceWorld\Settings\ComponentContent;
@@ -120,9 +121,41 @@ final class SalesBoardPage {
 		foreach ( self::ENV_KEYS as $env ) {
 			$value = getenv( $env );
 			echo '<tr><th><code>' . esc_html( $env ) . '</code></th><td>'
-				. esc_html( is_string( $value ) && '' !== $value ? __( 'hinterlegt (Wert wird nie angezeigt)', 'liebherr-interface-world' ) : __( 'fehlt – erst für Stufe 1c nötig', 'liebherr-interface-world' ) ) . '</td></tr>';
+				. esc_html( is_string( $value ) && '' !== $value ? __( 'hinterlegt (Wert wird nie angezeigt)', 'liebherr-interface-world' ) : __( 'fehlt – für die Testverbindung (Stufe 1c) nötig', 'liebherr-interface-world' ) ) . '</td></tr>';
 		}
+
+		// Stufe 1c: Testverbindung (nur lesend, nur Testumgebung) – Vorbedingungen und letzter Lauf, nie Nutzdaten.
+		$ready = DealerApiClient::readiness();
+		echo '<tr><th>' . esc_html__( 'Testverbindung', 'liebherr-interface-world' ) . '</th><td>'
+			. esc_html( $ready['ok'] ? __( 'bereit – Probe: scripts/liw-livision-probe.php --confirm', 'liebherr-interface-world' ) : sprintf( /* translators: %s: Grund */ __( 'blockiert (%s)', 'liebherr-interface-world' ), self::reason_label( $ready['reason'] ) ) ) . '</td></tr>';
+		$probe = DealerApiClient::last_probe();
+		echo '<tr><th>' . esc_html__( 'Letzter Aufruf', 'liebherr-interface-world' ) . '</th><td>' . esc_html( self::probe_label( $probe ) ) . '</td></tr>';
 		echo '</tbody></table>';
+	}
+
+	private static function reason_label( string $reason ): string {
+		$map = [
+			'key_missing'        => __( 'Subscription-Key fehlt in der Umgebung', 'liebherr-interface-world' ),
+			'user_email_missing' => __( 'UserEmail fehlt in der Umgebung', 'liebherr-interface-world' ),
+			'instance_locked'    => __( 'Instanz nicht freigegeben (Klon/Not-Aus/Kill-Switch)', 'liebherr-interface-world' ),
+		];
+		return $map[ $reason ] ?? $reason;
+	}
+
+	/** @param array<string,mixed>|null $probe */
+	public static function probe_label( ?array $probe ): string {
+		if ( null === $probe ) {
+			return __( 'noch keiner', 'liebherr-interface-world' );
+		}
+		return sprintf(
+			/* translators: 1: Datum, 2: Endpunkt, 3: Ergebnis, 4: HTTP-Status, 5: Dauer ms */
+			__( '%1$s · GET %2$s · %3$s (HTTP %4$d, %5$d ms)', 'liebherr-interface-world' ),
+			wp_date( 'd.m.Y H:i', (int) ( $probe['at'] ?? 0 ) ),
+			(string) ( $probe['endpoint'] ?? '' ),
+			! empty( $probe['ok'] ) ? __( 'OK', 'liebherr-interface-world' ) : __( 'Fehler', 'liebherr-interface-world' ) . ' ' . (string) ( $probe['error'] ?? '' ),
+			(int) ( $probe['status'] ?? 0 ),
+			(int) ( $probe['duration_ms'] ?? 0 )
+		);
 	}
 
 	private static function render_guide(): void {
@@ -130,7 +163,7 @@ final class SalesBoardPage {
 		echo '<p>' . esc_html__( 'Zweck: Das Sales Board pflegt die Schnittstellenbeschreibung, die Tradler-Mitarbeiter hinter der Karte „Sales" (Interface Solutions → Process Worlds) mit Zugangscode lesen.', 'liebherr-interface-world' ) . '</p>';
 		echo '<p>' . esc_html__( 'Ablauf: Inhalte hier ändern und speichern → Seite öffnen und prüfen. Endpunkte erhalten einen Status (Entwurf → In Simulation → Verifiziert → Freigegeben). Texte erscheinen in der Standardsprache; Übersetzungen laufen über das Language Board.', 'liebherr-interface-world' ) . '</p>';
 		echo '<p>' . esc_html__( 'Schutz: Die Seite trägt die Core-Regel „mit Code" (Standardcode wie auf der übrigen Plattform). Code ändern oder Schutz je Umgebung schalten: ARALIYA-Zugangsschutz. Händlerindividuelle Codes sind für eine spätere Stufe vorgesehen.', 'liebherr-interface-world' ) . '</p>';
-		echo '<p>' . esc_html__( 'Schlüssel: Subscription-Keys und die Absender-E-Mail gehören nur in die Server-Umgebung (LIW_LIVISION_KEY_TEST, LIW_LIVISION_USER_EMAIL), nie in dieses Formular. Live-Aufrufe gegen den Testserver folgen in Stufe 1c.', 'liebherr-interface-world' ) . '</p></div>';
+		echo '<p>' . esc_html__( 'Schlüssel: Subscription-Keys und die Absender-E-Mail gehören nur in die Server-Umgebung (LIW_LIVISION_KEY_TEST, LIW_LIVISION_USER_EMAIL), nie in dieses Formular. Die Testverbindung (Stufe 1c) ist lesend, nur gegen die Testumgebung und wird per Skript ausgelöst; Ergebnis steht oben unter „Letzter Aufruf“ und im Audit Board.', 'liebherr-interface-world' ) . '</p></div>';
 	}
 
 	/** @return array{class:string,message:string}|null */

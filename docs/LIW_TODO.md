@@ -19,8 +19,10 @@ Stand: 19.09.2026 (0.1.0-alpha.78).
 
 - **1b** Codelisten-Import (`liw_codelist`, Skript aus `LIVISION_Auswahlliste.xlsx`, ≈49 100 Zeilen, 8 Sprachen) + Suche;
   Sandbox mit `SimulationMockEngine`.
-- **1c** `DealerApiClient` gegen Testserver, nur lesende GETs; Keys nur Env (`LIW_LIVISION_KEY_TEST`,
-  `LIW_LIVISION_USER_EMAIL`), Manifest-Eintrag, `InstanceState::may_send('liebherr-livision')`, Audit ohne Kundendaten.
+- **1c** ✅ alpha.147: `DealerApiClient` (nur Test, nur GET), Manifest, `may_send`, Audit, Probe-Skript; **Echtlauf 24.10.2026
+  erfolgreich** (`/tab-text` AH/0 → 3 Anreden, `/product-list` → 14 701 Produkte). **Offen:** Ergebnisse (Codelisten-Texte,
+  Produktliste) in Seite/Board sichtbar machen; Endpunkt-Status der geprüften GETs Entwurf → Verifiziert nachziehen;
+  `/sales-orders` liefert reale Auftragsdaten (Kundennamen) – nur mit Zweckbindung anzeigen, nie loggen.
 - **1d** Schreibende Endpunkte hinter Feature-Flag (Default AUS); Klärung PUT /opportunity-Body und `oderDateFrom` mit Liebherr.
 - **Variante B** Händlerindividuelle Codes über `GateBridge`-Naht (statt Plattformcode).
 - Einträge der 17 Endpunkte im Interface Board (`liw_interface`) spiegeln – in 1a bewusst nicht automatisiert.

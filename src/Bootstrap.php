@@ -48,6 +48,7 @@ final class Bootstrap {
 		add_action( 'init', [ Adventures\AdventureCpt::class, 'register' ] ); // Liebherr Adventures – vierte Insel (CPT).
 		add_action( 'init', [ TranslationBridge::class, 'register' ], 21 ); // nach Translation-Modul (Core-Bootstrap-Reihenfolge).
 
+		CoreBridge\InstanceBridge::register(); // Manifest-Deklaration LIW_LIVISION_* + may_send-Naht (ADR-134, Stufe 1c).
 		SeoBridge::register();
 		LanguageBridge::register();
 		MediaBridge::register();

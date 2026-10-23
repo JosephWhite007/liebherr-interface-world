@@ -222,7 +222,12 @@ final class SalesInterfaceView {
 	}
 
 	private static function sandbox(): string {
-		return '<p class="liw-sales__text">' . esc_html__( 'Die Sandbox mit synthetischen Beispielantworten und Testaufrufen folgt in Stufe 1b bzw. 1c (siehe Roadmap). Bis dahin finden keine Aufrufe gegen Liebherr-Systeme statt.', 'liebherr-interface-world' ) . '</p>';
+		$out   = '<p class="liw-sales__text">' . esc_html__( 'Testverbindung zur Liebherr-Testumgebung (nur lesend, Stufe 1c). Aufrufe werden vom Entwicklerteam ausgelöst; hier steht der Stand des letzten Aufrufs – ohne Nutzdaten.', 'liebherr-interface-world' ) . '</p>';
+		$probe = DealerApiClient::last_probe();
+		$out  .= '<dl class="liw-sales__dl"><dt>' . esc_html__( 'Umgebung', 'liebherr-interface-world' ) . '</dt><dd><code>' . esc_html( DealerApiClient::BASE_TEST ) . '</code></dd>';
+		$out  .= '<dt>' . esc_html__( 'Letzter Aufruf', 'liebherr-interface-world' ) . '</dt><dd>' . esc_html( \Liebherr\InterfaceWorld\Admin\Pages\SalesBoardPage::probe_label( $probe ) ) . '</dd></dl>';
+		$out  .= '<p class="liw-sales__meta">' . esc_html__( 'Synthetische Beispielantworten (Sandbox-Simulation) folgen in Stufe 1b.', 'liebherr-interface-world' ) . '</p>';
+		return $out;
 	}
 
 	/** @param array<string,mixed> $c */

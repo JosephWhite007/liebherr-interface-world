@@ -1,5 +1,38 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.147] – 2026-10-23 – Sales Interface: lesende Testverbindung zur Liebherr Dealer Interface API (Stufe 1c)
+
+### Neu
+- **`SalesInterface\DealerApiClient`** – einziger Ausgangskanal zur Sales API v3: **nur Testumgebung**
+  (`livision.azure-api.net/crm/v3`, Produktions-Host kommt im Code nicht vor), **nur GET**, nur die sieben lesenden
+  Endpunkte (`/product-list`, `/tab-text`, `/opportunity[…]`, `/opportunity-id`, `/customer-quotation-list`,
+  `/livision-url`, `/sales-orders`); Schreibpfade werden abgelehnt. Header `Ocp-Apim-Subscription-Key` + `UserEmail`
+  (nicht bei `/sales-orders`, Guide §4.15) ausschließlich aus Env; vor jedem Aufruf Vorbedingungen (`readiness()`).
+  Audit je Aufruf (Endpunkt, Status, Dauer – keine Nutzdaten/Header), letzter Lauf in Option `liw_livision_last_probe`.
+- **`CoreBridge\InstanceBridge`** – Installer-Vertrag (ADR-134): deklariert `LIW_LIVISION_KEY_TEST` (secret) und
+  `LIW_LIVISION_USER_EMAIL` im `EnvironmentManifest` (Gruppe `liebherr`, Adapter `liebherr-livision`, Klon-Policy
+  „neu eingeben"); `may_send()` fragt `InstanceState` (Not-Aus, Kill-Switch, Klon-Zustand) – ohne Core fail closed.
+- **Probe-Skript** `scripts/liw-livision-probe.php`: ohne `--confirm` Trockenlauf (Keys/Freigabe prüfen, nichts senden);
+  mit `--confirm` genau ein GET, Standard `/tab-text?CodeList=AH&Language=0`; `--endpoint=… --Param=…` für andere
+  lesende Aufrufe. Keys werden nie ausgegeben.
+- Sales Board: Statuszeilen „Testverbindung" (bereit/blockiert mit Grund) und „Letzter Aufruf"; Sales-Seite, Reiter
+  Sandbox: Umgebung + letzter Aufruf (ohne Nutzdaten).
+- Core (`araliya-platform-core/docker-compose.yml`): beide Env-Variablen aus `.env` an den WordPress-Container
+  durchgereicht (leer = nicht gesetzt).
+
+### Verifikation
+- `php -l` grün; `tests/run-tests.php` 697 Prüfungen, 0 Fehler (5 neue: Test-Basis, Pfadfreigabe, UserEmail-Regel,
+  nur GET/getenv/readiness, Manifest-Deklaration). Manifest-Scan `--strict` ohne neue Lücke; beide Keys im Manifest
+  sichtbar (Status `unset`, bis `.env` gefüllt und Container neu gestartet).
+- **Echtlauf 24.10.2026 (Dev, Keys in `.env`):** `GET /tab-text?CodeList=AH&Language=0` → HTTP 200, 3 Anreden (F/FF/H);
+  `GET /product-list` → 200 (14 701 Produkte). Befund: der erste `/tab-text`-Aufruf brauchte ~17 s (Liebherr-Backend, kalter
+  Start; ohne Key antwortet das Gateway in 0,3 s mit 401, ohne `UserEmail` in 1 s mit 400 „Invalid input: 'UserEmail'"),
+  danach 0,5 s. Client-Timeout deshalb 20 → **45 s**. Antwortformate sind uneinheitlich – `{status,data:[…]}` (tab-text,
+  product-list) vs. direktes Array (sales-orders) – `DealerApiClient::rows_of()` normalisiert; `get()` liefert `rows`.
+  Nachweis: Option `liw_livision_last_probe` (Board „Letzter Aufruf") und Audit `ary_audit_log` (`api_read`, `liw_livision`,
+  nur Endpunkt/Status/Dauer/Zeilenzahl).
+
+
 ## [0.1.0-alpha.146] – 2026-10-23 – Sales Interface: geschützte Unterseite hinter der Karte „Sales" (ADR-LIW-SALES-001, Stufe 1a)
 
 ### Neu

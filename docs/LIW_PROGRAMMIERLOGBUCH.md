@@ -21,6 +21,21 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.147 – Sales Interface Stufe 1c: lesende Testverbindung – 23.10.2026
+
+- NEU `src/CoreBridge/InstanceBridge.php`: Manifest-Filter (`declare_keys`, Cache-Reset da Core vor dem Plugin lädt),
+  `may_send()`, `env_set()`; Konstanten `ADAPTER`, `ENV_KEY_TEST`, `ENV_USER_EMAIL`.
+- NEU `src/SalesInterface/DealerApiClient.php`: `readiness()`, `get()` (nur Test-Basis, nur GET, READ_ENDPOINTS),
+  `base_path()`, Audit + Option `liw_livision_last_probe`, `last_probe()`.
+- NEU `scripts/liw-livision-probe.php` (Trockenlauf ohne `--confirm`).
+- `src/SalesInterface/DealerApiClient.php` (Nachtrag nach Echtlauf): `TIMEOUT` 45 s, `rows_of()` (Antwort-Umschlag), `get()` liefert `rows`.
+- `src/Bootstrap.php`: `InstanceBridge::register()` vor den übrigen Bridges.
+- `src/Admin/Pages/SalesBoardPage.php`: Statuszeilen Testverbindung/Letzter Aufruf, `reason_label()`, `probe_label()`.
+- `src/SalesInterface/SalesInterfaceView.php`: Sandbox-Reiter zeigt Umgebung und letzten Aufruf.
+- `tests/run-tests.php`: 5 Prüfungen zu DealerApiClient/InstanceBridge.
+- Core `docker-compose.yml`: `LIW_LIVISION_KEY_TEST`, `LIW_LIVISION_USER_EMAIL`.
+- Version `0.1.0-alpha.147`.
+
 ## 0.1.0-alpha.146 – Sales Interface (Stufe 1a, ADR-LIW-SALES-001) – 23.10.2026
 
 - `src/Settings/ComponentContent.php`: Konstante `SALES_TARGET`; Process-Karten optional `target` (Seitenpfad); neue
