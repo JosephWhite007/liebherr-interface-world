@@ -852,6 +852,25 @@ liw_assert( 'CodeListSchema: UNIQUE (language, code_list, code), COMMENT ohne Kl
 $__sv = (string) file_get_contents( $root . '/src/SalesInterface/SalesInterfaceView.php' );
 liw_assert( 'Codelisten-Suche: GET-Parameter sanitisiert, unbekannte Liste verworfen, Ausgabe escaped', str_contains( $__sv, "sanitize_text_field( wp_unslash( (string) \$_GET['cl'] ) )" ) && str_contains( $__sv, "if ( ! isset( \$lists[ \$sel_list ] ) )" ) && str_contains( $__sv, 'esc_attr( $term )' ), $checks, $failures );
 
+// ── alpha.152: Dealer Workspace + Livision-Sync (WP-freie Mapping-Logik) ──
+if ( ! function_exists( 'add_filter' ) ) { function add_filter( ...$a ) { return true; } }
+if ( ! function_exists( 'add_action' ) ) { function add_action( ...$a ) { return true; } }
+require_once $root . '/src/SalesInterface/LivisionSync.php';
+$ls = \Liebherr\InterfaceWorld\SalesInterface\LivisionSync::class;
+$cb = $ls::customer_body( [ 'name1' => 'Sunnyside Four', 'name2' => str_repeat( 'x', 60 ), 'street' => 'Island Lane 4', 'postal_code' => '10004', 'city' => 'Island City', 'country' => 'DE', 'state' => 'DE-BY', 'class_abc' => 'A', 'industry1' => '10', 'phone' => '+49 861 90944 30', 'key_account' => 1, 'employees' => '12', 'notes_internal' => 'GEHEIM' ], '450324' );
+liw_assert( 'customer_body: Pflichtfelder, Name2 auf 50 gekürzt, Vorwahl getrennt, Codes übernommen, interne Notizen nie', 'Sunnyside Four' === $cb['Name1'] && 50 === mb_strlen( $cb['Name2'] ) && '+49' === $cb['InternationalDialingCodePhone'] && '861 90944 30' === $cb['Phone'] && 'DE-BY' === $cb['FederalState'] && 'DE' === $cb['State'] && '450324' === $cb['SalesAccountNumber'] && 'true' === $cb['Keyaccount'] && 12 === $cb['NumberOfEmployee'] && ! isset( $cb['Note'] ) && ! str_contains( json_encode( $cb ), 'GEHEIM' ) && ! isset( $cb['LivisionCustomerId'] ), $checks, $failures );
+$cb2 = $ls::customer_body( [ 'name1' => 'X', 'street' => 'Y', 'postal_code' => '1', 'city' => 'Z', 'country' => 'DE' ], '450324', 2143795934 );
+liw_assert( 'customer_body: Update trägt LivisionCustomerId, leere Felder entfallen', 2143795934 === $cb2['LivisionCustomerId'] && ! isset( $cb2['Name2'], $cb2['Email'] ), $checks, $failures );
+$ct = $ls::contact_body( [ 'salutation' => 'F', 'first_name' => 'Alice', 'last_name' => 'Sunnyside Four', 'function1' => 'Einkaufsleitung Nord', 'mobile' => '0049 170 1234567', 'decider' => 1 ], 2143795934, 0 );
+liw_assert( 'contact_body: Function1 auf 10 gekürzt, Mobil-Vorwahl 0049 → +49, Decider, Kunden-ID', 'Einkaufsle' === $ct['Function1'] && '+49' === $ct['InternationalDialingCodeMobile'] && '170 1234567' === $ct['Mobile'] && 'true' === $ct['Decider'] && 2143795934 === $ct['LivisionCustomerId'] && ! isset( $ct['LivisionContactId'] ), $checks, $failures );
+liw_assert( 'split_phone: ohne Länderkennung bleibt alles in number; leer → leer', [ 'code' => '', 'number' => '08634 6256 0' ] === $ls::split_phone( '08634 6256 0' ) && [ 'code' => '', 'number' => '' ] === $ls::split_phone( '' ), $checks, $failures );
+liw_assert( 'extract_id: findet LivisionContactId im Livision-Umschlag', 2144227395 === $ls::extract_id( [ 'status' => [ 'code' => '200' ], 'data' => [ [ 'LivisionContactId' => 2144227395, 'LivisionCustomerId' => '2143795934' ] ] ], 'LivisionContactId' ), $checks, $failures );
+$__ws = (string) file_get_contents( $root . '/src/DealerWorkspace/WorkspaceView.php' );
+liw_assert( 'Workspace: Nonce-Prüfung, Login über Core WorkspaceAuth, kein Inline-Style/-Script, noindex, DONOTCACHEPAGE', str_contains( $__ws, 'wp_verify_nonce' ) && str_contains( $__ws, '::attempt_login(' ) && ! str_contains( $__ws, 'style="' ) && ! str_contains( $__ws, '<script' ) && str_contains( $__ws, "'noindex'" ) && str_contains( $__ws, 'DONOTCACHEPAGE' ), $checks, $failures );
+liw_assert( 'Workspace: alle Datenzugriffe über Core-Repositories (kein eigenes SQL auf ary_ab_*)', ! str_contains( $__ws, 'ary_ab_' ) && ! str_contains( $__ws, '$wpdb' ), $checks, $failures );
+$__ab = (string) file_get_contents( $root . '/src/CoreBridge/AddressbookBridge.php' );
+liw_assert( 'AddressbookBridge: Hooks sync_actions + push registriert, Push nur für system=livision', str_contains( $__ab, "add_action( self::ACTION_SYNC" ) && str_contains( $__ab, "add_filter( self::FILTER_PUSH" ) && str_contains( $__ab, "'livision' !== \$system" ), $checks, $failures );
+
 liw_assert( 'Sales-Ansicht: letzter Reiter = Anleitung', 'guide' === array_key_last( \Liebherr\InterfaceWorld\SalesInterface\SalesInterfaceView::tabs() ), $checks, $failures );
 
 echo "\n{$checks} Prüfungen, {$failures} fehlgeschlagen.\n";

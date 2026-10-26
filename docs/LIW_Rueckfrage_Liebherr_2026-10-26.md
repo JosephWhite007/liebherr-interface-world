@@ -48,16 +48,18 @@ Händlerkonto zugeordnet, sodass `POST /contact` und `GET /livision-url` für di
 
 Mit einer `UserEmail` der Domäne tradler.com funktionieren `POST/PUT /customer`, `POST/PUT /contact` und `GET /livision-url`
 (Kunde 2143795934, Kontakt 2144227395). Fragen 1, 3 und 4 sind damit beantwortet: `UserEmail` muss ein in Livision
-angelegter Benutzer des Händlers sein. Offen bleibt Frage 2 (`SalesAccountNumber`: 450324 akzeptiert, `SalesArea` der
-Antwort ist jetzt „020“). Bitte löschen Sie die verwaisten Testkunden 2143795932 „Sunnyside One“ und 2143795933
-„Sunnyside Two“ (unter einem anderen Benutzer angelegt, dem Partner nicht zugeordnet).
+angelegter Benutzer des Händlers sein. Frage 2 haben wir inzwischen selbst geklärt: `SalesAccountNumber` wird je Kunde auf Eindeutigkeit geprüft
+(„Customer already existing“) und ist damit unsere Kundennummer für den jeweiligen Kunden – wir senden künftig die
+Händler-Kundennummer (z. B. K-000803). Bitte bestätigen Sie, dass dies dem vorgesehenen Gebrauch entspricht. Die Testkunden 2143795932 „Sunnyside One“ und 2143795933 „Sunnyside Two“ wurden unter einem
+anderen Benutzer angelegt und sind dem Partner nicht zugeordnet; da es die Testumgebung ist, können sie bleiben oder von
+Ihnen entfernt werden – ein Löschendpunkt existiert in der API nicht.
 
 **Weitere Hinweise**
 
 - `GET /opportunity` ohne Filterparameter antwortet mit HTTP 500; mit Filter (z. B. `customerName`) mit 200.
 - `PUT /opportunity` hat in der Spezifikation keinen Request-Body; `GET /sales-orders` führt den Parameter `oderDateFrom`
   (vermutlich `orderDateFrom`). Könnten Sie beides bestätigen?
-- Die beiden Testkunden „Sunnyside One/Two" dürfen jederzeit gelöscht werden.
+- Die Testkunden „Sunnyside One/Two/Three" dürfen jederzeit gelöscht werden.
 
 Vielen Dank und freundliche Grüße
 

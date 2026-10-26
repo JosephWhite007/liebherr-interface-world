@@ -32,7 +32,10 @@ Stand: 19.09.2026 (0.1.0-alpha.78).
   ✅ 26.10.2026 (dritte Kennung, UserEmail @tradler.com): customer, contact, customer-update, contact-update alle 200, Deep-Links 200.
   Erkenntnis: `UserEmail` muss ein Livision-Benutzer des Händlers sein; Kunden sind an den anlegenden Benutzer/Partner gebunden.
   Alt-Testkunden 2143795932/2143795933 (fremder Benutzer) bleiben nicht zugeordnet → Liebherr um Löschung bitten.
-  Feldlängen: Function1 10, Name2 50 Zeichen → in Phase 4 vor dem Senden validieren;
+  Feldlängen: Function1 10, Name2 50 Zeichen → in LivisionSync::precheck umgesetzt (alpha.152).
+- **Phase 3/4 (Addressbook)** ✅ alpha.152: Dealer Workspace + LivisionSync. **Offen:** Pull (Livision → Addressbook) für bestehende
+  Kunden mit KundeID (Abgleich), Massen-Push, Codelisten-Auswahlhilfe (Klartext-Dropdowns) in Workspace/Backend, Artikel im
+  Workspace (P5), Passwort-Reset-Maske im Liebherr-Design (derzeit WP-Standardseite);
   Klärung PUT /opportunity-Body und `oderDateFrom` mit Liebherr; später: Händlerauswahl auf der Sales-Seite (Variante B-Naht).
 - **Variante B** Händlerindividuelle Codes über `GateBridge`-Naht (statt Plattformcode).
 - Einträge der 17 Endpunkte im Interface Board (`liw_interface`) spiegeln – in 1a bewusst nicht automatisiert.

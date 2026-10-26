@@ -44,7 +44,7 @@ final class DealerRepository {
 	public static function all(): array {
 		global $wpdb;
 		$t    = DealerSchema::table_name();
-		$rows = $wpdb->get_results( "SELECT id, code, name, country, environment, sales_account_number, user_email, write_enabled, status, notes, created_at, updated_at, api_key_enc <> '' AND api_key_enc IS NOT NULL AS has_key FROM {$t} ORDER BY name ASC", ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$rows = $wpdb->get_results( "SELECT id, code, org_id, name, country, environment, sales_account_number, user_email, write_enabled, status, notes, created_at, updated_at, api_key_enc <> '' AND api_key_enc IS NOT NULL AS has_key FROM {$t} ORDER BY name ASC", ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		return is_array( $rows ) ? array_map( [ self::class, 'cast' ], $rows ) : [];
 	}
 
@@ -96,6 +96,7 @@ final class DealerRepository {
 		$row    = [
 			'code'                 => $code,
 			'name'                 => $name,
+			'org_id'               => max( 0, (int) ( $data['org_id'] ?? 0 ) ), // Core-Addressbook-Mandant (ary_iam_organization), Phase 3/4
 			'country'              => strtoupper( substr( preg_replace( '/[^A-Za-z]/', '', (string) ( $data['country'] ?? '' ) ) ?? '', 0, 2 ) ),
 			'environment'          => $env,
 			'sales_account_number' => sanitize_text_field( (string) ( $data['sales_account_number'] ?? '' ) ),
@@ -166,9 +167,21 @@ final class DealerRepository {
 		];
 	}
 
+	/** Händler zu einem Core-Mandanten (org_id); null = keiner zugeordnet. @return array<string,mixed>|null */
+	public static function for_org( int $org_id ): ?array {
+		global $wpdb;
+		if ( $org_id <= 0 ) {
+			return null;
+		}
+		$t    = DealerSchema::table_name();
+		$code = (string) $wpdb->get_var( $wpdb->prepare( "SELECT code FROM {$t} WHERE org_id = %d AND status = 'active' ORDER BY id LIMIT 1", $org_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		return '' !== $code ? self::find( $code ) : null;
+	}
+
 	/** @param array<string,mixed> $row */
 	private static function cast( array $row ): array {
 		$row['id']            = (int) ( $row['id'] ?? 0 );
+		$row['org_id']        = (int) ( $row['org_id'] ?? 0 );
 		$row['write_enabled'] = (bool) (int) ( $row['write_enabled'] ?? 0 );
 		$row['has_key']       = (bool) (int) ( $row['has_key'] ?? 0 );
 		return $row;

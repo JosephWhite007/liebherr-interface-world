@@ -1,5 +1,37 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.152] – 2026-10-26 – Dealer Workspace (Phase 3) und Livision-Sync aus dem Addressbook (Phase 4)
+
+### Neu
+- **Dealer Workspace** (`src/DealerWorkspace/`, Shortcode `[liw_dealer_workspace]`, Seite `/dealer-workspace/`): eigene
+  **Login-Maske** über Core `WorkspaceAuth` (Rolle `araliya_dealer_user`, Sperre 5/15 min, „Passwort vergessen“), danach Reiter
+  Übersicht · Adressen (Suche/Filter/25 je Seite) · Adresse-Detail mit Ansprechpartnern · Ansprechpartner · Schnittstellen ·
+  Team · Anleitung. Gleiche Daten und Rechte wie das Backend – ausschließlich über die Core-Repositories (Mandantengrenze,
+  Audit); serverseitig gerendert, ohne JavaScript, Liebherr-CI, `noindex`, `DONOTCACHEPAGE`. Org-Umschalter bei Mehrfach-
+  Mitgliedschaft; Filter `araliya_ab_workspace_url` leitet Händler-Benutzer aus `wp-admin` hierher.
+- **Händler ↔ Mandant:** `liw_dealer.org_id` (additiv), Dealer Board Feld „Addressbook-Mandant (Org-ID)“, `DealerRepository::for_org()`.
+- **`LivisionSync`** (Phase 4): Mapping Adresse → Customer, Ansprechpartner → Contact (Konzept Kap. 7), Telefon-Vorwahl-Split,
+  Vorprüfung (Pflichtfelder, Codes gegen `liw_codelist` für 1B/1L/KL/3B/2K/LN bzw. AH/FN/PV, Feldlängen Name2 50 / Function1 10),
+  Push POST/PUT über `DealerApiClient` mit dem Händler des Mandanten, Livision-ID + Status als externe Referenz im Addressbook.
+  Buttons „An Livision übertragen“ im Workspace (Detail) **und** im Core-Backend (Reiter Schnittstellen / Kontaktmaske) über
+  die Core-Hooks `araliya_addressbook_sync_actions` / `araliya_addressbook_push` (`AddressbookBridge`).
+- Seed-Skript `scripts/liw-seed-dealer-workspace.php --dealer=<kürzel> --org=<id> --confirm`.
+
+### Befund SalesAccountNumber (löst Frage 2 an Liebherr)
+- Livision prüft `SalesAccountNumber` **je Kunde auf Eindeutigkeit**: zweite Anlage mit derselben Nummer → HTTP 400
+  „Customer already existing“ (reproduziert mit vier verschiedenen Kundennamen). Sie ist die **Kundennummer des Händlers für
+  diesen Kunden**, nicht das Händlerkonto. `LivisionSync` sendet daher die ERP-Referenz des Kunden, sonst die Addressbook-Nummer
+  (`K-000803`). Mit dieser Regel: Kunde 2143795936 (Sunnyside Four, SAN K-000803) + Kontakt 2144227396 (Bob) angelegt und per
+  PUT aktualisiert – alle vier Aufrufe 200. Beim Diagnostizieren entstand zusätzlich „Sunnyside Eight“ (2143795935, SAN 020)
+  per curl, nicht im Addressbook verknüpft.
+
+### Verifikation
+- `php -l` grün; `tests/run-tests.php` 746 Prüfungen, 0 Fehler (8 neue: Mapping, Phone-Split, extract_id, Workspace-Verträge, Bridge-Hooks).
+- Dev: Login-Sperre nach 5 Fehlversuchen greift (korrektes Passwort danach abgewiesen); `tradler.admin`/`tradler.sales` sehen 802
+  Tradler-Adressen, Vertrieb ohne Team-Formular; `dealer2` (anderer Mandant) sieht Tradler-Adresse #1 nicht; Leser darf nicht
+  übertragen; Backend-Reiter Schnittstellen zeigt Livision-Block mit Button.
+
+
 ## [0.1.0-alpha.151] – 2026-10-26 – Codelisten für das Core-Addressbook (AddressbookBridge)
 
 ### Neu

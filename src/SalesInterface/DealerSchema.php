@@ -35,6 +35,7 @@ final class DealerSchema {
 		dbDelta( "CREATE TABLE {$table} (
 			id                   BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			code                 VARCHAR(40)  NOT NULL,
+			org_id               BIGINT UNSIGNED NOT NULL DEFAULT 0,
 			name                 VARCHAR(190) NOT NULL,
 			country              VARCHAR(2)   NOT NULL DEFAULT '',
 			environment          VARCHAR(12)  NOT NULL DEFAULT 'test',
@@ -48,7 +49,8 @@ final class DealerSchema {
 			updated_at           DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			PRIMARY KEY (id),
 			UNIQUE KEY uniq_code (code),
-			KEY idx_status (status)
+			KEY idx_status (status),
+			KEY idx_org (org_id)
 		) {$charset} COMMENT='Liebherr Dealer Interface – Haendler mit eigenen Schnittstellen-Zugangsdaten';" );
 	}
 }

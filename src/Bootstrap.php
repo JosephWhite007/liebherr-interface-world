@@ -63,7 +63,8 @@ final class Bootstrap {
 		HeroView::register();
 		FooterView::register();
 		ComponentViews::register();
-		SalesInterface\SalesInterfaceView::register(); // Sales Interface [liw_sales_interface], geschuetzte Unterseite der Karte Sales (ADR-LIW-SALES-001).
+		SalesInterface\SalesInterfaceView::register();
+		DealerWorkspace\WorkspaceView::register(); // Dealer Workspace [liw_dealer_workspace] – eigenes Login, Masken, Livision-Push (ARY-PH-AB-1.0 P3/P4), alpha.152. // Sales Interface [liw_sales_interface], geschuetzte Unterseite der Karte Sales (ADR-LIW-SALES-001).
 		WorldMapView::register();
 		LandingpageView::register();
 		IntroOverlay::register();          // Intro-Overlay (Sternenregen + Eintritts-Fenster).

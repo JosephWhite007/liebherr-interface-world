@@ -95,6 +95,7 @@ final class DealerBoardPage {
 		$f( 'code', __( 'Kürzel (Slug)', 'liebherr-interface-world' ), (string) ( $d['code'] ?? '' ), 'text', __( 'Eindeutig, z. B. tradler. Nach dem Anlegen nicht änderbar.', 'liebherr-interface-world' ), $is_edit );
 		$f( 'name', __( 'Name', 'liebherr-interface-world' ), (string) ( $d['name'] ?? '' ) );
 		$f( 'country', __( 'Land (ISO2)', 'liebherr-interface-world' ), (string) ( $d['country'] ?? '' ) );
+		$f( 'org_id', __( 'Addressbook-Mandant (Org-ID)', 'liebherr-interface-world' ), (string) ( $d['org_id'] ?? '0' ), 'number', __( 'ID der IAM-Organisation (Core → Addressbook → Team & Einstellungen); 0 = nicht zugeordnet. Nötig für Dealer Workspace und Livision-Sync.', 'liebherr-interface-world' ) );
 		printf( '<tr><th scope="row"><label for="liw-dealer-environment">%s</label></th><td><select id="liw-dealer-environment" name="dealer[environment]">', esc_html__( 'Umgebung', 'liebherr-interface-world' ) );
 		foreach ( DealerRepository::ENVIRONMENTS as $env ) {
 			printf( '<option value="%1$s"%2$s>%1$s</option>', esc_attr( $env ), selected( $d['environment'] ?? 'test', $env, false ) );

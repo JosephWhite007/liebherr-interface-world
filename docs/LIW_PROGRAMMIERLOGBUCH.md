@@ -21,6 +21,14 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.152 – Dealer Workspace + LivisionSync – 26.10.2026
+- NEU `src/DealerWorkspace/WorkspaceContext.php`, `WorkspaceView.php` (Shortcode, Login/Logout, Reiter, POST-Handler auf `template_redirect`).
+- NEU `src/SalesInterface/LivisionSync.php` (customer_body/contact_body/split_phone/precheck/push/extract_id/stats/sales_account_number).
+- `src/SalesInterface/DealerSchema.php` (+`org_id`), `DealerRepository.php` (+`org_id`, `for_org()`), `Admin/Pages/DealerBoardPage.php` (Feld Org-ID).
+- `src/CoreBridge/AddressbookBridge.php`: Hooks `araliya_addressbook_sync_actions` (Backend-Block) + `araliya_addressbook_push`.
+- `src/Bootstrap.php`, `src/Frontend/FrontendAssets.php`: Registrierung/Asset-Trigger; `assets/css/liebherr-frontend.css`: `.liw-dw__*`.
+- NEU `scripts/liw-seed-dealer-workspace.php`; `tests/run-tests.php`: 8 Prüfungen. Version alpha.152.
+
 ## 0.1.0-alpha.151 – AddressbookBridge – 26.10.2026
 - NEU `src/CoreBridge/AddressbookBridge.php` (Filter `araliya_addressbook_value_list` → `liw_codelist`); `src/Bootstrap.php`: Registrierung; Version alpha.151.
 
