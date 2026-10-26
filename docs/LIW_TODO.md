@@ -26,8 +26,12 @@ Stand: 19.09.2026 (0.1.0-alpha.78).
   `/sales-orders` liefert reale Auftragsdaten (Kundennamen) – nur mit Zweckbindung anzeigen, nie loggen.
 - **1d** ✅ alpha.148 (gebaut, **noch nicht gesendet**): Händler-Entität + Dealer Board, Schreibpfad Kunde/Kontakt mit
   Schalter je Händler, Trockenlauf-Skript. **Offen:** SalesAccountNumber für `tradler` eintragen (JW reicht nach),
-  Schreibschalter setzen, Trockenlauf freigeben → vier Echtläufe (customer, contact, customer-update, contact-update);
-  Antwortformat von POST /customer (ID-Feld) beim ersten Echtlauf verifizieren (Skript probiert mehrere Schlüssel);
+  ✅ 26.10.2026: `POST /customer` → 200, `LivisionCustomerId 2143795932` (Antwort `{status,data:[…]}`, ID-Feld verifiziert).
+  ❌ `POST /contact` → 401 „Partner not associated to requested entity“ – **mit Liebherr klären**, welcher Wert in
+  `SalesAccountNumber` die Partner-Zuordnung herstellt (450324 MyLiebherr-Kundennummer vs. `SalesOrgCustomerCode 020`);
+  Zweiter Versuch mit `020` (Sunnyside Two, 2143795933): gleicher 401 → SalesAccountNumber stellt die Zuordnung nicht her.
+  **Rückfrage an Liebherr** (Partner-Zuordnung Key/UserEmail ↔ Kunden im Testsystem). Testkunden 2143795932 und 2143795933
+  im Testsystem (löschbar). Danach contact, customer-update, contact-update;
   Klärung PUT /opportunity-Body und `oderDateFrom` mit Liebherr; später: Händlerauswahl auf der Sales-Seite (Variante B-Naht).
 - **Variante B** Händlerindividuelle Codes über `GateBridge`-Naht (statt Plattformcode).
 - Einträge der 17 Endpunkte im Interface Board (`liw_interface`) spiegeln – in 1a bewusst nicht automatisiert.

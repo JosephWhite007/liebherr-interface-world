@@ -200,7 +200,11 @@ final class DealerApiClient {
 		$raw    = (string) wp_remote_retrieve_body( $res );
 		$data   = json_decode( $raw, true );
 		if ( $status < 200 || $status >= 300 ) {
-			return self::fail( $option, $code, $method, $path, $status, 'http_' . $status, $ms, $actor_id );
+			// Fachliche Fehlermeldung des Liebherr-Backends (z. B. „Partner not associated to requested entity.") mitführen –
+			// kurz, ohne Nutzdaten; hilft bei der Klärung mit Liebherr.
+			$msg = is_array( $data ) ? (string) ( $data['status']['message'] ?? $data['message'] ?? '' ) : '';
+			$msg = '' !== $msg ? ': ' . substr( sanitize_text_field( $msg ), 0, 120 ) : '';
+			return self::fail( $option, $code, $method, $path, $status, 'http_' . $status . $msg, $ms, $actor_id );
 		}
 		if ( null === $data && '' !== trim( $raw ) ) {
 			return self::fail( $option, $code, $method, $path, $status, 'invalid_json', $ms, $actor_id );

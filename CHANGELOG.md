@@ -1,5 +1,31 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.150] – 2026-10-26 – Stufe 1d: erster Schreibtest gegen Liebherr – Kunde angelegt, Partner-Zuordnung offen
+
+### Befund (Echtlauf, Testumgebung, Händler `tradler`, SalesAccountNumber 450324 = MyLiebherr-Kundennummer Liebherr-Hydraulikbagger)
+- `POST /customer` „Sunnyside One“ → **HTTP 200**, Liebherr liefert `LivisionCustomerId 2143795932`, `SalesArea "LHB"`,
+  `SalesAccountNumber "450324"` zurück. Antwortformat: `{status,data:[{…Customer-Felder…}]}` – ID-Feld `LivisionCustomerId`
+  (Skript erkennt es, Option `liw_livision_test_records` gefüllt).
+- `POST /contact` (Alice, zum neuen Kunden) → **HTTP 401** „Partner not associated to requested entity.“
+  (`[interface].[Dealer_CreateContact]`). `GET /livision-url?LivisionCustomerId=…` → 401 „Customer doesn't exist or is not
+  associated to this partner“. `GET /customer-quotation-list` für die ID → 200. `GET /opportunity?customerName=Sunnyside` → 0.
+- Deutung: Der Kunde existiert in Livision, ist aber nicht dem Partner zugeordnet, den Key + `UserEmail` repräsentieren.
+  Entweder gehört `450324` nicht zur Partner-Registrierung (Kandidat aus `GET /sales-orders`: `SalesOrgCustomerCode "020"`,
+  Lieferant LBH Bischofshofen) oder die Zuordnung entsteht erst nachgelagert. **Klärung mit Liebherr nötig**; die
+  Folgeschritte (`contact`, `customer-update`, `contact-update`) wurden nicht weiter versucht.
+- **Zweiter Versuch (Freigabe JW):** `POST /customer` „Sunnyside Two“ mit `SalesAccountNumber "020"` → **200**,
+  `LivisionCustomerId 2143795933`, wieder `SalesArea "LHB"`; `POST /contact` → **401** „Partner not associated to requested
+  entity“; `GET /livision-url` → 401 „not associated to this partner“. **Schluss:** `SalesAccountNumber` wird vom
+  Backend offenbar nicht gegen das Partnerkonto geprüft und stellt die Zuordnung nicht her; die Partner-Zuordnung
+  (Key/`UserEmail` ↔ Kunde) muss Liebherr klären oder im Testsystem einrichten. Keine weiteren Schreibversuche.
+  Testkunden im Livision-Testsystem: 2143795932 „Sunnyside One“, 2143795933 „Sunnyside Two“ (löschbar).
+- Nebenbefund: `GET /opportunity` ohne Filter → HTTP 500; mit Filter → 200.
+
+### Geändert
+- `DealerApiClient`: fachliche Fehlermeldung des Backends (`status.message`) wird gekürzt im Fehlercode mitgeführt
+  (z. B. `http_401: Partner not associated to requested entity.`) – ohne Nutzdaten, für Board/Audit/Skript.
+
+
 ## [0.1.0-alpha.149] – 2026-10-24 – Sales Interface Stufe 1b: Codelisten-Import aus der LIVISION-Auswahlliste + Suche auf der Sales-Seite
 
 ### Neu

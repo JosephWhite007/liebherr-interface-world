@@ -21,6 +21,12 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.150 – Schreibtest-Befund + Backend-Fehlermeldung im Client – 26.10.2026
+
+- `src/SalesInterface/DealerApiClient.php`: `request()` hängt bei Nicht-2xx `status.message`/`message` (gekürzt, sanitisiert) an den Fehlercode.
+- Daten (Dev): Händler `tradler` SalesAccountNumber 450324, Schreibschalter AN; Option `liw_livision_test_records` = Kunde 2143795932.
+- Version alpha.150. Befund siehe CHANGELOG.
+
 ## 0.1.0-alpha.149 – Sales Interface Stufe 1b: Codelisten – 24.10.2026
 
 - NEU `src/SalesInterface/CodeListSchema.php` (Tabelle `liw_codelist`), `XlsxReader.php` (ZipArchive+XMLReader),
