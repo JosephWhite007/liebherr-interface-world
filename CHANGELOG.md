@@ -1,5 +1,32 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.151] – 2026-10-26 – Codelisten für das Core-Addressbook (AddressbookBridge)
+
+### Neu
+- `CoreBridge\AddressbookBridge`: Filter `araliya_addressbook_value_list` liefert dem Core-Addressbook (ARY-PH-AB-1.0, Phase 2)
+  die Liebherr-Codelisten aus `liw_codelist` als Text ⇒ Code je Liste und Sprache (Import-Umwandlung `codelist:<LISTE>`).
+  Verifiziert mit dem Import der Tradler-Kundenliste (KL, 1B, 3B, 2K, SC aufgelöst).
+
+### Befund Schreibtest 26.10.2026 (zweite Anmeldekennung – neue `UserEmail`, Key unverändert)
+- Lesen ohne Benutzerbindung funktioniert (`/tab-text`, `/product-list`, `/opportunity?customerName=`).
+- **`POST /customer` → HTTP 400 „Parameter User-Email unknown“** (`Dealer_CreateCustomer`); `GET /livision-url` → 401
+  „UPN not found. Needs a valid eMail or User“; `POST /contact` auf 2143795932 → 401 „Partner not associated“.
+- Deutung: Die neue `UserEmail` ist in Livision **kein angelegter Benutzer (UPN)**. Mit der alten Adresse ließen sich Kunden
+  anlegen (aber ohne Partner-Zuordnung). Beides muss Liebherr auf ihrer Seite einrichten: Livision-Benutzer + Partner-
+  Zuordnung zum Händlerkonto. Kein weiterer Schreibversuch; kein neuer Datensatz entstanden.
+
+### ✅ Schreibtest 26.10.2026, dritte Anmeldekennung (`UserEmail` @tradler.com) – **alle vier Schritte erfolgreich**
+- `POST /customer` „Sunnyside Three“ (SalesAccountNumber 450324) → 200, `LivisionCustomerId 2143795934`, **`SalesArea "020"`**
+  (mit den vorherigen Adressen war es „LHB“ – der Livision-Benutzer bestimmt die Verkaufsorganisation).
+- `POST /contact` Alice → 200, `LivisionContactId 2144227395`; `PUT /customer` → 200; `PUT /contact` → 200.
+- Gegenproben: `GET /livision-url` für Kunde und Kunde+Kontakt → 200 (Deep-Link), `GET /customer-quotation-list` → 200.
+  Die früheren Testkunden 2143795932/2143795933 bleiben dem Partner **nicht** zugeordnet (401) – unter fremdem Benutzer angelegt.
+- Feldlängen laut Antwort: `Function1` wird auf **10 Zeichen** gekürzt („Test Conta“), `Name2` auf **50 Zeichen**. → Validierung
+  vor dem Senden (Phase 4, Addressbook-Mapping) berücksichtigen.
+- Endpunkt-Status im Sales Board auf „verifiziert“ gesetzt: tab-text, product-list, sales-orders, customer-quotation-list,
+  livision-url, opportunity (Suche), POST/PUT customer, POST/PUT contact.
+
+
 ## [0.1.0-alpha.150] – 2026-10-26 – Stufe 1d: erster Schreibtest gegen Liebherr – Kunde angelegt, Partner-Zuordnung offen
 
 ### Befund (Echtlauf, Testumgebung, Händler `tradler`, SalesAccountNumber 450324 = MyLiebherr-Kundennummer Liebherr-Hydraulikbagger)

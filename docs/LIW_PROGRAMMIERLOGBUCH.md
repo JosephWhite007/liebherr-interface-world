@@ -21,6 +21,9 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.151 – AddressbookBridge – 26.10.2026
+- NEU `src/CoreBridge/AddressbookBridge.php` (Filter `araliya_addressbook_value_list` → `liw_codelist`); `src/Bootstrap.php`: Registrierung; Version alpha.151.
+
 ## 0.1.0-alpha.150 – Schreibtest-Befund + Backend-Fehlermeldung im Client – 26.10.2026
 
 - `src/SalesInterface/DealerApiClient.php`: `request()` hängt bei Nicht-2xx `status.message`/`message` (gekürzt, sanitisiert) an den Fehlercode.

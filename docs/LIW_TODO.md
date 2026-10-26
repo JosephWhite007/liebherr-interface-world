@@ -29,9 +29,10 @@ Stand: 19.09.2026 (0.1.0-alpha.78).
   ✅ 26.10.2026: `POST /customer` → 200, `LivisionCustomerId 2143795932` (Antwort `{status,data:[…]}`, ID-Feld verifiziert).
   ❌ `POST /contact` → 401 „Partner not associated to requested entity“ – **mit Liebherr klären**, welcher Wert in
   `SalesAccountNumber` die Partner-Zuordnung herstellt (450324 MyLiebherr-Kundennummer vs. `SalesOrgCustomerCode 020`);
-  Zweiter Versuch mit `020` (Sunnyside Two, 2143795933): gleicher 401 → SalesAccountNumber stellt die Zuordnung nicht her.
-  **Rückfrage an Liebherr** (Partner-Zuordnung Key/UserEmail ↔ Kunden im Testsystem). Testkunden 2143795932 und 2143795933
-  im Testsystem (löschbar). Danach contact, customer-update, contact-update;
+  ✅ 26.10.2026 (dritte Kennung, UserEmail @tradler.com): customer, contact, customer-update, contact-update alle 200, Deep-Links 200.
+  Erkenntnis: `UserEmail` muss ein Livision-Benutzer des Händlers sein; Kunden sind an den anlegenden Benutzer/Partner gebunden.
+  Alt-Testkunden 2143795932/2143795933 (fremder Benutzer) bleiben nicht zugeordnet → Liebherr um Löschung bitten.
+  Feldlängen: Function1 10, Name2 50 Zeichen → in Phase 4 vor dem Senden validieren;
   Klärung PUT /opportunity-Body und `oderDateFrom` mit Liebherr; später: Händlerauswahl auf der Sales-Seite (Variante B-Naht).
 - **Variante B** Händlerindividuelle Codes über `GateBridge`-Naht (statt Plattformcode).
 - Einträge der 17 Endpunkte im Interface Board (`liw_interface`) spiegeln – in 1a bewusst nicht automatisiert.
