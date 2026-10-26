@@ -712,9 +712,12 @@
 .liw-dw__ab .ary-ab__muted, .liw-dw__ab .ary-ab__why { color: var(--brand-muted, #666); font-size: 0.85rem; margin: 0.2rem 0; }
 .liw-dw__ab .ary-ab__article { font-weight: 700; margin: 0.4rem 0 0.1rem; }
 .liw-dw__ab .ary-ab__done { color: #1f6b3a; font-size: 0.85rem; }
-.liw-dw__ab .ary-ab__ack { display: flex; gap: 0.4rem; margin-top: 0.5rem; }
-.liw-dw__ab .ary-ab__ack input { flex: 1; padding: 0.4rem 0.5rem; border: 1px solid var(--brand-border, #d9d9d9); font: inherit; }
-.liw-dw__ab .ary-ab__ack .button { padding: 0.4rem 0.8rem; border: 0; background: var(--brand-primary, #3a3f45); color: var(--brand-on-primary, #fff); font: inherit; font-weight: 700; cursor: pointer; }
+.liw-dw__ab .ary-ab__ack { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; }
+.liw-dw__ab .ary-ab__ack input { flex: 1 1 120px; min-width: 0; padding: 0.4rem 0.5rem; border: 1px solid var(--brand-border, #d9d9d9); font: inherit; }
+/* Quittung „Gedanklich bearbeitet" – CI: Tannengrün mit Goldschrift (Entscheidung JW 26.10.2026) */
+.liw-dw__ab .ary-ab__ack .button.ary-ab__ackbtn { background: #1f4d33; border: 1px solid #b8963f; color: #d9b96a; letter-spacing: 0.02em; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08); }
+.liw-dw__ab .ary-ab__ack .button.ary-ab__ackbtn:hover, .liw-dw__ab .ary-ab__ack .button.ary-ab__ackbtn:focus-visible { background: #27613f; border-color: #d9b96a; color: #f0dc9a; box-shadow: 0 0 0 1px #d9b96a; }
+.liw-dw__ab .ary-ab__ack .button { flex: 0 0 auto; white-space: nowrap; padding: 0.4rem 0.8rem; border: 0; background: var(--brand-primary, #3a3f45); color: var(--brand-on-primary, #fff); font: inherit; font-weight: 700; cursor: pointer; }
 .liw-dw__ab table.widefat { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin: 0.5rem 0 1rem; }
 .liw-dw__ab table.widefat th, .liw-dw__ab table.widefat td { text-align: left; padding: 0.45rem 0.6rem; border-bottom: 1px solid var(--brand-border, #d9d9d9); }
 .liw-dw__ab .ary-ab__cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
@@ -1246,3 +1249,48 @@ html.liw-intro-lock .liw-switcher__inner > .liw-header__lang {
 	.liw-intro__backdrop { transition: opacity .3s ease; }
 	.liw-intro__sky { transition: opacity .3s ease; }
 }
+
+/* ── Dealer Workspace · Action Board Heute-Sichten (alpha.155; Core alpha.789, ARY-PH-AB §10) ── */
+.liw-dw__ab .ary-ab__views { display: flex; gap: 0.25rem; margin: 0.75rem 0 0.25rem; }
+.liw-dw__ab .ary-ab__view { padding: 0.35rem 0.9rem; border: 1px solid var(--brand-border, #d9d9d9); border-bottom: 0; background: var(--brand-surface, #fff); color: var(--brand-text, #1f1f1f); text-decoration: none; font-weight: 700; }
+.liw-dw__ab .ary-ab__view.is-active { background: #1f4d33; color: #d9b96a; border-color: #b8963f; }
+.liw-dw__ab .ary-ab__rows { list-style: none; margin: 0.5rem 0; padding: 0; }
+.liw-dw__ab .ary-ab__row { background: var(--brand-surface, #fff); border: 1px solid var(--brand-border, #d9d9d9); margin-bottom: 0.4rem; }
+.liw-dw__ab .ary-ab__row.is-done { opacity: 0.55; }
+.liw-dw__ab .ary-ab__rowbox > summary { list-style: none; cursor: pointer; }
+.liw-dw__ab .ary-ab__rowbox > summary::-webkit-details-marker { display: none; }
+.liw-dw__ab .ary-ab__rowline { display: grid; grid-template-columns: 2rem 6rem minmax(10rem, 1.2fr) minmax(9rem, 1fr) auto; gap: 0.6rem; align-items: center; padding: 0.5rem 0.8rem; }
+.liw-dw__ab .ary-ab__firm { font-weight: 700; }
+.liw-dw__ab .ary-ab__person { color: var(--brand-muted, #666); font-size: 0.9rem; }
+.liw-dw__ab .ary-ab__actionbtn { justify-self: end; padding: 0.3rem 0.9rem; background: #1f4d33; border: 1px solid #b8963f; color: #d9b96a; font-weight: 700; }
+.liw-dw__ab .ary-ab__actionbtn.is-done { background: #eee; color: #1f6b3a; border-color: var(--brand-border, #d9d9d9); }
+.liw-dw__ab .ary-ab__rowpanel { padding: 0.5rem 0.8rem 0.7rem 9.2rem; }
+.liw-dw__ab .ary-ab__links { font-size: 0.85rem; margin: 0.4rem 0 0; }
+.liw-dw__ab .ary-ab__tree { padding: 0 0.8rem 0.6rem 9.2rem; }
+.liw-dw__ab .ary-ab__treebox { border-top: 1px dashed var(--brand-border, #d9d9d9); padding: 0.4rem 0; }
+.liw-dw__ab .ary-ab__treebox > summary { cursor: pointer; display: flex; justify-content: space-between; }
+.liw-dw__ab .ary-ab__treecount { color: var(--brand-muted, #666); font-size: 0.8rem; }
+.liw-dw__ab .ary-ab__branches { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 0.5rem; margin: 0.5rem 0; }
+.liw-dw__ab .ary-ab__branch { display: flex; flex-direction: column; gap: 0.2rem; padding: 0.4rem 0.5rem; border: 1px solid var(--brand-border, #d9d9d9); border-left: 3px solid var(--brand-border, #d9d9d9); background: #fafafa; }
+.liw-dw__ab .ary-ab__branch.has-text { border-left-color: #b8963f; background: #fffdf5; }
+.liw-dw__ab .ary-ab__branchlabel { font-size: 0.8rem; font-weight: 700; }
+.liw-dw__ab .ary-ab__branch textarea { width: 100%; min-height: 2.6rem; font: inherit; font-size: 0.85rem; border: 1px solid var(--brand-border, #d9d9d9); }
+.liw-dw__ab .ary-ab__branchtext { font-size: 0.85rem; white-space: pre-wrap; }
+.liw-dw__ab .ary-ab__filter { display: flex; flex-wrap: wrap; gap: 0.4rem 0.8rem; align-items: center; margin: 0.5rem 0 0.8rem; padding: 0.5rem 0.8rem; background: var(--brand-surface, #fff); border: 1px solid var(--brand-border, #d9d9d9); font-size: 0.9rem; }
+.liw-dw__ab .ary-ab__tiles { list-style: none; margin: 0.75rem 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr)); gap: 0.8rem; }
+.liw-dw__ab .ary-ab__tile { background: var(--brand-surface, #fff); border: 1px solid var(--brand-border, #d9d9d9); border-top: 3px solid #1f4d33; padding: 0.8rem 1rem; font-size: 0.85rem; }
+.liw-dw__ab .ary-ab__tile.is-done { opacity: 0.55; }
+.liw-dw__ab .ary-ab__tile h3 { font-family: var(--font-heading, sans-serif); font-size: 1.05rem; margin: 0.3rem 0; }
+.liw-dw__ab .ary-ab__tile h4 { margin: 0.7rem 0 0.2rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--brand-muted, #666); }
+.liw-dw__ab .ary-ab__facts { display: grid; grid-template-columns: 7rem 1fr; gap: 0.1rem 0.5rem; margin: 0; }
+.liw-dw__ab .ary-ab__facts dt { color: var(--brand-muted, #666); } .liw-dw__ab .ary-ab__facts dd { margin: 0; }
+.liw-dw__ab .ary-ab__people, .liw-dw__ab .ary-ab__insights, .liw-dw__ab .ary-ab__hist, .liw-dw__ab .ary-ab__needs { margin: 0; padding-left: 1rem; }
+.liw-dw__ab .ary-ab__tag { display: inline-block; padding: 0 0.4rem; background: #eee; font-size: 0.75rem; font-weight: 700; }
+.liw-dw__ab .ary-ab__need.is-done { text-decoration: line-through; opacity: 0.6; }
+.liw-dw__ab .ary-ab__need .ary-ab__inline-form { display: inline; margin-left: 0.4rem; }
+.liw-dw__ab .button-link { background: none; border: 0; padding: 0; color: #1f4d33; text-decoration: underline; cursor: pointer; font: inherit; }
+.liw-dw__ab .ary-ab__needform { display: flex; flex-wrap: wrap; gap: 0.3rem; margin: 0.4rem 0; }
+.liw-dw__ab .ary-ab__needform select, .liw-dw__ab .ary-ab__needform input { flex: 1 1 8rem; min-width: 0; font: inherit; padding: 0.3rem; border: 1px solid var(--brand-border, #d9d9d9); }
+.liw-dw__ab .ary-ab__needform .button, .liw-dw__ab .ary-ab__filter .button { padding: 0.3rem 0.8rem; border: 0; background: var(--brand-primary, #3a3f45); color: var(--brand-on-primary, #fff); font: inherit; font-weight: 700; cursor: pointer; }
+.liw-dw__ab .ary-ab__treeform .ary-ab__ackbtn { padding: 0.4rem 0.9rem; background: #1f4d33; border: 1px solid #b8963f; color: #d9b96a; font: inherit; font-weight: 700; cursor: pointer; }
+@media (max-width: 900px) { .liw-dw__ab .ary-ab__rowline { grid-template-columns: 1.6rem 1fr auto; } .liw-dw__ab .ary-ab__class, .liw-dw__ab .ary-ab__person { grid-column: 2; } .liw-dw__ab .ary-ab__rowpanel, .liw-dw__ab .ary-ab__tree { padding-left: 0.8rem; } }

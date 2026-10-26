@@ -21,6 +21,11 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 2026-10-26 · alpha.155 · Dealer Workspace Action Board – Heute-Sichten
+- `src/DealerWorkspace/WorkspaceView.php`: `handle_post()` – Fälle `ack`, `save_insight`, `add_need`, `need_done`, `need_reopen` an `AddressbookActionPage::handle_shared_action()` delegiert; `actionboard()` – `render_today()` mit Basis-URLs (`actionboard`, `contact`).
+- `assets/css/liebherr-frontend.css`: Block „Action Board Heute-Sichten“ (Views, Rows, Tree, Tiles, Filter, Needform), Ack-Button-CI, Flex-Wrap der Quittungszeile.
+- `liebherr-interface-world.php`: Version 0.1.0-alpha.155.
+
 ## 0.1.0-alpha.154 – Workspace-Reiter Action Board – 26.10.2026
 - `src/DealerWorkspace/WorkspaceView.php`: POST `ack`, View `actionboard()`, Nav; `assets/css/liebherr-frontend.css`: `.liw-dw__ab`. Version alpha.154.
 

@@ -183,9 +183,16 @@ final class WorkspaceView {
 				self::$notice = $gid > 0 ? [ 'class' => 'ok', 'text' => __( 'Gruppe angelegt.', 'liebherr-interface-world' ) ] : [ 'class' => 'error', 'text' => __( 'Gruppe konnte nicht angelegt werden (leer oder vorhanden).', 'liebherr-interface-world' ) ];
 				return;
 			case 'ack':
-				if ( class_exists( 'Araliya\\Platform\\Core\\Modules\\Addressbook\\ActionBoardService' ) && $tenant::can( $M::CAP_VIEW, $org ) ) {
-					$ok           = \Araliya\Platform\Core\Modules\Addressbook\ActionBoardService::acknowledge( $org, (int) ( $_POST['pick_id'] ?? 0 ), $actor, (string) wp_unslash( $_POST['note'] ?? '' ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Core sanitisiert.
-					self::$notice = [ 'class' => $ok ? 'ok' : 'error', 'text' => $ok ? __( 'Gedanklich bearbeitet – quittiert.', 'liebherr-interface-world' ) : __( 'Quittung fehlgeschlagen.', 'liebherr-interface-world' ) ];
+			case 'save_insight':
+			case 'add_need':
+			case 'need_done':
+			case 'need_reopen':
+				// [alpha.155] Action-Board-Aktionen (Quittung, Ideenbaum, Bedarfsmarker) laufen über die Core-Seite – eine Logik, zwei Oberflächen.
+				if ( class_exists( 'Araliya\\Platform\\Core\\Admin\\Pages\\AddressbookActionPage' ) ) {
+					$r = \Araliya\Platform\Core\Admin\Pages\AddressbookActionPage::handle_shared_action( $action, $org, $actor, wp_unslash( $_POST ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Core sanitisiert.
+					if ( null !== $r ) {
+						self::$notice = $r;
+					}
 				}
 				return;
 			case 'push_livision':
@@ -623,7 +630,7 @@ final class WorkspaceView {
 		return $out . '</form></section>';
 	}
 
-	/** Action Board im Workspace: Heute (12 Top-Kunden, Quittung) + Klassifizierung – Darstellung über die Core-Seite. */
+	/** Action Board im Workspace: Heute (Pure · Pure Plus · Detail · Karten) + Klassifizierung – Darstellung über die Core-Seite. */
 	private static function actionboard( int $org ): string {
 		if ( ! class_exists( 'Araliya\\Platform\\Core\\Admin\\Pages\\AddressbookActionPage' ) ) {
 			return '<section class="liw-dw__section"><p>' . esc_html__( 'Action Board nicht verfügbar.', 'liebherr-interface-world' ) . '</p></section>';
@@ -636,7 +643,7 @@ final class WorkspaceView {
 		} elseif ( 'log' === $sub ) {
 			\Araliya\Platform\Core\Admin\Pages\AddressbookActionPage::render_log( $org );
 		} else {
-			\Araliya\Platform\Core\Admin\Pages\AddressbookActionPage::render_today( $org, self::NONCE, '', 'dw_action', WorkspaceContext::url( 'address', [ 'id' => 0 ] ) . '&id=', true );
+			\Araliya\Platform\Core\Admin\Pages\AddressbookActionPage::render_today( $org, self::NONCE, '', 'dw_action', WorkspaceContext::url( 'address', [ 'id' => 0 ] ) . '&id=', true, WorkspaceContext::url( 'actionboard' ), WorkspaceContext::url( 'contact', [ 'id' => 0 ] ) . '&id=' );
 		}
 		return $out . ob_get_clean() . '</section>';
 	}

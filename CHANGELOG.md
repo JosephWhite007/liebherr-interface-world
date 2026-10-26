@@ -1,5 +1,14 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.155] – 2026-10-26 – Dealer Workspace: Action Board „Heute“ in vier Sichten (Pure · Pure Plus · Detail · Karten)
+
+### Geändert
+- `WorkspaceView::actionboard()` übergibt der Core-Seite die Workspace-URLs für Sichtwahl/Filter und Ansprechpartner-Links; die POST-Aktionen
+  Quittung, Ideenbaum (`save_insight`) und Bedarfsmarker (`add_need`, `need_done`, `need_reopen`) laufen über
+  `AddressbookActionPage::handle_shared_action()` (Core alpha.789) – eine Logik, zwei Oberflächen.
+- CSS: Sichtwahl, Zeilen mit Action-Knopf, Ideenbaum-Zweige, Detail-Kacheln, Filterleiste und Bedarfsformular im Liebherr-Layout; Quittungs-/
+  Action-Knöpfe in Tannengrün mit Goldschrift (Entscheidung JW); Quittungszeile bricht um.
+
 ## [0.1.0-alpha.154] – 2026-10-26 – Dealer Workspace: Reiter „Action Board" (Heute · Klassifizierung · Protokoll)
 
 ### Neu
