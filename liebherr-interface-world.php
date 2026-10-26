@@ -4,7 +4,7 @@
  * Plugin URI:   https://araliya.info
  * Description:  Administrierbare, mehrsprachige Landingpage "Interface World Connections" für Liebherr-Händler-,
  *               Lieferanten- und Kundenanbindung (Magic Cube, Interface LogiQ). Solution Provider: GoHeal.
- * Version:      0.1.0-alpha.155
+ * Version:      0.1.0-alpha.156
  * Author:       GoHeal
  * Author URI:   https://araliya.info
  * Requires at least: 6.0
@@ -29,7 +29,7 @@ namespace Liebherr\InterfaceWorld;
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 // ── Konstanten ────────────────────────────────────────────────────────────────
-define( 'LIW_VERSION', '0.1.0-alpha.155' );
+define( 'LIW_VERSION', '0.1.0-alpha.156' );
 define( 'LIW_PATH', plugin_dir_path( __FILE__ ) );
 define( 'LIW_URL', plugin_dir_url( __FILE__ ) );
 define( 'LIW_BASENAME', plugin_basename( __FILE__ ) );
@@ -112,7 +112,8 @@ function create_tables(): void {
 	PlatformTime\Schema::create_tables();      // Plattformzeit – Session + Token-Abrechnungssatz (ADR-LIW-MYL-001 S9/S10, §41).
 	Pocket\Schema::create_tables();
 	SalesInterface\DealerSchema::create_table();
-	SalesInterface\CodeListSchema::create_table(); // Lokalspiegel der LIVISION-Codelisten (Stufe 1b). // Haendler mit eigenen Schnittstellen-Zugangsdaten (ADR-LIW-SALES-001 Stufe 1d).            // Pocket Information – personenbezogene Kurzinfos (ADR-LIW-MYL-001 R5, §34).
+	SalesInterface\CodeListSchema::create_table();
+	SalesInterface\ProductTemplateSchema::create_table(); // Produktliste als Artikelvorlage (ARY-PH-BV-1.0 BV-0, alpha.156). // Lokalspiegel der LIVISION-Codelisten (Stufe 1b). // Haendler mit eigenen Schnittstellen-Zugangsdaten (ADR-LIW-SALES-001 Stufe 1d).            // Pocket Information – personenbezogene Kurzinfos (ADR-LIW-MYL-001 R5, §34).
 }
 
 /**

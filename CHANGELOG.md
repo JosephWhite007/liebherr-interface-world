@@ -1,5 +1,19 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.156] – 2026-10-27 – BV-0 Liebherr-Produktliste als Artikelvorlage; Dealer Workspace: Branchen, Merkmale, Merkmal-Filter (Core alpha.790)
+
+### Neu
+- **Produktvorlagen** (`ProductTemplateSchema` `liw_product_template`, `ProductTemplateService`): Spiegel von `GET /product-list` (14 701 Modelle,
+  Upsert je Produkt_ID), Suche nach Bezeichnung/Hersteller/Maschinenart, **Übernahme per Klick** in das Händler-Articlebook (Typ Maschine, Gruppe je
+  Maschinenart, Dublettenschutz über `type_meta.template_product_id`). Skript `scripts/liw-import-product-list.php` (Trockenlauf / `--confirm`).
+  Klartexte der Codes Maschinenart/Hersteller/Aktiv über Ersatztabelle (Codelisten fehlen in der Auswahlliste – Rückfrage Liebherr).
+- Dealer Workspace → Artikel: Kasten „Aus der Liebherr-Produktliste übernehmen“ (erscheint nach dem Import).
+
+### Geändert
+- Dealer Workspace → Action Board: Unterseite **Branchen** (Core `render_industries()`), Aktionen Regeln/Vorschläge/eigene Branche delegiert;
+  Adressmaske: Abschnitt **Merkmale** (Branche · Anwendung · Maschinenpotenzial, Core `render_tag_fields()`), Speichern über
+  `save_tags_from_post()`; Adressliste: Filter „Merkmal“. CSS im Liebherr-Layout.
+
 ## [0.1.0-alpha.155] – 2026-10-26 – Dealer Workspace: Action Board „Heute“ in vier Sichten (Pure · Pure Plus · Detail · Karten)
 
 ### Geändert

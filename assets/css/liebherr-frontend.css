@@ -1294,3 +1294,21 @@ html.liw-intro-lock .liw-switcher__inner > .liw-header__lang {
 .liw-dw__ab .ary-ab__needform .button, .liw-dw__ab .ary-ab__filter .button { padding: 0.3rem 0.8rem; border: 0; background: var(--brand-primary, #3a3f45); color: var(--brand-on-primary, #fff); font: inherit; font-weight: 700; cursor: pointer; }
 .liw-dw__ab .ary-ab__treeform .ary-ab__ackbtn { padding: 0.4rem 0.9rem; background: #1f4d33; border: 1px solid #b8963f; color: #d9b96a; font: inherit; font-weight: 700; cursor: pointer; }
 @media (max-width: 900px) { .liw-dw__ab .ary-ab__rowline { grid-template-columns: 1.6rem 1fr auto; } .liw-dw__ab .ary-ab__class, .liw-dw__ab .ary-ab__person { grid-column: 2; } .liw-dw__ab .ary-ab__rowpanel, .liw-dw__ab .ary-ab__tree { padding-left: 0.8rem; } }
+
+/* ── Dealer Workspace · Branchen / Merkmale (alpha.156; Core alpha.790, ARY-PH-BV-1.0 BV-1) ── */
+.liw-dw__ab .ary-ab__chip, .liw-dw__form .ary-ab__chip { display: inline-block; min-width: 1.2rem; padding: 0 0.3rem; font-size: 0.75rem; font-weight: 700; text-align: center; background: #eee; }
+.liw-dw__ab .ary-ab__chip--K { background: #d5e8d4; } .liw-dw__ab .ary-ab__chip--H { background: #ffe6cc; } .liw-dw__ab .ary-ab__chip--V { background: #dae8fc; } .liw-dw__ab .ary-ab__chip--L { background: #fff2cc; }
+.liw-dw__ab .ary-ab__tagstart, .liw-dw__form .ary-ab__tagstart { color: #b8963f; font-weight: 700; }
+.liw-dw__ab .ary-ab__legend, .liw-dw__ab .ary-ab__hint, .liw-dw__form .ary-ab__hint { font-size: 0.85rem; color: var(--brand-muted, #666); }
+.liw-dw__ab .ary-ab__details { border: 1px solid var(--brand-border, #d9d9d9); background: var(--brand-surface, #fff); margin: 0.5rem 0; padding: 0.4rem 0.8rem; }
+.liw-dw__ab .ary-ab__details > summary { cursor: pointer; padding: 0.3rem 0; }
+.liw-dw__tags { margin: 0.75rem 0; border: 1px solid var(--brand-border, #d9d9d9); padding: 0.4rem 0.8rem; }
+.liw-dw__tags > summary { cursor: pointer; }
+.liw-dw__tags .ary-ab__tags { border: 0; border-top: 1px dashed var(--brand-border, #d9d9d9); padding: 0.4rem 0; margin: 0.4rem 0; }
+.liw-dw__tags .ary-ab__tags legend { font-weight: 700; }
+.liw-dw__tags .ary-ab__taggroup-label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--brand-muted, #666); margin: 0.3rem 0 0.1rem; }
+.liw-dw__tags .ary-ab__tag { display: inline-block; margin: 0.1rem 0.6rem 0.1rem 0; font-size: 0.85rem; }
+.liw-dw__tags .ary-ab__tag.is-set { font-weight: 700; }
+.liw-dw__tags .ary-ab__tag.is-suggested { outline: 1px dashed #b8963f; padding: 0 0.3rem; background: #fffdf5; }
+.liw-dw__tags .ary-ab__tag em { color: #996b00; font-size: 0.75rem; }
+.liw-dw__ab .ary-ab__inline-form { display: inline; }

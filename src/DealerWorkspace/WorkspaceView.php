@@ -119,6 +119,9 @@ final class WorkspaceView {
 					self::$notice = [ 'class' => 'error', 'text' => $res->get_error_message() ];
 					return;
 				}
+				if ( class_exists( 'Araliya\\Platform\\Core\\Admin\\Pages\\AddressbookPage' ) ) {
+					\Araliya\Platform\Core\Admin\Pages\AddressbookPage::save_tags_from_post( $org, $id > 0 ? $id : (int) $res, $data['tags'] ?? null, $actor ); // [alpha.156] Merkmale (BV-1)
+				}
 				wp_safe_redirect( WorkspaceContext::url( 'address', [ 'id' => $id > 0 ? $id : (int) $res, 'saved' => 1 ] ) );
 				exit;
 			case 'set_status':
@@ -173,6 +176,22 @@ final class WorkspaceView {
 				}
 				wp_safe_redirect( WorkspaceContext::url( 'article', [ 'id' => (int) $res, 'saved' => 1 ] ) );
 				exit;
+			case 'adopt_template':
+				// [alpha.156] BV-0: Modell aus der Liebherr-Produktliste als Artikel übernehmen.
+				if ( ! $tenant::can( $M::CAP_CREATE, $org ) ) {
+					self::$notice = [ 'class' => 'error', 'text' => __( 'Keine Berechtigung für Artikel.', 'liebherr-interface-world' ) ];
+					return;
+				}
+				$res = \Liebherr\InterfaceWorld\SalesInterface\ProductTemplateService::adopt( $org, (int) ( $_POST['product_id'] ?? 0 ), $actor );
+				if ( $res instanceof \WP_Error ) {
+					self::$notice = [ 'class' => 'error', 'text' => $res->get_error_message() ];
+					return;
+				}
+				if ( AuditBridge::is_available() ) {
+					AuditBridge::log( 'create', 'dealer_article', (int) $res, [], [ 'org_id' => $org, 'template' => (int) ( $_POST['product_id'] ?? 0 ) ], $actor );
+				}
+				self::$notice = [ 'class' => 'ok', 'text' => sprintf( /* translators: %d: Artikel-ID */ __( 'Vorlage übernommen – Artikel #%d angelegt.', 'liebherr-interface-world' ), (int) $res ) ];
+				return;
 			case 'save_group':
 				if ( ! class_exists( self::CORE_SCOPE ) || ! $tenant::can( $M::CAP_CREATE, $org ) ) {
 					return;
@@ -187,6 +206,13 @@ final class WorkspaceView {
 			case 'add_need':
 			case 'need_done':
 			case 'need_reopen':
+			case 'seed_rules':
+			case 'apply_rules':
+			case 'add_rule':
+			case 'delete_rule':
+			case 'tag_accept':
+			case 'tag_reject':
+			case 'add_industry':
 				// [alpha.155] Action-Board-Aktionen (Quittung, Ideenbaum, Bedarfsmarker) laufen über die Core-Seite – eine Logik, zwei Oberflächen.
 				if ( class_exists( 'Araliya\\Platform\\Core\\Admin\\Pages\\AddressbookActionPage' ) ) {
 					$r = \Araliya\Platform\Core\Admin\Pages\AddressbookActionPage::handle_shared_action( $action, $org, $actor, wp_unslash( $_POST ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Core sanitisiert.
@@ -361,6 +387,7 @@ final class WorkspaceView {
 			'q'      => isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['q'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			'status' => isset( $_GET['status'] ) ? sanitize_key( wp_unslash( (string) $_GET['status'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			'role'   => isset( $_GET['role'] ) ? sanitize_key( wp_unslash( (string) $_GET['role'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			'tag'    => isset( $_GET['tag'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['tag'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			'page'   => (int) ( $_GET['pg'] ?? 1 ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		];
 		$res = ( self::CORE_ADDR )::search( $org, $f );
@@ -375,7 +402,20 @@ final class WorkspaceView {
 		foreach ( ( self::CORE_SAN )::ROLES as $r ) {
 			$out .= '<option value="' . esc_attr( $r ) . '"' . selected( $f['role'], $r, false ) . '>' . esc_html( self::role_name( $r ) ) . '</option>';
 		}
-		$out .= '</select><button type="submit" class="liw-dw__button liw-dw__button--small">' . esc_html__( 'Filtern', 'liebherr-interface-world' ) . '</button>';
+		$out .= '</select>';
+		$tagrepo = 'Araliya\\Platform\\Core\\Modules\\Addressbook\\TagRepository';
+		if ( class_exists( $tagrepo ) ) { // [alpha.156] Merkmal-Filter (BV-1)
+			$out .= '<select name="tag"><option value="">' . esc_html__( 'alle Merkmale', 'liebherr-interface-world' ) . '</option><option value="none"' . selected( $f['tag'], 'none', false ) . '>' . esc_html__( 'ohne neue Branche', 'liebherr-interface-world' ) . '</option>';
+			foreach ( $tagrepo::kind_labels() as $kind => $klabel ) {
+				$out .= '<optgroup label="' . esc_attr( $klabel ) . '">';
+				foreach ( $tagrepo::names( $kind, $org ) as $key => $name ) {
+					$out .= '<option value="' . esc_attr( $kind . ':' . $key ) . '"' . selected( $f['tag'], $kind . ':' . $key, false ) . '>' . esc_html( $name ) . '</option>';
+				}
+				$out .= '</optgroup>';
+			}
+			$out .= '</select>';
+		}
+		$out .= '<button type="submit" class="liw-dw__button liw-dw__button--small">' . esc_html__( 'Filtern', 'liebherr-interface-world' ) . '</button>';
 		if ( WorkspaceContext::can( $M::CAP_CREATE ) ) {
 			$out .= ' <a class="liw-dw__button liw-dw__button--small" href="' . esc_url( WorkspaceContext::url( 'address' ) ) . '">+ ' . esc_html__( 'Adresse anlegen', 'liebherr-interface-world' ) . '</a>';
 		}
@@ -392,7 +432,7 @@ final class WorkspaceView {
 		if ( $res['pages'] > 1 ) {
 			$out .= '<p class="liw-dw__pager">';
 			for ( $p = 1; $p <= $res['pages']; $p++ ) {
-				$out .= $p === $res['page'] ? '<strong>' . $p . '</strong> ' : '<a href="' . esc_url( WorkspaceContext::url( 'addresses', array_filter( [ 'q' => $f['q'], 'status' => $f['status'], 'role' => $f['role'], 'pg' => $p ] ) ) ) . '">' . $p . '</a> ';
+				$out .= $p === $res['page'] ? '<strong>' . $p . '</strong> ' : '<a href="' . esc_url( WorkspaceContext::url( 'addresses', array_filter( [ 'q' => $f['q'], 'status' => $f['status'], 'role' => $f['role'], 'tag' => $f['tag'], 'pg' => $p ] ) ) ) . '">' . $p . '</a> ';
 			}
 			$out .= '</p>';
 		}
@@ -434,6 +474,12 @@ final class WorkspaceView {
 			$out .= '<option value="' . esc_attr( $s ) . '"' . selected( $v( 'status' ), $s, false ) . '>' . esc_html( self::status_label( $s ) ) . '</option>';
 		}
 		$out .= '</select></label>';
+		if ( class_exists( 'Araliya\\Platform\\Core\\Admin\\Pages\\AddressbookPage' ) ) { // [alpha.156] Merkmale Branche · Anwendung · Potenzial (BV-1)
+			$out .= '<details class="liw-dw__tags"><summary class="liw-dw__h3">' . esc_html__( 'Merkmale: Branche · Anwendung · Maschinenpotenzial', 'liebherr-interface-world' ) . '</summary>';
+			ob_start();
+			\Araliya\Platform\Core\Admin\Pages\AddressbookPage::render_tag_fields( $org, $id, $can );
+			$out .= ob_get_clean() . '</details>';
+		}
 		if ( $can ) {
 			$out .= '<button type="submit" class="liw-dw__button">' . esc_html__( 'Speichern', 'liebherr-interface-world' ) . '</button>';
 		}
@@ -582,7 +628,44 @@ final class WorkspaceView {
 			$out .= '<h3 class="liw-dw__h3">' . esc_html__( 'Artikelgruppen', 'liebherr-interface-world' ) . '</h3><p class="liw-dw__meta">' . esc_html( [] === $glabel ? __( 'Noch keine Gruppen.', 'liebherr-interface-world' ) : implode( ' · ', $glabel ) ) . '</p>';
 			$out .= '<form method="post" class="liw-dw__inline" action="' . esc_url( WorkspaceContext::url( 'articles' ) ) . '">' . self::nonce() . '<input type="hidden" name="dw_action" value="save_group" /><input type="text" name="label" maxlength="120" placeholder="' . esc_attr__( 'Neue Gruppe', 'liebherr-interface-world' ) . '" required /> <button type="submit" class="liw-dw__button liw-dw__button--small">' . esc_html__( 'Gruppe anlegen', 'liebherr-interface-world' ) . '</button></form>';
 		}
+		$out .= self::template_box( $org );
 		return $out . '</section>';
+	}
+
+	/** BV-0: Suche in der Liebherr-Produktliste (Vorlagen) und Übernahme per Klick (alpha.156). */
+	private static function template_box( int $org ): string {
+		$M   = WorkspaceContext::CORE_MODULE;
+		$svc = 'Liebherr\\InterfaceWorld\\SalesInterface\\ProductTemplateService';
+		if ( ! WorkspaceContext::can( $M::CAP_CREATE ) || ! class_exists( $svc ) || 0 === $svc::total() ) {
+			return '';
+		}
+		$tq = isset( $_GET['tq'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['tq'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$tt = isset( $_GET['tt'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['tt'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$tm = isset( $_GET['tm'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['tm'] ) ) : 'LI'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$out  = '<h3 class="liw-dw__h3">' . esc_html__( 'Aus der Liebherr-Produktliste übernehmen', 'liebherr-interface-world' ) . '</h3>';
+		$out .= '<p class="liw-dw__meta">' . esc_html( sprintf( /* translators: %s: Anzahl */ __( '%s Modelle als Vorlage (Dealer Interface /product-list). Übernehmen legt einen Artikel vom Typ Maschine mit Gruppe je Maschinenart an.', 'liebherr-interface-world' ), number_format_i18n( $svc::total() ) ) ) . '</p>';
+		$out .= '<form method="get" class="liw-dw__filters" action="' . esc_url( WorkspaceContext::page_url() ) . '"><input type="hidden" name="ws" value="articles" />';
+		$out .= '<input type="search" name="tq" value="' . esc_attr( $tq ) . '" placeholder="' . esc_attr__( 'Bezeichnung, z. B. L 550 oder R 926', 'liebherr-interface-world' ) . '" />';
+		$out .= '<select name="tm"><option value="LI"' . selected( $tm, 'LI', false ) . '>' . esc_html__( 'Liebherr', 'liebherr-interface-world' ) . '</option><option value=""' . selected( $tm, '', false ) . '>' . esc_html__( 'alle Hersteller', 'liebherr-interface-world' ) . '</option></select>';
+		$out .= '<select name="tt"><option value="">' . esc_html__( 'alle Maschinenarten', 'liebherr-interface-world' ) . '</option>';
+		foreach ( $svc::machine_types( $tm ) as $code => $n ) {
+			$out .= '<option value="' . esc_attr( (string) $code ) . '"' . selected( $tt, (string) $code, false ) . '>' . esc_html( $svc::label_type( (string) $code ) . ' (' . $n . ')' ) . '</option>';
+		}
+		$out .= '</select><button type="submit" class="liw-dw__button liw-dw__button--small">' . esc_html__( 'Suchen', 'liebherr-interface-world' ) . '</button></form>';
+		if ( '' === $tq && '' === $tt ) {
+			return $out;
+		}
+		$rows = $svc::search( $tq, $tm, $tt, 60 );
+		$out .= '<div class="liw-dw__scroll"><table class="liw-dw__table"><thead><tr><th>' . esc_html__( 'Hersteller', 'liebherr-interface-world' ) . '</th><th>' . esc_html__( 'Bezeichnung', 'liebherr-interface-world' ) . '</th><th>' . esc_html__( 'Maschinenart', 'liebherr-interface-world' ) . '</th><th>' . esc_html__( 'Bauzeit', 'liebherr-interface-world' ) . '</th><th></th></tr></thead><tbody>';
+		if ( [] === $rows ) {
+			$out .= '<tr><td colspan="5">' . esc_html__( 'Keine Vorlage gefunden.', 'liebherr-interface-world' ) . '</td></tr>';
+		}
+		foreach ( $rows as $r ) {
+			$years = '' !== (string) $r['build_from'] ? (string) $r['build_from'] . ( '' !== (string) $r['build_to'] ? '–' . (string) $r['build_to'] : '' ) : '';
+			$out  .= '<tr><td>' . esc_html( $svc::label_manufacturer( (string) $r['manufacturer'] ) ) . '</td><td><strong>' . esc_html( (string) $r['designation'] ) . '</strong>' . ( '' !== (string) $r['product_code'] ? ' <code>' . esc_html( (string) $r['product_code'] ) . '</code>' : '' ) . '</td><td>' . esc_html( $svc::label_type( (string) $r['machine_type'] ) ) . '</td><td>' . esc_html( $years ) . '</td>';
+			$out  .= '<td><form method="post" class="liw-dw__inline" action="' . esc_url( WorkspaceContext::url( 'articles' ) ) . '">' . self::nonce() . '<input type="hidden" name="dw_action" value="adopt_template" /><input type="hidden" name="product_id" value="' . (int) $r['product_id'] . '" /><button type="submit" class="liw-dw__button liw-dw__button--small">' . esc_html__( 'Übernehmen', 'liebherr-interface-world' ) . '</button></form></td></tr>';
+		}
+		return $out . '</tbody></table></div>';
 	}
 
 	/** Artikel anlegen/bearbeiten (nur Händler-Typen physical/service). */
@@ -636,10 +719,12 @@ final class WorkspaceView {
 			return '<section class="liw-dw__section"><p>' . esc_html__( 'Action Board nicht verfügbar.', 'liebherr-interface-world' ) . '</p></section>';
 		}
 		$sub = isset( $_GET['sub'] ) ? sanitize_key( wp_unslash( (string) $_GET['sub'] ) ) : 'today'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$out = '<section class="liw-dw__section liw-dw__ab"><h2 class="liw-dw__h2">' . esc_html__( 'Action Board', 'liebherr-interface-world' ) . '</h2><p class="liw-dw__meta"><a href="' . esc_url( WorkspaceContext::url( 'actionboard' ) ) . '">' . esc_html__( 'Heute', 'liebherr-interface-world' ) . '</a> · <a href="' . esc_url( WorkspaceContext::url( 'actionboard', [ 'sub' => 'classes' ] ) ) . '">' . esc_html__( 'Klassifizierung', 'liebherr-interface-world' ) . '</a> · <a href="' . esc_url( WorkspaceContext::url( 'actionboard', [ 'sub' => 'log' ] ) ) . '">' . esc_html__( 'Protokoll', 'liebherr-interface-world' ) . '</a></p>';
+		$out = '<section class="liw-dw__section liw-dw__ab"><h2 class="liw-dw__h2">' . esc_html__( 'Action Board', 'liebherr-interface-world' ) . '</h2><p class="liw-dw__meta"><a href="' . esc_url( WorkspaceContext::url( 'actionboard' ) ) . '">' . esc_html__( 'Heute', 'liebherr-interface-world' ) . '</a> · <a href="' . esc_url( WorkspaceContext::url( 'actionboard', [ 'sub' => 'classes' ] ) ) . '">' . esc_html__( 'Klassifizierung', 'liebherr-interface-world' ) . '</a> · <a href="' . esc_url( WorkspaceContext::url( 'actionboard', [ 'sub' => 'industries' ] ) ) . '">' . esc_html__( 'Branchen', 'liebherr-interface-world' ) . '</a> · <a href="' . esc_url( WorkspaceContext::url( 'actionboard', [ 'sub' => 'log' ] ) ) . '">' . esc_html__( 'Protokoll', 'liebherr-interface-world' ) . '</a></p>';
 		ob_start();
 		if ( 'classes' === $sub ) {
 			\Araliya\Platform\Core\Admin\Pages\AddressbookActionPage::render_classes( $org, WorkspaceContext::url( 'addresses' ) );
+		} elseif ( 'industries' === $sub ) {
+			\Araliya\Platform\Core\Admin\Pages\AddressbookActionPage::render_industries( $org, WorkspaceContext::url( 'addresses' ), self::NONCE, '', 'dw_action', true );
 		} elseif ( 'log' === $sub ) {
 			\Araliya\Platform\Core\Admin\Pages\AddressbookActionPage::render_log( $org );
 		} else {

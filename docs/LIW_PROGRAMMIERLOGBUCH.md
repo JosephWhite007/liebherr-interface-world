@@ -21,6 +21,12 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 2026-10-27 · alpha.156 · BV-0 Produktvorlagen + Workspace Branchen/Merkmale
+- Neu `src/SalesInterface/ProductTemplateSchema.php`, `ProductTemplateService.php`, `scripts/liw-import-product-list.php`.
+- `liebherr-interface-world.php`: `ProductTemplateSchema::create_table()` in `create_tables()`, Version 0.1.0-alpha.156.
+- `src/DealerWorkspace/WorkspaceView.php`: Fälle `adopt_template`, `seed_rules`/`apply_rules`/`add_rule`/`delete_rule`/`tag_accept`/`tag_reject`/`add_industry` (→ Core); `template_box()`; `actionboard()` Unterseite `industries`; `address()` Merkmale-Abschnitt; `addresses()` Filter `tag`; `save_address` ruft `save_tags_from_post()`.
+- `assets/css/liebherr-frontend.css`: Block „Branchen / Merkmale“.
+
 ## 2026-10-26 · alpha.155 · Dealer Workspace Action Board – Heute-Sichten
 - `src/DealerWorkspace/WorkspaceView.php`: `handle_post()` – Fälle `ack`, `save_insight`, `add_need`, `need_done`, `need_reopen` an `AddressbookActionPage::handle_shared_action()` delegiert; `actionboard()` – `render_today()` mit Basis-URLs (`actionboard`, `contact`).
 - `assets/css/liebherr-frontend.css`: Block „Action Board Heute-Sichten“ (Views, Rows, Tree, Tiles, Filter, Needform), Ack-Button-CI, Flex-Wrap der Quittungszeile.
