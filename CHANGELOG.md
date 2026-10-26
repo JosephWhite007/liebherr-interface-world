@@ -1,5 +1,22 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.154] – 2026-10-26 – Dealer Workspace: Reiter „Action Board" (Heute · Klassifizierung · Protokoll)
+
+### Neu
+- Reiter **Action Board** im Dealer Workspace: 12 Top-Kunden des Tages mit Quittung „Gedanklich bearbeitet" (+ Notiz), Klassifizierungstabelle
+  und Protokoll – gerendert über die Core-Seite `AddressbookActionPage` (eine Darstellung, zwei Oberflächen), Nonce des Workspace,
+  Liebherr-CI für Karten und Tabellen.
+
+
+## [0.1.0-alpha.153] – 2026-10-26 – Dealer Workspace: Reiter „Artikel" (Addressbook Phase 5)
+
+### Neu
+- Reiter **Artikel** im Dealer Workspace: Liste (Suche Name/Nummer/EAN, Typfilter), Anlegen/Bearbeiten von Ware und Dienstleistung
+  (Name, Nummer automatisch `A-000001`, EAN, Preis, Währung, MwSt, Bestand nur Ware, Gruppe, Status, Beschreibungen), eigene
+  Artikelgruppen je Händler (Schlüssel `o<org>-…`). Alle Zugriffe laufen über `ArticleTenantScope::with( org, … )` des Core –
+  Plattform-Artikel bleiben unsichtbar, andere Händler ebenso. Übersichtskachel zeigt die Artikelzahl; Anleitung ergänzt.
+
+
 ## [0.1.0-alpha.152] – 2026-10-26 – Dealer Workspace (Phase 3) und Livision-Sync aus dem Addressbook (Phase 4)
 
 ### Neu

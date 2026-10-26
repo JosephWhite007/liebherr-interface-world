@@ -703,6 +703,22 @@
 .liw-dw__dl dd { margin: 0.2rem 0 0; max-width: 75ch; }
 .liw-dw__warnings { margin: 0.5rem 0; padding-left: 1.2rem; color: #8a1c1c; font-size: 0.9rem; }
 .liw-dw__pager a, .liw-dw__pager strong { margin-right: 0.4rem; }
+.liw-dw__ab .ary-ab__cards { list-style: none; margin: 1rem 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+.liw-dw__ab .ary-ab__card { background: var(--brand-surface, #fff); border: 1px solid var(--brand-border, #d9d9d9); border-top: 3px solid var(--brand-primary, #3a3f45); padding: 0.9rem 1.1rem; }
+.liw-dw__ab .ary-ab__card.is-done { opacity: 0.55; }
+.liw-dw__ab .ary-ab__card h3 { font-family: var(--font-heading, sans-serif); font-size: 1.05rem; margin: 0.3rem 0; }
+.liw-dw__ab .ary-ab__cardhead { display: flex; justify-content: space-between; }
+.liw-dw__ab .ary-ab__class { font-size: 0.75rem; font-weight: 700; padding: 0.1rem 0.5rem; background: var(--brand-primary, #3a3f45); color: var(--brand-on-primary, #fff); }
+.liw-dw__ab .ary-ab__muted, .liw-dw__ab .ary-ab__why { color: var(--brand-muted, #666); font-size: 0.85rem; margin: 0.2rem 0; }
+.liw-dw__ab .ary-ab__article { font-weight: 700; margin: 0.4rem 0 0.1rem; }
+.liw-dw__ab .ary-ab__done { color: #1f6b3a; font-size: 0.85rem; }
+.liw-dw__ab .ary-ab__ack { display: flex; gap: 0.4rem; margin-top: 0.5rem; }
+.liw-dw__ab .ary-ab__ack input { flex: 1; padding: 0.4rem 0.5rem; border: 1px solid var(--brand-border, #d9d9d9); font: inherit; }
+.liw-dw__ab .ary-ab__ack .button { padding: 0.4rem 0.8rem; border: 0; background: var(--brand-primary, #3a3f45); color: var(--brand-on-primary, #fff); font: inherit; font-weight: 700; cursor: pointer; }
+.liw-dw__ab table.widefat { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin: 0.5rem 0 1rem; }
+.liw-dw__ab table.widefat th, .liw-dw__ab table.widefat td { text-align: left; padding: 0.45rem 0.6rem; border-bottom: 1px solid var(--brand-border, #d9d9d9); }
+.liw-dw__ab .ary-ab__cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+@media (max-width: 900px) { .liw-dw__ab .ary-ab__cols { grid-template-columns: 1fr; } }
 
 .liw-sales__locked { padding: 3rem 1rem; text-align: center; }
 .liw-sales__search { display: flex; flex-wrap: wrap; gap: 0.75rem 1rem; align-items: flex-end; margin: 1rem 0 1.25rem; padding: 1rem; background: var(--brand-surface, #fff); border: 1px solid var(--brand-border, #d9d9d9); }

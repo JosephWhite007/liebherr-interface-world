@@ -21,6 +21,12 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 0.1.0-alpha.154 – Workspace-Reiter Action Board – 26.10.2026
+- `src/DealerWorkspace/WorkspaceView.php`: POST `ack`, View `actionboard()`, Nav; `assets/css/liebherr-frontend.css`: `.liw-dw__ab`. Version alpha.154.
+
+## 0.1.0-alpha.153 – Workspace-Reiter Artikel – 26.10.2026
+- `src/DealerWorkspace/WorkspaceView.php`: Konstanten CORE_ART/CORE_GROUP/CORE_SCOPE, POST `save_article`/`save_group`, Views `articles()`/`article()`, Kachel, Nav, Anleitung, `draft`-Label. Version alpha.153.
+
 ## 0.1.0-alpha.152 – Dealer Workspace + LivisionSync – 26.10.2026
 - NEU `src/DealerWorkspace/WorkspaceContext.php`, `WorkspaceView.php` (Shortcode, Login/Logout, Reiter, POST-Handler auf `template_redirect`).
 - NEU `src/SalesInterface/LivisionSync.php` (customer_body/contact_body/split_phone/precheck/push/extract_id/stats/sales_account_number).
