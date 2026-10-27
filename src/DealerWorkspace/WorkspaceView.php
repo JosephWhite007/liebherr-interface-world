@@ -255,6 +255,17 @@ final class WorkspaceView {
 				}
 				self::$notice = [ 'class' => 'ok', 'text' => __( 'Teammitglied gespeichert.', 'liebherr-interface-world' ) ];
 				return;
+			case 'save_alias':
+			case 'delete_alias':
+			case 'csp_reconcile':
+				// [alpha.157] Customer Solution Provider – Betreuer-Zuordnung/Abgleich über die Core-Seite.
+				if ( class_exists( 'Araliya\\Platform\\Core\\Admin\\Pages\\AddressbookTeamPage' ) ) {
+					$r = \Araliya\Platform\Core\Admin\Pages\AddressbookTeamPage::handle_csp_action( $action, $org, $actor, wp_unslash( $_POST ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Core sanitisiert.
+					if ( null !== $r ) {
+						self::$notice = $r;
+					}
+				}
+				return;
 			case 'end_member':
 				$uid = (int) ( $_POST['user_id'] ?? 0 );
 				if ( $tenant::can( $M::CAP_MANAGE_TEAM, $org ) && $uid !== $actor ) {
@@ -388,6 +399,7 @@ final class WorkspaceView {
 			'status' => isset( $_GET['status'] ) ? sanitize_key( wp_unslash( (string) $_GET['status'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			'role'   => isset( $_GET['role'] ) ? sanitize_key( wp_unslash( (string) $_GET['role'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			'tag'    => isset( $_GET['tag'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['tag'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			'csp'    => (int) ( $_GET['csp'] ?? 0 ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			'page'   => (int) ( $_GET['pg'] ?? 1 ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		];
 		$res = ( self::CORE_ADDR )::search( $org, $f );
@@ -415,6 +427,14 @@ final class WorkspaceView {
 			}
 			$out .= '</select>';
 		}
+		$cspsvc = 'Araliya\\Platform\\Core\\Modules\\Addressbook\\CspService';
+		if ( class_exists( $cspsvc ) ) { // [alpha.157] CSP-Filter
+			$out .= '<select name="csp"><option value="0">' . esc_html__( 'alle CSP', 'liebherr-interface-world' ) . '</option><option value="' . get_current_user_id() . '"' . selected( $f['csp'], get_current_user_id(), false ) . '>' . esc_html__( 'meine Kunden', 'liebherr-interface-world' ) . '</option><option value="-1"' . selected( $f['csp'], -1, false ) . '>' . esc_html__( 'ohne CSP', 'liebherr-interface-world' ) . '</option>';
+			foreach ( $cspsvc::team_options( $org ) as $uid => $name ) {
+				$out .= '<option value="' . (int) $uid . '"' . selected( $f['csp'], $uid, false ) . '>' . esc_html( $name ) . '</option>';
+			}
+			$out .= '</select>';
+		}
 		$out .= '<button type="submit" class="liw-dw__button liw-dw__button--small">' . esc_html__( 'Filtern', 'liebherr-interface-world' ) . '</button>';
 		if ( WorkspaceContext::can( $M::CAP_CREATE ) ) {
 			$out .= ' <a class="liw-dw__button liw-dw__button--small" href="' . esc_url( WorkspaceContext::url( 'address' ) ) . '">+ ' . esc_html__( 'Adresse anlegen', 'liebherr-interface-world' ) . '</a>';
@@ -432,7 +452,7 @@ final class WorkspaceView {
 		if ( $res['pages'] > 1 ) {
 			$out .= '<p class="liw-dw__pager">';
 			for ( $p = 1; $p <= $res['pages']; $p++ ) {
-				$out .= $p === $res['page'] ? '<strong>' . $p . '</strong> ' : '<a href="' . esc_url( WorkspaceContext::url( 'addresses', array_filter( [ 'q' => $f['q'], 'status' => $f['status'], 'role' => $f['role'], 'tag' => $f['tag'], 'pg' => $p ] ) ) ) . '">' . $p . '</a> ';
+				$out .= $p === $res['page'] ? '<strong>' . $p . '</strong> ' : '<a href="' . esc_url( WorkspaceContext::url( 'addresses', array_filter( [ 'q' => $f['q'], 'status' => $f['status'], 'role' => $f['role'], 'tag' => $f['tag'], 'csp' => $f['csp'] ?: '', 'pg' => $p ] ) ) ) . '">' . $p . '</a> ';
 			}
 			$out .= '</p>';
 		}
@@ -465,7 +485,13 @@ final class WorkspaceView {
 		foreach ( $fields as [ $n, $label, $max ] ) {
 			$out .= '<label class="liw-dw__field"><span>' . esc_html( $label ) . '</span><input type="text" name="address[' . esc_attr( $n ) . ']" value="' . esc_attr( $v( $n ) ) . '" maxlength="' . (int) $max . '"' . ( $can ? '' : ' readonly' ) . ' /></label>';
 		}
-		$out .= '</div><p class="liw-dw__field"><span class="liw-dw__label">' . esc_html__( 'Rollen', 'liebherr-interface-world' ) . '</span>';
+		$out .= '</div>';
+		if ( class_exists( 'Araliya\\Platform\\Core\\Admin\\Pages\\AddressbookPage' ) ) { // [alpha.157] Customer Solution Provider
+			ob_start();
+			\Araliya\Platform\Core\Admin\Pages\AddressbookPage::csp_select( $org, 'address[csp_user_id]', (int) ( $a['csp_user_id'] ?? 0 ), $can, __( 'Customer Solution Provider (Verkäufer mit dem Wissen)', 'liebherr-interface-world' ), __( '– kein CSP –', 'liebherr-interface-world' ) );
+			$out .= ob_get_clean();
+		}
+		$out .= '<p class="liw-dw__field"><span class="liw-dw__label">' . esc_html__( 'Rollen', 'liebherr-interface-world' ) . '</span>';
 		foreach ( ( self::CORE_SAN )::ROLES as $r ) {
 			$out .= '<label class="liw-dw__check"><input type="checkbox" name="address[roles][]" value="' . esc_attr( $r ) . '"' . checked( in_array( $r, (array) $a['roles'], true ), true, false ) . ( $can ? '' : ' disabled' ) . ' /> ' . esc_html( self::role_name( $r ) ) . '</label>';
 		}
@@ -530,7 +556,13 @@ final class WorkspaceView {
 		foreach ( [ [ 'salutation', __( 'Anrede (AH: F/H)', 'liebherr-interface-world' ), 10 ], [ 'title', __( 'Titel', 'liebherr-interface-world' ), 40 ], [ 'first_name', __( 'Vorname', 'liebherr-interface-world' ), 120 ], [ 'last_name', __( 'Nachname *', 'liebherr-interface-world' ), 120 ], [ 'function1', __( 'Funktion (FN)', 'liebherr-interface-world' ), 20 ], [ 'department', __( 'Abteilung (PV)', 'liebherr-interface-world' ), 20 ], [ 'email', __( 'E-Mail', 'liebherr-interface-world' ), 191 ], [ 'mobile', __( 'Mobil', 'liebherr-interface-world' ), 60 ], [ 'phone', __( 'Telefon', 'liebherr-interface-world' ), 60 ] ] as [ $n, $label, $max ] ) {
 			$out .= '<label class="liw-dw__field"><span>' . esc_html( $label ) . '</span><input type="text" name="contact[' . esc_attr( $n ) . ']" value="' . esc_attr( $v( $n ) ) . '" maxlength="' . (int) $max . '"' . ( $can ? '' : ' readonly' ) . ' /></label>';
 		}
-		$out .= '</div><label class="liw-dw__check"><input type="checkbox" name="contact[decider]" value="1"' . checked( ! empty( $c['decider'] ), true, false ) . ( $can ? '' : ' disabled' ) . ' /> ' . esc_html__( 'Entscheider', 'liebherr-interface-world' ) . '</label>';
+		$out .= '</div>';
+		if ( class_exists( 'Araliya\\Platform\\Core\\Admin\\Pages\\AddressbookPage' ) ) { // [alpha.157] Exklusivkontakt (CSP)
+			ob_start();
+			\Araliya\Platform\Core\Admin\Pages\AddressbookPage::csp_select( $org, 'contact[csp_user_id]', (int) ( $c['csp_user_id'] ?? 0 ), $can, __( 'Exklusivkontakt – Customer Solution Provider', 'liebherr-interface-world' ), __( '– erbt den Firmen-CSP –', 'liebherr-interface-world' ) );
+			$out .= ob_get_clean();
+		}
+		$out .= '<label class="liw-dw__check"><input type="checkbox" name="contact[decider]" value="1"' . checked( ! empty( $c['decider'] ), true, false ) . ( $can ? '' : ' disabled' ) . ' /> ' . esc_html__( 'Entscheider', 'liebherr-interface-world' ) . '</label>';
 		$out .= '<label class="liw-dw__field"><span>' . esc_html__( 'Notiz', 'liebherr-interface-world' ) . '</span><textarea name="contact[note]" rows="3"' . ( $can ? '' : ' readonly' ) . '>' . esc_textarea( $v( 'note' ) ) . '</textarea></label>';
 		$out .= '<input type="hidden" name="contact[status]" value="' . esc_attr( $v( 'status' ) ?: 'active' ) . '" />';
 		if ( $can ) {
@@ -771,6 +803,11 @@ final class WorkspaceView {
 				$out .= '<option value="' . esc_attr( $f ) . '">' . esc_html( self::role_label( $f ) ) . '</option>';
 			}
 			$out .= '</select></label></div><button type="submit" class="liw-dw__button">' . esc_html__( 'Hinzufügen', 'liebherr-interface-world' ) . '</button><p class="liw-dw__meta">' . esc_html__( 'Neue Konten setzen ihr Passwort über den E-Mail-Link und arbeiten ausschließlich hier im Workspace.', 'liebherr-interface-world' ) . '</p></form>';
+		}
+		if ( class_exists( 'Araliya\\Platform\\Core\\Admin\\Pages\\AddressbookTeamPage' ) ) { // [alpha.157] Customer Solution Provider
+			ob_start();
+			\Araliya\Platform\Core\Admin\Pages\AddressbookTeamPage::render_csp_box( $org, [ 'nonce_action' => self::NONCE, 'nonce_name' => '', 'field' => 'dw_action', 'workspace' => true ] );
+			$out .= '<div class="liw-dw__ab liw-dw__csp">' . ob_get_clean() . '</div>';
 		}
 		return $out . '</section>';
 	}

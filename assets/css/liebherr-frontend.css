@@ -1259,7 +1259,7 @@ html.liw-intro-lock .liw-switcher__inner > .liw-header__lang {
 .liw-dw__ab .ary-ab__row.is-done { opacity: 0.55; }
 .liw-dw__ab .ary-ab__rowbox > summary { list-style: none; cursor: pointer; }
 .liw-dw__ab .ary-ab__rowbox > summary::-webkit-details-marker { display: none; }
-.liw-dw__ab .ary-ab__rowline { display: grid; grid-template-columns: 2rem 6rem minmax(10rem, 1.2fr) minmax(9rem, 1fr) auto; gap: 0.6rem; align-items: center; padding: 0.5rem 0.8rem; }
+.liw-dw__ab .ary-ab__rowline { display: grid; grid-template-columns: 2rem 6rem minmax(10rem, 1.2fr) minmax(9rem, 1fr) minmax(7rem, 0.8fr) auto; gap: 0.6rem; align-items: center; padding: 0.5rem 0.8rem; }
 .liw-dw__ab .ary-ab__firm { font-weight: 700; }
 .liw-dw__ab .ary-ab__person { color: var(--brand-muted, #666); font-size: 0.9rem; }
 .liw-dw__ab .ary-ab__actionbtn { justify-self: end; padding: 0.3rem 0.9rem; background: #1f4d33; border: 1px solid #b8963f; color: #d9b96a; font-weight: 700; }
@@ -1312,3 +1312,15 @@ html.liw-intro-lock .liw-switcher__inner > .liw-header__lang {
 .liw-dw__tags .ary-ab__tag.is-suggested { outline: 1px dashed #b8963f; padding: 0 0.3rem; background: #fffdf5; }
 .liw-dw__tags .ary-ab__tag em { color: #996b00; font-size: 0.75rem; }
 .liw-dw__ab .ary-ab__inline-form { display: inline; }
+
+/* ── Dealer Workspace · Customer Solution Provider (alpha.157) ── */
+.liw-dw__ab .ary-ab__csp { font-size: 0.85rem; color: #1f4d33; font-weight: 700; }
+.liw-dw__ab .ary-ab__csp em { color: #996b00; font-weight: 400; }
+.liw-dw__ab .ary-ab__view--mine { margin-left: auto; }
+.liw-dw__form .ary-ab__csp label { display: block; font-size: 0.8rem; color: var(--brand-muted, #666); margin-bottom: 0.2rem; }
+.liw-dw__form .ary-ab__csp select { width: 100%; max-width: 28rem; font: inherit; padding: 0.4rem 0.5rem; border: 1px solid var(--brand-border, #d9d9d9); }
+.liw-dw__csp h2 { font-size: 1.1rem; margin-top: 1.5rem; } .liw-dw__csp h3 { font-size: 0.95rem; }
+.liw-dw__csp select { font: inherit; padding: 0.3rem; border: 1px solid var(--brand-border, #d9d9d9); }
+.liw-dw__csp .button { padding: 0.3rem 0.8rem; border: 0; background: var(--brand-primary, #3a3f45); color: var(--brand-on-primary, #fff); font: inherit; font-weight: 700; cursor: pointer; }
+.liw-dw__csp .button.ary-ab__ackbtn { background: #1f4d33; border: 1px solid #b8963f; color: #d9b96a; }
+@media (max-width: 900px) { .liw-dw__ab .ary-ab__csp { grid-column: 2; } }

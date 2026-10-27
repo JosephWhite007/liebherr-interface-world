@@ -1,6 +1,13 @@
 # Liebherr Interface Solutions — Changelog
 
-## [0.1.0-alpha.156] – 2026-10-27 – BV-0 Liebherr-Produktliste als Artikelvorlage; Dealer Workspace: Branchen, Merkmale, Merkmal-Filter (Core alpha.790)
+## [0.1.0-alpha.157] – 2026-10-27 – Dealer Workspace: Customer Solution Provider (CSP), Exklusivkontakt, Betreuer-Abgleich, Filter „meine Kunden“ (Core alpha.791)
+
+### Geändert
+- Adressmaske: Auswahl „Customer Solution Provider“; Ansprechpartner-Maske: „Exklusivkontakt“ (Core `AddressbookPage::csp_select()`); Adressliste:
+  Filter CSP mit „meine Kunden“ / „ohne CSP“; Reiter Team: Kasten CSP (Verteilung, Betreuer ⇒ Teammitglied, Abgleich – Core `render_csp_box()`,
+  Aktionen über `handle_csp_action()`); Action Board Heute: Schalter „nur meine Kunden (CSP)“, CSP in Pure-Zeile und Detail. CSS.
+
+ – 2026-10-27 – BV-0 Liebherr-Produktliste als Artikelvorlage; Dealer Workspace: Branchen, Merkmale, Merkmal-Filter (Core alpha.790)
 
 ### Neu
 - **Produktvorlagen** (`ProductTemplateSchema` `liw_product_template`, `ProductTemplateService`): Spiegel von `GET /product-list` (14 701 Modelle,
