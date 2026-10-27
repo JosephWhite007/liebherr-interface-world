@@ -21,6 +21,9 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 2026-10-27 · alpha.161 · Dealer Workspace Know-how
+- `src/DealerWorkspace/WorkspaceView.php`: Fälle `save_knowhow`/`knowhow_from_views`/`approve_knowhow`/`share_knowhow`/`unshare_knowhow`/`delete_knowhow`/`adopt_knowhow` (→ Core), `actionboard()` Unterseite `knowhow`; `assets/css/liebherr-frontend.css`: Block „Know-how“; Version 0.1.0-alpha.161.
+
 ## 2026-10-27 · alpha.160 · Dealer Workspace Magic Cube
 - `src/DealerWorkspace/WorkspaceView.php`: Fälle `ai_views`/`ai_poll` (→ Core); `assets/css/liebherr-frontend.css`: Block „Magic Cube“; Version 0.1.0-alpha.160.
 

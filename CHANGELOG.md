@@ -1,6 +1,12 @@
 # Liebherr Interface Solutions — Changelog
 
-## [0.1.0-alpha.160] – 2026-10-27 – Dealer Workspace: Magic-Cube-Aktionen (Core alpha.795, BV-3)
+## [0.1.0-alpha.161] – 2026-10-27 – Dealer Workspace: Unterseite „Know-how“ (Core alpha.796, BV-4)
+
+### Geändert
+- Action Board → Know-how: Workflows, Editor, Freigabe/Teilen und „Geteiltes Wissen“ mit Token-Übernahme (My Liebherr Wallet) über die Core-Seite
+  (`render_knowhow()`), Aktionen delegiert; CSS für Schrittraster und Status.
+
+ – 2026-10-27 – Dealer Workspace: Magic-Cube-Aktionen (Core alpha.795, BV-3)
 
 ### Geändert
 - Action Board → Branchen/Branchenviews: „🤖 KI“ je Branche und „Ergebnisse abholen“ über die Core-Seite (Aktionen `ai_views`/`ai_poll` delegiert);
