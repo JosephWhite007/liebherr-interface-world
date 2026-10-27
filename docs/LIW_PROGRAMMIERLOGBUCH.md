@@ -21,6 +21,9 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 2026-10-27 · alpha.162 · Dealer Workspace Ideen
+- `src/DealerWorkspace/WorkspaceView.php`: Fälle `save_idea`/`handover_idea`/`done_idea`/`delete_idea`/`idea_lead` (→ Core), `actionboard()` Unterseite `ideas`; `assets/css/liebherr-frontend.css`: Block „Ideen“; Version 0.1.0-alpha.162.
+
 ## 2026-10-27 · alpha.161 · Dealer Workspace Know-how
 - `src/DealerWorkspace/WorkspaceView.php`: Fälle `save_knowhow`/`knowhow_from_views`/`approve_knowhow`/`share_knowhow`/`unshare_knowhow`/`delete_knowhow`/`adopt_knowhow` (→ Core), `actionboard()` Unterseite `knowhow`; `assets/css/liebherr-frontend.css`: Block „Know-how“; Version 0.1.0-alpha.161.
 

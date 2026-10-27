@@ -1355,3 +1355,9 @@ html.liw-intro-lock .liw-switcher__inner > .liw-header__lang {
 .liw-dw__ab .ary-ab__khcard ol { padding-left: 1.2rem; }
 .liw-dw__ab .ary-ab__inline-form select { font: inherit; padding: 0.3rem; }
 @media (max-width: 1100px) { .liw-dw__ab .ary-ab__step { grid-template-columns: 1.5rem 1fr 1fr; } }
+
+/* ── Dealer Workspace · Ideen (alpha.162; Core alpha.797, BV-5) ── */
+.liw-dw__ab .ary-ab__ideacard { border-top-color: #996b00; } .liw-dw__ab .ary-ab__ideacard.is-handed_over { border-top-color: #1f6b3a; } .liw-dw__ab .ary-ab__ideacard.is-done { opacity: 0.6; }
+.liw-dw__ab .ary-ab__tag--idea-draft { background: #fff2cc; } .liw-dw__ab .ary-ab__tag--idea-handed_over { background: #d5e8d4; } .liw-dw__ab .ary-ab__tag--idea-done { background: #e0e0e0; }
+.liw-dw__ab .ary-ab__aggbox { margin: 0.5rem 0; padding: 0.4rem 0.7rem; background: #f6f6f6; border-left: 3px solid #b8963f; font-size: 0.85rem; }
+.liw-dw__ab .ary-ab__form select[multiple] { width: 100%; font: inherit; border: 1px solid var(--brand-border, #d9d9d9); }

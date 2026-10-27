@@ -1,6 +1,12 @@
 # Liebherr Interface Solutions — Changelog
 
-## [0.1.0-alpha.161] – 2026-10-27 – Dealer Workspace: Unterseite „Know-how“ (Core alpha.796, BV-4)
+## [0.1.0-alpha.162] – 2026-10-27 – Dealer Workspace: Unterseite „Ideen“ (Core alpha.797, BV-5/AB-3)
+
+### Geändert
+- Action Board → Ideen: Idee anlegen (Vorbelegung aus Views/Workflows), Aggregat-Vorschau, Übergabe an das Agent Board, Rückläufer erfassen –
+  über die Core-Seite (`render_ideas()`), Aktionen delegiert; CSS.
+
+ – 2026-10-27 – Dealer Workspace: Unterseite „Know-how“ (Core alpha.796, BV-4)
 
 ### Geändert
 - Action Board → Know-how: Workflows, Editor, Freigabe/Teilen und „Geteiltes Wissen“ mit Token-Übernahme (My Liebherr Wallet) über die Core-Seite
