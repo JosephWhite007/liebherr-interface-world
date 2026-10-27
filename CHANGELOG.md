@@ -1,6 +1,12 @@
 # Liebherr Interface Solutions — Changelog
 
-## [0.1.0-alpha.158] – 2026-10-27 – Dealer Workspace: Funktion „Verkäufer – nur eigene Kunden (CSP)“ (Core alpha.792)
+## [0.1.0-alpha.159] – 2026-10-27 – Dealer Workspace: Unterseite „Branchenviews“ (Core alpha.794, BV-2)
+
+### Geändert
+- Action Board → Branchenviews: Bewertungsstrecke und „View anlegen“ über die Core-Seite (`render_views()`), Aktionen `save_view`/`vote_view`/`delete_view`
+  delegiert; CSS für Karten, Bewertungsknöpfe (passt grün/gold, passt nicht rot) und Formular.
+
+ – 2026-10-27 – Dealer Workspace: Funktion „Verkäufer – nur eigene Kunden (CSP)“ (Core alpha.792)
 
 ### Geändert
 - Team-Reiter: neue Funktion `dealer_csp` wählbar (Label); Sichtbereich und eigene Tagesliste kommen vollständig aus den Core-Repositories –

@@ -1324,3 +1324,18 @@ html.liw-intro-lock .liw-switcher__inner > .liw-header__lang {
 .liw-dw__csp .button { padding: 0.3rem 0.8rem; border: 0; background: var(--brand-primary, #3a3f45); color: var(--brand-on-primary, #fff); font: inherit; font-weight: 700; cursor: pointer; }
 .liw-dw__csp .button.ary-ab__ackbtn { background: #1f4d33; border: 1px solid #b8963f; color: #d9b96a; }
 @media (max-width: 900px) { .liw-dw__ab .ary-ab__csp { grid-column: 2; } }
+
+/* ── Dealer Workspace · Branchenviews (alpha.159; Core alpha.794, BV-2) ── */
+.liw-dw__ab .ary-ab__viewcard { border-top-color: #b8963f; }
+.liw-dw__ab .ary-ab__viewcard.is-confirmed { border-top-color: #1f6b3a; } .liw-dw__ab .ary-ab__viewcard.is-rejected { opacity: 0.55; } .liw-dw__ab .ary-ab__viewcard.is-stationary { border-top-color: #888; }
+.liw-dw__ab .ary-ab__viewline { margin: 0.2rem 0; font-size: 0.9rem; }
+.liw-dw__ab .ary-ab__tag--confirmed { background: #d5e8d4; } .liw-dw__ab .ary-ab__tag--rejected { background: #f8d7da; } .liw-dw__ab .ary-ab__tag--open { background: #fff2cc; } .liw-dw__ab .ary-ab__tag--stationary { background: #e0e0e0; }
+.liw-dw__ab .ary-ab__vote { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin-top: 0.5rem; }
+.liw-dw__ab .ary-ab__vote input { flex: 1 1 9rem; min-width: 0; padding: 0.35rem 0.5rem; border: 1px solid var(--brand-border, #d9d9d9); font: inherit; }
+.liw-dw__ab .ary-ab__votebtn { flex: 0 0 auto; padding: 0.35rem 0.8rem; font: inherit; font-weight: 700; cursor: pointer; border: 1px solid var(--brand-border, #d9d9d9); background: #f6f6f6; color: var(--brand-text, #1f1f1f); }
+.liw-dw__ab .ary-ab__votebtn--yes { background: #1f4d33; color: #d9b96a; border-color: #b8963f; }
+.liw-dw__ab .ary-ab__votebtn--no { background: #fff; color: #a00; border-color: #a00; }
+.liw-dw__ab .ary-ab__votebtn.is-active { box-shadow: 0 0 0 2px #d9b96a; }
+.liw-dw__ab .ary-ab__viewform .ary-ab__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); gap: 0.6rem; }
+.liw-dw__ab .ary-ab__viewform select, .liw-dw__ab .ary-ab__viewform input[type="text"] { width: 100%; font: inherit; padding: 0.35rem 0.5rem; border: 1px solid var(--brand-border, #d9d9d9); }
+.liw-dw__ab .ary-ab__viewform label { display: block; font-size: 0.85rem; }

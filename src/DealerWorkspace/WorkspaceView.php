@@ -213,6 +213,9 @@ final class WorkspaceView {
 			case 'tag_accept':
 			case 'tag_reject':
 			case 'add_industry':
+			case 'save_view':
+			case 'vote_view':
+			case 'delete_view':
 				// [alpha.155] Action-Board-Aktionen (Quittung, Ideenbaum, Bedarfsmarker) laufen über die Core-Seite – eine Logik, zwei Oberflächen.
 				if ( class_exists( 'Araliya\\Platform\\Core\\Admin\\Pages\\AddressbookActionPage' ) ) {
 					$r = \Araliya\Platform\Core\Admin\Pages\AddressbookActionPage::handle_shared_action( $action, $org, $actor, wp_unslash( $_POST ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Core sanitisiert.
@@ -751,10 +754,12 @@ final class WorkspaceView {
 			return '<section class="liw-dw__section"><p>' . esc_html__( 'Action Board nicht verfügbar.', 'liebherr-interface-world' ) . '</p></section>';
 		}
 		$sub = isset( $_GET['sub'] ) ? sanitize_key( wp_unslash( (string) $_GET['sub'] ) ) : 'today'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$out = '<section class="liw-dw__section liw-dw__ab"><h2 class="liw-dw__h2">' . esc_html__( 'Action Board', 'liebherr-interface-world' ) . '</h2><p class="liw-dw__meta"><a href="' . esc_url( WorkspaceContext::url( 'actionboard' ) ) . '">' . esc_html__( 'Heute', 'liebherr-interface-world' ) . '</a> · <a href="' . esc_url( WorkspaceContext::url( 'actionboard', [ 'sub' => 'classes' ] ) ) . '">' . esc_html__( 'Klassifizierung', 'liebherr-interface-world' ) . '</a> · <a href="' . esc_url( WorkspaceContext::url( 'actionboard', [ 'sub' => 'industries' ] ) ) . '">' . esc_html__( 'Branchen', 'liebherr-interface-world' ) . '</a> · <a href="' . esc_url( WorkspaceContext::url( 'actionboard', [ 'sub' => 'log' ] ) ) . '">' . esc_html__( 'Protokoll', 'liebherr-interface-world' ) . '</a></p>';
+		$out = '<section class="liw-dw__section liw-dw__ab"><h2 class="liw-dw__h2">' . esc_html__( 'Action Board', 'liebherr-interface-world' ) . '</h2><p class="liw-dw__meta"><a href="' . esc_url( WorkspaceContext::url( 'actionboard' ) ) . '">' . esc_html__( 'Heute', 'liebherr-interface-world' ) . '</a> · <a href="' . esc_url( WorkspaceContext::url( 'actionboard', [ 'sub' => 'classes' ] ) ) . '">' . esc_html__( 'Klassifizierung', 'liebherr-interface-world' ) . '</a> · <a href="' . esc_url( WorkspaceContext::url( 'actionboard', [ 'sub' => 'industries' ] ) ) . '">' . esc_html__( 'Branchen', 'liebherr-interface-world' ) . '</a> · <a href="' . esc_url( WorkspaceContext::url( 'actionboard', [ 'sub' => 'views' ] ) ) . '">' . esc_html__( 'Branchenviews', 'liebherr-interface-world' ) . '</a> · <a href="' . esc_url( WorkspaceContext::url( 'actionboard', [ 'sub' => 'log' ] ) ) . '">' . esc_html__( 'Protokoll', 'liebherr-interface-world' ) . '</a></p>';
 		ob_start();
 		if ( 'classes' === $sub ) {
 			\Araliya\Platform\Core\Admin\Pages\AddressbookActionPage::render_classes( $org, WorkspaceContext::url( 'addresses' ) );
+		} elseif ( 'views' === $sub ) {
+			\Araliya\Platform\Core\Admin\Pages\AddressbookActionPage::render_views( $org, self::NONCE, '', 'dw_action', true, WorkspaceContext::url( 'actionboard', [ 'sub' => 'views' ] ) );
 		} elseif ( 'industries' === $sub ) {
 			\Araliya\Platform\Core\Admin\Pages\AddressbookActionPage::render_industries( $org, WorkspaceContext::url( 'addresses' ), self::NONCE, '', 'dw_action', true );
 		} elseif ( 'log' === $sub ) {
