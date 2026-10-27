@@ -21,6 +21,9 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 2026-10-27 · alpha.163 · Sales Interface Umsetzungsstand
+- `src/SalesInterface/SalesContent.php`: Liste `progress` (LISTS + Defaults), Roadmap/Klärungspunkte/Anleitung/Endpunkt-Status aktualisiert; `SalesInterfaceView.php`: Tab `progress` + `progress()`, Sandbox-Hinweis; `Admin/Pages/SalesBoardPage.php`: Label `progress`; Version 0.1.0-alpha.163.
+
 ## 2026-10-27 · alpha.162 · Dealer Workspace Ideen
 - `src/DealerWorkspace/WorkspaceView.php`: Fälle `save_idea`/`handover_idea`/`done_idea`/`delete_idea`/`idea_lead` (→ Core), `actionboard()` Unterseite `ideas`; `assets/css/liebherr-frontend.css`: Block „Ideen“; Version 0.1.0-alpha.162.
 

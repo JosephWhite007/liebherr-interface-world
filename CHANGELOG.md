@@ -1,6 +1,19 @@
 # Liebherr Interface Solutions — Changelog
 
-## [0.1.0-alpha.162] – 2026-10-27 – Dealer Workspace: Unterseite „Ideen“ (Core alpha.797, BV-5/AB-3)
+## [0.1.0-alpha.163] – 2026-10-27 – Sales Interface: Reiter „Umsetzungsstand“, Roadmap/Klärungspunkte/Anleitung auf aktuellem Stand
+
+### Neu
+- Reiter **Umsetzungsstand** direkt nach der Schnittstellenbeschreibung (Liste `progress`, im Sales Board pflegbar): 11 Bausteine mit
+  Status – erledigt: Sales-Seite, Codelisten, lesende Aufrufe, Kunde/Kontakt schreibend, Addressbook & Dealer Workspace, Action Board;
+  in Arbeit: Produktlisten-Import, Rückfragen; geplant: Bedarfsfall/Angebot/Aufträge, Livision-Pull, Produktion.
+
+### Geändert
+- Roadmap: Stufen 1a–1c erledigt, 1d in Arbeit (Bedarfsfall nach Klärung), neue Stufen 2 (Addressbook als Quelle, erledigt) und 3 (Pull,
+  Bedarfsfälle, Produktion). Endpunkte POST/PUT /customer, POST /contact, GET /product-list, GET /tab-text auf „verifiziert“.
+  Klärungspunkte: SalesAccountNumber (je Kunde eindeutig), UserEmail (Livision-Benutzer), fehlende Codes der Produktliste.
+  Anleitung: Reiter, Statuslegende, Übertragung aus dem Addressbook, Produktliste/Codelisten. Sandbox-Hinweis aktualisiert.
+
+ – 2026-10-27 – Dealer Workspace: Unterseite „Ideen“ (Core alpha.797, BV-5/AB-3)
 
 ### Geändert
 - Action Board → Ideen: Idee anlegen (Vorbelegung aus Views/Workflows), Aggregat-Vorschau, Übergabe an das Agent Board, Rückläufer erfassen –

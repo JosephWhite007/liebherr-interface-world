@@ -46,6 +46,7 @@ final class SalesBoardPage {
 			'schemas'        => __( 'Datenmodell – Name | Pflichtfelder (Komma) | Felder („Feld:Typ; Feld:Typ") oder Kurztext', 'liebherr-interface-world' ),
 			'codelists'      => __( 'Codelisten – Code | Bezeichnung | Entität', 'liebherr-interface-world' ),
 			'clarifications' => __( 'Klärungspunkte – Titel | Text', 'liebherr-interface-world' ),
+			'progress'       => __( 'Umsetzungsstand – Titel | Text | Status (planned, in_progress, done)', 'liebherr-interface-world' ),
 			'roadmap'        => __( 'Stufenplan – Titel | Text | Status (planned, in_progress, done)', 'liebherr-interface-world' ),
 			'guide'          => __( 'Anleitung der Seite – Titel | Text', 'liebherr-interface-world' ),
 		];

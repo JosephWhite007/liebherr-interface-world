@@ -75,6 +75,7 @@ final class SalesInterfaceView {
 	public static function tabs(): array {
 		return [
 			'overview'     => __( 'Übersicht', 'liebherr-interface-world' ),
+			'progress'     => __( 'Umsetzungsstand', 'liebherr-interface-world' ), // [alpha.163]
 			'environments' => __( 'Umgebungen & Zugang', 'liebherr-interface-world' ),
 			'endpoints'    => __( 'Endpunkte', 'liebherr-interface-world' ),
 			'datamodel'    => __( 'Datenmodell', 'liebherr-interface-world' ),
@@ -124,6 +125,7 @@ final class SalesInterfaceView {
 
 		$tabs = self::tabs();
 		$out .= self::section( 'overview', $tabs, self::overview( $c ) );
+		$out .= self::section( 'progress', $tabs, self::progress( $c ) );
 		$out .= self::section( 'environments', $tabs, self::environments( $c ) );
 		$out .= self::section( 'endpoints', $tabs, self::endpoints( $c ) );
 		$out .= self::section( 'datamodel', $tabs, self::datamodel( $c ) );
@@ -294,8 +296,20 @@ final class SalesInterfaceView {
 		$probe = DealerApiClient::last_probe();
 		$out  .= '<dl class="liw-sales__dl"><dt>' . esc_html__( 'Umgebung', 'liebherr-interface-world' ) . '</dt><dd><code>' . esc_html( DealerApiClient::BASE_TEST ) . '</code></dd>';
 		$out  .= '<dt>' . esc_html__( 'Letzter Aufruf', 'liebherr-interface-world' ) . '</dt><dd>' . esc_html( \Liebherr\InterfaceWorld\Admin\Pages\SalesBoardPage::probe_label( $probe ) ) . '</dd></dl>';
-		$out  .= '<p class="liw-sales__meta">' . esc_html__( 'Synthetische Beispielantworten (Sandbox-Simulation) folgen in Stufe 1b.', 'liebherr-interface-world' ) . '</p>';
+		$out  .= '<p class="liw-sales__meta">' . esc_html__( 'Die Sandbox zeigt die letzte reale Verbindungsprobe gegen den Testserver (Dealer Board → Verbindungsprobe); synthetische Antworten gibt es nicht mehr.', 'liebherr-interface-world' ) . '</p>';
 		return $out;
+	}
+
+	/** [alpha.163] Umsetzungsstand: was ist gebaut, was offen – direkt nach der Schnittstellenbeschreibung. @param array<string,mixed> $c */
+	private static function progress( array $c ): string {
+		$labels = self::status_labels();
+		$rows   = is_array( $c['progress'] ?? null ) ? $c['progress'] : [];
+		$done   = count( array_filter( $rows, static fn( array $r ): bool => 'done' === (string) $r['status'] ) );
+		$out    = '<p class="liw-sales__text">' . esc_html( sprintf( /* translators: 1: erledigt 2: gesamt 3: Datum */ __( '%1$d von %2$d Bausteinen umgesetzt (Stand %3$s). Erledigt = in der Plattform gebaut und geprüft, In Arbeit = ein Schritt steht aus, Geplant = nach Klärung oder Freigabe.', 'liebherr-interface-world' ), $done, count( $rows ), '27.10.2026' ) ) . '</p><ol class="liw-sales__steps">';
+		foreach ( $rows as $r ) {
+			$out .= '<li><strong>' . esc_html( $r['title'] ) . '</strong> <span class="liw-sales__status liw-sales__status--' . esc_attr( $r['status'] ) . '">' . esc_html( $labels[ $r['status'] ] ?? $r['status'] ) . '</span><br>' . esc_html( $r['text'] ) . '</li>';
+		}
+		return $out . '</ol>';
 	}
 
 	/** @param array<string,mixed> $c */
