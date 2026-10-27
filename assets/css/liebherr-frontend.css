@@ -1339,3 +1339,9 @@ html.liw-intro-lock .liw-switcher__inner > .liw-header__lang {
 .liw-dw__ab .ary-ab__viewform .ary-ab__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); gap: 0.6rem; }
 .liw-dw__ab .ary-ab__viewform select, .liw-dw__ab .ary-ab__viewform input[type="text"] { width: 100%; font: inherit; padding: 0.35rem 0.5rem; border: 1px solid var(--brand-border, #d9d9d9); }
 .liw-dw__ab .ary-ab__viewform label { display: block; font-size: 0.85rem; }
+
+/* ── Dealer Workspace · Magic Cube (alpha.160; Core alpha.795, BV-3) ── */
+.liw-dw__ab .ary-ab__aibox { margin: 0.5rem 0 0.8rem; padding: 0.5rem 0.8rem; background: var(--brand-surface, #fff); border: 1px solid var(--brand-border, #d9d9d9); border-left: 3px solid #b8963f; font-size: 0.9rem; }
+.liw-dw__ab .ary-ab__joblist { margin: 0.4rem 0 0; padding: 0; list-style: none; font-size: 0.85rem; }
+.liw-dw__ab .ary-ab__tag--job-succeeded { background: #d5e8d4; } .liw-dw__ab .ary-ab__tag--job-failed { background: #f8d7da; } .liw-dw__ab .ary-ab__tag--job-running, .liw-dw__ab .ary-ab__tag--job-submitted { background: #dae8fc; }
+.liw-dw__ab .ary-ab__aibox .button { padding: 0.3rem 0.8rem; border: 0; background: var(--brand-primary, #3a3f45); color: var(--brand-on-primary, #fff); font: inherit; font-weight: 700; cursor: pointer; }

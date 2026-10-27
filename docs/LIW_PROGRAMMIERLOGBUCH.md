@@ -21,6 +21,9 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 2026-10-27 · alpha.160 · Dealer Workspace Magic Cube
+- `src/DealerWorkspace/WorkspaceView.php`: Fälle `ai_views`/`ai_poll` (→ Core); `assets/css/liebherr-frontend.css`: Block „Magic Cube“; Version 0.1.0-alpha.160.
+
 ## 2026-10-27 · alpha.159 · Dealer Workspace Branchenviews
 - `src/DealerWorkspace/WorkspaceView.php`: Fälle `save_view`/`vote_view`/`delete_view` (→ Core), `actionboard()` Unterseite `views`; `assets/css/liebherr-frontend.css`: Block „Branchenviews“; Version 0.1.0-alpha.159.
 

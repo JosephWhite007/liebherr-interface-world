@@ -1,6 +1,12 @@
 # Liebherr Interface Solutions — Changelog
 
-## [0.1.0-alpha.159] – 2026-10-27 – Dealer Workspace: Unterseite „Branchenviews“ (Core alpha.794, BV-2)
+## [0.1.0-alpha.160] – 2026-10-27 – Dealer Workspace: Magic-Cube-Aktionen (Core alpha.795, BV-3)
+
+### Geändert
+- Action Board → Branchen/Branchenviews: „🤖 KI“ je Branche und „Ergebnisse abholen“ über die Core-Seite (Aktionen `ai_views`/`ai_poll` delegiert);
+  CSS für den Magic-Cube-Kasten und die Auftragsliste.
+
+ – 2026-10-27 – Dealer Workspace: Unterseite „Branchenviews“ (Core alpha.794, BV-2)
 
 ### Geändert
 - Action Board → Branchenviews: Bewertungsstrecke und „View anlegen“ über die Core-Seite (`render_views()`), Aktionen `save_view`/`vote_view`/`delete_view`

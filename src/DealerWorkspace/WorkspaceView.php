@@ -216,6 +216,8 @@ final class WorkspaceView {
 			case 'save_view':
 			case 'vote_view':
 			case 'delete_view':
+			case 'ai_views':
+			case 'ai_poll':
 				// [alpha.155] Action-Board-Aktionen (Quittung, Ideenbaum, Bedarfsmarker) laufen über die Core-Seite – eine Logik, zwei Oberflächen.
 				if ( class_exists( 'Araliya\\Platform\\Core\\Admin\\Pages\\AddressbookActionPage' ) ) {
 					$r = \Araliya\Platform\Core\Admin\Pages\AddressbookActionPage::handle_shared_action( $action, $org, $actor, wp_unslash( $_POST ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Core sanitisiert.
