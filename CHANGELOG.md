@@ -1,6 +1,12 @@
 # Liebherr Interface Solutions — Changelog
 
-## [0.1.0-alpha.157] – 2026-10-27 – Dealer Workspace: Customer Solution Provider (CSP), Exklusivkontakt, Betreuer-Abgleich, Filter „meine Kunden“ (Core alpha.791)
+## [0.1.0-alpha.158] – 2026-10-27 – Dealer Workspace: Funktion „Verkäufer – nur eigene Kunden (CSP)“ (Core alpha.792)
+
+### Geändert
+- Team-Reiter: neue Funktion `dealer_csp` wählbar (Label); Sichtbereich und eigene Tagesliste kommen vollständig aus den Core-Repositories –
+  Adressen, Ansprechpartner, Action Board und Merkmale im Workspace zeigen dem Verkäufer nur seine Kunden.
+
+ – 2026-10-27 – Dealer Workspace: Customer Solution Provider (CSP), Exklusivkontakt, Betreuer-Abgleich, Filter „meine Kunden“ (Core alpha.791)
 
 ### Geändert
 - Adressmaske: Auswahl „Customer Solution Provider“; Ansprechpartner-Maske: „Exklusivkontakt“ (Core `AddressbookPage::csp_select()`); Adressliste:

@@ -21,6 +21,9 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 2026-10-27 · alpha.158 · Dealer Workspace Funktion dealer_csp
+- `src/DealerWorkspace/WorkspaceView.php`: `role_label()` um `dealer_csp`; `liebherr-interface-world.php`: Version 0.1.0-alpha.158.
+
 ## 2026-10-27 · alpha.157 · Dealer Workspace Customer Solution Provider
 - `src/DealerWorkspace/WorkspaceView.php`: Fälle `save_alias`/`delete_alias`/`csp_reconcile` → Core `AddressbookTeamPage::handle_csp_action()`; `address()` + `contact()` CSP-Auswahl über `AddressbookPage::csp_select()`; `team()` Kasten `render_csp_box()`; `addresses()` Filter `csp`.
 - `assets/css/liebherr-frontend.css`: Block „Customer Solution Provider“, Pure-Zeile 6 Spalten.

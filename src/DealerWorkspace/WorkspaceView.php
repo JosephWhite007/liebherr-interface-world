@@ -830,7 +830,7 @@ final class WorkspaceView {
 	}
 
 	public static function role_label( string $f ): string {
-		$map = [ 'operator' => __( 'GoHeal-Operator', 'liebherr-interface-world' ), 'dealer_admin' => __( 'Händler-Admin', 'liebherr-interface-world' ), 'dealer_sales' => __( 'Vertrieb', 'liebherr-interface-world' ), 'dealer_viewer' => __( 'Nur lesen', 'liebherr-interface-world' ) ];
+		$map = [ 'operator' => __( 'GoHeal-Operator', 'liebherr-interface-world' ), 'dealer_admin' => __( 'Händler-Admin', 'liebherr-interface-world' ), 'dealer_sales' => __( 'Vertrieb', 'liebherr-interface-world' ), 'dealer_csp' => __( 'Verkäufer – nur eigene Kunden (CSP)', 'liebherr-interface-world' ), 'dealer_viewer' => __( 'Nur lesen', 'liebherr-interface-world' ) ];
 		return $map[ $f ] ?? $f;
 	}
 
