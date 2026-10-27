@@ -1,6 +1,31 @@
 # Liebherr Interface Solutions — Changelog
 
-## [0.1.0-alpha.163] – 2026-10-27 – Sales Interface: Reiter „Umsetzungsstand“, Roadmap/Klärungspunkte/Anleitung auf aktuellem Stand
+## [0.1.0-alpha.166] – 2026-10-27 – Sales Interface: Inhaltsversion – gespeicherte Fassung zieht Stand-Listen nach
+
+### Behoben
+- Die Sales-Seite zeigte den alten Stufenplan (1a „In Arbeit“, 1b–1d „Geplant“), weil eine im Sales Board gespeicherte Fassung die neuen
+  Standardtexte überdeckte. `SalesContent` führt jetzt `content_version`: liegt die gespeicherte Fassung darunter, werden Umsetzungsstand,
+  Stufenplan, Klärungspunkte, Anleitung und Endpunkt-Status einmalig aus den Defaults nachgezogen; Einleitung, Zugang, Umgebungen, Gruppen,
+  Datenmodell und Codelisten bleiben wie gepflegt.
+
+ – 2026-10-27 – Livision-Übertragung: Rückmeldung Liebherr zu Kunde/Ansprechpartner eingearbeitet
+
+### Geändert
+- **Vorprüfung Kunde:** Betreuer (Advisor), Klassifizierung (ClassABC/KL) und Branche (Industry1/3B) sind jetzt Pflicht vor der Übertragung;
+  leeres Bundesland (FederalState/1B) wird als Hinweis gemeldet. Ungültige Codes blockieren (vorher nur Warnung).
+- **Vorprüfung Ansprechpartner:** Funktion 1/2, Abteilung, Anrede müssen Codelisten-Codes sein (FN/PV/AH – „Test Contact“ war Freitext);
+  fehlende Telefon/Mobil-Nummer wird als Hinweis gemeldet.
+- **Testdaten (Sunnyside):** Kunde mit Bundesland DE-BY, Klasse A, Branche 20 (Tiefbau-Allgemein), Betreuer, Telefon; Ansprechpartner mit
+  Funktion GF, Abteilung AD, Telefon und Mobil. Schreibskript `contact-update` setzt den FN-Code ALEI.
+
+ – 2026-10-27 – Sales Interface: Antworten von Liebherr eingearbeitet (GET /opportunity Filterpflicht, PUT /opportunity intern, orderDateFrom)
+
+### Geändert
+- Klärungspunkte und Endpunkt-Texte: GET /opportunity verlangt mindestens einen Filter (500 statt 400 wird von Liebherr geprüft);
+  PUT /opportunity ist ein interner Endpunkt und entfällt für Händler-Szenarien; GET /sales-orders nutzt `orderDateFrom` (Doku korrigiert).
+  Umsetzungsstand entsprechend aktualisiert.
+
+ – 2026-10-27 – Sales Interface: Reiter „Umsetzungsstand“, Roadmap/Klärungspunkte/Anleitung auf aktuellem Stand
 
 ### Neu
 - Reiter **Umsetzungsstand** direkt nach der Schnittstellenbeschreibung (Liste `progress`, im Sales Board pflegbar): 11 Bausteine mit

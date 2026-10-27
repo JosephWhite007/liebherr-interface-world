@@ -23,6 +23,14 @@ final class SalesContent {
 
 	public const OPTION = 'liw_sales_interface';
 
+	/**
+	 * [alpha.166] Inhaltsversion der Standardtexte. Liegt eine gespeicherte Fassung (Sales Board) unter dieser Version, werden die
+	 * Stand-Listen (Umsetzungsstand, Stufenplan, Klärungspunkte, Anleitung, Endpunkt-Status) einmalig aus den Defaults nachgezogen;
+	 * frei gepflegte Texte (Einleitung, Zugang, Umgebungen, Gruppen, Datenmodell, Codelisten) bleiben erhalten.
+	 */
+	public const CONTENT_VERSION = 2;
+	public const REFRESH_LISTS   = [ 'progress', 'roadmap', 'clarifications', 'guide', 'endpoints' ];
+
 	public const STATUSES = [ 'draft', 'in_simulation', 'verified', 'approved', 'planned', 'in_progress', 'done' ];
 	public const METHODS  = [ 'GET', 'POST', 'PUT', 'DELETE', 'PATCH' ];
 
@@ -44,6 +52,14 @@ final class SalesContent {
 		$stored = get_option( self::OPTION, [] );
 		if ( ! is_array( $stored ) || [] === $stored ) {
 			return self::defaults();
+		}
+		if ( (int) ( $stored['content_version'] ?? 0 ) < self::CONTENT_VERSION ) { // Stand-Listen aus den Defaults nachziehen (einmalig)
+			$def = self::defaults();
+			foreach ( self::REFRESH_LISTS as $list ) {
+				$stored[ $list ] = $def[ $list ];
+			}
+			$stored['content_version'] = self::CONTENT_VERSION;
+			update_option( self::OPTION, self::sanitize( $stored ) );
 		}
 		return self::sanitize( $stored );
 	}
@@ -72,6 +88,7 @@ final class SalesContent {
 			'lead'  => self::text( $intro['lead'] ?? '', $def['intro']['lead'] ),
 		];
 		$out['auth'] = self::text( $raw['auth'] ?? '', $def['auth'] );
+		$out['content_version'] = max( (int) ( $raw['content_version'] ?? 0 ), self::CONTENT_VERSION );
 
 		foreach ( self::LISTS as $list => $columns ) {
 			$rows = [];
@@ -138,6 +155,7 @@ final class SalesContent {
 	 */
 	public static function defaults(): array {
 		return [
+			'content_version' => self::CONTENT_VERSION,
 			'intro' => [
 				'title' => __( 'Sales Interface', 'liebherr-interface-world' ),
 				'lead'  => __( 'Schnittstellenbeschreibung der Liebherr Dealer Interface API (Sales API v3) für Händler-Anbindungen: Kunden, Ansprechpartner, Bedarfsfälle, Angebote und Aufträge.', 'liebherr-interface-world' ),
@@ -160,8 +178,8 @@ final class SalesContent {
 				[ 'group' => 'customer', 'method' => 'PUT', 'path' => '/customer', 'summary' => __( 'Kunde aktualisieren', 'liebherr-interface-world' ), 'params' => __( 'Body CustomerUpdate. Pflicht wie Anlage plus LivisionCustomerId.', 'liebherr-interface-world' ), 'status' => 'verified' ],
 				[ 'group' => 'customer', 'method' => 'POST', 'path' => '/contact', 'summary' => __( 'Ansprechpartner anlegen', 'liebherr-interface-world' ), 'params' => __( 'Body Contact. Pflicht: LastName, LivisionCustomerId.', 'liebherr-interface-world' ), 'status' => 'verified' ],
 				[ 'group' => 'customer', 'method' => 'PUT', 'path' => '/contact', 'summary' => __( 'Ansprechpartner aktualisieren', 'liebherr-interface-world' ), 'params' => __( 'Body ContactUpdate. Pflicht: LastName, LivisionCustomerId, LivisionContactId.', 'liebherr-interface-world' ), 'status' => 'draft' ],
-				[ 'group' => 'opportunity', 'method' => 'GET', 'path' => '/opportunity', 'summary' => __( 'Bedarfsfall suchen', 'liebherr-interface-world' ), 'params' => __( 'Optionale Filter: salesTerritory, customerName, customerZip, city, countryCode, opportunityType, realisation, advisor, contact, decisionDate.', 'liebherr-interface-world' ), 'status' => 'draft' ],
-				[ 'group' => 'opportunity', 'method' => 'PUT', 'path' => '/opportunity', 'summary' => __( 'Bedarfsfall aktualisieren', 'liebherr-interface-world' ), 'params' => __( 'Body in der Spezifikation noch nicht definiert (siehe Klärungspunkte).', 'liebherr-interface-world' ), 'status' => 'draft' ],
+				[ 'group' => 'opportunity', 'method' => 'GET', 'path' => '/opportunity', 'summary' => __( 'Bedarfsfall suchen', 'liebherr-interface-world' ), 'params' => __( 'Mindestens ein Filter ist Pflicht (Antwort Liebherr 27.10.2026; ohne Filter derzeit 500 statt 400). Filter: salesTerritory, customerName, customerZip, city, countryCode, opportunityType, realisation, advisor, contact, decisionDate.', 'liebherr-interface-world' ), 'status' => 'draft' ],
+				[ 'group' => 'opportunity', 'method' => 'PUT', 'path' => '/opportunity', 'summary' => __( 'Bedarfsfall aktualisieren', 'liebherr-interface-world' ), 'params' => __( 'Interner Liebherr-Endpunkt (Antwort Liebherr 27.10.2026) – für Händler-Szenarien nicht vorgesehen, wird nicht umgesetzt.', 'liebherr-interface-world' ), 'status' => 'draft' ],
 				[ 'group' => 'opportunity', 'method' => 'DELETE', 'path' => '/opportunity', 'summary' => __( 'Bedarfsfall als verloren melden', 'liebherr-interface-world' ), 'params' => __( 'Body UpdateOpportunityBase/UpdateLostOpportunity: Opportunity_ID, CompetitorProduct_ID, Reason, ConstructionYear, Classification_CL, NewUsed_CL, SaleDate, Quantity.', 'liebherr-interface-world' ), 'status' => 'draft' ],
 				[ 'group' => 'opportunity', 'method' => 'GET', 'path' => '/opportunity-id', 'summary' => __( 'Bedarfsfall-ID aus Angebot ermitteln', 'liebherr-interface-world' ), 'params' => __( 'Pflicht: QuotationId, QuotationVersion.', 'liebherr-interface-world' ), 'status' => 'draft' ],
 				[ 'group' => 'opportunity', 'method' => 'GET', 'path' => '/opportunity/{opportunityId}', 'summary' => __( 'Bedarfsfall lesen', 'liebherr-interface-world' ), 'params' => __( 'Pfad: opportunityId (Ganzzahl).', 'liebherr-interface-world' ), 'status' => 'draft' ],
@@ -170,7 +188,7 @@ final class SalesContent {
 				[ 'group' => 'quotation', 'method' => 'GET', 'path' => '/livision-url-for-update', 'summary' => __( 'Deep-Link zum Ändern eines Angebots', 'liebherr-interface-world' ), 'params' => __( 'Pflicht: DocumentNo, DialogLanguage (ISO2), QuotationLanguage (ISO2). Optional: DocumentVersion.', 'liebherr-interface-world' ), 'status' => 'draft' ],
 				[ 'group' => 'quotation', 'method' => 'GET', 'path' => '/lias-opentrans-document', 'summary' => __( 'OpenTrans-Dokument abrufen', 'liebherr-interface-world' ), 'params' => __( 'Pflicht: TransactionRowGuid. Optional: GetWithRtf (Standard false).', 'liebherr-interface-world' ), 'status' => 'draft' ],
 				[ 'group' => 'quotation', 'method' => 'GET', 'path' => '/customer-quotation-list', 'summary' => __( 'Angebotsliste eines Kunden/Bedarfsfalls', 'liebherr-interface-world' ), 'params' => __( 'Pflicht: LivisionCustomerId, LivisionOpportunityId.', 'liebherr-interface-world' ), 'status' => 'draft' ],
-				[ 'group' => 'orders', 'method' => 'GET', 'path' => '/sales-orders', 'summary' => __( 'Verkaufsaufträge abfragen', 'liebherr-interface-world' ), 'params' => __( 'Alle optional: configurationNumber, salesOrderNumber, LanguageCode, oderDateFrom, orderDateTo, SalesOrgCodeSupplier. Kein UserEmail-Header nötig.', 'liebherr-interface-world' ), 'status' => 'draft' ],
+				[ 'group' => 'orders', 'method' => 'GET', 'path' => '/sales-orders', 'summary' => __( 'Verkaufsaufträge abfragen', 'liebherr-interface-world' ), 'params' => __( 'Alle optional: configurationNumber, salesOrderNumber, LanguageCode, orderDateFrom (Doku von Liebherr korrigiert, 27.10.2026), orderDateTo, SalesOrgCodeSupplier. Kein UserEmail-Header nötig.', 'liebherr-interface-world' ), 'status' => 'draft' ],
 				[ 'group' => 'master', 'method' => 'GET', 'path' => '/product-list', 'summary' => __( 'Produktliste', 'liebherr-interface-world' ), 'params' => __( 'Nur Header UserEmail.', 'liebherr-interface-world' ), 'status' => 'verified' ],
 				[ 'group' => 'master', 'method' => 'GET', 'path' => '/tab-text', 'summary' => __( 'Übersetzte Codelisten-Texte', 'liebherr-interface-world' ), 'params' => __( 'Pflicht: CodeList, Language (Zahl, siehe Codelisten).', 'liebherr-interface-world' ), 'status' => 'verified' ],
 			],
@@ -204,9 +222,10 @@ final class SalesContent {
 				[ 'code' => 'SC', 'name' => __( 'Aktivität Aktivität', 'liebherr-interface-world' ), 'entity' => __( 'Aktivität', 'liebherr-interface-world' ) ],
 			],
 			'clarifications' => [
-				[ 'title' => __( 'PUT /opportunity ohne Body', 'liebherr-interface-world' ), 'text' => __( 'Die Spezifikation definiert für das Aktualisieren eines Bedarfsfalls noch keinen Request-Body. Klärung mit Liebherr nötig, bevor der Endpunkt umgesetzt wird.', 'liebherr-interface-world' ) ],
-				[ 'title' => __( 'Parametername „oderDateFrom"', 'liebherr-interface-world' ), 'text' => __( 'GET /sales-orders führt „oderDateFrom" (vermutlich Tippfehler für orderDateFrom). Bis zur Bestätigung wird der Name genau so dokumentiert, wie er in der Spezifikation steht.', 'liebherr-interface-world' ) ],
+				[ 'title' => __( 'PUT /opportunity (geklärt 27.10.2026)', 'liebherr-interface-world' ), 'text' => __( 'Laut Liebherr ein interner Integrationsendpunkt, der in Händler-Szenarien nicht benötigt wird. Wird nicht umgesetzt; Bedarfsfälle werden gelesen (GET) und als verloren gemeldet (DELETE).', 'liebherr-interface-world' ) ],
+				[ 'title' => __( 'Parametername orderDateFrom (geklärt 27.10.2026)', 'liebherr-interface-world' ), 'text' => __( 'Liebherr bestätigt orderDateFrom und hat die Dokumentation korrigiert; „oderDateFrom“ war ein Tippfehler.', 'liebherr-interface-world' ) ],
 				[ 'title' => __( 'Sprachangaben', 'liebherr-interface-world' ), 'text' => __( 'Deep-Link-Endpunkte erwarten ISO2-Sprachcodes (z. B. DE), GET /tab-text erwartet eine Zahl (0 Deutsch, 1 Französisch, 2 Englisch, 3 Italienisch, 4 Spanisch, 5 Russisch, 6 Niederländisch, 7 Chinesisch laut Auswahlliste).', 'liebherr-interface-world' ) ],
+				[ 'title' => __( 'GET /opportunity ohne Filter (geklärt 27.10.2026)', 'liebherr-interface-world' ), 'text' => __( 'Mindestens ein Filterparameter ist Pflicht (z. B. customerName). Der Server antwortet ohne Filter derzeit mit 500; Liebherr prüft, warum nicht 400. Die Plattform sendet nie ohne Filter.', 'liebherr-interface-world' ) ],
 				[ 'title' => __( 'SalesAccountNumber', 'liebherr-interface-world' ), 'text' => __( 'Je Kunde eindeutig – Livision meldet „Customer already existing" bei Wiederverwendung. Die Plattform sendet die Händler-Kundennummer (ERP-Referenz, sonst Addressbook-Nummer). Bestätigung durch Liebherr angefragt.', 'liebherr-interface-world' ) ],
 				[ 'title' => __( 'UserEmail', 'liebherr-interface-world' ), 'text' => __( 'Muss ein Livision-Benutzer des Händlers sein; andere Adressen liefern 401/400. Je Händler im Dealer Board bzw. in der Umgebung hinterlegt.', 'liebherr-interface-world' ) ],
 				[ 'title' => __( 'Codes der Produktliste', 'liebherr-interface-world' ), 'text' => __( 'Maschinenart_CL, Hersteller_CL und Aktiv_CL der Produktliste sind in keiner Codeliste der Auswahlliste enthalten; die Plattform zeigt bekannte Kürzel aus einer Ersatztabelle. Codeliste bei Liebherr angefragt.', 'liebherr-interface-world' ) ],
@@ -220,9 +239,9 @@ final class SalesContent {
 				[ 'title' => __( 'Addressbook & Dealer Workspace', 'liebherr-interface-world' ), 'text' => __( 'Adress-Stammdaten je Händler (Tradler: 802 Adressen importiert), eigenes Login, Ansprechpartner, Artikel, Customer Solution Provider, Merkmale Branche/Anwendung/Potenzial, Übertragung an Livision aus der Maske.', 'liebherr-interface-world' ), 'status' => 'done' ],
 				[ 'title' => __( 'Action Board', 'liebherr-interface-world' ), 'text' => __( '12 Top-Kunden des Tages (Pure, Pure Plus mit Ideenbaum, Detail, Karten), Klassifizierung, Hitlisten, 85 Zielbranchen, Branchenviews mit Bewertung, Know-how-Workflows, Ideen → Agent Board, Magic-Cube-Anbindung (lokale KI, Dev-Stub).', 'liebherr-interface-world' ), 'status' => 'done' ],
 				[ 'title' => __( 'Produktliste als Artikelvorlage', 'liebherr-interface-world' ), 'text' => __( 'Spiegel von GET /product-list (14 701 Modelle) mit Übernahme je Händler ins Articlebook – Skript fertig, Import (--confirm) steht aus.', 'liebherr-interface-world' ), 'status' => 'in_progress' ],
-				[ 'title' => __( 'Bedarfsfall, Angebot, Aufträge', 'liebherr-interface-world' ), 'text' => __( 'GET /opportunity ohne Filter liefert 500; PUT /opportunity ohne Body in der Spezifikation. Umsetzung nach Klärung mit Liebherr. Stufe 1d, Teil 2.', 'liebherr-interface-world' ), 'status' => 'planned' ],
+				[ 'title' => __( 'Bedarfsfall, Angebot, Aufträge', 'liebherr-interface-world' ), 'text' => __( 'Liebherr hat geklärt (27.10.2026): GET /opportunity braucht mindestens einen Filter, PUT /opportunity ist intern und entfällt, GET /sales-orders nutzt orderDateFrom. Umsetzung Lesen/Verlustmeldung/Angebote/Aufträge = Stufe 1d, Teil 2.', 'liebherr-interface-world' ), 'status' => 'planned' ],
 				[ 'title' => __( 'Livision-Pull (Kunden aus Livision lesen)', 'liebherr-interface-world' ), 'text' => __( 'Abgleich Livision → Addressbook (Dubletten, KundeID). Geplant nach Teil 2.', 'liebherr-interface-world' ), 'status' => 'planned' ],
-				[ 'title' => __( 'Rückfragen an Liebherr und Tradler', 'liebherr-interface-world' ), 'text' => __( 'Liebherr: Bestätigung SalesAccountNumber, Löschung der Testkunden, fehlende Codeliste Maschinenart/Hersteller/Aktiv der Produktliste. Tradler: vier Codes ohne Zuordnung (Vorführung, Gastronomie, Potenzial). Texte liegen versandfertig vor.', 'liebherr-interface-world' ), 'status' => 'in_progress' ],
+				[ 'title' => __( 'Rückfragen an Liebherr und Tradler', 'liebherr-interface-world' ), 'text' => __( 'Liebherr hat die Endpunkt-Fragen beantwortet (27.10.2026); offen bleiben Bestätigung SalesAccountNumber, Löschung der Testkunden und die fehlende Codeliste Maschinenart/Hersteller/Aktiv der Produktliste. Tradler: vier Codes ohne Zuordnung (Vorführung, Gastronomie, Potenzial).', 'liebherr-interface-world' ), 'status' => 'in_progress' ],
 				[ 'title' => __( 'Produktion', 'liebherr-interface-world' ), 'text' => __( 'Produktionsschlüssel und Freigabe erst nach abgeschlossener Entwicklung und Tests; die Plattform adressiert Produktion bisher nicht.', 'liebherr-interface-world' ), 'status' => 'planned' ],
 			],
 			'roadmap' => [

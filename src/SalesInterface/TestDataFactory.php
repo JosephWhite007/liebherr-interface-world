@@ -47,6 +47,13 @@ final class TestDataFactory {
 			'City'               => 'Island City',
 			'SalesAccountNumber' => $sales_account_number,
 			'State'              => $country,
+			// Rückmeldung Liebherr 27.10.2026: Branche, Klassifizierung, Bundesland und Betreuer gehören zum Testkunden
+			'FederalState'       => 'DE' === $country ? 'DE-BY' : '',
+			'ClassABC'           => 'A',
+			'Industry1'          => '20',
+			'Advisor'            => 'Alice Sunnyside (Tradler Test)',
+			'Phone'              => '8641 ' . sprintf( '%05d', 70000 + $n ),
+			'InternationalDialingCodePhone' => '+49',
 			'Note'               => 'Testdatensatz ARALIYA Interface Solutions – darf gelöscht werden.',
 		];
 	}
@@ -62,8 +69,13 @@ final class TestDataFactory {
 			'Salutation'         => $female ? 'F' : 'H',
 			'FirstName'          => $first,
 			'LastName'           => self::CUSTOMER_PREFIX . ' ' . ( self::NUMBER_WORDS[ max( 1, $n ) - 1 ] ?? (string) $n ),
-			'Function1'          => 'Test Contact',
+			'Function1'          => 'GF', // FN-Code Geschäftsführer (kein Freitext – Rückmeldung Liebherr 27.10.2026)
+			'Department'         => 'AD',
 			'Email'              => strtolower( $first ) . '.' . max( 1, $n ) . '@sunnyside.example',
+			'InternationalDialingCodePhone'  => '+49',
+			'Phone'              => '8641 ' . sprintf( '%05d', 71000 + max( 1, $n ) ),
+			'InternationalDialingCodeMobile' => '+49',
+			'Mobile'             => '170 ' . sprintf( '%07d', 1000000 + max( 1, $n ) ),
 			'Note'               => 'Testdatensatz ARALIYA Interface Solutions – darf gelöscht werden.',
 			'LivisionCustomerId' => $livision_customer_id,
 		];

@@ -65,3 +65,19 @@ Vielen Dank und freundliche Grüße
 
 Joseph White
 GoHeal – Solution Provider für Tradler Baumaschinen GmbH
+
+
+---
+
+## Antwort Liebherr (27.10.2026, per E-Mail)
+- **GET /opportunity:** mindestens ein Filterparameter ist Pflicht; die Antwort 500 ohne Filter ist ein Fehler (sollte 400 sein), Liebherr prüft.
+- **PUT /opportunity:** vermutlich interner Integrationsendpunkt, für unsere Szenarien nicht vorgesehen (Rücksprache mit Andre).
+- **GET /sales-orders:** korrekter Parameter ist `orderDateFrom`; Dokumentation korrigiert.
+- Schreibtests Kunden/Kontakte wurden als erfolgreich bestätigt.
+
+**Weiterhin offen:** Bestätigung SalesAccountNumber-Semantik, Löschung der Testkunden One/Two, Codeliste für Maschinenart_CL/Hersteller_CL/Aktiv_CL der Produktliste (neu, 27.10.2026).
+
+## Rückmeldung Liebherr zu den Testdatensätzen (27.10.2026)
+- **Kunde:** Branche und Klassifizierung fehlten; Bundesland „wäre schön“; Betreuer muss befüllt sein.
+- **Ansprechpartner:** Mapping der Funktion prüfen (wir hatten Freitext „Test Contact“ gesendet – Funktion ist der FN-Code); Telefonnummern mitgeben, sofern vorhanden.
+- **Umsetzung (LIW alpha.165):** Vorprüfung blockiert jetzt ohne Betreuer/Klassifizierung/Branche und bei Nicht-Codes; Testdaten vollständig (DE-BY, A, 20, Betreuer, GF/AD, Telefon/Mobil). Nächster Schreibtest: Sunnyside Five mit vollständigem Datensatz.

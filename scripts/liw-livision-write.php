@@ -88,7 +88,7 @@ switch ( $step ) {
 		$path   = '/contact';
 		$body   = TestDataFactory::contact( (int) ( $rec['customer_id'] ?? 0 ), ! $male, (int) ( $rec['customer_n'] ?? $n ) );
 		$body['LivisionContactId'] = (int) ( $rec['contact_id'] ?? 0 );
-		$body['Function1']         = 'Test Contact – aktualisiert ' . gmdate( 'Y-m-d H:i' );
+		$body['Function1']         = 'ALEI'; // FN-Code Abteilungsleiter – Funktion ist ein Code, kein Freitext (Liebherr 27.10.2026)
 		break;
 	default:
 		echo "\nBitte --step=customer|contact|customer-update|contact-update angeben.\n";

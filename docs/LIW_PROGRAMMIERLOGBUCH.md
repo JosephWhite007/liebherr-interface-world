@@ -21,6 +21,15 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 2026-10-27 · alpha.166 · Sales Interface Inhaltsversion
+- `src/SalesInterface/SalesContent.php`: `CONTENT_VERSION`/`REFRESH_LISTS`, `get()` zieht Stand-Listen nach, `sanitize()`/`defaults()` führen `content_version`; Version 0.1.0-alpha.166.
+
+## 2026-10-27 · alpha.165 · Livision-Vorprüfung nach Rückmeldung Liebherr
+- `src/SalesInterface/LivisionSync.php`: `precheck()` – Pflicht Advisor/ClassABC/Industry1, Hinweis FederalState, Codes blockieren, Kontakt Code-Pflicht + Telefon-Hinweis; `TestDataFactory.php`: vollständige Testbodys; `scripts/liw-livision-write.php`: FN-Code; Version 0.1.0-alpha.165.
+
+## 2026-10-27 · alpha.164 · Sales Interface – Liebherr-Antworten
+- `src/SalesInterface/SalesContent.php`: Klärungspunkte GET/PUT /opportunity, orderDateFrom, Endpunkt-Parameter, Umsetzungsstand; Version 0.1.0-alpha.164.
+
 ## 2026-10-27 · alpha.163 · Sales Interface Umsetzungsstand
 - `src/SalesInterface/SalesContent.php`: Liste `progress` (LISTS + Defaults), Roadmap/Klärungspunkte/Anleitung/Endpunkt-Status aktualisiert; `SalesInterfaceView.php`: Tab `progress` + `progress()`, Sandbox-Hinweis; `Admin/Pages/SalesBoardPage.php`: Label `progress`; Version 0.1.0-alpha.163.
 

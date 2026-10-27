@@ -166,10 +166,14 @@ final class LivisionSync {
 			if ( null === $a ) {
 				return [ 'ok' => false, 'warnings' => [ __( 'Adresse nicht gefunden.', 'liebherr-interface-world' ) ] ];
 			}
-			foreach ( [ 'name1' => 'Name1', 'street' => 'Street', 'postal_code' => 'PostalCode', 'city' => 'City' ] as $f => $api ) {
+			// Pflichtfelder laut Spezifikation + Rückmeldung Liebherr 27.10.2026 (Betreuer muss befüllt sein; Branche und Klassifizierung fehlten)
+			foreach ( [ 'name1' => 'Name1', 'street' => 'Street', 'postal_code' => 'PostalCode', 'city' => 'City', 'advisor' => 'Advisor (Betreuer)', 'class_abc' => 'ClassABC (Klassifizierung KL)', 'industry1' => 'Industry1 (Branche 3B)' ] as $f => $api ) {
 				if ( '' === trim( (string) ( $a[ $f ] ?? '' ) ) ) {
 					$w[] = sprintf( /* translators: %s: Feld */ __( 'Pflichtfeld für Livision fehlt: %s', 'liebherr-interface-world' ), $api );
 				}
+			}
+			if ( '' === trim( (string) ( $a['state'] ?? '' ) ) ) {
+				$w[] = __( 'Hinweis: Bundesland (FederalState, Code 1B) ist leer – Liebherr wünscht die Angabe.', 'liebherr-interface-world' );
 			}
 			if ( mb_strlen( (string) ( $a['name2'] ?? '' ) ) > self::MAX_NAME2 ) {
 				$w[] = sprintf( /* translators: %d: Länge */ __( 'Name 2 wird von Livision auf %d Zeichen gekürzt.', 'liebherr-interface-world' ), self::MAX_NAME2 );
@@ -194,17 +198,18 @@ final class LivisionSync {
 			if ( 0 === self::livision_id( $org_id, 'address', (int) $c['address_id'] ) ) {
 				$w[] = __( 'Die zugehörige Adresse ist noch nicht an Livision übertragen (LivisionCustomerId fehlt).', 'liebherr-interface-world' );
 			}
-			if ( mb_strlen( (string) ( $c['function1'] ?? '' ) ) > self::MAX_FUNCTION1 ) {
-				$w[] = sprintf( /* translators: %d: Länge */ __( 'Funktion 1 wird von Livision auf %d Zeichen gekürzt.', 'liebherr-interface-world' ), self::MAX_FUNCTION1 );
-			}
+			// Rückmeldung Liebherr 27.10.2026: Funktion ist ein FN-Code (kein Freitext), Telefonnummern mitgeben
 			foreach ( [ 'salutation' => 'AH', 'function1' => 'FN', 'function2' => 'FN', 'department' => 'PV' ] as $f => $list ) {
 				$code = (string) ( $c[ $f ] ?? '' );
 				if ( '' !== $code && ! self::code_exists( $list, $code ) ) {
-					$w[] = sprintf( /* translators: 1: Feld, 2: Code, 3: Liste */ __( '%1$s: Code „%2$s“ nicht in Codeliste %3$s.', 'liebherr-interface-world' ), $f, $code, $list );
+					$w[] = sprintf( /* translators: 1: Feld, 2: Code, 3: Liste */ __( 'Pflichtfeld-Format: %1$s „%2$s“ ist kein Code der Codeliste %3$s (Livision erwartet den Code, z. B. GF = Geschäftsführer).', 'liebherr-interface-world' ), $f, $code, $list );
 				}
 			}
+			if ( '' === trim( (string) ( $c['phone'] ?? '' ) ) && '' === trim( (string) ( $c['mobile'] ?? '' ) ) ) {
+				$w[] = __( 'Hinweis: weder Durchwahl noch Mobil erfasst – Liebherr wünscht Telefonnummern, sofern vorhanden.', 'liebherr-interface-world' );
+			}
 		}
-		$blocking = array_filter( $w, static fn( string $m ): bool => str_contains( $m, 'Pflichtfeld' ) || str_contains( $m, 'LivisionCustomerId fehlt' ) || str_contains( $m, 'SalesAccountNumber' ) );
+		$blocking = array_filter( $w, static fn( string $m ): bool => str_contains( $m, 'Pflichtfeld' ) || str_contains( $m, 'LivisionCustomerId fehlt' ) || str_contains( $m, 'SalesAccountNumber' ) || str_contains( $m, 'nicht in Codeliste' ) );
 		return [ 'ok' => [] === $blocking, 'warnings' => $w ];
 	}
 
