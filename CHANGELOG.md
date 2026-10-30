@@ -1,5 +1,11 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.168] – 2026-10-30 – Dealer Workspace: Merkmale mit Liebherr-Block (Core alpha.808)
+
+### Neu
+- Styles für den Block „Liebherr-Klassifizierung (Vorgabe aus Livision)“ und die Überschrift „Unsere Ergänzungen“ in der Adressmaske des
+  Workspace (`liebherr-frontend.css`); Markup kommt aus dem Core (`AddressbookPage::render_tag_fields`).
+
 ## [0.1.0-alpha.167] – 2026-10-30 – Dealer Workspace: Brand View (Kundenstand nach Vertriebsmarken)
 
 ### Neu

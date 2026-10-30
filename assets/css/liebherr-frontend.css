@@ -1395,3 +1395,11 @@ html.liw-intro-lock .liw-switcher__inner > .liw-header__lang {
 .liw-dw__ab .ary-ax__cls { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 6px; font-size: 0.7rem; font-weight: 700; background: #ece7db; }
 .liw-dw__ab .ary-ax__cls--a { background: #d5e8d4; color: #1f4d33; } .liw-dw__ab .ary-ax__cls--g { background: #fff2cc; color: #7a5a00; } .liw-dw__ab .ary-ax__cls--h { background: #dae8fc; color: #1d3f6e; } .liw-dw__ab .ary-ax__cls--b { background: #e1d5e7; color: #4b2a63; }
 @media (max-width: 900px) { .liw-dw__ab .ary-abr__row { grid-template-columns: 1.5fr 1fr 1.4fr; } .liw-dw__ab .ary-abr__row > :nth-child(1), .liw-dw__ab .ary-abr__row > :nth-child(4), .liw-dw__ab .ary-abr__row > :nth-child(5) { display: none; } }
+
+/* ── Merkmale: Liebherr-Klassifizierung als Vorgabe (alpha.168; Core alpha.808) ── */
+.liw-dw__tags .ary-ab__tags--liebherr { border: 1px solid #b8963f; border-radius: 10px; background: #fffdf5; padding: 0.5rem 0.8rem; }
+.liw-dw__tags .ary-ab__lhrow { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.3rem 0; }
+.liw-dw__tags .ary-ab__lhchip { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.25rem 0.7rem; border-radius: 999px; border: 1px solid var(--brand-border, #d9d9d9); background: #fff; font-size: 0.85rem; }
+.liw-dw__tags .ary-ab__lhchip b { color: #1f4d33; } .liw-dw__tags .ary-ab__lhchip em { opacity: .5; font-style: normal; }
+.liw-dw__tags .ary-ab__lhlabel { font-size: 0.65rem; text-transform: uppercase; letter-spacing: .04em; opacity: .7; }
+.liw-dw__tags .ary-ab__tagsection { margin: 0.8rem 0 0.2rem; font-size: 1.05rem; color: #1f4d33; }
