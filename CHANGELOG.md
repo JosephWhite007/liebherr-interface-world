@@ -1,5 +1,13 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.167] – 2026-10-30 – Dealer Workspace: Brand View (Kundenstand nach Vertriebsmarken)
+
+### Neu
+- Action Board → **Brands** (hinter „Heute“): rendert die Core-Methode `AddressbookActionPage::render_brands` (Core alpha.804) –
+  Klickfelder je freigegebener Marke (ODER), „ohne Marke“, Kennzahlen, gefilterte Kundenliste, aufklappbare Zuordnung je Kunde
+  („Marken speichern“ über die Shared Action `set_brands`). Freigabe und Anlage der Marken bleiben im Core-Backend; der Händler
+  schaltet genau die freigegebenen Marken. Styles `.ary-abr__*` in `liebherr-frontend.css`.
+
 ## [0.1.0-alpha.166] – 2026-10-27 – Sales Interface: Inhaltsversion – gespeicherte Fassung zieht Stand-Listen nach
 
 ### Behoben

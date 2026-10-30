@@ -1361,3 +1361,37 @@ html.liw-intro-lock .liw-switcher__inner > .liw-header__lang {
 .liw-dw__ab .ary-ab__tag--idea-draft { background: #fff2cc; } .liw-dw__ab .ary-ab__tag--idea-handed_over { background: #d5e8d4; } .liw-dw__ab .ary-ab__tag--idea-done { background: #e0e0e0; }
 .liw-dw__ab .ary-ab__aggbox { margin: 0.5rem 0; padding: 0.4rem 0.7rem; background: #f6f6f6; border-left: 3px solid #b8963f; font-size: 0.85rem; }
 .liw-dw__ab .ary-ab__form select[multiple] { width: 100%; font: inherit; border: 1px solid var(--brand-border, #d9d9d9); }
+
+/* ── Brand View im Workspace (alpha.167; Core alpha.804) ── */
+.liw-dw__ab .ary-abr__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem 1.5rem; padding: 0.9rem 1.1rem; background: var(--brand-surface, #fff); border: 1px solid var(--brand-border, #d9d9d9); border-radius: 12px 12px 0 0; }
+.liw-dw__ab .ary-abr__title h2 { margin: 0; font-size: 1.3rem; color: #1f4d33; } .liw-dw__ab .ary-abr__title p { margin: 0.1rem 0 0; font-size: 0.8rem; opacity: .75; }
+.liw-dw__ab .ary-abt__kpis { display: flex; flex-wrap: wrap; gap: 0.6rem; } .liw-dw__ab .ary-abt__kpi { display: flex; flex-direction: column; padding: 0.4rem 0.9rem; border: 1px solid var(--brand-border, #d9d9d9); border-radius: 10px; min-width: 5.5rem; }
+.liw-dw__ab .ary-abt__kpi b { font-size: 1.4rem; color: #1f4d33; line-height: 1; } .liw-dw__ab .ary-abt__kpi span { font-size: 0.7rem; opacity: .75; white-space: nowrap; }
+.liw-dw__ab .ary-abt__kpi--warn { border-color: #f0c48a; background: #fff8ee; } .liw-dw__ab .ary-abt__kpi--warn b { color: #8a4b00; }
+.liw-dw__ab .ary-abr__switches { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.7rem 1.1rem; border: 1px solid var(--brand-border, #d9d9d9); border-top: 0; background: var(--brand-surface, #fff); }
+.liw-dw__ab .ary-abr__group { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; } .liw-dw__ab .ary-abr__group--tools { padding-top: 0.4rem; border-top: 1px dashed var(--brand-border, #d9d9d9); }
+.liw-dw__ab .ary-abr__glabel { font-size: 0.65rem; text-transform: uppercase; letter-spacing: .06em; opacity: .7; min-width: 6rem; }
+.liw-dw__ab .ary-abr__switch { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.7rem 0.25rem 0.3rem; border-radius: 999px; border: 1px solid var(--brand-border, #d9d9d9); background: #fff; color: inherit; font-size: 0.85rem; font-weight: 700; text-decoration: none; }
+.liw-dw__ab .ary-abr__switch i { display: inline-block; width: 1.9rem; height: 1.05rem; border-radius: 999px; background: #d9d4c7; position: relative; }
+.liw-dw__ab .ary-abr__switch i::after { content: ""; position: absolute; top: 2px; left: 2px; width: 0.8rem; height: 0.8rem; border-radius: 999px; background: #fff; }
+.liw-dw__ab .ary-abr__switch b { font-size: 0.7rem; opacity: .8; padding: 0 0.4rem; border-radius: 999px; background: rgba(0, 0, 0, 0.06); }
+.liw-dw__ab .ary-abr__switch.is-on { background: #1f4d33; color: #d9b96a; border-color: #b8963f; } .liw-dw__ab .ary-abr__switch.is-on i { background: #b8963f; } .liw-dw__ab .ary-abr__switch.is-on i::after { left: calc(100% - 0.8rem - 2px); } .liw-dw__ab .ary-abr__switch.is-on b { background: rgba(255, 255, 255, 0.15); }
+.liw-dw__ab .ary-abr__switch--none.is-on { background: #fff8ee; color: #8a4b00; border-color: #f0c48a; } .liw-dw__ab .ary-abr__switch--none.is-on i { background: #e0a050; }
+.liw-dw__ab .ary-abr__reset { margin-left: auto; }
+.liw-dw__ab .ary-abr__list { border: 1px solid var(--brand-border, #d9d9d9); border-top: 0; border-radius: 0 0 12px 12px; background: #fff; overflow: hidden; }
+.liw-dw__ab .ary-abr__row { display: grid; grid-template-columns: 5.5rem 1.5fr 1fr 3.5rem 1fr 1.6fr; gap: 0.7rem; align-items: center; padding: 0.55rem 1rem; border-top: 1px solid #eee; font-size: 0.85rem; list-style: none; cursor: pointer; }
+.liw-dw__ab .ary-abr__row::-webkit-details-marker { display: none; }
+.liw-dw__ab .ary-abr__row--head { background: #f6f2ea; border-top: 0; font-size: 0.68rem; text-transform: uppercase; letter-spacing: .04em; opacity: .75; cursor: default; }
+.liw-dw__ab .ary-abr__row > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.liw-dw__ab .ary-abr__firm { font-weight: 700; color: #1f4d33; white-space: normal !important; }
+.liw-dw__ab .ary-abr__badges { display: flex; flex-wrap: wrap; gap: 0.25rem; white-space: normal !important; } .liw-dw__ab .ary-abr__badges em { opacity: .5; font-style: normal; }
+.liw-dw__ab .ary-abr__badge { display: inline-block; padding: 0.05rem 0.5rem; border-radius: 6px; background: #ece7db; font-size: 0.7rem; font-weight: 700; } .liw-dw__ab .ary-abr__badge.is-on { background: #1f4d33; color: #d9b96a; }
+.liw-dw__ab .ary-abr__edit { padding: 0.6rem 1rem 0.9rem; background: #fbf9f4; border-top: 1px dashed #e2dccf; }
+.liw-dw__ab .ary-abr__checks { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.liw-dw__ab .ary-abr__check { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.7rem 0.25rem 0.5rem; border-radius: 999px; border: 1px solid var(--brand-border, #d9d9d9); background: #fff; font-size: 0.85rem; cursor: pointer; }
+.liw-dw__ab .ary-abr__check.is-on { border-color: #b8963f; background: #fffdf5; }
+.liw-dw__ab .ary-abr__actions { margin: 0.6rem 0 0; display: flex; gap: 0.5rem; align-items: center; }
+.liw-dw__ab .ary-abr__foot, .liw-dw__ab .ary-abr__empty { padding: 0.7rem 1rem; margin: 0; font-size: 0.8rem; opacity: .75; }
+.liw-dw__ab .ary-ax__cls { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 6px; font-size: 0.7rem; font-weight: 700; background: #ece7db; }
+.liw-dw__ab .ary-ax__cls--a { background: #d5e8d4; color: #1f4d33; } .liw-dw__ab .ary-ax__cls--g { background: #fff2cc; color: #7a5a00; } .liw-dw__ab .ary-ax__cls--h { background: #dae8fc; color: #1d3f6e; } .liw-dw__ab .ary-ax__cls--b { background: #e1d5e7; color: #4b2a63; }
+@media (max-width: 900px) { .liw-dw__ab .ary-abr__row { grid-template-columns: 1.5fr 1fr 1.4fr; } .liw-dw__ab .ary-abr__row > :nth-child(1), .liw-dw__ab .ary-abr__row > :nth-child(4), .liw-dw__ab .ary-abr__row > :nth-child(5) { display: none; } }
