@@ -1403,3 +1403,18 @@ html.liw-intro-lock .liw-switcher__inner > .liw-header__lang {
 .liw-dw__tags .ary-ab__lhchip b { color: #1f4d33; } .liw-dw__tags .ary-ab__lhchip em { opacity: .5; font-style: normal; }
 .liw-dw__tags .ary-ab__lhlabel { font-size: 0.65rem; text-transform: uppercase; letter-spacing: .04em; opacity: .7; }
 .liw-dw__tags .ary-ab__tagsection { margin: 0.8rem 0 0.2rem; font-size: 1.05rem; color: #1f4d33; }
+
+/* ── Branchenviews: Erklärungsboard (alpha.169; Core alpha.810) ── */
+.liw-dw__ab .ary-abv { margin: 0.8rem 0; padding: 0.9rem 1.1rem; background: var(--brand-surface, #fff); border: 1px solid var(--brand-border, #d9d9d9); border-radius: 12px; }
+.liw-dw__ab .ary-abv__head h2 { margin: 0; font-size: 1.3rem; color: #1f4d33; } .liw-dw__ab .ary-abv__head p { margin: 0.2rem 0 0; font-size: 0.85rem; opacity: .8; }
+.liw-dw__ab .ary-abv__chain { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.6rem; margin: 0.8rem 0 0; padding: 0; }
+.liw-dw__ab .ary-abv__step { position: relative; display: flex; flex-direction: column; gap: 0.1rem; padding: 0.6rem 0.7rem 0.6rem 2.7rem; background: #fff; border: 1px solid var(--brand-border, #d9d9d9); border-radius: 10px; font-size: 0.75rem; opacity: .9; }
+.liw-dw__ab .ary-abv__step b { font-size: 1.05rem; color: #1f4d33; }
+.liw-dw__ab .ary-abv__num { position: absolute; left: 0.6rem; top: 0.6rem; width: 1.6rem; height: 1.6rem; border-radius: 999px; background: #1f4d33; color: #d9b96a; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; }
+.liw-dw__ab .ary-abv__label { margin: 0.8rem 0 0.3rem; font-size: 0.65rem; text-transform: uppercase; letter-spacing: .06em; opacity: .7; }
+.liw-dw__ab .ary-abv__examples { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 0.6rem; }
+.liw-dw__ab .ary-abv__card { padding: 0.6rem 0.9rem 0.7rem; background: #fff; border: 1px solid var(--brand-border, #d9d9d9); border-radius: 10px; box-shadow: inset 0 3px 0 #b8963f; font-size: 0.85rem; }
+.liw-dw__ab .ary-abv__card p { margin: 0.15rem 0; }
+.liw-dw__ab .ary-abv__tag { display: inline-block; padding: 0.1rem 0.6rem; border-radius: 6px; background: #e3f1e8; color: #1f4d33; font-size: 0.7rem; font-weight: 700; }
+.liw-dw__ab .ary-abv__job { font-weight: 700; } .liw-dw__ab .ary-abv__machine { font-weight: 700; color: #1f4d33; } .liw-dw__ab .ary-abv__cond, .liw-dw__ab .ary-abv__howto { font-size: 0.75rem; opacity: .75; }
+@media (max-width: 900px) { .liw-dw__ab .ary-abv__chain { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

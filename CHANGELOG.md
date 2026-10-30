@@ -1,5 +1,10 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.169] – 2026-10-31 – Dealer Workspace: Erklärungsboard Branchenviews (Core alpha.810)
+
+### Neu
+- Styles `.ary-abv__*` für das Erklärungsboard oben im Sub-Reiter Branchenviews (Markup aus dem Core).
+
 ## [0.1.0-alpha.168] – 2026-10-30 – Dealer Workspace: Merkmale mit Liebherr-Block (Core alpha.808)
 
 ### Neu
