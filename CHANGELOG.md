@@ -1,5 +1,13 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.170] – 2026-10-31 – Liebherr-Produktvorlagen als Katalogquelle für das Articlebook Construction (Core alpha.815)
+
+### Neu
+- `CoreBridge\ConstructionBridge` + `LiebherrCatalogSource`: die 14.701 Produktvorlagen (`liw_product_template`) werden über den Core-Vertrag
+  `CatalogSourceInterface` (Filter `araliya_construction_catalog_sources`) als Quelle „Liebherr Produktvorlagen“ angeboten – Filter Hersteller
+  und Maschinenart mit Klartext, Suche nach Bezeichnung/Produktcode. Der Core übernimmt Treffer in die Händlerschicht (Artikelbuch V2); das
+  Plugin liefert nur Daten (Konzept ARY-KZ-ABC-0.2 Kap. 12, JW 31.10.2026). Ohne Core ≥ alpha.815 bleibt die Quelle still (kein Fehler).
+
 ## [0.1.0-alpha.169] – 2026-10-31 – Dealer Workspace: Erklärungsboard Branchenviews (Core alpha.810)
 
 ### Neu

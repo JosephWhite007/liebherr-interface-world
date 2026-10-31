@@ -49,6 +49,7 @@ final class Bootstrap {
 		add_action( 'init', [ TranslationBridge::class, 'register' ], 21 ); // nach Translation-Modul (Core-Bootstrap-Reihenfolge).
 
 		CoreBridge\InstanceBridge::register();
+		CoreBridge\ConstructionBridge::register(); // Liebherr-Produktvorlagen als Katalogquelle des Core-Articlebook-Construction (Filter araliya_construction_catalog_sources), alpha.170.
 		CoreBridge\AddressbookBridge::register(); // Codelisten fuer das Core-Addressbook (Filter araliya_addressbook_value_list), alpha.151. // Manifest-Deklaration LIW_LIVISION_* + may_send-Naht (ADR-134, Stufe 1c).
 		SeoBridge::register();
 		LanguageBridge::register();
