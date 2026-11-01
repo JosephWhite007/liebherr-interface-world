@@ -1,5 +1,11 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.174] – 2026-11-01 – Sales-Seite: Statuspunkt „Produktliste als Artikelvorlage“ auf erledigt
+
+### Geändert
+- Fortschritt Punkt 7: Import erfolgt (Dev 26.10.2026, 14 701 Vorlagen), Übernahme je Händler aktiv; offen bleiben nur die Codeliste
+  Maschinenart/Hersteller/Aktiv (Liebherr) und der einmalige Import je Instanz. Status `done` (JW 01.11.2026).
+
 ## [0.1.0-alpha.173] – 2026-11-01 – Teilliste Landkreise je Bundesland für die Core-Menüvorschläge
 
 ### Neu
