@@ -1,5 +1,12 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.180] – 2026-11-01 – XLSX-Leser aus dem Core (Core alpha.852, IMP-038)
+
+### Geändert
+- `XlsxReader` ist nur noch Brücke zu `Araliya\Platform\Core\Modules\Addressbook\SpreadsheetReader` (`sheet_names()`, `cells()`); eigene
+  ZipArchive/XMLReader-Implementierung entfernt. Schnittstelle (`sheet_names()`, `rows( $blatt )`) und `CodeListService`/Import-Skript unverändert;
+  ohne Core-Plugin sprechende Ausnahme. Unit-Tests laden den Core-Leser aus dem Nachbar-Repo. Dev: Trockenlauf 49.104 Zeilen, 20 Listen, 8 Sprachen.
+
 ## [0.1.0-alpha.179] – 2026-11-01 – Freigabe-Vorlage Liebherr für das Core-API-Management (Core alpha.849, IMP-045)
 
 ### Neu

@@ -21,6 +21,9 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 2026-11-01 · alpha.180 · XLSX-Leser aus dem Core (IMP-038)
+- `src/SalesInterface/XlsxReader.php`: nur noch Brücke zu `Araliya\Platform\Core\Modules\Addressbook\SpreadsheetReader` (Core alpha.852: `sheet_names()`, `cells()`); eigene ZipArchive/XMLReader-Logik entfernt, Schnittstelle unverändert; `tests/run-tests.php` lädt den Core-Leser aus dem Nachbar-Repo; Version 0.1.0-alpha.180.
+
 ## 2026-10-27 · alpha.166 · Sales Interface Inhaltsversion
 - `src/SalesInterface/SalesContent.php`: `CONTENT_VERSION`/`REFRESH_LISTS`, `get()` zieht Stand-Listen nach, `sanitize()`/`defaults()` führen `content_version`; Version 0.1.0-alpha.166.
 

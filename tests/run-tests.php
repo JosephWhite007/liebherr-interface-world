@@ -824,6 +824,10 @@ $__db = (string) file_get_contents( $root . '/src/Admin/Pages/DealerBoardPage.ph
 liw_assert( 'Dealer Board: API-Key-Feld ist password + leer (write-only), Nonce + Capability', str_contains( $__db, "'api_key'" ) && str_contains( $__db, "'password'" ) && str_contains( $__db, 'check_admin_referer' ) && str_contains( $__db, 'RoleBridge::CAP_MANAGE_INTERFACES' ), $checks, $failures );
 liw_assert( 'InstanceBridge: Adapter-Schlüssel + beide Env-Keys deklariert (Manifest-Pflicht ADR-134)', 'liebherr-livision' === \Liebherr\InterfaceWorld\CoreBridge\InstanceBridge::ADAPTER && str_contains( (string) file_get_contents( $root . '/src/CoreBridge/InstanceBridge.php' ), "::FILTER, [ self::class, 'declare_keys' ]" ), $checks, $failures );
 // ── alpha.149: Codelisten – XLSX-Leser (Fixture wird zur Laufzeit erzeugt) ──
+$__core_reader = dirname( $root ) . '/araliya-platform-core/src/Modules/Addressbook/SpreadsheetReader.php'; // alpha.180 (IMP-038): Leser kommt aus dem Core
+if ( is_readable( $__core_reader ) ) {
+	require_once $__core_reader;
+}
 require_once $root . '/src/SalesInterface/XlsxReader.php';
 $__xlsx = sys_get_temp_dir() . '/liw-test-' . getmypid() . '.xlsx';
 $__z = new ZipArchive();
@@ -842,6 +846,7 @@ liw_assert( 'XlsxReader: alle Zeilen (keine übersprungen), leere Zeile ignorier
 liw_assert( 'XlsxReader: Shared Strings, Rich-Text-Runs, Inline-Strings und Zahlen', 'Language' === $__rows[0]['A'] && 'Sehr geehrte Frau' === $__rows[1]['C'] && 'Madame' === $__rows[2]['C'] && '1' === $__rows[2]['A'] && 'F' === $__rows[1]['D'], $checks, $failures );
 $__l2 = iterator_to_array( $__xr->rows( 'Langs' ), false );
 liw_assert( 'XlsxReader: zweites Blatt unabhängig lesbar', 2 === count( $__l2 ) && 'German' === $__l2[1]['B'], $checks, $failures );
+liw_assert( 'XlsxReader (alpha.180, IMP-038): nur Brücke zum Core-SpreadsheetReader – kein eigenes ZipArchive/XMLReader mehr', ! str_contains( (string) file_get_contents( $root . '/src/SalesInterface/XlsxReader.php' ), 'new \\XMLReader' ) && ! str_contains( (string) file_get_contents( $root . '/src/SalesInterface/XlsxReader.php' ), 'new \\ZipArchive' ) && str_contains( (string) file_get_contents( $root . '/src/SalesInterface/XlsxReader.php' ), 'class_exists( self::CORE_READER )' ), $checks, $failures );
 unset( $__xr );
 @unlink( $__xlsx );
 $__cls = (string) file_get_contents( $root . '/src/SalesInterface/CodeListService.php' );
