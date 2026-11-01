@@ -30,6 +30,7 @@ final class AddressbookBridge {
 
 	public static function register(): void {
 		add_filter( self::FILTER_VALUE_LIST, [ self::class, 'value_list' ], 10, 3 );
+		add_filter( 'araliya_ab_release_template', [ self::class, 'release_template' ], 10, 2 ); // [alpha.179] Freigabe-Vorlage Liebherr (Core alpha.849, IMP-045)
 		add_action( self::ACTION_SYNC, [ self::class, 'render_sync_actions' ], 10, 5 );
 		add_filter( self::FILTER_PUSH, [ self::class, 'push' ], 10, 6 );
 	}
@@ -81,6 +82,26 @@ final class AddressbookBridge {
 	 * @param int                  $language  0 = Deutsch (Liebherr-Zählung)
 	 * @return array<string,string>
 	 */
+	/**
+	 * [alpha.179] Freigabe-Vorlage für Liebherr-Schnittstellen (Core alpha.849, IMP-045): die Felder, die der Livision-Push braucht
+	 * (Guide §5 Customer + Rückmeldung Liebherr 27.10.2026). Ansprechpartner bewusst leer – Freigabe nur je Feld durch den Händler-Admin.
+	 *
+	 * @param array<string,mixed>|null $tpl
+	 * @return array<string,mixed>|null
+	 */
+	public static function release_template( $tpl, $brand_key ) {
+		if ( 'liebherr' !== (string) $brand_key ) {
+			return $tpl;
+		}
+		return [
+			'label'   => __( 'Livision-Push (Liebherr Interface World)', 'liebherr-interface-world' ),
+			'note'    => __( 'Customer-Body laut Guide §5: Pflichtfelder Name 1, Straße, PLZ, Ort, Kundennummer; Liebherr erwartet zusätzlich Betreuer, Klassifizierung, Branche 1 (27.10.2026) und wünscht Bundesland/Land. Ansprechpartner nur nach Einzelfreigabe.', 'liebherr-interface-world' ),
+			'address' => [ 'name1', 'name2', 'street', 'street_add1', 'postal_code', 'city', 'number', 'advisor', 'class_abc', 'class_hagb', 'industry1', 'industry2', 'industry3', 'state', 'district', 'country', 'address_info', 'sales_area' ],
+			'contact' => [],
+			'article' => [],
+		];
+	}
+
 	public static function value_list( $list, $code_list, $language = 0 ): array {
 		global $wpdb;
 		$list          = is_array( $list ) ? $list : [];

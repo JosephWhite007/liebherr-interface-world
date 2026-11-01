@@ -892,5 +892,8 @@ liw_assert( 'LivisionSync: Freigabematrix des Core (ReleasePolicy) – release_e
 // --- alpha.178: starts_with
 liw_assert( 'Vorlagensuche: starts_with serverseitig (LIKE/NOT REGEXP), Quelle reicht den Core-Filter durch', str_contains( (string) file_get_contents( $root . '/src/SalesInterface/ProductTemplateService.php' ), "int \$limit = 50, string \$starts_with = ''" ) && str_contains( (string) file_get_contents( $root . '/src/SalesInterface/ProductTemplateService.php' ), "designation NOT REGEXP '^[[:alpha:]]'" ) && str_contains( (string) file_get_contents( $root . '/src/CoreBridge/LiebherrCatalogSource.php' ), "\$f['starts_with']" ), $checks, $failures );
 
+// --- alpha.179: Freigabe-Vorlage
+liw_assert( 'AddressbookBridge: Freigabe-Vorlage Liebherr per Filter araliya_ab_release_template (Adresse gefüllt, Ansprechpartner/Artikel leer)', str_contains( (string) file_get_contents( $root . '/src/CoreBridge/AddressbookBridge.php' ), "add_filter( 'araliya_ab_release_template', [ self::class, 'release_template' ], 10, 2 )" ) && str_contains( (string) file_get_contents( $root . '/src/CoreBridge/AddressbookBridge.php' ), "'contact' => []," ), $checks, $failures );
+
 echo "\n{$checks} Prüfungen, {$failures} fehlgeschlagen.\n";
 exit( $failures > 0 ? 1 : 0 );

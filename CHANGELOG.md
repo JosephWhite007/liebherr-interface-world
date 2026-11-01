@@ -1,5 +1,11 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.179] – 2026-11-01 – Freigabe-Vorlage Liebherr für das Core-API-Management (Core alpha.849, IMP-045)
+
+### Neu
+- `AddressbookBridge::release_template` (Filter `araliya_ab_release_template`): Vorlage „Livision-Push“ mit den Adressfeldern des Customer-Body
+  (Guide §5 + Rückmeldung 27.10.2026, 18 Felder); Ansprechpartner und Artikel bewusst leer – Freigabe nur je Feld durch den Händler-Admin.
+
 ## [0.1.0-alpha.178] – 2026-11-01 – Vorlagensuche: Anfangsbuchstabe serverseitig (Core alpha.848, IMP-044)
 
 ### Neu
