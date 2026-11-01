@@ -1,5 +1,25 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.173] – 2026-11-01 – Teilliste Landkreise je Bundesland für die Core-Menüvorschläge
+
+### Neu
+- `AddressbookBridge::value_list` beantwortet das Listenkürzel `1L:<Bundesland>` (z. B. `1L:DE-NW`) mit den Landkreisen dieses Bundeslands
+  (Zusatzfeld der 1L-Liste); volle Listen jetzt nach Beschreibung sortiert. Der Core (alpha.832) zeigt damit Anrede/Funktion/Abteilung/
+  Marketing-Aktion/Bundesland/Landkreis als Menüvorschlag mit Klartext.
+
+## [0.1.0-alpha.172] – 2026-11-01 – Live-Katalog-Vertrag des Core (LiveCatalogSourceInterface, Core alpha.827)
+
+### Neu
+- `CoreBridge/LiebherrLiveCatalogSource`: erweitert die Vorlagenquelle um `status()` – `live` = Livision-Zugang des aktiven Händlers bereit
+  (Env-Schlüssel, Testumgebung, Instanz frei), `version` = `LIW_VERSION`, `synced_at` = letzter Vorlagen-Import (`/product-list`),
+  `endpoint` = Livision-Basis ohne Zugangsdaten, `auth_ref` = `LIW_LIVISION_KEY_TEST` – und `ping()` über den leichten Lese-Endpunkt
+  `/tab-text` des vorhandenen `DealerApiClient` (Readiness, Kill-Switch, Protokoll; nie schreibend).
+- `ConstructionBridge` registriert die Live-Quelle nur, wenn der Core den Vertrag kennt; ältere Core-Stände erhalten weiter die einfache Quelle.
+  Der Core zeigt den Stand je Marke im API Management (Stufe 2) und legt die Hersteller-Schnittstelle `liebherr-hersteller` als Sandbox/REST an.
+
+### Hinweis
+- Kein neuer externer Dienst, kein neuer Schlüssel: die Live-Anzeige nutzt den bestehenden Livision-Testzugang des Händlers (ARY-PH-AB-EV-1.0 Kap. 6.14).
+
 ## [0.1.0-alpha.171] – 2026-11-01 – Deploy per GitHub Actions auf Staging und GoHeal (Core-Muster)
 
 ### Neu

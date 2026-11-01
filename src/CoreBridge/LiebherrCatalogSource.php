@@ -17,7 +17,7 @@ use Liebherr\InterfaceWorld\SalesInterface\ProductTemplateService;
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-final class LiebherrCatalogSource implements CatalogSourceInterface {
+class LiebherrCatalogSource implements CatalogSourceInterface { // [alpha.172] nicht final: LiebherrLiveCatalogSource erweitert um den Live-Vertrag
 
 	public const KEY = 'liebherr';
 

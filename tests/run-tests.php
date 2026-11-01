@@ -873,5 +873,14 @@ liw_assert( 'AddressbookBridge: Hooks sync_actions + push registriert, Push nur 
 
 liw_assert( 'Sales-Ansicht: letzter Reiter = Anleitung', 'guide' === array_key_last( \Liebherr\InterfaceWorld\SalesInterface\SalesInterfaceView::tabs() ), $checks, $failures );
 
+// --- alpha.172: Live-Katalog-Vertrag des Core (LiveCatalogSourceInterface, Core alpha.827)
+$__lcs = (string) file_get_contents( $root . '/src/CoreBridge/LiebherrLiveCatalogSource.php' );
+$__cb2 = (string) file_get_contents( $root . '/src/CoreBridge/ConstructionBridge.php' );
+liw_assert( 'LiebherrLiveCatalogSource: erweitert die Vorlagenquelle um status() (live aus Readiness, Version, letzter Import, Endpunkt ohne Zugangsdaten, Env-Referenz) und ping() über DealerApiClient /tab-text (nur lesen); Bridge wählt sie nur, wenn der Core den Live-Vertrag kennt', str_contains( $__lcs, 'extends LiebherrCatalogSource implements LiveCatalogSourceInterface' ) && str_contains( $__lcs, "DealerApiClient::readiness( null, false )" ) && str_contains( $__lcs, "'auth_ref'  => InstanceBridge::ENV_KEY_TEST" ) && str_contains( $__lcs, "DealerApiClient::get( self::PING_PATH" ) && ! str_contains( $__lcs, 'DealerApiClient::send(' ) && str_contains( $__cb2, 'interface_exists( self::CORE_LIVE_INTERFACE )' ) && str_contains( $__cb2, 'elseif ( interface_exists( self::CORE_INTERFACE ) )' ), $checks, $failures );
+
+// --- alpha.173: Teilliste 1L:<Bundesland>
+$__ab3 = (string) file_get_contents( $root . '/src/CoreBridge/AddressbookBridge.php' );
+liw_assert( 'AddressbookBridge: Teilliste „1L:<Bundesland>“ über additional_value, sortiert nach Beschreibung', str_contains( $__ab3, "preg_match( '/^1L:([A-Za-z]{2}-[A-Za-z0-9]{1,3})$/', \$raw, \$m )" ) && str_contains( $__ab3, "additional_value = %s ORDER BY description" ), $checks, $failures );
+
 echo "\n{$checks} Prüfungen, {$failures} fehlgeschlagen.\n";
 exit( $failures > 0 ? 1 : 0 );

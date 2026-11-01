@@ -83,13 +83,23 @@ final class AddressbookBridge {
 	 */
 	public static function value_list( $list, $code_list, $language = 0 ): array {
 		global $wpdb;
-		$list      = is_array( $list ) ? $list : [];
-		$code_list = (string) preg_replace( '/[^A-Za-z0-9]/', '', (string) $code_list );
+		$list          = is_array( $list ) ? $list : [];
+		$code_list_raw = (string) $code_list;
+		$code_list     = (string) preg_replace( '/[^A-Za-z0-9]/', '', (string) $code_list );
 		if ( '' === $code_list || ! class_exists( CodeListService::class ) ) {
 			return $list;
 		}
 		$table = \Liebherr\InterfaceWorld\SalesInterface\CodeListSchema::table_name();
-		$rows  = $wpdb->get_results( $wpdb->prepare( "SELECT code, description FROM {$table} WHERE code_list = %s AND language = %d", $code_list, (int) $language ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// [alpha.173] Teilliste „1L:<Bundesland>“: Landkreise des Bundeslands (Zuordnung im Zusatzfeld, z. B. DE-NW) – Core-Menüvorschlag Landkreis
+		$raw = (string) $code_list_raw;
+		if ( preg_match( '/^1L:([A-Za-z]{2}-[A-Za-z0-9]{1,3})$/', $raw, $m ) ) {
+			$rows = $wpdb->get_results( $wpdb->prepare( "SELECT code, description FROM {$table} WHERE code_list = '1L' AND language = %d AND additional_value = %s ORDER BY description", (int) $language, strtoupper( $m[1] ) ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			foreach ( is_array( $rows ) ? $rows : [] as $r ) {
+				$list[ (string) $r['description'] ] = (string) $r['code'];
+			}
+			return $list;
+		}
+		$rows  = $wpdb->get_results( $wpdb->prepare( "SELECT code, description FROM {$table} WHERE code_list = %s AND language = %d ORDER BY description", $code_list, (int) $language ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		foreach ( is_array( $rows ) ? $rows : [] as $r ) {
 			$list[ (string) $r['description'] ] = (string) $r['code'];
 		}

@@ -8,6 +8,16 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-11-01 · Live-Katalog-Vertrag des Core erfüllt (0.1.0-alpha.172)
+
+**Frage/Kontext.** Core alpha.827 bereitet L-9 vor: `LiveCatalogSourceInterface` (Stand + Verbindungsprüfung je Marke). Das Plugin soll ihn erfüllen, ohne einen neuen Dienst anzubinden.
+
+**Optionen.** (a) Vorlagenquelle selbst erweitern (bricht bei älterem Core, weil das Interface fehlt); (b) Unterklasse `LiebherrLiveCatalogSource`, Bridge wählt sie nur bei vorhandenem Vertrag; (c) abwarten bis zur Livision-Live-Entscheidung.
+
+**Entscheidung (Kat. B).** (b). `live` ergibt sich aus der vorhandenen Readiness (Schlüssel aus Env, Testumgebung, InstanceState), `ping()` nutzt `/tab-text` lesend über den DealerApiClient. Kein neuer Schlüssel, keine Schreibzugriffe; die echte Live-Produktdaten-Anbindung je Händler bleibt Entscheidung JW (Core-Pflichtenheft Kap. 6.14).
+
+**Auswirkung.** 0.1.0-alpha.172; Core zeigt „Live-API v0.1.0-alpha.172“ bzw. „Katalog n Vorlagen“ im API Management.
+
 ### 2026-10-03 · Liebherr-Seiten im Theme-Rahmen statt Vollbild – Vorlage zurücksetzen (Core alpha.753)
 
 **Frage/Kontext.** JW: Layout der Liebherr-Seiten (My Liebherr, Intelligence World, Local Intelligence, Adventures) ist zerschossen.

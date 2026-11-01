@@ -20,6 +20,7 @@ final class ConstructionBridge {
 
 	public const FILTER_SOURCES = 'araliya_construction_catalog_sources';
 	public const CORE_INTERFACE = '\\Araliya\\Platform\\Core\\Modules\\Construction\\CatalogSourceInterface';
+	public const CORE_LIVE_INTERFACE = '\\Araliya\\Platform\\Core\\Modules\\Construction\\LiveCatalogSourceInterface'; // Core ab alpha.827 (alpha.172)
 
 	public static function register(): void {
 		add_filter( self::FILTER_SOURCES, [ self::class, 'sources' ] );
@@ -32,7 +33,9 @@ final class ConstructionBridge {
 	 * @return array<int,object>
 	 */
 	public static function sources( array $sources ): array {
-		if ( interface_exists( self::CORE_INTERFACE ) ) {
+		if ( interface_exists( self::CORE_LIVE_INTERFACE ) ) {
+			$sources[] = new LiebherrLiveCatalogSource(); // [alpha.172] Stand + Verbindungsprüfung für API Management / Hersteller-Schnittstelle
+		} elseif ( interface_exists( self::CORE_INTERFACE ) ) {
 			$sources[] = new LiebherrCatalogSource();
 		}
 		return $sources;
