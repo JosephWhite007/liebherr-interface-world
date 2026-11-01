@@ -1,5 +1,11 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.175] – 2026-11-01 – Live-Quelle: Verbindungsprüfung mit Parametern (tab-text 404 behoben)
+
+### Behoben
+- `LiebherrLiveCatalogSource::ping()` rief `/tab-text` ohne `CodeList`/`Language` auf – Livision antwortet darauf mit 404. Jetzt wie das
+  Probe-Skript: `/tab-text?CodeList=AH&Language=0` (Anrede, Deutsch, 3 Zeilen). Befund aus dem Core-Nachweis alpha.827/LIW alpha.172.
+
 ## [0.1.0-alpha.174] – 2026-11-01 – Sales-Seite: Statuspunkt „Produktliste als Artikelvorlage“ auf erledigt
 
 ### Geändert
