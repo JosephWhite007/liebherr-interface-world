@@ -1,5 +1,11 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.176] – 2026-11-01 – Facetten für die Chip-Leiste des Core-Explorers (Core alpha.837)
+
+### Neu
+- `LiebherrLiveCatalogSource` erfüllt `FacetedCatalogSourceInterface`: `facets()` liefert Maschinenart (58 Produktgruppen) und Hersteller
+  (324) der Vorlagenliste mit Zählern – Grundlage der automatischen Produktgruppen-Chips im Articlebook Construction.
+
 ## [0.1.0-alpha.175] – 2026-11-01 – Live-Quelle: Verbindungsprüfung mit Parametern (tab-text 404 behoben)
 
 ### Behoben

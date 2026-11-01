@@ -16,13 +16,15 @@ declare( strict_types = 1 );
 
 namespace Liebherr\InterfaceWorld\CoreBridge;
 
+use Araliya\Platform\Core\Modules\Construction\FacetedCatalogSourceInterface;
 use Araliya\Platform\Core\Modules\Construction\LiveCatalogSourceInterface;
 use Liebherr\InterfaceWorld\SalesInterface\DealerApiClient;
 use Liebherr\InterfaceWorld\SalesInterface\ProductTemplateSchema;
+use Liebherr\InterfaceWorld\SalesInterface\ProductTemplateService;
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-final class LiebherrLiveCatalogSource extends LiebherrCatalogSource implements LiveCatalogSourceInterface {
+final class LiebherrLiveCatalogSource extends LiebherrCatalogSource implements LiveCatalogSourceInterface, FacetedCatalogSourceInterface {
 
 	public const PING_PATH  = '/tab-text';
 	/** Leichter Lese-Aufruf wie im Probe-Skript: Codeliste AH (Anrede, 3 Zeilen), Deutsch – ohne Parameter antwortet Livision mit 404 (alpha.175). */
@@ -40,6 +42,24 @@ final class LiebherrLiveCatalogSource extends LiebherrCatalogSource implements L
 			'endpoint'  => DealerApiClient::BASE_TEST,
 			'auth_ref'  => InstanceBridge::ENV_KEY_TEST,
 		];
+	}
+
+	/**
+	 * [alpha.176] Facetten mit Zählern für die Chip-Leiste des Core-Explorers: Maschinenart (Produktgruppe) und Hersteller der Vorlagenliste.
+	 *
+	 * @return array<string,array<string,array{label:string,n:int}>>
+	 */
+	public function facets(): array {
+		global $wpdb;
+		$out = [ 'machine_type' => [], 'manufacturer' => [] ];
+		foreach ( ProductTemplateService::machine_types() as $code => $n ) {
+			$out['machine_type'][ (string) $code ] = [ 'label' => ProductTemplateService::label_type( (string) $code ), 'n' => (int) $n ];
+		}
+		$rows = ProductTemplateSchema::exists() ? $wpdb->get_results( 'SELECT manufacturer, COUNT(*) AS n FROM ' . ProductTemplateSchema::table() . " WHERE manufacturer <> '' GROUP BY manufacturer ORDER BY n DESC", ARRAY_A ) : []; // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		foreach ( is_array( $rows ) ? $rows : [] as $r ) {
+			$out['manufacturer'][ (string) $r['manufacturer'] ] = [ 'label' => ProductTemplateService::label_manufacturer( (string) $r['manufacturer'] ), 'n' => (int) $r['n'] ];
+		}
+		return $out;
 	}
 
 	/** @return array{ok:bool,code:int,ms:int,error:string} */

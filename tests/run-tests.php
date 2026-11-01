@@ -882,5 +882,8 @@ liw_assert( 'LiebherrLiveCatalogSource: erweitert die Vorlagenquelle um status()
 $__ab3 = (string) file_get_contents( $root . '/src/CoreBridge/AddressbookBridge.php' );
 liw_assert( 'AddressbookBridge: Teilliste „1L:<Bundesland>“ über additional_value, sortiert nach Beschreibung', str_contains( $__ab3, "preg_match( '/^1L:([A-Za-z]{2}-[A-Za-z0-9]{1,3})$/', \$raw, \$m )" ) && str_contains( $__ab3, "additional_value = %s ORDER BY description" ), $checks, $failures );
 
+// --- alpha.176: Facetten
+liw_assert( 'LiebherrLiveCatalogSource: facets() mit machine_type + manufacturer und Zählern (FacetedCatalogSourceInterface)', str_contains( (string) file_get_contents( $root . '/src/CoreBridge/LiebherrLiveCatalogSource.php' ), 'implements LiveCatalogSourceInterface, FacetedCatalogSourceInterface' ) && str_contains( (string) file_get_contents( $root . '/src/CoreBridge/LiebherrLiveCatalogSource.php' ), 'public function facets(): array' ), $checks, $failures );
+
 echo "\n{$checks} Prüfungen, {$failures} fehlgeschlagen.\n";
 exit( $failures > 0 ? 1 : 0 );
