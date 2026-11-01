@@ -8,6 +8,14 @@ Plugins gefallen sind.
 
 ## Teil II – Sitzungs-Logbuch (neueste zuerst)
 
+### 2026-11-01 · Livision-Push respektiert die Freigabematrix des Core (0.1.0-alpha.177)
+
+**Frage/Kontext.** Core alpha.839 führt je Schnittstelle Freigaben je Entität und Feld ein (JW: Liebherr bekommt keine Ansprechpartner ohne Freigabe, Telefon/E-Mail nur je Feld).
+
+**Entscheidung (Kat. B).** Anwendung im Plugin über eine Core-Filterfunktion (`ReleasePolicy::filter`), erreichbar nur bei vorhandenem Core (class_exists) – älterer Core = Altverhalten. Gesperrte Entität blockiert im Precheck (gleiche Mechanik wie Pflichtfelder), gesperrte Felder werden weggelassen und vorher gezeigt. `Keyaccount` nur bei Freigabe, damit kein Standardwert „false“ hinausgeht.
+
+**Auswirkung.** 0.1.0-alpha.177. Betrieb: Händler-Admin muss Betreuer/Klassifizierung/Branche/Bundesland zusätzlich freigeben (Liebherr-Pflichtfelder laut Rückmeldung 27.10.2026).
+
 ### 2026-11-01 · Live-Katalog-Vertrag des Core erfüllt (0.1.0-alpha.172)
 
 **Frage/Kontext.** Core alpha.827 bereitet L-9 vor: `LiveCatalogSourceInterface` (Stand + Verbindungsprüfung je Marke). Das Plugin soll ihn erfüllen, ohne einen neuen Dienst anzubinden.

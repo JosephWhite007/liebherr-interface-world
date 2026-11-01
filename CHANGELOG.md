@@ -1,5 +1,13 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.177] – 2026-11-01 – Livision-Push wendet die Freigabematrix des Core an (Core alpha.839)
+
+### Geändert
+- `LivisionSync::precheck`: gesperrte Entität (Adresse/Ansprechpartner nicht freigegeben) blockiert als Pflichtfeld-Freigabe; befüllte, aber
+  nicht freigegebene Felder erscheinen als Hinweis „werden nicht übertragen“. `push`: Datensätze werden vor dem Body-Aufbau auf die freigegebenen
+  Felder reduziert (`apply_release`); `Keyaccount` nur, wenn das Feld freigegeben ist. Ohne Core-Matrix (älterer Core) unverändertes Verhalten.
+- Entscheidung JW 01.11.2026: Liebherr erhält keine Ansprechpartner, bis der Händler-Admin die Entität und jedes Feld einzeln freigibt.
+
 ## [0.1.0-alpha.176] – 2026-11-01 – Facetten für die Chip-Leiste des Core-Explorers (Core alpha.837)
 
 ### Neu

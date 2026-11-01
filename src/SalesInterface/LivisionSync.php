@@ -36,6 +36,7 @@ final class LivisionSync {
 	private const CORE_REF     = 'Araliya\\Platform\\Core\\Modules\\Addressbook\\ExternalRefRepository';
 	private const CORE_TENANT  = 'Araliya\\Platform\\Core\\Modules\\Addressbook\\TenantContext';
 	private const CORE_MODULE  = 'Araliya\\Platform\\Core\\Modules\\Addressbook\\AddressbookModule';
+	private const CORE_RELEASE = 'Araliya\\Platform\\Core\\Modules\\Addressbook\\Api\\ReleasePolicy'; // [alpha.177] Freigabematrix (Core alpha.839)
 
 	public static function available(): bool {
 		return class_exists( self::CORE_ADDR ) && class_exists( self::CORE_REF );
@@ -69,7 +70,7 @@ final class LivisionSync {
 			'AdministrativeDistrict'        => (string) ( $a['district'] ?? '' ),
 			'ClassABC'                      => (string) ( $a['class_abc'] ?? '' ),
 			'ClassHAGB'                     => (string) ( $a['class_hagb'] ?? '' ),
-			'Keyaccount'                    => ! empty( $a['key_account'] ) ? 'true' : 'false',
+			'Keyaccount'                    => array_key_exists( 'key_account', $a ) ? ( ! empty( $a['key_account'] ) ? 'true' : 'false' ) : null, // [alpha.177] nur wenn freigegeben
 			'NumberOfEmployee'              => isset( $a['employees'] ) && '' !== (string) $a['employees'] ? (int) $a['employees'] : null,
 			'SalesAccountNumber'            => $sales_account_number,
 			'InternationalDialingCodePhone' => $phone['code'],
@@ -161,10 +162,21 @@ final class LivisionSync {
 		if ( null === $dealer ) {
 			return [ 'ok' => false, 'warnings' => [ __( 'Kein Liebherr-Händler mit diesem Mandanten verknüpft.', 'liebherr-interface-world' ) ] ];
 		}
+		// [alpha.177] Freigabematrix des Core (alpha.839): gesperrte Entität = Pflichtfeld-Fehler (blockiert), gesperrte befüllte Felder = Hinweis
+		$rel = self::release_endpoint( $org_id );
+		if ( null !== $rel && ! ( self::CORE_RELEASE )::entity_released( $org_id, (int) $rel['id'], $kind ) ) {
+			$w[] = 'address' === $kind ? __( 'Pflichtfeld-Freigabe fehlt: Die Adresse ist für diese Schnittstelle nicht freigegeben (API Management → Schnittstelle → Freigaben).', 'liebherr-interface-world' ) : __( 'Pflichtfeld-Freigabe fehlt: Ansprechpartner sind für diese Schnittstelle nicht freigegeben – erst der Händler-Admin gibt die Entität und jedes Feld einzeln frei (API Management → Freigaben).', 'liebherr-interface-world' );
+		}
 		if ( 'address' === $kind ) {
 			$a = ( self::CORE_ADDR )::get( $org_id, $id );
 			if ( null === $a ) {
 				return [ 'ok' => false, 'warnings' => [ __( 'Adresse nicht gefunden.', 'liebherr-interface-world' ) ] ];
+			}
+			if ( null !== $rel ) {
+				$blocked = ( self::CORE_RELEASE )::blocked_in( $org_id, (int) $rel['id'], 'address', $a );
+				if ( [] !== $blocked ) {
+					$w[] = sprintf( /* translators: %s: Felder */ __( 'Hinweis: nicht freigegeben, werden nicht übertragen: %s.', 'liebherr-interface-world' ), implode( ', ', $blocked ) );
+				}
 			}
 			// Pflichtfelder laut Spezifikation + Rückmeldung Liebherr 27.10.2026 (Betreuer muss befüllt sein; Branche und Klassifizierung fehlten)
 			foreach ( [ 'name1' => 'Name1', 'street' => 'Street', 'postal_code' => 'PostalCode', 'city' => 'City', 'advisor' => 'Advisor (Betreuer)', 'class_abc' => 'ClassABC (Klassifizierung KL)', 'industry1' => 'Industry1 (Branche 3B)' ] as $f => $api ) {
@@ -192,6 +204,12 @@ final class LivisionSync {
 			if ( null === $c ) {
 				return [ 'ok' => false, 'warnings' => [ __( 'Ansprechpartner nicht gefunden.', 'liebherr-interface-world' ) ] ];
 			}
+			if ( null !== $rel && ( self::CORE_RELEASE )::entity_released( $org_id, (int) $rel['id'], 'contact' ) ) {
+				$blocked = ( self::CORE_RELEASE )::blocked_in( $org_id, (int) $rel['id'], 'contact', $c );
+				if ( [] !== $blocked ) {
+					$w[] = sprintf( /* translators: %s: Felder */ __( 'Hinweis: nicht freigegeben, werden nicht übertragen: %s.', 'liebherr-interface-world' ), implode( ', ', $blocked ) );
+				}
+			}
 			if ( '' === trim( (string) $c['last_name'] ) ) {
 				$w[] = __( 'Pflichtfeld für Livision fehlt: LastName', 'liebherr-interface-world' );
 			}
@@ -211,6 +229,30 @@ final class LivisionSync {
 		}
 		$blocking = array_filter( $w, static fn( string $m ): bool => str_contains( $m, 'Pflichtfeld' ) || str_contains( $m, 'LivisionCustomerId fehlt' ) || str_contains( $m, 'SalesAccountNumber' ) || str_contains( $m, 'nicht in Codeliste' ) );
 		return [ 'ok' => [] === $blocking, 'warnings' => $w ];
+	}
+
+	/** [alpha.177] Liebherr-Schnittstelle des Mandanten im Core-API-Management (null = Core ohne Freigabematrix oder keine Schnittstelle: Altverhalten). */
+	public static function release_endpoint( int $org_id ): ?array {
+		if ( ! class_exists( self::CORE_RELEASE ) ) {
+			return null;
+		}
+		return ( self::CORE_RELEASE )::endpoint_for( $org_id, 'liebherr' );
+	}
+
+	/**
+	 * [alpha.177] Datensatz auf die freigegebenen Felder reduzieren; ohne Schnittstelle/Matrix unverändert. Gesperrte Entität ⇒ leer
+	 * (der Precheck blockiert vorher; hier zur Sicherheit nur technische Schlüssel).
+	 *
+	 * @param array<string,mixed> $row
+	 * @return array<string,mixed>
+	 */
+	public static function apply_release( int $org_id, string $kind, array $row ): array {
+		$rel = self::release_endpoint( $org_id );
+		if ( null === $rel ) {
+			return $row;
+		}
+		$filtered = ( self::CORE_RELEASE )::filter( $org_id, (int) $rel['id'], $kind, $row );
+		return null === $filtered ? array_intersect_key( $row, array_flip( [ 'id', 'address_id', 'org_id' ] ) ) : $filtered;
 	}
 
 	public static function code_exists( string $list, string $code ): bool {
@@ -252,6 +294,7 @@ final class LivisionSync {
 		if ( 'address' === $kind ) {
 			$a       = ( self::CORE_ADDR )::get( $org_id, $id );
 			$existing = self::livision_id( $org_id, 'address', $id );
+			$a       = self::apply_release( $org_id, 'address', $a ); // [alpha.177] nur freigegebene Felder
 			$body    = self::customer_body( $a, self::sales_account_number( $org_id, $id, $a ), $existing );
 			$method  = $existing > 0 ? 'PUT' : 'POST';
 			$path    = '/customer';
@@ -260,6 +303,7 @@ final class LivisionSync {
 			$c        = ( self::CORE_CONTACT )::get( $org_id, $id );
 			$cust     = self::livision_id( $org_id, 'address', (int) $c['address_id'] );
 			$existing = self::livision_id( $org_id, 'contact', $id );
+			$c        = self::apply_release( $org_id, 'contact', $c ); // [alpha.177] nur freigegebene Felder
 			$body     = self::contact_body( $c, $cust, $existing );
 			$method   = $existing > 0 ? 'PUT' : 'POST';
 			$path     = '/contact';

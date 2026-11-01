@@ -885,5 +885,9 @@ liw_assert( 'AddressbookBridge: Teilliste „1L:<Bundesland>“ über additional
 // --- alpha.176: Facetten
 liw_assert( 'LiebherrLiveCatalogSource: facets() mit machine_type + manufacturer und Zählern (FacetedCatalogSourceInterface)', str_contains( (string) file_get_contents( $root . '/src/CoreBridge/LiebherrLiveCatalogSource.php' ), 'implements LiveCatalogSourceInterface, FacetedCatalogSourceInterface' ) && str_contains( (string) file_get_contents( $root . '/src/CoreBridge/LiebherrLiveCatalogSource.php' ), 'public function facets(): array' ), $checks, $failures );
 
+// --- alpha.177: Freigabematrix im Push
+$__ls77 = (string) file_get_contents( $root . '/src/SalesInterface/LivisionSync.php' );
+liw_assert( 'LivisionSync: Freigabematrix des Core (ReleasePolicy) – release_endpoint/apply_release, Precheck blockiert gesperrte Entität, gesperrte Felder als Hinweis, Keyaccount nur bei Freigabe', str_contains( $__ls77, "CORE_RELEASE = 'Araliya\\\\Platform\\\\Core\\\\Modules\\\\Addressbook\\\\Api\\\\ReleasePolicy'" ) && str_contains( $__ls77, 'public static function apply_release( int $org_id, string $kind, array $row ): array' ) && str_contains( $__ls77, "self::apply_release( \$org_id, 'address', \$a )" ) && str_contains( $__ls77, "self::apply_release( \$org_id, 'contact', \$c )" ) && str_contains( $__ls77, 'Pflichtfeld-Freigabe fehlt' ) && str_contains( $__ls77, "array_key_exists( 'key_account', \$a )" ), $checks, $failures );
+
 echo "\n{$checks} Prüfungen, {$failures} fehlgeschlagen.\n";
 exit( $failures > 0 ? 1 : 0 );
