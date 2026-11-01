@@ -1,5 +1,18 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.171] – 2026-11-01 – Deploy per GitHub Actions auf Staging und GoHeal (Core-Muster)
+
+### Neu
+- `.github/workflows/deploy-staging.yml`: jeder Push auf `master` (oder „Run workflow“) deployt das Plugin per SFTP nach comehome.care –
+  Versionsprüfung (Header = `LIW_VERSION`), PHP-Lint, Paket ohne Dev-Anteile (Ausschlüsse wie `scripts/deploy.sh`), `.maintenance`, Upload
+  nach `wp-content/liebherr-interface-world.new`, atomarer Wechsel mit Rollback-Kopie `.prev`, Core-Version auf dem Ziel als Hinweis,
+  Startseiten-Check. Secrets im GitHub Environment `staging` **dieses Repos**: `STAGING_SFTP_HOST/PORT/USER/PASSWORD/TARGET`
+  (`TARGET` = `…/wp-content/plugins/liebherr-interface-world`).
+- `.github/workflows/deploy-goheal.yml`: nur manuell (`confirm` = `DEPLOY-GOHEAL`, `ref` Standard `master`), Environment `goheal`,
+  Secrets `GOHEAL_SFTP_HOST/PORT/USER/PASSWORD/TARGET`, optional `GOHEAL_PROTOCOL`. Entscheidung Joseph White 01.11.2026 (ARY-PH-REL-1.0 F-1):
+  das Liebherr-Plugin geht denselben GitHub-Weg wie der Core; `scripts/deploy.sh` (SSH/rsync) bleibt als Notweg.
+- Keine Code-Änderung am Plugin; Versionsbump, damit das Ziel den Stand im Header erkennt.
+
 ## [0.1.0-alpha.170] – 2026-10-31 – Liebherr-Produktvorlagen als Katalogquelle für das Articlebook Construction (Core alpha.815)
 
 ### Neu

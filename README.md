@@ -39,3 +39,14 @@ Liefergegenstand und offene Punkte.
 ```
 php tests/run-tests.php
 ```
+
+## Deployment (seit alpha.171)
+
+Gleicher GitHub-Weg wie der Core (`araliya-platform-core`):
+
+- **Staging comehome.care:** jeder Push auf `master` startet `.github/workflows/deploy-staging.yml` (auch „Run workflow“).
+- **GoHeal goheal.world:** GitHub → Actions → „🚀 Deploy to GoHeal (goheal.world)“ → Run workflow → `confirm` = `DEPLOY-GOHEAL`, `ref` = `master`.
+- Secrets je GitHub Environment **dieses Repos** (`staging`, `goheal`): `STAGING_SFTP_*` bzw. `GOHEAL_SFTP_*` wie im Core-Repo,
+  nur `*_SFTP_TARGET` endet auf `…/wp-content/plugins/liebherr-interface-world`.
+- Ablauf: Lint → Paket → `.maintenance` → Upload nach `wp-content/liebherr-interface-world.new` → Wechsel (Rollback-Kopie `.prev`) → HTTP-Check.
+  Erstdeploy: Plugin danach im Backend aktivieren. `scripts/deploy.sh` (SSH/rsync) bleibt als Notweg.

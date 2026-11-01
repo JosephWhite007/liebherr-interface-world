@@ -1,0 +1,246 @@
+name: 🚀 Deploy to Staging (comehome.care)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Liebherr Interface Solutions (liebherr-interface-world) – Staging-Deploy nach Core-Muster
+# (araliya-platform-core/.github/workflows/deploy-staging.yml, Entscheidung Joseph White 01.11.2026, LIW alpha.171).
+#
+# Trigger: jeder Push auf master (+ manuell via workflow_dispatch)
+# Ziel:    STRATO SFTP → comehome.care → wp-content/plugins/liebherr-interface-world/
+#
+# Benötigte Secrets im GitHub Environment "staging" DIESES Repos
+# (Settings → Environments → staging → Environment secrets; Werte wie im Core-Repo, nur TARGET anders):
+#   STAGING_SFTP_HOST      z. B. ssh.strato.de
+#   STAGING_SFTP_PORT      22 (Standard, optional)
+#   STAGING_SFTP_USER      Strato-SFTP-Benutzername
+#   STAGING_SFTP_PASSWORD  Strato-SFTP-Passwort
+#   STAGING_SFTP_TARGET    Absoluter Pfad bis zum Plugin-Ordner, z. B.
+#                          /STRATO-apps/wordpress_16/app/wp-content/plugins/liebherr-interface-world
+#
+# Ablauf: Version prüfen → PHP-Lint → Paket ohne Dev-Anteile → .maintenance → Upload nach
+# wp-content/liebherr-interface-world.new → atomarer Wechsel (live → .prev, .new → live, Versionsprüfung,
+# Rollback aus .prev) → .maintenance entfernen → Core-Version auf dem Ziel melden → Startseite HTTP.
+# Nicht Bestandteil: Core-Plugin (eigenes Repo), wp-config.php, mu-plugins, Uploads, Datenbank.
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Plugin packen & SFTP Upload
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: staging
+      url: https://comehome.care
+
+    steps:
+
+      # ── 1. Code auschecken ──────────────────────────────────────────────
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ── 2. Version prüfen (Header und LIW_VERSION müssen übereinstimmen) ──
+      - name: Version prüfen
+        run: |
+          VERSION=$(grep -m1 "Version:" liebherr-interface-world.php | awk '{print $NF}')
+          DEFINED=$(sed -n "s/^define( 'LIW_VERSION', '\([^']*\)' );/\1/p" liebherr-interface-world.php)
+          if [ -z "$VERSION" ] || [ "$VERSION" != "$DEFINED" ]; then
+            echo "❌ Plugin-Header ($VERSION) und LIW_VERSION ($DEFINED) stimmen nicht überein"; exit 1
+          fi
+          echo "🔖 Deploying Plugin Version: $VERSION"
+          echo "PLUGIN_VERSION=$VERSION" >> $GITHUB_ENV
+
+      # ── 2b. PHP-Lint über das gesamte Plugin ───────────────────────────
+      - name: PHP-Syntax prüfen (Lint)
+        run: |
+          COUNT=$(find . -path ./.git -prune -o -name '*.php' -print | wc -l)
+          echo "🔎 Lint: $COUNT PHP-Dateien"
+          find . -path ./.git -prune -o -name '*.php' -print0 \
+            | xargs -0 -n1 -P8 php -l 2>&1 | grep -v '^No syntax errors' > /tmp/lint.txt || true
+          if [ -s /tmp/lint.txt ]; then cat /tmp/lint.txt; echo "❌ Syntaxfehler – Abbruch vor dem Upload"; exit 1; fi
+          echo "✅ keine Syntaxfehler"
+
+      # ── 3. Deployment-Kopie (Ausschlüsse wie scripts/deploy.sh) ────────
+      - name: Deployment-Kopie erstellen
+        run: |
+          mkdir -p /tmp/liw-deploy
+          rsync -a --delete \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='.gitignore' \
+            --exclude='.claude/' \
+            --exclude='.DS_Store' \
+            --exclude='*.log' \
+            --exclude='COMMIT_MSG.txt' \
+            --exclude='tests/' \
+            --exclude='scripts/commit.sh' \
+            --exclude='scripts/deploy.sh' \
+            --exclude='scripts/liw-seed-*.php' \
+            --exclude='scripts/liw-selftest.php' \
+            --exclude='data/*.xlsx' \
+            --exclude='node_modules/' \
+            --exclude='vendor/' \
+            . /tmp/liw-deploy/
+          echo "📦 Dateien im Deployment-Paket: $(find /tmp/liw-deploy -type f | wc -l)"
+
+      - name: lftp installieren
+        run: sudo apt-get install -y lftp
+
+      # ── 4. Upload ohne Live-Zwischenstand (Core-Muster alpha.672/701/703) ──
+      #    Pfade relativ zu SFTP_TARGET (…/wp-content/plugins/liebherr-interface-world):
+      #      ../..  = wp-content        ../../..  = WP-Root
+      - name: Wartungsmodus aktivieren
+        env:
+          SFTP_HOST:        ${{ secrets.STAGING_SFTP_HOST }}
+          SFTP_USER:        ${{ secrets.STAGING_SFTP_USER }}
+          SFTP_PASSWORD:    ${{ secrets.STAGING_SFTP_PASSWORD }}
+          SFTP_PORT:        ${{ secrets.STAGING_SFTP_PORT || '22' }}
+          SFTP_REMOTE_PATH: ${{ secrets.STAGING_SFTP_TARGET }}
+        run: |
+          printf '<?php $upgrading = %s; ?>\n' "$(date +%s)" > /tmp/.maintenance
+          lftp -u "$SFTP_USER","$SFTP_PASSWORD" sftp://"$SFTP_HOST":"$SFTP_PORT" <<LFTP
+          set sftp:auto-confirm yes
+          set net:max-retries 3
+          cd $SFTP_REMOTE_PATH/../../..
+          put /tmp/.maintenance -o .maintenance
+          bye
+          LFTP
+          echo "🛠️ .maintenance gesetzt"
+
+      - name: Upload per SFTP (mirror → .new)
+        env:
+          SFTP_HOST:        ${{ secrets.STAGING_SFTP_HOST }}
+          SFTP_USER:        ${{ secrets.STAGING_SFTP_USER }}
+          SFTP_PASSWORD:    ${{ secrets.STAGING_SFTP_PASSWORD }}
+          SFTP_PORT:        ${{ secrets.STAGING_SFTP_PORT || '22' }}
+          SFTP_REMOTE_PATH: ${{ secrets.STAGING_SFTP_TARGET }}
+        run: |
+          NAME="$(basename "$SFTP_REMOTE_PATH")"
+          lftp -u "$SFTP_USER","$SFTP_PASSWORD" sftp://"$SFTP_HOST":"$SFTP_PORT" <<LFTP
+          set sftp:auto-confirm yes
+          set net:max-retries 3
+          set net:reconnect-interval-base 5
+          set net:reconnect-interval-multiplier 2
+          mirror --reverse --delete --verbose=1 --parallel=8 /tmp/liw-deploy $SFTP_REMOTE_PATH/../../$NAME.new
+          bye
+          LFTP
+          echo "📤 Plugin nach wp-content/$NAME.new hochgeladen"
+
+      - name: Plugin-Verzeichnis umschalten
+        env:
+          SFTP_HOST:        ${{ secrets.STAGING_SFTP_HOST }}
+          SFTP_USER:        ${{ secrets.STAGING_SFTP_USER }}
+          SFTP_PASSWORD:    ${{ secrets.STAGING_SFTP_PASSWORD }}
+          SFTP_PORT:        ${{ secrets.STAGING_SFTP_PORT || '22' }}
+          SFTP_REMOTE_PATH: ${{ secrets.STAGING_SFTP_TARGET }}
+        run: |
+          NAME="$(basename "$SFTP_REMOTE_PATH")"
+          PARENT="$(dirname "$SFTP_REMOTE_PATH")"          # …/wp-content/plugins
+          WPC="$(dirname "$PARENT")"                       # …/wp-content
+          run_lftp() {
+            lftp -u "$SFTP_USER","$SFTP_PASSWORD" sftp://"$SFTP_HOST":"$SFTP_PORT" -e "set sftp:auto-confirm yes; set net:max-retries 3; set cmd:fail-exit yes; $1; bye"
+          }
+          exists() { run_lftp "cls -1 $1" >/dev/null 2>&1; }
+          remove_dir() {
+            mkdir -p /tmp/ary-empty
+            run_lftp "set cmd:fail-exit no; mirror --reverse --delete --parallel=8 --no-perms /tmp/ary-empty $1" || true
+            run_lftp "rm -rf $1" || true
+          }
+          remote_version() { run_lftp "cat $1/liebherr-interface-world.php" 2>/dev/null | grep -m1 'Version:' | awk '{print $NF}'; }
+
+          if ! exists "$WPC/$NAME.new/liebherr-interface-world.php"; then
+            echo "❌ $WPC/$NAME.new fehlt – Upload unvollständig"; exit 1
+          fi
+          NEWV="$(remote_version "$WPC/$NAME.new")"
+          if [ "$NEWV" != "$PLUGIN_VERSION" ]; then
+            echo "❌ Version in .new ($NEWV) ≠ Deploy-Version ($PLUGIN_VERSION)"; exit 1
+          fi
+          for OLD in "$WPC/$NAME.prev" "$WPC/$NAME.prev2"; do
+            if exists "$OLD"; then
+              remove_dir "$OLD"
+              if exists "$OLD"; then echo "❌ $OLD konnte nicht entfernt werden – Umschalten abgebrochen (Live unverändert)"; exit 1; fi
+            fi
+          done
+          if exists "$SFTP_REMOTE_PATH"; then
+            run_lftp "mv $SFTP_REMOTE_PATH $WPC/$NAME.prev" || { echo "❌ live → .prev fehlgeschlagen (Live unverändert)"; exit 1; }
+            if exists "$SFTP_REMOTE_PATH"; then echo "❌ Live-Ordner existiert nach mv weiterhin – abgebrochen"; exit 1; fi
+          else
+            echo "ℹ️ kein bisheriges Plugin-Verzeichnis (Erstdeploy – Plugin danach im Backend aktivieren)"
+          fi
+          rollback() { run_lftp "mv $WPC/$NAME.prev $SFTP_REMOTE_PATH" && echo "↩️ Rollback auf vorherige Version" || echo "‼️ Rollback fehlgeschlagen – manuell: mv $WPC/$NAME.prev $SFTP_REMOTE_PATH"; }
+          if ! run_lftp "mv $WPC/$NAME.new $SFTP_REMOTE_PATH"; then
+            echo "❌ Umschalten fehlgeschlagen"; rollback; exit 1
+          fi
+          LIVEV="$(remote_version "$SFTP_REMOTE_PATH")"
+          if [ "$LIVEV" != "$PLUGIN_VERSION" ] || exists "$WPC/$NAME.new"; then
+            echo "❌ Verifikation fehlgeschlagen: live=$LIVEV erwartet=$PLUGIN_VERSION"
+            remove_dir "$SFTP_REMOTE_PATH"
+            rollback; exit 1
+          fi
+          echo "🔁 Plugin umgeschaltet auf $LIVEV — vorherige Version liegt in $WPC/$NAME.prev (Rollback: mv)"
+
+          # Core-Abhängigkeit (Requires Plugins: araliya-platform-core) – nur Hinweis, kein Abbruch
+          COREV="$(run_lftp "cat $PARENT/araliya-platform-core/araliya-platform-core.php" 2>/dev/null | grep -m1 'Version:' | awk '{print $NF}')"
+          if [ -z "$COREV" ]; then
+            echo "⚠️ Core-Plugin unter $PARENT/araliya-platform-core nicht gefunden – LIW bleibt ohne Core inaktiv"
+          else
+            echo "ℹ️ Core-Plugin auf dem Ziel: $COREV (LIW alpha.170+ braucht Core ≥ alpha.815 für die Katalogquelle)"
+          fi
+
+      - name: Wartungsmodus beenden
+        if: always()
+        env:
+          SFTP_HOST:        ${{ secrets.STAGING_SFTP_HOST }}
+          SFTP_USER:        ${{ secrets.STAGING_SFTP_USER }}
+          SFTP_PASSWORD:    ${{ secrets.STAGING_SFTP_PASSWORD }}
+          SFTP_PORT:        ${{ secrets.STAGING_SFTP_PORT || '22' }}
+          SFTP_REMOTE_PATH: ${{ secrets.STAGING_SFTP_TARGET }}
+        run: |
+          lftp -u "$SFTP_USER","$SFTP_PASSWORD" sftp://"$SFTP_HOST":"$SFTP_PORT" <<LFTP
+          set sftp:auto-confirm yes
+          set net:max-retries 3
+          cd $SFTP_REMOTE_PATH/../../..
+          rm -f .maintenance
+          bye
+          LFTP
+          echo "✅ .maintenance entfernt"
+
+      # ── 5. Nachprüfung der Startseite ───────────────────────────────────
+      - name: Startseite prüfen (HTTP)
+        run: |
+          for i in 1 2 3 4 5 6; do
+            CODE=$(curl -s -o /dev/null -w '%{http_code}' -L --max-time 30 "https://comehome.care/?deploycheck=$(date +%s)" || echo 000)
+            echo "Versuch $i: HTTP $CODE"
+            if [ "$CODE" = "200" ]; then echo "✅ comehome.care antwortet"; exit 0; fi
+            sleep 10
+          done
+          echo "❌ comehome.care antwortet nicht mit 200 – Rollback prüfen (wp-content/liebherr-interface-world.prev)"
+          exit 1
+
+      - name: Deployment-Summary
+        if: success()
+        run: |
+          echo "✅ LIW-Deploy Staging erfolgreich"
+          echo "   Version:  $PLUGIN_VERSION"
+          echo "   Staging:  https://comehome.care"
+          echo ""
+          echo "⚠️  Manuelle Nacharbeiten (WP Admin comehome.care):"
+          echo "   1. Plugins → „Liebherr Interface Solutions“ aktiv? (Erstdeploy: aktivieren)"
+          echo "   2. WP Rocket: Clear cache"
+          echo "   3. Articlebook Construction → Katalog: Quelle „Liebherr Produktvorlagen“ sichtbar?"
+
+      - name: Fehler-Hinweis
+        if: failure()
+        run: |
+          echo "❌ LIW-Deploy fehlgeschlagen"
+          echo "   Häufige Ursachen:"
+          echo "   - Environment 'staging' oder STAGING_SFTP_*-Secrets in DIESEM Repo nicht angelegt"
+          echo "   - STAGING_SFTP_TARGET endet nicht auf .../plugins/liebherr-interface-world"
+          echo "   - Header-Version ≠ LIW_VERSION in liebherr-interface-world.php"
