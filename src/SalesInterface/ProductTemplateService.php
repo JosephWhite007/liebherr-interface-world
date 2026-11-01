@@ -101,12 +101,16 @@ final class ProductTemplateService {
 	}
 
 	/** @return array<int,array<string,mixed>> Suche nach Bezeichnung/Hersteller/Maschinenart (Standard: nur Liebherr, freigegeben). */
-	public static function search( string $term, string $manufacturer = 'LI', string $machine_type = '', int $limit = 50 ): array {
+	public static function search( string $term, string $manufacturer = 'LI', string $machine_type = '', int $limit = 50, string $starts_with = '' ): array {
 		global $wpdb;
 		if ( ! ProductTemplateSchema::exists() ) {
 			return [];
 		}
 		$where = [ '1=1' ];
+		// [alpha.178] Anfangsbuchstabe der Bezeichnung serverseitig (Core-Explorer ABC-Leiste im Katalog, IMP-044): A–Z oder '#' = nicht-alphabetisch
+		if ( '' !== $starts_with ) {
+			$where[] = '#' === $starts_with ? "designation <> '' AND designation NOT REGEXP '^[[:alpha:]]'" : $wpdb->prepare( 'designation LIKE %s', $wpdb->esc_like( strtoupper( substr( $starts_with, 0, 1 ) ) ) . '%' );
+		}
 		if ( '' !== $manufacturer ) {
 			$where[] = $wpdb->prepare( 'manufacturer = %s', $manufacturer );
 		}

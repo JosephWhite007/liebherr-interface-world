@@ -1,5 +1,11 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.178] – 2026-11-01 – Vorlagensuche: Anfangsbuchstabe serverseitig (Core alpha.848, IMP-044)
+
+### Neu
+- `ProductTemplateService::search` kennt `starts_with` (A–Z: `designation LIKE 'R%'`, `#`: nicht-alphabetisch); `LiebherrCatalogSource::search`
+  reicht den optionalen Core-Filter durch. Die ABC-Leiste des Core-Explorers trifft damit den ganzen Katalog.
+
 ## [0.1.0-alpha.177] – 2026-11-01 – Livision-Push wendet die Freigabematrix des Core an (Core alpha.839)
 
 ### Geändert

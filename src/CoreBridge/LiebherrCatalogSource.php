@@ -59,7 +59,8 @@ class LiebherrCatalogSource implements CatalogSourceInterface { // [alpha.172] n
 
 	public function search( string $term, array $f, int $limit ): array {
 		$manufacturer = (string) ( $f['manufacturer'] ?? 'LI' ); // Standard: Liebherr; '' über Filter = alle Hersteller der Vorlagenliste
-		$rows         = ProductTemplateService::search( $term, $manufacturer, (string) ( $f['machine_type'] ?? '' ), max( 1, min( 500, $limit ) ) );
+		$starts       = (string) ( $f['starts_with'] ?? '' ); // [alpha.178] optional vom Core-Explorer (starts_field: Bezeichnung = designation)
+		$rows         = ProductTemplateService::search( $term, $manufacturer, (string) ( $f['machine_type'] ?? '' ), max( 1, min( 500, $limit ) ), preg_match( '/^([A-Za-z]|#)$/', $starts ) ? $starts : '' );
 		return array_map( [ self::class, 'normalize' ], $rows );
 	}
 

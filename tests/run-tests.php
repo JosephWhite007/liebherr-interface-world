@@ -889,5 +889,8 @@ liw_assert( 'LiebherrLiveCatalogSource: facets() mit machine_type + manufacturer
 $__ls77 = (string) file_get_contents( $root . '/src/SalesInterface/LivisionSync.php' );
 liw_assert( 'LivisionSync: Freigabematrix des Core (ReleasePolicy) – release_endpoint/apply_release, Precheck blockiert gesperrte Entität, gesperrte Felder als Hinweis, Keyaccount nur bei Freigabe', str_contains( $__ls77, "CORE_RELEASE = 'Araliya\\\\Platform\\\\Core\\\\Modules\\\\Addressbook\\\\Api\\\\ReleasePolicy'" ) && str_contains( $__ls77, 'public static function apply_release( int $org_id, string $kind, array $row ): array' ) && str_contains( $__ls77, "self::apply_release( \$org_id, 'address', \$a )" ) && str_contains( $__ls77, "self::apply_release( \$org_id, 'contact', \$c )" ) && str_contains( $__ls77, 'Pflichtfeld-Freigabe fehlt' ) && str_contains( $__ls77, "array_key_exists( 'key_account', \$a )" ), $checks, $failures );
 
+// --- alpha.178: starts_with
+liw_assert( 'Vorlagensuche: starts_with serverseitig (LIKE/NOT REGEXP), Quelle reicht den Core-Filter durch', str_contains( (string) file_get_contents( $root . '/src/SalesInterface/ProductTemplateService.php' ), "int \$limit = 50, string \$starts_with = ''" ) && str_contains( (string) file_get_contents( $root . '/src/SalesInterface/ProductTemplateService.php' ), "designation NOT REGEXP '^[[:alpha:]]'" ) && str_contains( (string) file_get_contents( $root . '/src/CoreBridge/LiebherrCatalogSource.php' ), "\$f['starts_with']" ), $checks, $failures );
+
 echo "\n{$checks} Prüfungen, {$failures} fehlgeschlagen.\n";
 exit( $failures > 0 ? 1 : 0 );
