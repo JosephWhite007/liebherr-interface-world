@@ -21,6 +21,10 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 2026-11-02 · alpha.181 · GoHeal-Workflow: Secrets-Vorprüfung
+- **Kontext:** Erster GoHeal-Lauf des LIW-Repos (#1) rot in „Plugin packen & Upload“. Lokal nachgestellt: Versionsprüfung (Header = LIW_VERSION = alpha.180) und PHP-Lint bestehen; damit bleiben nur die SFTP-Schritte – Secrets und Environment `goheal` gelten je Repo, das LIW-Repo hatte sie beim ersten Lauf noch nicht (Core-Repo ja).
+- **Entscheidung (Claude, Kat. B):** Vorprüf-Schritt vor lftp, der fehlende Secrets benennt (ohne Werte) und den Zielpfad plausibilisiert; keine Änderung am Upload selbst. Betrieb JW: Environment `goheal` im LIW-Repo mit `GOHEAL_SFTP_HOST/PORT/PROTOCOL/USER/PASSWORD/TARGET` anlegen, TARGET = `…/wp-content/plugins/liebherr-interface-world`, danach Workflow erneut starten.
+
 ## 2026-11-01 · alpha.180 · XLSX-Leser aus dem Core (IMP-038)
 - `src/SalesInterface/XlsxReader.php`: nur noch Brücke zu `Araliya\Platform\Core\Modules\Addressbook\SpreadsheetReader` (Core alpha.852: `sheet_names()`, `cells()`); eigene ZipArchive/XMLReader-Logik entfernt, Schnittstelle unverändert; `tests/run-tests.php` lädt den Core-Leser aus dem Nachbar-Repo; Version 0.1.0-alpha.180.
 

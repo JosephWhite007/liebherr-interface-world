@@ -1,5 +1,14 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.181] – 2026-11-02 – GoHeal-Workflow: Secrets-Vorprüfung mit klarer Meldung
+
+### Geändert
+- `deploy-goheal.yml`: neuer Schritt „Secrets prüfen (Environment goheal dieses Repos)“ vor lftp – bricht mit der Liste der fehlenden
+  `GOHEAL_SFTP_*`-Secrets und dem Einrichtungsweg ab (Settings → Environments → goheal) und prüft, dass `GOHEAL_SFTP_TARGET` auf
+  `/wp-content/plugins/liebherr-interface-world` endet (Core-Wert darf nicht übernommen werden). Werte werden nie ausgegeben.
+  Anlass: Lauf #1 (02.11.2026) brach in „Plugin packen & Upload“ ohne lesbare Ursache ab; Versionsprüfung und Lint bestehen lokal
+  (origin/master alpha.180), übrig bleiben die SFTP-Schritte – Secrets gelten je Repo, Lauf #1 eines neuen Repos hat sie noch nicht.
+
 ## [0.1.0-alpha.180] – 2026-11-01 – XLSX-Leser aus dem Core (Core alpha.852, IMP-038)
 
 ### Geändert

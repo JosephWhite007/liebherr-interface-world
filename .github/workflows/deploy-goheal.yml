@@ -113,6 +113,32 @@ jobs:
             . /tmp/liw-deploy/
           echo "📦 Dateien im Deployment-Paket: $(find /tmp/liw-deploy -type f | wc -l)"
 
+      # ── [alpha.181] Secrets-Vorprüfung: Lauf #1 (02.11.2026) brach in den SFTP-Schritten ohne lesbare Ursache ab.
+      #    Secrets gelten je Repo – das Environment "goheal" dieses Repos muss sie selbst tragen. Werte werden nie ausgegeben.
+      - name: Secrets prüfen (Environment goheal dieses Repos)
+        env:
+          SFTP_HOST:        ${{ secrets.GOHEAL_SFTP_HOST }}
+          SFTP_USER:        ${{ secrets.GOHEAL_SFTP_USER }}
+          SFTP_PASSWORD:    ${{ secrets.GOHEAL_SFTP_PASSWORD }}
+          SFTP_REMOTE_PATH: ${{ secrets.GOHEAL_SFTP_TARGET }}
+        run: |
+          MISSING=""
+          [ -z "$SFTP_HOST" ]        && MISSING="$MISSING GOHEAL_SFTP_HOST"
+          [ -z "$SFTP_USER" ]        && MISSING="$MISSING GOHEAL_SFTP_USER"
+          [ -z "$SFTP_PASSWORD" ]    && MISSING="$MISSING GOHEAL_SFTP_PASSWORD"
+          [ -z "$SFTP_REMOTE_PATH" ] && MISSING="$MISSING GOHEAL_SFTP_TARGET"
+          if [ -n "$MISSING" ]; then
+            echo "❌ Fehlende Secrets im Environment 'goheal' DIESES Repos (liebherr-interface-world):$MISSING"
+            echo "   GitHub → Settings → Environments → goheal → Environment secrets anlegen."
+            echo "   Werte wie im Core-Repo araliya-platform-core; nur GOHEAL_SFTP_TARGET anders:"
+            echo "   .../wp-content/plugins/liebherr-interface-world"
+            exit 1
+          fi
+          case "$SFTP_REMOTE_PATH" in
+            */wp-content/plugins/liebherr-interface-world) echo "✅ Secrets vorhanden, Zielpfad endet auf plugins/liebherr-interface-world" ;;
+            *) echo "❌ GOHEAL_SFTP_TARGET muss auf /wp-content/plugins/liebherr-interface-world enden (Core-Wert nicht übernehmen)"; exit 1 ;;
+          esac
+
       - name: lftp installieren
         run: sudo apt-get install -y lftp
 
