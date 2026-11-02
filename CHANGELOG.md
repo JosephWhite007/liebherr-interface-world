@@ -1,5 +1,19 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.185] – 2026-11-02 – GoHeal-Workflow: Nachweis über HTTP, Zielpfad ab FTP-Wurzel
+
+### Behoben
+- Lauf #11 (02.11.2026) war grün, goheal.world lieferte aber weiter alpha.145: `GOHEAL_SFTP_TARGET` stand auf `/home/goheala/www/…`,
+  die FTP-Wurzel von `goheala` ist jedoch bereits `/home/goheala` – lftp legte `/home/goheala/home/goheala/www/…` an, fand dort kein
+  Live-Plugin („Erstdeploy“) und bestand seine Versionsprüfung im eigenen Baum (Nachweis JW: FTP-Liste des Pfads zeigt den Ordner).
+  Richtig: `/www/wp-content/plugins/liebherr-interface-world`. Das erklärt auch die Hänger der Läufe #9/#10 (Elternpfad fehlte).
+
+### Geändert
+- `deploy-goheal.yml` „Plugin-Verzeichnis umschalten“: vor dem Umschalten muss `https://goheal.world/wp-content/<name>.new/CHANGELOG.md`
+  mit 200 antworten (sonst Abbruch mit Pfadhinweis, Live unverändert); nach dem Umschalten muss `wp-content/plugins/<name>/CHANGELOG.md`
+  über HTTP die Deploy-Version tragen (sonst Rollback). Ein Lauf kann damit nicht mehr grün sein, während die Website das alte Plugin zeigt.
+  Kopfkommentar: Zielpfad ab FTP-Wurzel. Kein PHP-Code betroffen.
+
 ## [0.1.0-alpha.184] – 2026-11-02 – GoHeal-Workflow: harte Zeitgrenzen je lftp-Aufruf, Teilschritte im Log
 
 ### Geändert

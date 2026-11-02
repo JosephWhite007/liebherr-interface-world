@@ -15,7 +15,9 @@ name: 🚀 Deploy to GoHeal (goheal.world)
 #   GOHEAL_PROTOCOL       sftp (Standard) | ftps | ftp  – OVH goheal.world: ftp (kein SFTP-Login, kein AUTH TLS; Befund 02.11.2026)
 #   GOHEAL_SFTP_USER      Benutzername
 #   GOHEAL_SFTP_PASSWORD  Passwort
-#   GOHEAL_SFTP_TARGET    Absoluter Pfad, z. B. /home/<user>/www/wp-content/plugins/liebherr-interface-world
+#   GOHEAL_SFTP_TARGET    Pfad ab der FTP-Wurzel des Benutzers – OVH goheal.world: FTP-Wurzel ist bereits /home/goheala,
+#                         richtig ist daher /www/wp-content/plugins/liebherr-interface-world (NICHT /home/goheala/www/…:
+#                         das legt /home/goheala/home/goheala/www/… an – Lauf #11, 02.11.2026)
 #
 # Nicht Bestandteil: Core-Plugin (eigenes Repo), wp-config.php, mu-plugins, Uploads, Datenbank.
 # ─────────────────────────────────────────────────────────────────────────────
@@ -236,6 +238,17 @@ jobs:
           if ! exists "$WPC/$NAME.new/liebherr-interface-world.php"; then
             echo "❌ $WPC/$NAME.new fehlt – Upload unvollständig"; exit 1
           fi
+          # [alpha.185] Der FTP-Pfad muss das Web-Root von goheal.world treffen. Lauf #11 (02.11.2026) war grün, hatte aber in
+          #   /home/goheala/home/goheala/www/… geschrieben (FTP-Wurzel ist bereits /home/goheala) – die Website blieb auf alpha.145.
+          #   Darum: .new muss über HTTP sichtbar sein, bevor irgendetwas umgeschaltet wird.
+          step "prüfe über HTTP, ob $NAME.new im Web-Root liegt"
+          HTTP_NEW="$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "https://goheal.world/wp-content/$NAME.new/CHANGELOG.md?t=$(date +%s)" || echo 000)"
+          if [ "$HTTP_NEW" != "200" ]; then
+            echo "❌ https://goheal.world/wp-content/$NAME.new/CHANGELOG.md antwortet $HTTP_NEW – der FTP-Zielpfad trifft nicht das Web-Root von goheal.world."
+            echo "   GOHEAL_SFTP_TARGET ist relativ zur FTP-Wurzel des Benutzers (OVH: FTP-Wurzel = /home/goheala) → richtig: /www/wp-content/plugins/$NAME"
+            echo "   Live unverändert. Den unter dem falschen Pfad angelegten Baum per FTP-Client entfernen."
+            exit 1
+          fi
           step "lese Version aus .new"
           NEWV="$(remote_version "$WPC/$NAME.new")"
           if [ "$NEWV" != "$PLUGIN_VERSION" ]; then
@@ -271,6 +284,15 @@ jobs:
             rollback; exit 1
           fi
           echo "🔁 Plugin umgeschaltet auf $LIVEV — vorherige Version liegt in $WPC/$NAME.prev (Rollback: mv)"
+
+          # [alpha.185] Nachweis aus Sicht der Website: CHANGELOG.md des Live-Ordners muss die Deploy-Version tragen.
+          step "verifiziere Version über HTTP (goheal.world)"
+          WEBV="$(curl -s -L --max-time 30 "https://goheal.world/wp-content/plugins/$NAME/CHANGELOG.md?t=$(date +%s)" | grep -m1 -o '\[0\.1\.0-alpha\.[0-9]*\]' | tr -d '[]')"
+          if [ "$WEBV" != "$PLUGIN_VERSION" ]; then
+            echo "❌ goheal.world liefert unter wp-content/plugins/$NAME/CHANGELOG.md Version '${WEBV:-–}' statt $PLUGIN_VERSION"
+            remove_dir "$SFTP_REMOTE_PATH"; rollback; exit 1
+          fi
+          echo "🌐 goheal.world liefert $WEBV"
 
           step "lese Core-Version"
           COREV="$(run_lftp "cat $PARENT/araliya-platform-core/araliya-platform-core.php" 2>/dev/null | grep -m1 'Version:' | awk '{print $NF}')"
