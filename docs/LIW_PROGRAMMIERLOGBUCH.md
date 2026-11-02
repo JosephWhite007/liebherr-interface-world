@@ -21,6 +21,10 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 2026-11-02 · alpha.183 · GoHeal-Lauf #4: Schritt 6 erneut rot
+- **Befund:** Anker step:6 → „Secrets prüfen“ Exit 1, kein Folgefehler mehr (alpha.182 wirkt). Ob Secret fehlt oder Pfadmuster zu streng (Schrägstrich am Ende, kein `wp-content` im Pfad), ist ohne Login nicht lesbar.
+- **Entscheidung (Claude, Kat. B):** Pfadprüfung tolerant (`…/plugins/liebherr-interface-world`, Schrägstrich am Ende erlaubt), Core-Ordner als eigener Fehlerfall, Ausgabe der letzten zwei Pfadsegmente (kein Host/Benutzer – Secrets bleiben geheim). Shell-Test der vier Fälle lokal grün.
+
 ## 2026-11-02 · alpha.182 · GoHeal-Lauf #2 gelesen: Secrets fehlen, Exit 127 war Folgefehler
 - **Befund (öffentlicher Actions-Log, Anker step:6 und step:11):** Schritt 6 „Secrets prüfen“ Exit 1 → die `GOHEAL_SFTP_*`-Secrets im Environment `goheal` des LIW-Repos fehlen oder der Zielpfad ist falsch; Schritt 11 „Wartungsmodus beenden“ (`if: always()`) rief lftp, das nach dem frühen Abbruch nie installiert war → Exit 127.
 - **Entscheidung (Claude, Kat. B):** „Wartungsmodus beenden“ nur noch bei `MAINTENANCE_SET=1` (gesetzt in „Wartungsmodus aktivieren“). Damit zeigt ein Lauf künftig genau einen Fehler. Betrieb JW: Secrets im LIW-Repo anlegen (Settings → Environments → goheal), erneut starten.

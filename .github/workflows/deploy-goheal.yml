@@ -134,9 +134,14 @@ jobs:
             echo "   .../wp-content/plugins/liebherr-interface-world"
             exit 1
           fi
-          case "$SFTP_REMOTE_PATH" in
-            */wp-content/plugins/liebherr-interface-world) echo "✅ Secrets vorhanden, Zielpfad endet auf plugins/liebherr-interface-world" ;;
-            *) echo "❌ GOHEAL_SFTP_TARGET muss auf /wp-content/plugins/liebherr-interface-world enden (Core-Wert nicht übernehmen)"; exit 1 ;;
+          # [alpha.183] Tolerant: Schrägstrich am Ende erlaubt; nur die letzten zwei Pfadsegmente werden gezeigt (kein Host, kein Benutzer).
+          P="${SFTP_REMOTE_PATH%/}"
+          TAIL="$(basename "$(dirname "$P")")/$(basename "$P")"
+          echo "ℹ️ Zielpfad endet auf: …/$TAIL"
+          case "$P" in
+            */plugins/liebherr-interface-world) echo "✅ Secrets vorhanden, Zielpfad zeigt auf plugins/liebherr-interface-world" ;;
+            */plugins/araliya-platform-core) echo "❌ GOHEAL_SFTP_TARGET zeigt auf den Core-Ordner – für dieses Repo muss er auf …/plugins/liebherr-interface-world enden"; exit 1 ;;
+            *) echo "❌ GOHEAL_SFTP_TARGET muss auf …/plugins/liebherr-interface-world enden (ist: …/$TAIL)"; exit 1 ;;
           esac
 
       - name: lftp installieren

@@ -1,5 +1,12 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.183] – 2026-11-02 – GoHeal-Workflow: Zielpfad-Prüfung tolerant und sprechend
+
+### Geändert
+- `deploy-goheal.yml` „Secrets prüfen“: Schrägstrich am Ende erlaubt, Prüfung nur auf `…/plugins/liebherr-interface-world`
+  (ohne `wp-content`-Zwang); Log zeigt die letzten zwei Pfadsegmente (kein Host, kein Benutzer) und erkennt den Core-Ordner
+  als eigenen Fehlerfall. Lauf #4 brach erneut in Schritt 6 ab (Exit 1); die Ursache steht jetzt im Log.
+
 ## [0.1.0-alpha.182] – 2026-11-02 – GoHeal-Workflow: „Wartungsmodus beenden“ nur nach gesetztem Wartungsmodus
 
 ### Geändert
