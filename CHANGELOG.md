@@ -1,5 +1,16 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.184] – 2026-11-02 – GoHeal-Workflow: harte Zeitgrenzen je lftp-Aufruf, Teilschritte im Log
+
+### Geändert
+- `deploy-goheal.yml`: Lauf #9 (02.11.2026, Protokoll FTP) kam erstmals durch Anmeldung und Upload und hing dann im Schritt
+  „Plugin-Verzeichnis umschalten“ bis zum Job-Timeout (30 min, Anker step:10) – bei gesetztem `.maintenance`. Jetzt: jeder lftp-Aufruf
+  unter `timeout` (120 s, Upload 840 s, Verzeichnis leeren 300 s), `net:timeout 30`, kurze Wiederholungsintervalle, `cmd:fail-exit`;
+  eigene `timeout-minutes` je Schritt (Wartungsmodus 3, Upload 15, Umschalten 8, Wartungsmodus beenden 3), damit „Wartungsmodus beenden“
+  nach einem Hänger sicher läuft. Das Umschalten meldet jeden Teilschritt mit Uhrzeit (`→ … prüfe .new / lese Version / live → .prev /
+  .new → live / verifiziere`); eine Zeitgrenze bei einer Existenzprüfung bricht ab, statt einen Zustand anzunehmen. Kopfkommentar und
+  Fehler-Hinweis nennen OVH goheal.world = `ftp`/21 (kein SFTP-Login, kein `AUTH TLS`). Kein PHP-Code betroffen.
+
 ## [0.1.0-alpha.183] – 2026-11-02 – GoHeal-Workflow: Zielpfad-Prüfung tolerant und sprechend
 
 ### Geändert

@@ -11,8 +11,8 @@ name: 🚀 Deploy to GoHeal (goheal.world)
 #
 # Benötigte Secrets im GitHub Environment "goheal" DIESES Repos (Werte wie im Core-Repo, nur TARGET anders):
 #   GOHEAL_SFTP_HOST      Host (z. B. ftp.clusterNNN.hosting.ovh.net)
-#   GOHEAL_SFTP_PORT      22 für SFTP (Standard), 21 für FTP/FTPS
-#   GOHEAL_PROTOCOL       sftp (Standard) | ftps | ftp  – optional
+#   GOHEAL_SFTP_PORT      22 für SFTP (Standard), 21 für FTP/FTPS – OVH goheal.world: 21
+#   GOHEAL_PROTOCOL       sftp (Standard) | ftps | ftp  – OVH goheal.world: ftp (kein SFTP-Login, kein AUTH TLS; Befund 02.11.2026)
 #   GOHEAL_SFTP_USER      Benutzername
 #   GOHEAL_SFTP_PASSWORD  Passwort
 #   GOHEAL_SFTP_TARGET    Absoluter Pfad, z. B. /home/<user>/www/wp-content/plugins/liebherr-interface-world
@@ -147,7 +147,12 @@ jobs:
       - name: lftp installieren
         run: sudo apt-get install -y lftp
 
+      # ── [alpha.184] Harte Zeitgrenzen: Lauf #9 (02.11.2026, FTP) kam durch Anmeldung und Upload, hing dann im Umschalten
+      #    bis zum Job-Timeout (30 min) – mit gesetztem .maintenance. Jeder lftp-Aufruf bekommt jetzt `timeout` (coreutils)
+      #    und net:timeout, jeder Schritt eine eigene Minutengrenze; das Umschalten meldet jeden Teilschritt, damit der Log
+      #    die hängende Operation zeigt.
       - name: Wartungsmodus aktivieren
+        timeout-minutes: 3
         env:
           SFTP_HOST:        ${{ secrets.GOHEAL_SFTP_HOST }}
           SFTP_PROTO:       ${{ secrets.GOHEAL_PROTOCOL || 'sftp' }}
@@ -157,9 +162,14 @@ jobs:
           SFTP_REMOTE_PATH: ${{ secrets.GOHEAL_SFTP_TARGET }}
         run: |
           printf '<?php $upgrading = %s; ?>\n' "$(date +%s)" > /tmp/.maintenance
-          lftp -u "$SFTP_USER","$SFTP_PASSWORD" "$SFTP_PROTO"://"$SFTP_HOST":"$SFTP_PORT" <<LFTP
+          echo "ℹ️ Protokoll: $SFTP_PROTO, Port $SFTP_PORT"
+          timeout 120 lftp -u "$SFTP_USER","$SFTP_PASSWORD" "$SFTP_PROTO"://"$SFTP_HOST":"$SFTP_PORT" <<LFTP
           set sftp:auto-confirm yes
-          set net:max-retries 3
+          set net:timeout 30
+          set net:max-retries 2
+          set net:reconnect-interval-base 5
+          set net:reconnect-interval-multiplier 1
+          set cmd:fail-exit yes
           cd $SFTP_REMOTE_PATH/../../..
           put /tmp/.maintenance -o .maintenance
           bye
@@ -168,6 +178,7 @@ jobs:
           echo "MAINTENANCE_SET=1" >> $GITHUB_ENV
 
       - name: Upload per SFTP (mirror → .new)
+        timeout-minutes: 15
         env:
           SFTP_HOST:        ${{ secrets.GOHEAL_SFTP_HOST }}
           SFTP_PROTO:       ${{ secrets.GOHEAL_PROTOCOL || 'sftp' }}
@@ -177,17 +188,21 @@ jobs:
           SFTP_REMOTE_PATH: ${{ secrets.GOHEAL_SFTP_TARGET }}
         run: |
           NAME="$(basename "$SFTP_REMOTE_PATH")"
-          lftp -u "$SFTP_USER","$SFTP_PASSWORD" "$SFTP_PROTO"://"$SFTP_HOST":"$SFTP_PORT" <<LFTP
+          echo "📤 Upload von $(find /tmp/liw-deploy -type f | wc -l) Dateien nach wp-content/$NAME.new …"
+          timeout 840 lftp -u "$SFTP_USER","$SFTP_PASSWORD" "$SFTP_PROTO"://"$SFTP_HOST":"$SFTP_PORT" <<LFTP
           set sftp:auto-confirm yes
+          set net:timeout 30
           set net:max-retries 3
           set net:reconnect-interval-base 5
           set net:reconnect-interval-multiplier 2
+          set cmd:fail-exit yes
           mirror --reverse --delete --verbose=1 --parallel=4 /tmp/liw-deploy $SFTP_REMOTE_PATH/../../$NAME.new
           bye
           LFTP
           echo "📤 Plugin nach wp-content/$NAME.new hochgeladen"
 
       - name: Plugin-Verzeichnis umschalten
+        timeout-minutes: 8
         env:
           SFTP_HOST:        ${{ secrets.GOHEAL_SFTP_HOST }}
           SFTP_PROTO:       ${{ secrets.GOHEAL_PROTOCOL || 'sftp' }}
@@ -199,40 +214,56 @@ jobs:
           NAME="$(basename "$SFTP_REMOTE_PATH")"
           PARENT="$(dirname "$SFTP_REMOTE_PATH")"          # …/wp-content/plugins
           WPC="$(dirname "$PARENT")"                       # …/wp-content
+          # [alpha.184] Jeder Aufruf mit harter Zeitgrenze (timeout, coreutils) und kurzen Netz-Wartezeiten; $2 = Sekunden (Standard 120).
           run_lftp() {
-            lftp -u "$SFTP_USER","$SFTP_PASSWORD" "$SFTP_PROTO"://"$SFTP_HOST":"$SFTP_PORT" -e "set sftp:auto-confirm yes; set net:max-retries 3; set cmd:fail-exit yes; $1; bye"
+            timeout "${2:-120}" lftp -u "$SFTP_USER","$SFTP_PASSWORD" "$SFTP_PROTO"://"$SFTP_HOST":"$SFTP_PORT" \
+              -e "set sftp:auto-confirm yes; set net:timeout 30; set net:max-retries 2; set net:reconnect-interval-base 5; set net:reconnect-interval-multiplier 1; set cmd:fail-exit yes; $1; bye"
           }
-          exists() { run_lftp "cls -1 $1" >/dev/null 2>&1; }
+          exists() {
+            run_lftp "cls -1 $1" >/dev/null 2>&1; local RC=$?
+            if [ "$RC" -eq 124 ]; then echo "❌ Zeitgrenze bei der Prüfung von $1 – Umschalten abgebrochen (keine Annahme über den Zustand)"; exit 1; fi
+            return "$RC"
+          }
           remove_dir() {
             mkdir -p /tmp/ary-empty
-            run_lftp "set cmd:fail-exit no; mirror --reverse --delete --parallel=8 --no-perms /tmp/ary-empty $1" || true
-            run_lftp "rm -rf $1" || true
+            run_lftp "set cmd:fail-exit no; mirror --reverse --delete --parallel=8 --no-perms /tmp/ary-empty $1" 300 || true
+            run_lftp "rm -rf $1" 120 || true
           }
           remote_version() { run_lftp "cat $1/liebherr-interface-world.php" 2>/dev/null | grep -m1 'Version:' | awk '{print $NF}'; }
+          step() { echo "→ $(date -u +%H:%M:%S) $1"; }
 
+          step "prüfe wp-content/$NAME.new"
           if ! exists "$WPC/$NAME.new/liebherr-interface-world.php"; then
             echo "❌ $WPC/$NAME.new fehlt – Upload unvollständig"; exit 1
           fi
+          step "lese Version aus .new"
           NEWV="$(remote_version "$WPC/$NAME.new")"
           if [ "$NEWV" != "$PLUGIN_VERSION" ]; then
             echo "❌ Version in .new ($NEWV) ≠ Deploy-Version ($PLUGIN_VERSION)"; exit 1
           fi
+          echo "   .new trägt $NEWV"
           for OLD in "$WPC/$NAME.prev" "$WPC/$NAME.prev2"; do
+            step "prüfe alte Rollback-Kopie $(basename "$OLD")"
             if exists "$OLD"; then
+              step "entferne $(basename "$OLD")"
               remove_dir "$OLD"
               if exists "$OLD"; then echo "❌ $OLD konnte nicht entfernt werden – Umschalten abgebrochen (Live unverändert)"; exit 1; fi
             fi
           done
+          step "prüfe Live-Ordner"
           if exists "$SFTP_REMOTE_PATH"; then
+            step "live → $NAME.prev"
             run_lftp "mv $SFTP_REMOTE_PATH $WPC/$NAME.prev" || { echo "❌ live → .prev fehlgeschlagen (Live unverändert)"; exit 1; }
             if exists "$SFTP_REMOTE_PATH"; then echo "❌ Live-Ordner existiert nach mv weiterhin – abgebrochen"; exit 1; fi
           else
             echo "ℹ️ kein bisheriges Plugin-Verzeichnis (Erstdeploy – Plugin danach im Backend aktivieren)"
           fi
           rollback() { run_lftp "mv $WPC/$NAME.prev $SFTP_REMOTE_PATH" && echo "↩️ Rollback auf vorherige Version" || echo "‼️ Rollback fehlgeschlagen – manuell: mv $WPC/$NAME.prev $SFTP_REMOTE_PATH"; }
+          step "$NAME.new → live"
           if ! run_lftp "mv $WPC/$NAME.new $SFTP_REMOTE_PATH"; then
             echo "❌ Umschalten fehlgeschlagen"; rollback; exit 1
           fi
+          step "verifiziere Live-Version"
           LIVEV="$(remote_version "$SFTP_REMOTE_PATH")"
           if [ "$LIVEV" != "$PLUGIN_VERSION" ] || exists "$WPC/$NAME.new"; then
             echo "❌ Verifikation fehlgeschlagen: live=$LIVEV erwartet=$PLUGIN_VERSION"
@@ -241,6 +272,7 @@ jobs:
           fi
           echo "🔁 Plugin umgeschaltet auf $LIVEV — vorherige Version liegt in $WPC/$NAME.prev (Rollback: mv)"
 
+          step "lese Core-Version"
           COREV="$(run_lftp "cat $PARENT/araliya-platform-core/araliya-platform-core.php" 2>/dev/null | grep -m1 'Version:' | awk '{print $NF}')"
           if [ -z "$COREV" ]; then
             echo "⚠️ Core-Plugin unter $PARENT/araliya-platform-core nicht gefunden – LIW bleibt ohne Core inaktiv"
@@ -252,6 +284,7 @@ jobs:
       #             (Lauf #2: Secrets-Prüfung rot) ohne Installation und meldete Exit 127 als zweiten, irreführenden Fehler.
       - name: Wartungsmodus beenden
         if: always() && env.MAINTENANCE_SET == '1'
+        timeout-minutes: 3
         env:
           SFTP_HOST:        ${{ secrets.GOHEAL_SFTP_HOST }}
           SFTP_PROTO:       ${{ secrets.GOHEAL_PROTOCOL || 'sftp' }}
@@ -260,9 +293,12 @@ jobs:
           SFTP_PORT:        ${{ secrets.GOHEAL_SFTP_PORT || '22' }}
           SFTP_REMOTE_PATH: ${{ secrets.GOHEAL_SFTP_TARGET }}
         run: |
-          lftp -u "$SFTP_USER","$SFTP_PASSWORD" "$SFTP_PROTO"://"$SFTP_HOST":"$SFTP_PORT" <<LFTP
+          timeout 120 lftp -u "$SFTP_USER","$SFTP_PASSWORD" "$SFTP_PROTO"://"$SFTP_HOST":"$SFTP_PORT" <<LFTP
           set sftp:auto-confirm yes
-          set net:max-retries 3
+          set net:timeout 30
+          set net:max-retries 2
+          set net:reconnect-interval-base 5
+          set net:reconnect-interval-multiplier 1
           cd $SFTP_REMOTE_PATH/../../..
           rm -f .maintenance
           bye
@@ -300,3 +336,5 @@ jobs:
           echo "   - Environment 'goheal' oder GOHEAL_SFTP_*-Secrets in DIESEM Repo nicht angelegt"
           echo "   - Protokoll/Port passen nicht (GOHEAL_PROTOCOL: sftp|ftps|ftp, GOHEAL_SFTP_PORT)"
           echo "   - GOHEAL_SFTP_TARGET endet nicht auf .../plugins/liebherr-interface-world"
+          echo "   - Ein Schritt lief in seine Zeitgrenze (timeout 124): der letzte '→'-Teilschritt im Log zeigt die hängende Operation"
+          echo "   Nach einem Abbruch im Umschalten: wp-content/liebherr-interface-world(.new|.prev) auf dem Ziel prüfen"
