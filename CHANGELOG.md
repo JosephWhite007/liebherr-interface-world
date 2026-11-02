@@ -1,5 +1,13 @@
 # Liebherr Interface Solutions — Changelog
 
+## [0.1.0-alpha.182] – 2026-11-02 – GoHeal-Workflow: „Wartungsmodus beenden“ nur nach gesetztem Wartungsmodus
+
+### Geändert
+- `deploy-goheal.yml`: „Wartungsmodus aktivieren“ setzt `MAINTENANCE_SET=1`; „Wartungsmodus beenden“ läuft nur noch mit diesem Flag.
+  Lauf #2 (02.11.2026, öffentlicher Log): Schritt 6 „Secrets prüfen“ rot (Exit 1 – Secrets des Environments `goheal` im LIW-Repo
+  fehlen oder `GOHEAL_SFTP_TARGET` endet nicht auf `plugins/liebherr-interface-world`), danach Schritt 11 Exit 127, weil lftp nach
+  dem frühen Abbruch nie installiert wurde – der zweite Fehler war nur Folge. Betrieb: Secrets setzen, Workflow erneut starten.
+
 ## [0.1.0-alpha.181] – 2026-11-02 – GoHeal-Workflow: Secrets-Vorprüfung mit klarer Meldung
 
 ### Geändert

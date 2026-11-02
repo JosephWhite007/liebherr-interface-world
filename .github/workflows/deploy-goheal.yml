@@ -160,6 +160,7 @@ jobs:
           bye
           LFTP
           echo "🛠️ .maintenance gesetzt"
+          echo "MAINTENANCE_SET=1" >> $GITHUB_ENV
 
       - name: Upload per SFTP (mirror → .new)
         env:
@@ -242,8 +243,10 @@ jobs:
             echo "ℹ️ Core-Plugin auf dem Ziel: $COREV (LIW alpha.170+ braucht Core ≥ alpha.815 für die Katalogquelle)"
           fi
 
+      # [alpha.182] Nur wenn .maintenance wirklich gesetzt wurde – sonst lief lftp nach einem frühen Abbruch
+      #             (Lauf #2: Secrets-Prüfung rot) ohne Installation und meldete Exit 127 als zweiten, irreführenden Fehler.
       - name: Wartungsmodus beenden
-        if: always()
+        if: always() && env.MAINTENANCE_SET == '1'
         env:
           SFTP_HOST:        ${{ secrets.GOHEAL_SFTP_HOST }}
           SFTP_PROTO:       ${{ secrets.GOHEAL_PROTOCOL || 'sftp' }}

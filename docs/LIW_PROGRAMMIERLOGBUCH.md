@@ -21,6 +21,10 @@ mitgeschrieben, zusätzlich zum bereits bestehenden Handbuch und Entscheidungs-L
 
 ---
 
+## 2026-11-02 · alpha.182 · GoHeal-Lauf #2 gelesen: Secrets fehlen, Exit 127 war Folgefehler
+- **Befund (öffentlicher Actions-Log, Anker step:6 und step:11):** Schritt 6 „Secrets prüfen“ Exit 1 → die `GOHEAL_SFTP_*`-Secrets im Environment `goheal` des LIW-Repos fehlen oder der Zielpfad ist falsch; Schritt 11 „Wartungsmodus beenden“ (`if: always()`) rief lftp, das nach dem frühen Abbruch nie installiert war → Exit 127.
+- **Entscheidung (Claude, Kat. B):** „Wartungsmodus beenden“ nur noch bei `MAINTENANCE_SET=1` (gesetzt in „Wartungsmodus aktivieren“). Damit zeigt ein Lauf künftig genau einen Fehler. Betrieb JW: Secrets im LIW-Repo anlegen (Settings → Environments → goheal), erneut starten.
+
 ## 2026-11-02 · alpha.181 · GoHeal-Workflow: Secrets-Vorprüfung
 - **Kontext:** Erster GoHeal-Lauf des LIW-Repos (#1) rot in „Plugin packen & Upload“. Lokal nachgestellt: Versionsprüfung (Header = LIW_VERSION = alpha.180) und PHP-Lint bestehen; damit bleiben nur die SFTP-Schritte – Secrets und Environment `goheal` gelten je Repo, das LIW-Repo hatte sie beim ersten Lauf noch nicht (Core-Repo ja).
 - **Entscheidung (Claude, Kat. B):** Vorprüf-Schritt vor lftp, der fehlende Secrets benennt (ohne Werte) und den Zielpfad plausibilisiert; keine Änderung am Upload selbst. Betrieb JW: Environment `goheal` im LIW-Repo mit `GOHEAL_SFTP_HOST/PORT/PROTOCOL/USER/PASSWORD/TARGET` anlegen, TARGET = `…/wp-content/plugins/liebherr-interface-world`, danach Workflow erneut starten.
